@@ -1,0 +1,27 @@
+{
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "./src/**/*.test.tsx",
+    "./src/fakes/**/*.ts"
+  ],
+  "compilerOptions": {
+    "target": "es6",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "types": [
+    ]
+  }
+}
