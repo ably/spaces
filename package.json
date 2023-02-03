@@ -27,14 +27,14 @@
     "url": ""
   },
   "homepage": "https://github.com/ably-labs/spaces",
-  "dependencies": {
-
-  },
   "peerDependencies": {
     "ably": "^1.2.35"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
 }
