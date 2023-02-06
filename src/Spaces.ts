@@ -21,21 +21,9 @@ class Spaces {
 
     if (this.spaces[name]) return this.spaces[name];
 
-    const space = new Space(name, options, this.ably);
+    const space = new Space(name, options, this.channel, this.ably.auth.clientId);
     this.spaces[name] = space;
     return space;
-  }
-
-  enter(data: unknown) {
-    if (!data || typeof data !== 'object') {
-      return;
-    }
-
-    const clientId = this.ably.auth.clientId || undefined;
-    const presence = this.channel.presence;
-
-    // TODO: Discuss if we actually want change this behaviour in contrast to presence (enter becomes an update)
-    presence.get({ clientId }).then();
   }
 
 }
