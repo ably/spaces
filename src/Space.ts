@@ -10,15 +10,30 @@ const createSpaceMemberFromPresenceMember = (m: Types.PresenceMessage): SpaceMem
 });
 class Space {
   private members: SpaceMember[] = [];
+  
+  private channelName: string;
+  private channel: Types.RealtimeChannelPromise;
+
+  eventTarget: EventTarget;
 
   constructor(
     private name: string,
     private options: SpaceOptions,
-    private channel: Types.RealtimeChannelPromise,
+    private client: Types.RealtimePromise,
     private clientId: string,
   ){
+    this.eventTarget = new EventTarget();
+    this.setChannel(this.name);
+  }
+
+  private setChannel(rootName) {
     // The channel name prefix here should be unique to avoid conflicts with non-space channels
-    // this.channel = ably.channels.get(`_ably_space_${name}`);
+    this.channelName = `_ably_space_${rootName}`;
+    this.channel = this.client.channels.get(this.channelName);
+  }
+
+  private createMember(clientId: string, isConnected: boolean, data: { [key: string]: any }) {
+    this.members.push({ clientId, isConnected, data });
   }
 
   private syncMembers() {
@@ -32,16 +47,41 @@ class Space {
 
   private subscribeToPresenceEvents() {
     this.channel.presence.subscribe('enter', (message: Types.PresenceMessage) => {
-      // this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
+      this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
     });
 
     this.channel.presence.subscribe('leave', (message: Types.PresenceMessage) => {
-      // this.updateMemberState(message.clientId, false);
+      this.updateMemberState(message.clientId, false);
     });
 
     this.channel.presence.subscribe('update', (message: Types.PresenceMessage) => {
-      // this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
+      this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
     });
+  }
+
+  private updateMemberState(clientId: string | undefined, isConnected: boolean, data?: { [key: string]: any }) {
+    const implicitClientId = clientId ?? this.client.auth.clientId;
+
+    if (!implicitClientId) {
+      return;
+    }
+
+    const member = this.members.find((m) => m.clientId === clientId);
+
+    if (!member) {
+      this.createMember(implicitClientId, isConnected, data || {});
+    } else {
+      member.isConnected = isConnected;
+      if (data) {
+        // Member data is completely overridden, except lastEventTimestamp which is updated
+        member.data = {
+          ...data,
+          lastEventTimestamp: new Date(),
+        };
+      }
+    }
+    const memberUpdateEvent = new CustomEvent('memberUpdate', { detail: this.members });
+    this.eventTarget.dispatchEvent('memberUpdate', memberUpdateEvent);
   }
 
 

@@ -20,7 +20,7 @@ class Spaces {
 
     if (this.spaces[name]) return this.spaces[name];
 
-    const space = new Space(name, options, this.channel, this.ably.auth.clientId);
+    const space = new Space(name, options, this.ably, this.ably.auth.clientId);
     this.spaces[name] = space;
     return space;
   }
