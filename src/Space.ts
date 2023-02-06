@@ -3,6 +3,12 @@ import SpaceOptions from "./Options/SpaceOptions";
 
 const ERROR_CLIENT_ALREADY_ENTERED = 'Client has already entered the space';
 
+class MemberUpdateEvent extends Event {
+  constructor(members: SpaceMember[]) {
+    super("memberUpdate", {})
+  }
+}
+
 const createSpaceMemberFromPresenceMember = (m: Types.PresenceMessage): SpaceMember => ({
   clientId: m.clientId as string,
   isConnected: true,
@@ -19,7 +25,6 @@ class Space extends EventTarget {
   constructor(
     private name: string,
     private client: Types.RealtimePromise,
-    private clientId: string,
     private options?: SpaceOptions,
   ){
     super();
@@ -80,7 +85,8 @@ class Space extends EventTarget {
         };
       }
     }
-    const memberUpdateEvent = new CustomEvent('memberUpdate', { detail: this.members });
+
+    const memberUpdateEvent = new MemberUpdateEvent(this.members);
     this.dispatchEvent(memberUpdateEvent);
   }
 
@@ -90,7 +96,7 @@ class Space extends EventTarget {
       return;
     }
 
-    const clientId = this.clientId || undefined;
+    const clientId = this.client.auth.clientId || undefined;
     const presence = this.channel.presence;
 
     // TODO: Discuss if we actually want change this behaviour in contrast to presence (enter becomes an update)
