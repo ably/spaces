@@ -4,14 +4,13 @@ import Space from './Space';
 class Spaces {
   private spaces: Record<string, Space>;
   private channel: Types.RealtimeChannelPromise;
+  ably: Types.RealtimePromise;
 
   constructor(
-    private ably: Types.RealtimePromise
+    ably: Types.RealtimePromise,
   ){
     this.spaces = {};
     this.ably = ably;
-    // The channel name prefix here should be unique to avoid conflicts with non-space channels
-    this.channel = ably.channels.get(`_ably_space_${name}`);
   }
 
   get(name: string, options: SpaceOptions): Space {

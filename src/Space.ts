@@ -16,7 +16,10 @@ class Space {
     private options: SpaceOptions,
     private channel: Types.RealtimeChannelPromise,
     private clientId: string,
-  ){}
+  ){
+    // The channel name prefix here should be unique to avoid conflicts with non-space channels
+    // this.channel = ably.channels.get(`_ably_space_${name}`);
+  }
 
   private syncMembers() {
     this.channel.presence.get()
@@ -29,15 +32,15 @@ class Space {
 
   private subscribeToPresenceEvents() {
     this.channel.presence.subscribe('enter', (message: Types.PresenceMessage) => {
-      this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
+      // this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
     });
 
     this.channel.presence.subscribe('leave', (message: Types.PresenceMessage) => {
-      this.updateMemberState(message.clientId, false);
+      // this.updateMemberState(message.clientId, false);
     });
 
     this.channel.presence.subscribe('update', (message: Types.PresenceMessage) => {
-      this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
+      // this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
     });
   }
 
