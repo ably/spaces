@@ -8,7 +8,7 @@ const createSpaceMemberFromPresenceMember = (m: Types.PresenceMessage): SpaceMem
   isConnected: true,
   data: JSON.parse(m.data as string )
 });
-class Space {
+class Space extends EventTarget {
   private members: SpaceMember[] = [];
   
   private channelName: string;
@@ -18,11 +18,11 @@ class Space {
 
   constructor(
     private name: string,
-    private options: SpaceOptions,
     private client: Types.RealtimePromise,
     private clientId: string,
+    private options?: SpaceOptions,
   ){
-    this.eventTarget = new EventTarget();
+    super();
     this.setChannel(this.name);
   }
 
@@ -81,7 +81,7 @@ class Space {
       }
     }
     const memberUpdateEvent = new CustomEvent('memberUpdate', { detail: this.members });
-    this.eventTarget.dispatchEvent('memberUpdate', memberUpdateEvent);
+    this.dispatchEvent(memberUpdateEvent);
   }
 
 

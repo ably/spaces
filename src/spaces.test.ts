@@ -47,6 +47,7 @@ describe('Core Space API functionality', () => {
     const connectSuccess = await ablyClient.connection.whenState("connected");
     expect(connectSuccess.current).toBe('connected');
   });
+
   it('Creates and retrieves spaces successfully', () => {
     const ablyClient = new Ably.Realtime({
       key: 'abc:def',
@@ -54,7 +55,7 @@ describe('Core Space API functionality', () => {
     const channels = ablyClient.channels;
     const spy = vi.spyOn(channels, 'get');
     const spaces = new Spaces(ablyClient);
-    const space = spaces.get('test', {});
+    const space = spaces.get('test');
     expect(spy).toHaveBeenCalledOnce();
     expect(spy).toHaveBeenCalledWith('_ably_space_test');
     // Note: This is matching the class type. This is not a TypeScript type.

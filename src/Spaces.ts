@@ -13,14 +13,14 @@ class Spaces {
     this.ably = ably;
   }
 
-  get(name: string, options: SpaceOptions): Space {
+  get(name: string, options?: SpaceOptions): Space {
     if (typeof name !== 'string' || name.length === 0) {
       throw new Error('Spaces must have a non-empty name');
     }
 
     if (this.spaces[name]) return this.spaces[name];
 
-    const space = new Space(name, options, this.ably, this.ably.auth.clientId);
+    const space = new Space(name, this.ably, this.ably.auth.clientId, options);
     this.spaces[name] = space;
     return space;
   }
