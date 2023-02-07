@@ -1,32 +1,28 @@
-import { Types } from "ably";
-import SpaceOptions from "./options/SpaceOptions";
+import { Types } from 'ably';
+import SpaceOptions from './options/SpaceOptions';
 
 const ERROR_CLIENT_ALREADY_ENTERED = 'Client has already entered the space';
 
 class MemberUpdateEvent extends Event {
   constructor(public members: SpaceMember[]) {
-    super("memberUpdate", {})
+    super('memberUpdate', {});
   }
 }
 
 const createSpaceMemberFromPresenceMember = (m: Types.PresenceMessage): SpaceMember => ({
   clientId: m.clientId as string,
   isConnected: true,
-  data: JSON.parse(m.data as string )
+  data: JSON.parse(m.data as string),
 });
 class Space extends EventTarget {
   private members: SpaceMember[] = [];
-  
+
   private channelName: string;
   private channel: Types.RealtimeChannelPromise;
 
   eventTarget: EventTarget;
 
-  constructor(
-    private name: string,
-    private client: Types.RealtimePromise,
-    private options?: SpaceOptions,
-  ){
+  constructor(private name: string, private client: Types.RealtimePromise, private options?: SpaceOptions) {
     super();
     this.setChannel(this.name);
   }
@@ -42,12 +38,9 @@ class Space extends EventTarget {
   }
 
   private syncMembers() {
-    this.channel.presence.get()
-      .then((presenceMessages) => {
-        this.members = presenceMessages
-          .filter(m => m.clientId)
-          .map(createSpaceMemberFromPresenceMember);
-      });
+    this.channel.presence.get().then((presenceMessages) => {
+      this.members = presenceMessages.filter((m) => m.clientId).map(createSpaceMemberFromPresenceMember);
+    });
   }
 
   private subscribeToPresenceEvents() {
@@ -90,7 +83,6 @@ class Space extends EventTarget {
     this.dispatchEvent(memberUpdateEvent);
   }
 
-
   enter(data: unknown) {
     if (!data || typeof data !== 'object') {
       return;
@@ -100,15 +92,18 @@ class Space extends EventTarget {
     const presence = this.channel.presence;
 
     // TODO: Discuss if we actually want change this behaviour in contrast to presence (enter becomes an update)
-    presence.get({ clientId }).then((presenceMessages) => new Promise((resolve, reject) => {
-      if(presenceMessages && presenceMessages.length === 1) {
-        reject(ERROR_CLIENT_ALREADY_ENTERED);
-      }
+    presence.get({ clientId }).then(
+      (presenceMessages) =>
+        new Promise((resolve, reject) => {
+          if (presenceMessages && presenceMessages.length === 1) {
+            reject(ERROR_CLIENT_ALREADY_ENTERED);
+          }
 
-      this.syncMembers();
-      this.subscribeToPresenceEvents();
-      resolve(presence.enter(JSON.stringify(data)));
-    }));
+          this.syncMembers();
+          this.subscribeToPresenceEvents();
+          resolve(presence.enter(JSON.stringify(data)));
+        })
+    );
   }
 }
 

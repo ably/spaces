@@ -1,5 +1,5 @@
-import { Types } from "ably";
-import SpaceOptions from "./options/SpaceOptions";
+import { Types } from 'ably';
+import SpaceOptions from './options/SpaceOptions';
 import Space from './Space';
 
 class Spaces {
@@ -7,9 +7,7 @@ class Spaces {
   private channel: Types.RealtimeChannelPromise;
   ably: Types.RealtimePromise;
 
-  constructor(
-    ably: Types.RealtimePromise,
-  ){
+  constructor(ably: Types.RealtimePromise) {
     this.spaces = {};
     this.ably = ably;
   }
@@ -26,7 +24,6 @@ class Spaces {
     this.spaces[name] = space;
     return space;
   }
-
 }
 
 export default Spaces;
