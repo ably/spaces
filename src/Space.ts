@@ -21,6 +21,7 @@ class Space extends EventTarget {
   }
 
   private createSpaceMemberFromPresenceMember(m: Types.PresenceMessage) {
+    console.log(m);
     return {
       clientId: m.clientId as string,
       isConnected: true,

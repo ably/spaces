@@ -7,6 +7,7 @@ import Spaces from './Spaces';
 
 import Server from './utilities/test/mock-server';
 import defaultClientConfig from './utilities/test/default-client-config';
+import { TEST_DEFAULT_CLIENT_ID, TEST_DEFAULT_CONNECTION_ID, TEST_ENTER_PRESENCE_TIMESTAMP } from './utilities/test/mock-server-action-responses';
 
 interface SpacesTestContext {
   client: Types.RealtimePromise;
@@ -53,5 +54,26 @@ describe('Spaces', () => {
   it<SpacesTestContext>('fails to retrieve a space when a non-string is provided', ({ client }) => {
     const spaces = new Spaces(client);
     expect(() => spaces.get('')).toThrowError();
+  });
+
+  it<SpacesTestContext>('creates a space member message from a presence member message', ({ client }) => {
+      const spaces = new Spaces(client);
+      const presenceMemberMessage: Types.PresenceMessage = {
+        action: "enter",
+        clientId: TEST_DEFAULT_CLIENT_ID,
+        connectionId: TEST_DEFAULT_CONNECTION_ID,
+        encoding: "json",
+        id: "NU_ExvNktu:0",
+        timestamp: TEST_ENTER_PRESENCE_TIMESTAMP,
+        data: "{}"
+      };
+      const expectedSpaceMemberMessage = {
+        clientId: TEST_DEFAULT_CLIENT_ID,
+        data: {},
+        isConnected: true,
+      }
+      const space = spaces.get('test') as any;
+      const convertedPresenceMemberMessage = space.createSpaceMemberFromPresenceMember(presenceMemberMessage);
+      expect(convertedPresenceMemberMessage).toEqual(expectedSpaceMemberMessage);
   });
 });

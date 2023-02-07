@@ -1,11 +1,11 @@
 const TEST_DEFAULT_CLIENT_ID = 'RND-CLIENTID';
-
+const TEST_DEFAULT_CONNECTION_ID = 'CONNDESC';
 const TEST_ENTER_PRESENCE_TIMESTAMP = 1675699722722;
 
 const authAction = (override) => {
   return {
     action: 4,
-    connectionId: 'CONNDESC',
+    connectionId: TEST_DEFAULT_CONNECTION_ID,
     connectionKey: 'CONNECTIONKEY',
     connectionSerial: -1,
     connectionDetails: {
@@ -66,4 +66,12 @@ const enterPresenceAction = (override) => {
   };
 };
 
-export { enterPresenceAction, getPresenceAction, createChannelAction, authAction, TEST_DEFAULT_CLIENT_ID, TEST_ENTER_PRESENCE_TIMESTAMP };
+export {
+  enterPresenceAction,
+  getPresenceAction,
+  createChannelAction,
+  authAction,
+  TEST_DEFAULT_CLIENT_ID,
+  TEST_ENTER_PRESENCE_TIMESTAMP,
+  TEST_DEFAULT_CONNECTION_ID
+};
