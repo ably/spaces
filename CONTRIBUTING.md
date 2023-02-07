@@ -22,6 +22,6 @@
 
 ## Test suite
 
-To run the Jest tests, simply run the following command:
+To run the tests, simply run the following command:
 
     npm test
