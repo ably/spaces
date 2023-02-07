@@ -1,5 +1,5 @@
 import { Types } from "ably";
-import SpaceOptions from "./Options/SpaceOptions";
+import SpaceOptions from "./options/SpaceOptions";
 import Space from './Space';
 class Spaces {
   private spaces: Record<string, Space>;

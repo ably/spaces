@@ -1,5 +1,5 @@
 import { Types } from "ably";
-import SpaceOptions from "./Options/SpaceOptions";
+import SpaceOptions from "./options/SpaceOptions";
 
 const ERROR_CLIENT_ALREADY_ENTERED = 'Client has already entered the space';
 
