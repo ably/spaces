@@ -5,8 +5,8 @@ import { WebSocket } from 'mock-socket';
 import Space from './Space';
 import Spaces from './Spaces';
 
-import Server from '../utilities/test/mock-server';
-import defaultClientConfig from '../utilities/test/default-client-config';
+import Server from './utilities/test/mock-server';
+import defaultClientConfig from './utilities/test/default-client-config';
 
 interface SpacesTestContext {
   client: Types.RealtimePromise;

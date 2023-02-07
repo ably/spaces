@@ -3,13 +3,13 @@ import Ably, { Types } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
 import Space from './Space';
-import Server from '../utilities/test/mock-server';
-import defaultClientConfig from '../utilities/test/default-client-config';
+import Server from './utilities/test/mock-server';
+import defaultClientConfig from './utilities/test/default-client-config';
 import {
   enterPresenceAction,
   getPresenceAction,
   createChannelAction,
-} from '../utilities/test/mock-server-action-responses';
+} from './utilities/test/mock-server-action-responses';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
