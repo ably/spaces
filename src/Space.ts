@@ -3,7 +3,7 @@ import SpaceOptions from './options/SpaceOptions';
 
 const ERROR_CLIENT_ALREADY_ENTERED = 'Client has already entered the space';
 
-class MemberUpdateEvent extends Event {
+export class MemberUpdateEvent extends Event {
   constructor(public members: SpaceMember[]) {
     super('memberUpdate', {});
   }
@@ -20,11 +20,15 @@ class Space extends EventTarget {
   private channelName: string;
   private channel: Types.RealtimeChannelPromise;
 
-  eventTarget: EventTarget;
-
-  constructor(private name: string, private client: Types.RealtimePromise, private options?: SpaceOptions) {
+  constructor(
+    name: string,
+    private client: Types.RealtimePromise,
+    private options: SpaceOptions = {},
+  ) {
     super();
-    this.setChannel(this.name);
+    if (!this.options.offlineTimeout)
+      this.options.offlineTimeout = 5000;
+    this.channel = this.client.channels.get(`_ably_space_${name}`);
   }
 
   private setChannel(rootName) {
@@ -33,54 +37,64 @@ class Space extends EventTarget {
     this.channel = this.client.channels.get(this.channelName);
   }
 
-  private createMember(clientId: string, isConnected: boolean, data: { [key: string]: any }) {
-    this.members.push({ clientId, isConnected, data });
-  }
-
-  private syncMembers() {
-    this.channel.presence.get().then((presenceMessages) => {
-      this.members = presenceMessages.filter((m) => m.clientId).map(createSpaceMemberFromPresenceMember);
-    });
+  private async syncMembers() {
+    this.members = await this.channel.presence.get({}).then((m) =>
+      m.filter((m) => m.clientId)
+        .map((m) => ({
+          clientId: m.clientId as string,
+          isConnected: true,
+          data: JSON.parse(m.data as string),
+        }))
+    );
   }
 
   private subscribeToPresenceEvents() {
-    this.channel.presence.subscribe('enter', (message: Types.PresenceMessage) => {
-      this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
-    });
-
-    this.channel.presence.subscribe('leave', (message: Types.PresenceMessage) => {
-      this.updateMemberState(message.clientId, false);
-    });
-
-    this.channel.presence.subscribe('update', (message: Types.PresenceMessage) => {
-      this.updateMemberState(message.clientId, true, JSON.parse(message.data as string));
-    });
+    this.channel.presence.subscribe(this.updateMemberState.bind(this));
   }
 
-  private updateMemberState(clientId: string | undefined, isConnected: boolean, data?: { [key: string]: any }) {
-    const implicitClientId = clientId ?? this.client.auth.clientId;
+  private updateMemberState(message: Types.PresenceMessage) {
+    const implicitClientId = message.clientId ?? this.client.auth.clientId;
+    const isConnected = message.action !== "leave";
+    const data = JSON.parse(message.data as string);
+    const event = message.action;
 
     if (!implicitClientId) {
       return;
     }
 
-    const member = this.members.find((m) => m.clientId === clientId);
+    let member = this.members.find((m) => m.clientId === implicitClientId);
 
     if (!member) {
-      this.createMember(implicitClientId, isConnected, data || {});
-    } else {
-      member.isConnected = isConnected;
-      if (data) {
-        // Member data is completely overridden, except lastEventTimestamp which is updated
-        member.data = {
-          ...data,
-          lastEventTimestamp: new Date(),
-        };
-      }
+      member = {clientId: implicitClientId, isConnected, data};
+      this.members.push(member);
     }
 
-    const memberUpdateEvent = new MemberUpdateEvent(this.members);
-    this.dispatchEvent(memberUpdateEvent);
+    member.isConnected = isConnected;
+    if (data) {
+      // Member presenceData is completely overridden, except lastEvent which is updated
+      member.data = {
+        ...data,
+        lastEvent: {
+          event,
+          timestamp: new Date()
+        },
+      };
+    }
+
+    if (member._leaveTimeout)
+      clearTimeout(member._leaveTimeout);
+
+    if (!isConnected) {
+      member._leaveTimeout = setTimeout(this.deleteMember, this.options.offlineTimeout)
+    }
+
+    this.dispatchEvent(new MemberUpdateEvent(this.members))
+  }
+
+  deleteMember(clientId: string) {
+    let memberIndex = this.members.findIndex((m) => m.clientId === clientId);
+    this.members.splice(memberIndex, 1);
+    this.dispatchEvent(new MemberUpdateEvent(this.members));
   }
 
   enter(data: unknown) {
@@ -107,10 +121,11 @@ class Space extends EventTarget {
   }
 }
 
-type SpaceMember = {
+export type SpaceMember = {
   clientId: string;
   isConnected: boolean;
   data: { [key: string]: any };
+  _leaveTimeout?: number | NodeJS.Timeout,
 };
 
 export default Space;

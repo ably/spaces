@@ -1,5 +1,5 @@
 import { it, describe, expect, expectTypeOf, vi, beforeEach, afterEach } from 'vitest';
-import Ably, { Types } from 'ably/promises';
+import { Types, Realtime } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
 import Space from './Space';
@@ -15,9 +15,9 @@ interface SpacesTestContext {
 
 describe('Spaces', () => {
   beforeEach<SpacesTestContext>((context) => {
-    (Ably.Realtime as any).Platform.Config.WebSocket = WebSocket;
+    (Realtime as any).Platform.Config.WebSocket = WebSocket;
     context.server = new Server('wss://realtime.ably.io/');
-    context.client = new Ably.Realtime(defaultClientConfig);
+    context.client = new Realtime(defaultClientConfig);
   });
 
   afterEach<SpacesTestContext>((context) => {
@@ -26,7 +26,7 @@ describe('Spaces', () => {
 
   it<SpacesTestContext>('expects the injected client to be of the type RealtimePromise', ({ client }) => {
     const spaces = new Spaces(client);
-    expectTypeOf(spaces.ably).toMatchTypeOf<Types.RealtimePromise>();
+    expectTypeOf(spaces.client).toMatchTypeOf<Types.RealtimePromise>();
   });
 
   it<SpacesTestContext>('connects successfully with the Ably Client', async ({ client, server }) => {
@@ -46,4 +46,6 @@ describe('Spaces', () => {
     // Note: This is matching the class type. This is not a TypeScript type.
     expectTypeOf(space).toMatchTypeOf<Space>();
   });
+
+
 });

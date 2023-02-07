@@ -1,8 +1,8 @@
 import { it, describe, expect, expectTypeOf, vi, beforeEach, afterEach } from 'vitest';
-import Ably, { Types } from 'ably/promises';
+import { Types, Realtime } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
-import Space from './Space';
+import Space, { MemberUpdateEvent, SpaceMember } from './Space';
 import Server from './utilities/test/mock-server';
 import defaultClientConfig from './utilities/test/default-client-config';
 import {
@@ -18,9 +18,9 @@ interface SpaceTestContext {
 
 describe('Space', () => {
   beforeEach<SpaceTestContext>((context) => {
-    (Ably.Realtime as any).Platform.Config.WebSocket = WebSocket;
+    (Realtime as any).Platform.Config.WebSocket = WebSocket;
     context.server = new Server('wss://realtime.ably.io/');
-    context.client = new Ably.Realtime(defaultClientConfig);
+    context.client = new Realtime(defaultClientConfig);
   });
 
   afterEach<SpaceTestContext>((context) => {
@@ -77,4 +77,52 @@ describe('Space', () => {
       expect(data).toEqual(spaceData);
     });
   });
+
+  describe('addEventListener', ()=>{
+    it<SpaceTestContext>('fires an event when a user enters the space', async ({ client, server })=>{
+      const spaceName = '_ably_space_test';
+      const actionsOverride = {
+        channel: spaceName,
+      };
+
+      server.onAction(10, createChannelAction(actionsOverride));
+      server.onAction(10, getPresenceAction(actionsOverride));
+      server.onActionCallback(14, (msg) => {
+        const data = JSON.stringify(msg.presence[0].data);
+
+        return enterPresenceAction({
+          ...actionsOverride,
+          presence: [
+            {
+              ...enterPresenceAction({}).presence[0],
+              data,
+            },
+          ],
+        });
+      });
+
+      server.start();
+
+      const spaceData = { name: 'John' };
+      const space = new Space('test', client);
+      space.enter(spaceData);
+
+      const data: SpaceMember[] = await new Promise((fulfill) => {
+        space.addEventListener('memberUpdate', (event: MemberUpdateEvent)=>{
+          fulfill(event.members)
+        })
+      });
+
+      expect(data[0]).toContain({
+        "clientId": client.auth.clientId,
+        "data":  {
+        "lastEvent": {
+          "event": "enter",
+        },
+        "name": "John",
+      },
+      "isConnected": true,
+    });
+    })
+  })
 });
