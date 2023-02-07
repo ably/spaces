@@ -1,6 +1,7 @@
 import { Types } from "ably";
 import SpaceOptions from "./options/SpaceOptions";
 import Space from './Space';
+
 class Spaces {
   private spaces: Record<string, Space>;
   private channel: Types.RealtimeChannelPromise;
@@ -13,6 +14,7 @@ class Spaces {
     this.ably = ably;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   get(name: string, options?: SpaceOptions): Space {
     if (typeof name !== 'string' || name.length === 0) {
       throw new Error('Spaces must have a non-empty name');

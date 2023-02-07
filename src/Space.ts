@@ -4,7 +4,7 @@ import SpaceOptions from "./options/SpaceOptions";
 const ERROR_CLIENT_ALREADY_ENTERED = 'Client has already entered the space';
 
 class MemberUpdateEvent extends Event {
-  constructor(members: SpaceMember[]) {
+  constructor(public members: SpaceMember[]) {
     super("memberUpdate", {})
   }
 }

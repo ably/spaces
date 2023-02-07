@@ -1,4 +1,4 @@
-import { it, describe, expect, expectTypeOf, beforeEach, vi } from 'vitest';
+import { it, describe, expect, expectTypeOf, vi } from 'vitest';
 import Ably, { Types } from 'ably/promises';
 import Space from './Space';
 import Spaces from './Spaces';
