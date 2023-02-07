@@ -15,9 +15,12 @@ class Space extends EventTarget {
     private options: SpaceOptions = {},
   ) {
     super();
-    if (!this.options.offlineTimeout)
+    if (!this.options.offlineTimeout) {
       this.options.offlineTimeout = 5000;
-    this.channel = this.client.channels.get(`_ably_space_${name}`);
+    }
+    // The channel name prefix here should be unique to avoid conflicts with non-space channels
+    this.channelName = `_ably_space_${name}`;
+    this.channel = this.client.channels.get(this.channelName);
   }
 
   private createSpaceMemberFromPresenceMember(m: Types.PresenceMessage) {
@@ -27,12 +30,6 @@ class Space extends EventTarget {
       isConnected: true,
       data: JSON.parse(m.data as string),
     };
-  }
-
-  private setChannel(rootName) {
-    // The channel name prefix here should be unique to avoid conflicts with non-space channels
-    this.channelName = `_ably_space_${rootName}`;
-    this.channel = this.client.channels.get(this.channelName);
   }
 
   private async syncMembers() {
