@@ -14,9 +14,9 @@ const createSpaceMemberFromPresenceMember = (m: Types.PresenceMessage): SpaceMem
   isConnected: true,
   data: JSON.parse(m.data as string),
 });
+
 class Space extends EventTarget {
   private members: SpaceMember[] = [];
-
   private channelName: string;
   private channel: Types.RealtimeChannelPromise;
 
