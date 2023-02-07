@@ -45,7 +45,13 @@ describe('Spaces', () => {
     expect(spy).toHaveBeenCalledWith('_ably_space_test');
     // Note: This is matching the class type. This is not a TypeScript type.
     expectTypeOf(space).toMatchTypeOf<Space>();
+
+    const sameSpace = spaces.get('test');
+    expect(space).toBe(sameSpace);
   });
 
-
+  it<SpacesTestContext>('fails to retrieve a space when a non-string is provided', ({ client }) => {
+    const spaces = new Spaces(client);
+    expect(() => spaces.get('')).toThrowError();
+  });
 });
