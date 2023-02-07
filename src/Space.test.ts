@@ -2,7 +2,7 @@ import { it, describe, expect, expectTypeOf, vi, beforeEach, afterEach } from 'v
 import { Types, Realtime } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
-import Space, { MemberUpdateEvent, SpaceMember } from './Space';
+import Space, { SpaceMember } from './Space';
 import Server from './utilities/test/mock-server';
 import defaultClientConfig from './utilities/test/default-client-config';
 import {
@@ -11,6 +11,7 @@ import {
   createChannelAction,
   TEST_ENTER_PRESENCE_TIMESTAMP,
 } from './utilities/test/mock-server-action-responses';
+import { SpaceMemberUpdateEvent } from './events/SpaceMemberUpdateEvent';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
@@ -110,7 +111,7 @@ describe('Space', () => {
 
       const data: SpaceMember[] = await new Promise((fulfill) => {
         space.addEventListener('memberUpdate', (event: Event) => {
-          const members = (event as MemberUpdateEvent).members;
+          const members = (event as SpaceMemberUpdateEvent).members;
           fulfill(members);
         })
       });

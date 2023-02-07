@@ -1,13 +1,8 @@
 import { Types } from 'ably';
+import { SpaceMemberUpdateEvent } from './events/SpaceMemberUpdateEvent';
 import SpaceOptions from './options/SpaceOptions';
 
 const ERROR_CLIENT_ALREADY_ENTERED = 'Client has already entered the space';
-
-export class MemberUpdateEvent extends Event {
-  constructor(public members: SpaceMember[]) {
-    super('memberUpdate', {});
-  }
-}
 
 class Space extends EventTarget {
   private members: SpaceMember[] = [];
@@ -86,13 +81,13 @@ class Space extends EventTarget {
       member._leaveTimeout = setTimeout(this.deleteMember, this.options.offlineTimeout)
     }
 
-    this.dispatchEvent(new MemberUpdateEvent(this.members))
+    this.dispatchEvent(new SpaceMemberUpdateEvent(this.members))
   }
 
   deleteMember(clientId: string) {
     let memberIndex = this.members.findIndex((m) => m.clientId === clientId);
     this.members.splice(memberIndex, 1);
-    this.dispatchEvent(new MemberUpdateEvent(this.members));
+    this.dispatchEvent(new SpaceMemberUpdateEvent(this.members));
   }
 
   enter(data: unknown) {
