@@ -9,6 +9,7 @@ import {
   enterPresenceAction,
   getPresenceAction,
   createChannelAction,
+  TEST_ENTER_PRESENCE_TIMESTAMP,
 } from './utilities/test/mock-server-action-responses';
 
 interface SpaceTestContext {
@@ -108,16 +109,18 @@ describe('Space', () => {
       space.enter(spaceData);
 
       const data: SpaceMember[] = await new Promise((fulfill) => {
-        space.addEventListener('memberUpdate', (event: MemberUpdateEvent)=>{
-          fulfill(event.members)
+        space.addEventListener('memberUpdate', (event: Event) => {
+          const members = (event as MemberUpdateEvent).members;
+          fulfill(members);
         })
       });
 
-      expect(data[0]).toContain({
+      expect(data[0]).toEqual({
         "clientId": client.auth.clientId,
         "data":  {
         "lastEvent": {
           "event": "enter",
+          "timestamp": TEST_ENTER_PRESENCE_TIMESTAMP,
         },
         "name": "John",
       },

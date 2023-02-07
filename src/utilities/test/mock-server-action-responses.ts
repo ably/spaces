@@ -1,3 +1,7 @@
+const TEST_DEFAULT_CLIENT_ID = 'RND-CLIENTID';
+
+const TEST_ENTER_PRESENCE_TIMESTAMP = 1675699722722;
+
 const authAction = (override) => {
   return {
     action: 4,
@@ -5,7 +9,7 @@ const authAction = (override) => {
     connectionKey: 'CONNECTIONKEY',
     connectionSerial: -1,
     connectionDetails: {
-      clientId: 'RND-CLIENTID',
+      clientId: TEST_DEFAULT_CLIENT_ID,
       connectionKey: 'randomKey',
       maxMessageSize: 131000,
       maxInboundRate: 1000,
@@ -46,13 +50,13 @@ const enterPresenceAction = (override) => {
     connectionSerial: 0,
     channel: 'foo',
     channelSerial: '108eMNtswBL6Ud51959078:3',
-    timestamp: 1675699722722,
+    timestamp: TEST_ENTER_PRESENCE_TIMESTAMP,
     presence: [
       {
         id: 'NU_ExvNktu:0:0',
-        clientId: 'T7we24YJhMvTDrxQC1pvH',
+        clientId: TEST_DEFAULT_CLIENT_ID,
         connectionId: 'NU_ExvNktu',
-        timestamp: 1675699722722,
+        timestamp: TEST_ENTER_PRESENCE_TIMESTAMP,
         encoding: 'json',
         data: '',
         action: 2,
@@ -62,4 +66,4 @@ const enterPresenceAction = (override) => {
   };
 };
 
-export { enterPresenceAction, getPresenceAction, createChannelAction, authAction };
+export { enterPresenceAction, getPresenceAction, createChannelAction, authAction, TEST_DEFAULT_CLIENT_ID, TEST_ENTER_PRESENCE_TIMESTAMP };

@@ -9,12 +9,6 @@ export class MemberUpdateEvent extends Event {
   }
 }
 
-const createSpaceMemberFromPresenceMember = (m: Types.PresenceMessage): SpaceMember => ({
-  clientId: m.clientId as string,
-  isConnected: true,
-  data: JSON.parse(m.data as string),
-});
-
 class Space extends EventTarget {
   private members: SpaceMember[] = [];
   private channelName: string;
@@ -31,6 +25,14 @@ class Space extends EventTarget {
     this.channel = this.client.channels.get(`_ably_space_${name}`);
   }
 
+  private createSpaceMemberFromPresenceMember(m: Types.PresenceMessage) {
+    return {
+      clientId: m.clientId as string,
+      isConnected: true,
+      data: JSON.parse(m.data as string),
+    };
+  }
+
   private setChannel(rootName) {
     // The channel name prefix here should be unique to avoid conflicts with non-space channels
     this.channelName = `_ably_space_${rootName}`;
@@ -40,11 +42,7 @@ class Space extends EventTarget {
   private async syncMembers() {
     this.members = await this.channel.presence.get({}).then((m) =>
       m.filter((m) => m.clientId)
-        .map((m) => ({
-          clientId: m.clientId as string,
-          isConnected: true,
-          data: JSON.parse(m.data as string),
-        }))
+        .map(this.createSpaceMemberFromPresenceMember)
     );
   }
 
@@ -76,7 +74,7 @@ class Space extends EventTarget {
         ...data,
         lastEvent: {
           event,
-          timestamp: new Date()
+          timestamp: message.timestamp
         },
       };
     }
