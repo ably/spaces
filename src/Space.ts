@@ -96,7 +96,7 @@ class Space extends EventTarget {
       (presenceMessages) =>
         new Promise((resolve, reject) => {
           if (presenceMessages && presenceMessages.length === 1) {
-            reject(ERROR_CLIENT_ALREADY_ENTERED);
+            reject(new Error(ERROR_CLIENT_ALREADY_ENTERED));
           }
 
           this.syncMembers();
