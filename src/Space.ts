@@ -105,6 +105,11 @@ class Space extends EventTarget {
         })
     );
   }
+
+  leave(data?: unknown) {
+    const presence = this.channel.presence;
+    return presence.leave(data);
+  }
 }
 
 type SpaceMember = {
