@@ -2,7 +2,6 @@ import { Types } from 'ably';
 import SpaceOptions from './options/SpaceOptions';
 
 const ERROR_CLIENT_ALREADY_ENTERED = 'Client has already entered the space';
-export const ERROR_CLIENT_NOT_PRESENT = 'Member not present in space, leave operation redundant';
 
 class MemberUpdateEvent extends Event {
   constructor(public members: SpaceMember[]) {
@@ -107,19 +106,9 @@ class Space extends EventTarget {
     );
   }
 
-  leave(data: unknown) {
-    const clientId = this.client.auth.clientId || undefined;
+  leave(data?: unknown) {
     const presence = this.channel.presence;
-
-    return presence.get({ clientId }).then(
-      (presenceMessages) =>
-        new Promise((resolve, reject) => {
-          if (presenceMessages && presenceMessages.length >= 1) {
-            resolve(presence.leave(JSON.stringify(data)));
-          }
-          reject(new Error(ERROR_CLIENT_NOT_PRESENT));
-        })
-    );
+    return presence.leave(data);
   }
 }
 
