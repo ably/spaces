@@ -92,7 +92,7 @@ class Space extends EventTarget {
     const presence = this.channel.presence;
 
     // TODO: Discuss if we actually want change this behaviour in contrast to presence (enter becomes an update)
-    presence.get({ clientId }).then(
+    return presence.get({ clientId }).then(
       (presenceMessages) =>
         new Promise((resolve, reject) => {
           if (presenceMessages && presenceMessages.length === 1) {
