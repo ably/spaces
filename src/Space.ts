@@ -20,8 +20,6 @@ class Space extends EventTarget {
   private channelName: string;
   private channel: Types.RealtimeChannelPromise;
 
-  eventTarget: EventTarget;
-
   constructor(private name: string, private client: Types.RealtimePromise, private options?: SpaceOptions) {
     super();
     this.setChannel(this.name);
