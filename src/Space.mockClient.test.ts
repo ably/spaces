@@ -26,6 +26,54 @@ describe('Space (mockClient)', () => {
     });
   });
 
+  describe('enter', () => {
+    it<SpaceTestContext>('enter a space successfully', async ({ client }) => {
+      const spaceName = '_ably_space_test';
+      const space = new Space('test', client);
+
+      const presence = client.channels.get(spaceName).presence;
+      const presenceLeaveSpy = vi.spyOn(presence, 'enter').mockResolvedValueOnce();
+
+      await space.enter();
+      expect(presenceLeaveSpy).toHaveBeenCalledOnce();
+    });
+
+    it<SpaceTestContext>('returns current space members', async ({ client }) => {
+      const spaceName = '_ably_space_test';
+      const space = new Space('test', client);
+
+      const presence = client.channels.get(spaceName).presence;
+
+      vi.spyOn(presence, 'get').mockResolvedValueOnce([
+        {
+          clientId: '1',
+          data: '{ "a": 1 }',
+          action: 'enter',
+          connectionId: '1',
+          id: '1',
+          encoding: 'json',
+          timestamp: 324325323423,
+        },
+        {
+          clientId: '2',
+          data: '{ "a": 2 }',
+          action: 'update',
+          connectionId: '2',
+          id: '2',
+          encoding: 'json',
+          timestamp: 324325323423,
+        },
+      ]);
+
+      const spaceMembers = await space.enter();
+
+      expect(spaceMembers).toEqual([
+        { clientId: '1', isConnected: true, data: { a: 1 } },
+        { clientId: '2', isConnected: true, data: { a: 2 } },
+      ]);
+    });
+  });
+
   describe('leave', () => {
     it<SpaceTestContext>('leaves a space successfully', async ({ client }) => {
       const spaceName = '_ably_space_test';
