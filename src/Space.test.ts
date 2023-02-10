@@ -1,4 +1,4 @@
-import { it, describe, expect, expectTypeOf, vi, beforeEach, afterEach } from 'vitest';
+import { it, describe, expect, beforeEach, afterEach } from 'vitest';
 import Ably, { Types } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
@@ -16,7 +16,7 @@ interface SpaceTestContext {
   server: Server;
 }
 
-describe('Space', () => {
+describe('Space (mockSocket)', () => {
   beforeEach<SpaceTestContext>((context) => {
     (Ably.Realtime as any).Platform.Config.WebSocket = WebSocket;
     context.server = new Server('wss://realtime.ably.io/');
@@ -25,18 +25,6 @@ describe('Space', () => {
 
   afterEach<SpaceTestContext>((context) => {
     context.server.stop();
-  });
-
-  describe('get', () => {
-    it<SpaceTestContext>('creates a space with the correct name', ({ client }) => {
-      const channels = client.channels;
-      const channelSpy = vi.spyOn(channels, 'get');
-      const space = new Space('test', client);
-
-      expect(channelSpy).toHaveBeenNthCalledWith(1, '_ably_space_test');
-      // Note: This is matching the class type. This is not a TypeScript type.
-      expectTypeOf(space).toMatchTypeOf<Space>();
-    });
   });
 
   describe('enter', () => {
