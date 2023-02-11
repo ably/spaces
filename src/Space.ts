@@ -1,24 +1,49 @@
 import { Types } from 'ably';
 
-const createSpaceMemberFromPresenceMember = (m: Types.PresenceMessage): SpaceMember => ({
-  clientId: m.clientId as string,
-  isConnected: true,
-  data: JSON.parse(m.data as string),
-});
+import SpaceOptions from './options/SpaceOptions';
 
 // Unique prefix to avoid conflicts with channels
 const SPACE_CHANNEL_PREFIX = '_ably_space_';
+
+type SpaceEvents = 'membersUpdate';
+
+type SpaceMember = {
+  clientId: string;
+  isConnected: boolean;
+  data: { [key: string]: any };
+};
+
+type SpaceLeaver = {
+  clientId: string;
+  timeoutId: NodeJS.Timeout;
+};
+
+const SPACE_OPTIONS_DEFAULTS = {
+  offlineTimeout: 120_000,
+};
+
+class SpaceMembersUpdateEvent extends Event {
+  constructor(public message?: Types.PresenceMessage) {
+    super('membersUpdate', {});
+  }
+}
 
 class Space extends EventTarget {
   private channelName: string;
   private clientId: string;
   private channel: Types.RealtimeChannelPromise;
+  private members: SpaceMember[];
+  private leavers: SpaceLeaver[];
+  private options: SpaceOptions;
 
   eventTarget: EventTarget;
 
-  constructor(private name: string, private client: Types.RealtimePromise) {
+  constructor(private name: string, private client: Types.RealtimePromise, options?: SpaceOptions) {
     super();
+    this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
     this.clientId = this.client.auth.clientId;
+    this.members = [];
+    this.leavers = [];
     this.setChannel(this.name);
   }
 
@@ -27,25 +52,104 @@ class Space extends EventTarget {
     this.channel = this.client.channels.get(this.channelName);
   }
 
+  private createSpaceMemberFromPresenceMember(message: Types.PresenceMessage): SpaceMember {
+    return {
+      clientId: message.clientId as string,
+      isConnected: message.action !== 'leave',
+      data: JSON.parse(message.data as string),
+    };
+  }
+
+  private mapPresenceMembersToSpaceMembers(messages: Types.PresenceMessage[]) {
+    return messages
+      .filter((message) => message.clientId !== this.clientId)
+      .map((message) => this.createSpaceMemberFromPresenceMember(message));
+  }
+
+  private addLeaver(message: Types.PresenceMessage) {
+    const timeoutCallback = () => {
+      const membersIndex = this.members.findIndex(({ clientId }) => clientId === message.clientId);
+      const leaverIndex = this.leavers.findIndex(({ clientId }) => clientId === message.clientId);
+
+      if (membersIndex >= 0) this.members.splice(membersIndex, 1);
+      if (leaverIndex >= 0) this.removeLeaver(leaverIndex);
+    };
+
+    this.leavers.push({
+      clientId: message.clientId,
+      timeoutId: setTimeout(timeoutCallback, this.options.offlineTimeout),
+    });
+  }
+
+  private removeLeaver(leaverIndex) {
+    this.leavers.splice(leaverIndex, 1);
+  }
+
+  private resetLeaver(leaverIndex) {
+    clearTimeout(this.leavers[leaverIndex].timeoutId);
+  }
+
+  private updateMembersFromPresenceMessage(message: Types.PresenceMessage): SpaceMember[] {
+    const memberIndex = this.members.findIndex(({ clientId }) => clientId === message.clientId);
+
+    if (memberIndex >= 0) {
+      this.members[memberIndex] = this.createSpaceMemberFromPresenceMember(message);
+    } else {
+      this.members.push(this.createSpaceMemberFromPresenceMember(message));
+    }
+
+    const leaverIndex = this.leavers.findIndex(({ clientId }) => clientId === message.clientId);
+
+    if (message.action === 'leave' && leaverIndex < 0) {
+      this.addLeaver(message);
+    } else if (message.action === 'leave' && leaverIndex >= 0) {
+      this.resetLeaver(leaverIndex);
+      this.addLeaver(message);
+    } else if (leaverIndex >= 0) {
+      this.resetLeaver(leaverIndex);
+      this.removeLeaver(leaverIndex);
+    }
+
+    return this.members;
+  }
+
+  private subscribeToPresence() {
+    this.channel.presence.subscribe((message) => {
+      this.dispatchEvent(new SpaceMembersUpdateEvent(message));
+    });
+  }
+
   async enter(data?: unknown) {
     const presence = this.channel.presence;
+
     await presence.enter(data);
     const presenceMessages = await presence.get();
+    this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);
 
-    return presenceMessages
-      .filter((message) => message.clientId !== this.clientId)
-      .map(createSpaceMemberFromPresenceMember);
+    return this.members;
   }
 
   leave(data?: unknown) {
     return this.channel.presence.leave(data);
   }
+
+  on(spaceEvent: SpaceEvents, callback) {
+    if (spaceEvent === 'membersUpdate') {
+      this.subscribeToPresence();
+      this.addEventListener('membersUpdate', (event: SpaceMembersUpdateEvent) => {
+        if (!event.message) return;
+        // By default, we only return data about other connected clients, not the whole set
+        if (event.message.clientId === this.clientId) return;
+
+        this.updateMembersFromPresenceMessage(event.message);
+        callback(this.members);
+      });
+    } else {
+      // TODO: align with ably-js error policy here
+      throw new Error(`Event "${spaceEvent}" is unsupported`);
+    }
+  }
 }
 
-type SpaceMember = {
-  clientId: string;
-  isConnected: boolean;
-  data: { [key: string]: any };
-};
-
+export { SpaceMembersUpdateEvent };
 export default Space;

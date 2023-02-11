@@ -9,6 +9,7 @@ const mockPresence = {
   get: () => mockPromisify<Types.PresenceMessage[]>([]),
   enter: methodReturningVoidPromise,
   leave: methodReturningVoidPromise,
+  subscribe: () => {},
 };
 
 const mockChannel = {
