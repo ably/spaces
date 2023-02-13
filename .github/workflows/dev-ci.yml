@@ -7,7 +7,16 @@ on:
       - main
 
 jobs:
-  lint:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npm audit --production
+  format-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,8 +25,15 @@ jobs:
           node-version: 18
       - run: npm ci
       - run: npm run format:check
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: npm ci
       - run: npm run lint
-      - run: npm audit --production
   test:
     runs-on: ubuntu-latest
     steps:
