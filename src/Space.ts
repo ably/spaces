@@ -11,6 +11,10 @@ type SpaceMember = {
   clientId: string;
   isConnected: boolean;
   data: { [key: string]: any };
+  lastEvent: {
+    name: Types.PresenceAction;
+    timestamp: number;
+  };
 };
 
 type SpaceLeaver = {
@@ -57,6 +61,10 @@ class Space extends EventTarget {
       clientId: message.clientId as string,
       isConnected: message.action !== 'leave',
       data: JSON.parse(message.data as string),
+      lastEvent: {
+        name: message.action,
+        timestamp: message.timestamp,
+      },
     };
   }
 
