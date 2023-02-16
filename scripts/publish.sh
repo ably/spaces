@@ -7,9 +7,6 @@ env
 echo "Install packages, making sure they are up to date"
 npm ci
 
-echo "Build library"
-NODE_ENV=production node scripts/build.js
-
 echo "Create version"
 npm --no-git-tag-version version from-git
 
