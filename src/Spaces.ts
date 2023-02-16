@@ -14,7 +14,7 @@ class Spaces {
       this.ably = optionsOrAbly as Types.RealtimePromise;
       this.addAgent(this.ably['options']);
     } else {
-      let options: any = typeof optionsOrAbly === 'string' ? { key: optionsOrAbly } : optionsOrAbly;
+      let options: Types.ClientOptions = typeof optionsOrAbly === 'string' ? { key: optionsOrAbly } : optionsOrAbly;
       this.addAgent(options);
       this.ably = new Realtime.Promise(options);
     }
