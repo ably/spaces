@@ -60,7 +60,7 @@ class Space extends EventTarget {
     return {
       clientId: message.clientId as string,
       isConnected: message.action !== 'leave',
-      data: JSON.parse(message.data as string),
+      data: message.data,
       lastEvent: {
         name: message.action,
         timestamp: message.timestamp,
