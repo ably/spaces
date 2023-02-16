@@ -7,6 +7,9 @@ env
 echo "Install packages, making sure they are up to date"
 npm ci
 
+echo "Build package"
+npm run build
+
 echo "Create version"
 npm --no-git-tag-version version from-git
 
