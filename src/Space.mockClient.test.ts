@@ -102,7 +102,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', data: '{ "a": 1 }' }));
+      space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', data: { a: 1 } }));
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
@@ -133,7 +133,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('update', { data: '{ "a": 1 }' }));
+      space.dispatchEvent(createPresenceEvent('update', { data: { a: 1 } }));
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',

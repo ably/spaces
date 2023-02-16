@@ -2,7 +2,7 @@ import { SpaceMembersUpdateEvent } from '../../Space';
 
 const enterPresenceMessage = {
   clientId: '1',
-  data: '{}',
+  data: {},
   action: 'enter',
   connectionId: '1',
   id: '1',
@@ -12,7 +12,7 @@ const enterPresenceMessage = {
 
 const updatePresenceMessage = {
   ...enterPresenceMessage,
-  data: '{ "a": 1 }',
+  data: { a: 1 },
   action: 'update',
 };
 
