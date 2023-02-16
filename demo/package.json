@@ -1,0 +1,20 @@
+{
+  "name": "spaces-demo",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "cd api/ably-token-request && npm install",
+    "dev": "vite",
+    "start": "netlify dev -c \"npm run dev\" --targetPort 8080",
+    "build": "vite build",
+    "deploy": "npm run build && netlify deploy",
+    "deploy:production": "npm run build && netlify deploy --prod"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5",
+    "vite": "^4.1.1"
+  },
+  "dependencies": {
+    "ably": "^1.2.36",
+    "dotenv": "^16.0.3"
+  }
+}
