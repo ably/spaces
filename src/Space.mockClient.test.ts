@@ -203,7 +203,9 @@ describe('Space (mockClient)', () => {
         ]);
 
         vi.advanceTimersByTime(130_000);
+
         expect(callbackSpy).toHaveBeenNthCalledWith(1, []);
+        expect(callbackSpy).toHaveBeenCalledTimes(3);
       });
 
       it<SpaceTestContext>('does not remove a member that has rejoined', async ({ space }) => {
@@ -275,6 +277,8 @@ describe('Space (mockClient)', () => {
             lastEvent: { name: 'enter', timestamp: 1 },
           },
         ]);
+
+        expect(callbackSpy).toHaveBeenCalledTimes(4);
       });
     });
   });
