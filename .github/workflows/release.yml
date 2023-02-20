@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm ci
-      - run: npm run build
-      - run: npm --no-git-tag-version version from-git
-      - run: npm publish --access=public
+        run: npm ci
+        run: npm run build
+        run: npm --no-git-tag-version version from-git
+        run: npm publish --access=public
