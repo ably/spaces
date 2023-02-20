@@ -14,8 +14,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "18.13.0"
-      - name: Publish latest Spaces API version
+      - name: Install dependencies
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: ./scripts/publish.sh
-        shell: bash
+      - run: npm ci
+      - run: npm run build
+      - run: npm --no-git-tag-version version from-git
+      - run: npm publish --access=public
