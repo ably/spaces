@@ -1,0 +1,15 @@
+/**/*.test.ts
+/**/*/node_modules
+scripts
+test
+examples
+__mocks__
+vitest.config.ts
+.github
+.gitignore
+.editorconfig
+.eslintrc.js
+.prettierrc.json
+.tool-versions
+CHANGELOG.MD
+CONTRIBUTING.md

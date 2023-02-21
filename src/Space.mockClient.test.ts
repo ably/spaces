@@ -102,7 +102,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', data: '{ "a": 1 }' }));
+      space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', data: { a: 1 } }));
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
@@ -133,7 +133,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('update', { data: '{ "a": 1 }' }));
+      space.dispatchEvent(createPresenceEvent('update', { data: { a: 1 } }));
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
@@ -203,7 +203,9 @@ describe('Space (mockClient)', () => {
         ]);
 
         vi.advanceTimersByTime(130_000);
+
         expect(callbackSpy).toHaveBeenNthCalledWith(1, []);
+        expect(callbackSpy).toHaveBeenCalledTimes(3);
       });
 
       it<SpaceTestContext>('does not remove a member that has rejoined', async ({ space }) => {
@@ -275,6 +277,8 @@ describe('Space (mockClient)', () => {
             lastEvent: { name: 'enter', timestamp: 1 },
           },
         ]);
+
+        expect(callbackSpy).toHaveBeenCalledTimes(4);
       });
     });
   });

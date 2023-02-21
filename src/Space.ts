@@ -27,8 +27,9 @@ const SPACE_OPTIONS_DEFAULTS = {
 };
 
 class SpaceMembersUpdateEvent extends Event {
-  constructor(public message?: Types.PresenceMessage) {
+  constructor(public message?: Types.PresenceMessage, public markForRemoval?: boolean) {
     super('membersUpdate', {});
+    this.markForRemoval = typeof markForRemoval !== 'boolean' ? false : markForRemoval;
   }
 }
 
@@ -60,7 +61,7 @@ class Space extends EventTarget {
     return {
       clientId: message.clientId as string,
       isConnected: message.action !== 'leave',
-      data: JSON.parse(message.data as string),
+      data: message.data,
       lastEvent: {
         name: message.action,
         timestamp: message.timestamp,
@@ -76,11 +77,7 @@ class Space extends EventTarget {
 
   private addLeaver(message: Types.PresenceMessage) {
     const timeoutCallback = () => {
-      const membersIndex = this.members.findIndex(({ clientId }) => clientId === message.clientId);
-      const leaverIndex = this.leavers.findIndex(({ clientId }) => clientId === message.clientId);
-
-      if (membersIndex >= 0) this.members.splice(membersIndex, 1);
-      if (leaverIndex >= 0) this.removeLeaver(leaverIndex);
+      this.dispatchEvent(new SpaceMembersUpdateEvent(message, true));
     };
 
     this.leavers.push({
@@ -97,28 +94,38 @@ class Space extends EventTarget {
     clearTimeout(this.leavers[leaverIndex].timeoutId);
   }
 
-  private updateMembersFromPresenceMessage(message: Types.PresenceMessage): SpaceMember[] {
-    const memberIndex = this.members.findIndex(({ clientId }) => clientId === message.clientId);
+  private updateLeavers(message: Types.PresenceMessage) {
+    const index = this.leavers.findIndex(({ clientId }) => clientId === message.clientId);
 
-    if (memberIndex >= 0) {
-      this.members[memberIndex] = this.createSpaceMemberFromPresenceMember(message);
+    if (message.action === 'leave' && index < 0) {
+      this.addLeaver(message);
+    } else if (message.action === 'leave' && index >= 0) {
+      this.resetLeaver(index);
+      this.removeLeaver(index);
+      this.addLeaver(message);
+    } else if (index >= 0) {
+      this.resetLeaver(index);
+      this.removeLeaver(index);
+    }
+  }
+
+  private updateMembers(message: Types.PresenceMessage) {
+    const index = this.members.findIndex(({ clientId }) => clientId === message.clientId);
+    const spaceMember = this.createSpaceMemberFromPresenceMember(message);
+
+    if (index >= 0) {
+      this.members[index] = spaceMember;
     } else {
-      this.members.push(this.createSpaceMemberFromPresenceMember(message));
+      this.members.push(spaceMember);
     }
+  }
 
-    const leaverIndex = this.leavers.findIndex(({ clientId }) => clientId === message.clientId);
+  private removeMember(clientId) {
+    const index = this.members.findIndex((member) => member.clientId === clientId);
 
-    if (message.action === 'leave' && leaverIndex < 0) {
-      this.addLeaver(message);
-    } else if (message.action === 'leave' && leaverIndex >= 0) {
-      this.resetLeaver(leaverIndex);
-      this.addLeaver(message);
-    } else if (leaverIndex >= 0) {
-      this.resetLeaver(leaverIndex);
-      this.removeLeaver(leaverIndex);
+    if (index >= 0) {
+      this.members.splice(index, 1);
     }
-
-    return this.members;
   }
 
   private subscribeToPresence() {
@@ -149,7 +156,13 @@ class Space extends EventTarget {
         // By default, we only return data about other connected clients, not the whole set
         if (event.message.clientId === this.clientId) return;
 
-        this.updateMembersFromPresenceMessage(event.message);
+        if (event.markForRemoval) {
+          this.removeMember(event.message.clientId);
+        } else {
+          this.updateLeavers(event.message);
+          this.updateMembers(event.message);
+        }
+
         callback(this.members);
       });
     } else {

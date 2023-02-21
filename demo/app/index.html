@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Spaces Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <script src="./script.ts" type="module"></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <main>
+    <section id="avatar-stack-container">
+      <div id="avatar-self"></div>
+      <div id="avatar-stack"></div>
+    </section>
+  </main>
+
+  <template id="avatar-template">
+    <div>
+      <span data-id="name"></span>
+      <span data-id="avatar" style="margin-left: 8px; width: 20px; height: 20px; display: inline-block;"></span>
+
+      <span data-id="action" style="display: none;">
+        Has left?
+        <span></span>
+      </span>
+
+      <span data-id="last-seen" style="display: none;">
+        <span>Last seen:</span>
+        <span></span>
+      </span>
+    </div>
+  </template>
+</body>
+
+</html>
