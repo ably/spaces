@@ -134,10 +134,10 @@ class Space extends EventTarget {
     });
   }
 
-  async enter(data?: unknown) {
+  async enter(profileData?: unknown) {
     const presence = this.channel.presence;
 
-    await presence.enter(data);
+    await presence.enter(profileData);
     const presenceMessages = await presence.get();
     this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);
 
