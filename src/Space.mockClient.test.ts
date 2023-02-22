@@ -1,7 +1,7 @@
 import { it, describe, expect, vi, beforeEach, expectTypeOf, afterEach } from 'vitest';
 import Ably, { Types } from 'ably/promises';
 
-import Space from './Space';
+import Space, { SpaceMember } from './Space';
 import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes';
 
 interface SpaceTestContext {
@@ -47,7 +47,7 @@ describe('Space (mockClient)', () => {
         createPresenceMessage('update', { clientId: '2' }),
       ]);
       const spaceMembers = await space.enter();
-      expect(spaceMembers).toEqual([
+      expect(spaceMembers).toEqual<SpaceMember[]>([
         { clientId: '1', isConnected: true, profileData: {}, lastEvent: { name: 'enter', timestamp: 1 } },
         { clientId: '2', isConnected: true, profileData: { a: 1 }, lastEvent: { name: 'update', timestamp: 1 } },
       ]);
@@ -93,7 +93,7 @@ describe('Space (mockClient)', () => {
       space.on('membersUpdate', callbackSpy);
 
       space.dispatchEvent(createPresenceEvent('enter'));
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+      expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           profileData: {},
@@ -103,7 +103,7 @@ describe('Space (mockClient)', () => {
       ]);
 
       space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', data: { a: 1 } }));
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+      expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           profileData: {},
@@ -124,7 +124,7 @@ describe('Space (mockClient)', () => {
       space.on('membersUpdate', callbackSpy);
 
       space.dispatchEvent(createPresenceEvent('enter'));
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+      expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           profileData: {},
@@ -134,7 +134,7 @@ describe('Space (mockClient)', () => {
       ]);
 
       space.dispatchEvent(createPresenceEvent('update', { data: { a: 1 } }));
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+      expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           profileData: { a: 1 },
@@ -149,7 +149,7 @@ describe('Space (mockClient)', () => {
       space.on('membersUpdate', callbackSpy);
 
       space.dispatchEvent(createPresenceEvent('enter'));
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+      expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           profileData: {},
@@ -159,7 +159,7 @@ describe('Space (mockClient)', () => {
       ]);
 
       space.dispatchEvent(createPresenceEvent('leave'));
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+      expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           profileData: {},
@@ -183,7 +183,7 @@ describe('Space (mockClient)', () => {
         space.on('membersUpdate', callbackSpy);
 
         space.dispatchEvent(createPresenceEvent('enter'));
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+        expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
             profileData: {},
@@ -193,7 +193,7 @@ describe('Space (mockClient)', () => {
         ]);
 
         space.dispatchEvent(createPresenceEvent('leave'));
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+        expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
             profileData: {},
@@ -214,7 +214,7 @@ describe('Space (mockClient)', () => {
 
         space.dispatchEvent(createPresenceEvent('enter'));
         space.dispatchEvent(createPresenceEvent('enter', { clientId: '2' }));
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+        expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
             profileData: {},
@@ -230,7 +230,7 @@ describe('Space (mockClient)', () => {
         ]);
 
         space.dispatchEvent(createPresenceEvent('leave'));
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+        expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
             profileData: {},
@@ -247,7 +247,7 @@ describe('Space (mockClient)', () => {
 
         vi.advanceTimersByTime(60_000);
         space.dispatchEvent(createPresenceEvent('enter'));
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+        expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
             profileData: {},
@@ -262,8 +262,8 @@ describe('Space (mockClient)', () => {
           },
         ]);
 
-        vi.advanceTimersByTime(70_000); // 2:10 passed, defaut timeout is 2 min
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, [
+        vi.advanceTimersByTime(70_000); // 2:10 passed, default timeout is 2 min
+        expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
             profileData: {},

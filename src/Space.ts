@@ -7,7 +7,7 @@ const SPACE_CHANNEL_PREFIX = '_ably_space_';
 
 type SpaceEvents = 'membersUpdate';
 
-type SpaceMember = {
+export type SpaceMember = {
   clientId: string;
   isConnected: boolean;
   profileData: { [key: string]: any };
