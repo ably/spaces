@@ -10,7 +10,7 @@ type SpaceEvents = 'membersUpdate';
 type SpaceMember = {
   clientId: string;
   isConnected: boolean;
-  data: { [key: string]: any };
+  profileData: { [key: string]: any };
   lastEvent: {
     name: Types.PresenceAction;
     timestamp: number;
@@ -61,7 +61,7 @@ class Space extends EventTarget {
     return {
       clientId: message.clientId as string,
       isConnected: message.action !== 'leave',
-      data: message.data,
+      profileData: message.data,
       lastEvent: {
         name: message.action,
         timestamp: message.timestamp,
