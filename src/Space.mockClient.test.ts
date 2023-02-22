@@ -48,8 +48,8 @@ describe('Space (mockClient)', () => {
       ]);
       const spaceMembers = await space.enter();
       expect(spaceMembers).toEqual([
-        { clientId: '1', isConnected: true, data: {}, lastEvent: { name: 'enter', timestamp: 1 } },
-        { clientId: '2', isConnected: true, data: { a: 1 }, lastEvent: { name: 'update', timestamp: 1 } },
+        { clientId: '1', isConnected: true, profileData: {}, lastEvent: { name: 'enter', timestamp: 1 } },
+        { clientId: '2', isConnected: true, profileData: { a: 1 }, lastEvent: { name: 'update', timestamp: 1 } },
       ]);
     });
   });
@@ -96,7 +96,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
-          data: {},
+          profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
@@ -106,13 +106,13 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
-          data: {},
+          profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
         {
           clientId: '2',
-          data: { a: 1 },
+          profileData: { a: 1 },
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
@@ -127,7 +127,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
-          data: {},
+          profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
@@ -137,7 +137,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
-          data: { a: 1 },
+          profileData: { a: 1 },
           isConnected: true,
           lastEvent: { name: 'update', timestamp: 1 },
         },
@@ -152,7 +152,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
-          data: {},
+          profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
@@ -162,7 +162,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith(1, [
         {
           clientId: '1',
-          data: {},
+          profileData: {},
           isConnected: false,
           lastEvent: { name: 'leave', timestamp: 1 },
         },
@@ -186,7 +186,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith(1, [
           {
             clientId: '1',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
@@ -196,7 +196,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith(1, [
           {
             clientId: '1',
-            data: {},
+            profileData: {},
             isConnected: false,
             lastEvent: { name: 'leave', timestamp: 1 },
           },
@@ -217,13 +217,13 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith(1, [
           {
             clientId: '1',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
             clientId: '2',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
@@ -233,13 +233,13 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith(1, [
           {
             clientId: '1',
-            data: {},
+            profileData: {},
             isConnected: false,
             lastEvent: { name: 'leave', timestamp: 1 },
           },
           {
             clientId: '2',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
@@ -250,13 +250,13 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith(1, [
           {
             clientId: '1',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
             clientId: '2',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
@@ -266,13 +266,13 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith(1, [
           {
             clientId: '1',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
             clientId: '2',
-            data: {},
+            profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
