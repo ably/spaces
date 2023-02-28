@@ -1,5 +1,5 @@
 import { it, describe, expect, beforeEach, afterEach } from 'vitest';
-import Ably, { Types } from 'ably/promises';
+import { Realtime, Types } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
 import Space from './Space';
@@ -18,9 +18,9 @@ interface SpaceTestContext {
 
 describe('Space (mockSocket)', () => {
   beforeEach<SpaceTestContext>((context) => {
-    (Ably.Realtime as any).Platform.Config.WebSocket = WebSocket;
+    (Realtime as any).Platform.Config.WebSocket = WebSocket;
     context.server = new Server('wss://realtime.ably.io/');
-    context.client = new Ably.Realtime(defaultClientConfig);
+    context.client = new Realtime(defaultClientConfig);
   });
 
   afterEach<SpaceTestContext>((context) => {

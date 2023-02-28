@@ -1,5 +1,5 @@
 import { it, describe, expect, vi, beforeEach, expectTypeOf, afterEach } from 'vitest';
-import Ably, { Types } from 'ably/promises';
+import { Realtime, Types } from 'ably/promises';
 
 import Space, { SpaceMember } from './Space';
 import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes';
@@ -14,7 +14,7 @@ vi.mock('ably/promises');
 
 describe('Space (mockClient)', () => {
   beforeEach<SpaceTestContext>((context) => {
-    const client = new Ably.Realtime({});
+    const client = new Realtime({});
     const presence = client.channels.get('').presence;
 
     context.client = client;
