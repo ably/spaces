@@ -34,6 +34,4 @@ class MockRealtime {
   }
 }
 
-export default {
-  Realtime: MockRealtime,
-};
+export {MockRealtime as Realtime};
