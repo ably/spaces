@@ -6,6 +6,8 @@ If you have any feedback or are interested in what we are doing please [contact 
 
 API for managing and accessing Ably Spaces.
 
+**Quick start and class definitions are available [here](/docs).**
+
 ## Spaces
 
 A Space is an Ably concept that allows for shared realtime digital experiences such as chat, reactions and collaborative editing.
