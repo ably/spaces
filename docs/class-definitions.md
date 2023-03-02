@@ -1,5 +1,12 @@
 ## Class Definitions
 
+**Contents**
+
+- [Spaces](#spaces)
+- [SpaceOptions](#spaceoptions)
+- [Space](#space)
+- [SpaceMember](#spacemember)
+
 ### Spaces
 
 #### constructor(ably)
@@ -23,11 +30,13 @@ Get or create a space. Options may only be provided if a space does not yet exis
 
 ### SpaceOptions
 
+TBD.
+
 ### Space
-An instance of a Space created using [spaces.get](#get--name-options-).
+An instance of a Space created using [spaces.get](#getname-options).
 
 #### enter(profileData?)
-Enter this space with optional profile data.
+Enter this space with optional profile data and notifies other clients in the space via the [membersUpdate](#membersupdate) event.
 This data can be an arbitrary JSON-serializable object which will be attached to the member object and delivered to other members of the space.
 
 | Property    | Type   |
@@ -40,10 +49,10 @@ This data can be an arbitrary JSON-serializable object which will be attached to
 Leave the space. This removes you from the space and notifies other space members.
 
 #### on(event, callback)
-`event` can be one of:
+Used for subscribing to realtime events within the space. Currently, only one event is supported:
 
 ##### membersUpdate
-Called when a member is updated, enters or leaves. This returns an array of [SpaceMember](#spacemember) objects.
+Fires when a member is enters or leaves the space. This returns an array of [SpaceMember](#spacemember) objects.
 
 
 ### SpaceMember
