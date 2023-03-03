@@ -30,7 +30,12 @@ Get or create a space. Options may only be provided if a space does not yet exis
 
 ### SpaceOptions
 
-TBD.
+Used to configure a Space object on creation.
+
+#### offlineTimeout
+Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list.
+
+Default is 5000ms.
 
 ### Space
 An instance of a Space created using [spaces.get](#getname-options).
