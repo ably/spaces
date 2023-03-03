@@ -16,14 +16,18 @@ A Space consists of users and storage with persistent presence.
 
 ### Usage
 
-To use the Space API, you'll need to have an Ably client already set up.
+To use the Space API, you'll need to have an Ably client already set up and authenticated.
+To get started quickly, you can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication)
+by creating an API key with the **publish**, **subscribe** and **presence** capabilities enabled.
+
+
 Here's an example of how you can create a new instance of the client and pass it to the Spaces constructor:
 
 ```ts
 import { Realtime } from 'ably/promise';
 import Spaces from '@ably-labs/spaces';
 
-const client = new Realtime(process.env.ABLY_KEY);
+const client = new Realtime(ABLY_API_KEY);
 const spaces = new Spaces(client);
 ```
 
