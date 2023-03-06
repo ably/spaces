@@ -1,5 +1,5 @@
 import { it, describe, expect, expectTypeOf, vi, beforeEach, afterEach } from 'vitest';
-import { Types, Realtime } from 'ably/promises';
+import { Realtime, Types } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
 import Space from './Space';

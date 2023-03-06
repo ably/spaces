@@ -7,10 +7,10 @@ const SPACE_CHANNEL_PREFIX = '_ably_space_';
 
 type SpaceEvents = 'membersUpdate';
 
-type SpaceMember = {
+export type SpaceMember = {
   clientId: string;
   isConnected: boolean;
-  data: { [key: string]: any };
+  profileData: { [key: string]: any };
   lastEvent: {
     name: Types.PresenceAction;
     timestamp: number;
@@ -61,7 +61,7 @@ class Space extends EventTarget {
     return {
       clientId: message.clientId as string,
       isConnected: message.action !== 'leave',
-      data: message.data,
+      profileData: message.data,
       lastEvent: {
         name: message.action,
         timestamp: message.timestamp,
@@ -134,10 +134,10 @@ class Space extends EventTarget {
     });
   }
 
-  async enter(data?: unknown) {
+  async enter(profileData?: unknown) {
     const presence = this.channel.presence;
 
-    await presence.enter(data);
+    await presence.enter(profileData);
     const presenceMessages = await presence.get();
     this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);
 
