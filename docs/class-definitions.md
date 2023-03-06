@@ -21,7 +21,7 @@ Refer to the [Ably-JS Documentation](https://github.com/ably/ably-js#introductio
 
 
 #### get(name, options?)
-Get or create a space. Options may only be provided if a space does not yet exist.
+Get or create a Space instance. Options may only be provided if a Space instance with the supplied name does not yet exist.
 
 | Property | Type                                           |
 |----------|------------------------------------------------|
@@ -30,7 +30,7 @@ Get or create a space. Options may only be provided if a space does not yet exis
 
 ### SpaceOptions
 
-Used to configure a Space object on creation.
+Used to configure a Space instance on creation.
 
 #### offlineTimeout
 Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list.
@@ -57,12 +57,12 @@ Leave the space. This removes the member from the space and notifies other space
 Used for subscribing to realtime events within the space. Currently, only one event is supported:
 
 ##### membersUpdate
-Fires when a member enters or leaves the space. This returns an array of [SpaceMember](#spacemember) objects.
+Fires when a member enters or leaves the space. The argument supplied to the event listener callback is the current array of all [SpaceMember](#spacemember) objects within the space.
 
 
 ### SpaceMember
 
-A SpaceMember represents a member within a space.
+A SpaceMember represents a member within a Space instance.
 This could be the local client or other remote clients which are connected to the same space.
 
 | Property    | Type                              |
