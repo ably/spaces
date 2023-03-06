@@ -18,8 +18,9 @@
   },
   "dependencies": {
     "ably": "^1.2.36",
+    "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
-    "minidenticons": "^2.0.0",
-    "nanoid": "^3.3.4"
+    "nanoid": "^3.3.4",
+    "random-words": "^1.3.0"
   }
 }
