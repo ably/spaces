@@ -8,12 +8,6 @@ API for managing and accessing Ably Spaces.
 
 **Class definitions are available [here](/docs/class-definitions.md).**
 
-## Spaces
-
-A Space is an Ably concept that allows for shared realtime digital experiences such as chat, reactions and collaborative editing.
-
-A Space consists of users and storage with persistent presence.
-
 ### Usage
 
 To use the Space API, you'll need to have an Ably client already set up and authenticated.
