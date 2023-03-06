@@ -53,7 +53,7 @@ describe('Spaces', () => {
   });
 
   it<SpacesTestContext>('creates a client with options that are passed in', () => {
-    const spaces = new Spaces({...defaultClientConfig});
+    const spaces = new Spaces({ ...defaultClientConfig });
     expect(spaces.ably['options']).toContain(defaultClientConfig);
   });
 
@@ -72,6 +72,10 @@ describe('Spaces', () => {
       ...defaultClientConfig,
       agents: ['some-client/1.2.3'],
     } as any);
-    expect(spaces.ably['options'].agents).toEqual(['some-client/1.2.3', `ably-spaces/${spaces.version}`, 'default-client']);
+    expect(spaces.ably['options'].agents).toEqual([
+      'some-client/1.2.3',
+      `ably-spaces/${spaces.version}`,
+      'default-client',
+    ]);
   });
 });

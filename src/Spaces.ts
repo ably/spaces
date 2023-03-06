@@ -23,7 +23,7 @@ class Spaces {
 
   private addAgent(options: any, isDefault: boolean) {
     const agent = `ably-spaces/${this.version}`;
-    const clientType = isDefault ? "default-client" : "custom-client";
+    const clientType = isDefault ? 'default-client' : 'custom-client';
     if (!options.agents) {
       options.agents = [agent, clientType];
     } else if (!options.agents.includes(agent)) {
