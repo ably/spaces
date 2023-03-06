@@ -114,4 +114,12 @@ export const fakeNames = [
   'Hanna Tretyak',
 ];
 
+export const nameToInitials = (name) =>
+  name
+    .split(' ')
+    .map((str) => str[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
 export const getRandomName = () => fakeNames[Math.floor(Math.random() * fakeNames.length)];
