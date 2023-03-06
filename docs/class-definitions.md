@@ -35,13 +35,13 @@ Used to configure a Space object on creation.
 #### offlineTimeout
 Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list.
 
-Default is 5000ms.
+Default is 120,000ms (2 minutes).
 
 ### Space
 An instance of a Space created using [spaces.get](#getname-options).
 
 #### enter(profileData?)
-Enter this space with optional profile data and notifies other clients in the space via the [membersUpdate](#membersupdate) event.
+Enter this space with optional profile data and notify other clients in the space via the [membersUpdate](#membersupdate) event.
 This data can be an arbitrary JSON-serializable object which will be attached to the member object and delivered to other members of the space.
 
 | Property    | Type   |
@@ -51,13 +51,13 @@ This data can be an arbitrary JSON-serializable object which will be attached to
 
 #### leave()
 
-Leave the space. This removes you from the space and notifies other space members.
+Leave the space. This removes the member from the space and notifies other space members.
 
 #### on(event, callback)
 Used for subscribing to realtime events within the space. Currently, only one event is supported:
 
 ##### membersUpdate
-Fires when a member is enters or leaves the space. This returns an array of [SpaceMember](#spacemember) objects.
+Fires when a member enters or leaves the space. This returns an array of [SpaceMember](#spacemember) objects.
 
 
 ### SpaceMember

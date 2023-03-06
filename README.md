@@ -41,7 +41,7 @@ space.enter({
 });
 ```
 
-Enter and leave events can be listened to by creating an event listener:
+The membersUpdate event will fire when a member's connection status updates, e.g. when a member joins or leaves the space:
 
 ```ts
 space.on('membersUpdate', (members) => {
