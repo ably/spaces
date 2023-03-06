@@ -12,20 +12,22 @@ class Spaces {
     this.spaces = {};
     if (optionsOrAbly instanceof Realtime) {
       this.ably = optionsOrAbly as Types.RealtimePromise;
-      this.addAgent(this.ably['options']);
+      this.addAgent(this.ably['options'], false);
     } else {
       let options: Types.ClientOptions = typeof optionsOrAbly === 'string' ? { key: optionsOrAbly } : optionsOrAbly;
-      this.addAgent(options);
+      this.addAgent(options, true);
       this.ably = new Realtime.Promise(options);
     }
+    this.ably.time();
   }
 
-  private addAgent(options: any) {
+  private addAgent(options: any, isDefault: boolean) {
     const agent = `ably-spaces/${this.version}`;
+    const clientType = isDefault ? "default-client" : "custom-client";
     if (!options.agents) {
-      options.agents = [agent];
+      options.agents = [agent, clientType];
     } else if (!options.agents.includes(agent)) {
-      options.agents.push(agent);
+      options.agents.push(agent, clientType);
     }
   }
 
