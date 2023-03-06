@@ -59,12 +59,12 @@ describe('Spaces', () => {
 
   it<SpacesTestContext>('applies the agent header to an existing SDK instance', ({ client }) => {
     const spaces = new Spaces(client);
-    expect((client as any).options.agents).toEqual([`ably-spaces/${spaces.version}`, 'custom-client']);
+    expect((client as any).options.agents).toEqual([`ably-spaces/${spaces.version}`, 'space-custom-client']);
   });
 
   it<SpacesTestContext>('applies the agent header when options are passed in', () => {
     const spaces = new Spaces(defaultClientConfig);
-    expect(spaces.ably['options'].agents).toEqual([`ably-spaces/${spaces.version}`, 'default-client']);
+    expect(spaces.ably['options'].agents).toEqual([`ably-spaces/${spaces.version}`, 'space-default-client']);
   });
 
   it<SpacesTestContext>('extend the agents array when it already exists', () => {
@@ -75,7 +75,7 @@ describe('Spaces', () => {
     expect(spaces.ably['options'].agents).toEqual([
       'some-client/1.2.3',
       `ably-spaces/${spaces.version}`,
-      'default-client',
+      'space-default-client',
     ]);
   });
 });
