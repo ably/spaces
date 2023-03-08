@@ -44,12 +44,12 @@ describe('Space (mockClient)', () => {
     it<SpaceTestContext>('returns current space members', async ({ presence, space }) => {
       vi.spyOn(presence, 'get').mockImplementationOnce(async () => [
         createPresenceMessage('enter'),
-        createPresenceMessage('update', { clientId: '2' }),
+        createPresenceMessage('update', { clientId: '2', connectionId: '2' }),
       ]);
       const spaceMembers = await space.enter();
       expect(spaceMembers).toEqual<SpaceMember[]>([
-        { clientId: '1', isConnected: true, profileData: {}, lastEvent: { name: 'enter', timestamp: 1 } },
-        { clientId: '2', isConnected: true, profileData: { a: 1 }, lastEvent: { name: 'update', timestamp: 1 } },
+        { clientId: '1', connections: ['1'], isConnected: true, profileData: {}, lastEvent: { name: 'enter', timestamp: 1 } },
+        { clientId: '2', connections: ['2'], isConnected: true, profileData: { a: 1 }, lastEvent: { name: 'update', timestamp: 1 } },
       ]);
     });
   });
@@ -96,22 +96,25 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
+          connections: ['1'],
           profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', data: { a: 1 } }));
+      space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', connectionId: '2', data: { a: 1 } }));
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
+          connections: ['1'],
           profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
         {
           clientId: '2',
+          connections: ['2'],
           profileData: { a: 1 },
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
@@ -127,6 +130,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
+          connections: ['1'],
           profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
@@ -137,6 +141,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
+          connections: ['1'],
           profileData: { a: 1 },
           isConnected: true,
           lastEvent: { name: 'update', timestamp: 1 },
@@ -152,6 +157,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
+          connections: ['1'],
           profileData: {},
           isConnected: true,
           lastEvent: { name: 'enter', timestamp: 1 },
@@ -162,6 +168,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
+          connections: ['1'],
           profileData: {},
           isConnected: false,
           lastEvent: { name: 'leave', timestamp: 1 },
@@ -186,6 +193,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
+            connections: ['1'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
@@ -196,6 +204,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
+            connections: ['1'],
             profileData: {},
             isConnected: false,
             lastEvent: { name: 'leave', timestamp: 1 },
@@ -213,16 +222,18 @@ describe('Space (mockClient)', () => {
         space.on('membersUpdate', callbackSpy);
 
         space.dispatchEvent(createPresenceEvent('enter'));
-        space.dispatchEvent(createPresenceEvent('enter', { clientId: '2' }));
+        space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', connectionId: '2' }));
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
+            connections: ['1'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
             clientId: '2',
+            connections: ['2'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
@@ -233,12 +244,14 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
+            connections: ['1'],
             profileData: {},
             isConnected: false,
             lastEvent: { name: 'leave', timestamp: 1 },
           },
           {
             clientId: '2',
+            connections: ['2'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
@@ -250,12 +263,14 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
+            connections: ['1'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
             clientId: '2',
+            connections: ['2'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
@@ -266,12 +281,14 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
+            connections: ['1'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
             clientId: '2',
+            connections: ['2'],
             profileData: {},
             isConnected: true,
             lastEvent: { name: 'enter', timestamp: 1 },

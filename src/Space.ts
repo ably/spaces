@@ -10,6 +10,7 @@ type SpaceEvents = 'membersUpdate';
 export type SpaceMember = {
   clientId: string;
   isConnected: boolean;
+  connections: string[];
   profileData: { [key: string]: any };
   lastEvent: {
     name: Types.PresenceAction;
@@ -52,27 +53,48 @@ class Space extends EventTarget {
     this.setChannel(this.name);
   }
 
-  private setChannel(rootName) {
+  private setChannel(rootName: string) {
     this.channelName = `${SPACE_CHANNEL_PREFIX}${rootName}`;
     this.channel = this.client.channels.get(this.channelName);
   }
 
-  private createSpaceMemberFromPresenceMember(message: Types.PresenceMessage): SpaceMember {
-    return {
-      clientId: message.clientId as string,
-      isConnected: message.action !== 'leave',
-      profileData: message.data,
-      lastEvent: {
-        name: message.action,
-        timestamp: message.timestamp,
-      },
+  getMemberFromConnection(connectionId: string){
+    return this.members.find((m) => m.connections.includes(connectionId));
+  }
+  
+
+  private updateOrCreateMember(message: Types.PresenceMessage): SpaceMember {
+    const member = this.getMemberFromConnection(message.connectionId);
+    const lastEvent = {
+      name: message.action,
+      timestamp: message.timestamp,
     };
+
+    if(!member){
+      return {
+        clientId: message.clientId as string,
+        isConnected: message.action !== 'leave',
+        profileData: message.data,
+        lastEvent,
+        connections: [message.connectionId]
+      };
+    }
+
+    if(!member.connections.includes(message.connectionId)){
+      member.connections.push(message.connectionId);
+    }
+
+    member.isConnected = message.action !== 'leave';
+    member.profileData = message.data ?? member.profileData;
+    member.lastEvent = lastEvent;
+
+    return member;
   }
 
   private mapPresenceMembersToSpaceMembers(messages: Types.PresenceMessage[]) {
     return messages
       .filter((message) => message.clientId !== this.clientId)
-      .map((message) => this.createSpaceMemberFromPresenceMember(message));
+      .map((message) => this.updateOrCreateMember(message));
   }
 
   private addLeaver(message: Types.PresenceMessage) {
@@ -111,7 +133,7 @@ class Space extends EventTarget {
 
   private updateMembers(message: Types.PresenceMessage) {
     const index = this.members.findIndex(({ clientId }) => clientId === message.clientId);
-    const spaceMember = this.createSpaceMemberFromPresenceMember(message);
+    const spaceMember = this.updateOrCreateMember(message);
 
     if (index >= 0) {
       this.members[index] = spaceMember;
