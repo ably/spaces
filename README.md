@@ -87,7 +87,7 @@ space.on('membersUpdate', (members) => {
 [
   {
     "clientId": "user1234",
-    "isConnected": true,
+    "isConnected": false,
     "lastEvent": {
       "name": "enter",
       "timestamp": 1677595689759
