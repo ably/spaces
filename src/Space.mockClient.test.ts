@@ -48,8 +48,20 @@ describe('Space (mockClient)', () => {
       ]);
       const spaceMembers = await space.enter();
       expect(spaceMembers).toEqual<SpaceMember[]>([
-        { clientId: '1', connections: ['1'], isConnected: true, profileData: {}, lastEvent: { name: 'enter', timestamp: 1 } },
-        { clientId: '2', connections: ['2'], isConnected: true, profileData: { a: 1 }, lastEvent: { name: 'update', timestamp: 1 } },
+        {
+          clientId: '1',
+          connections: ['1'],
+          isConnected: true,
+          profileData: {},
+          lastEvent: { name: 'enter', timestamp: 1 },
+        },
+        {
+          clientId: '2',
+          connections: ['2'],
+          isConnected: true,
+          profileData: { a: 1 },
+          lastEvent: { name: 'update', timestamp: 1 },
+        },
       ]);
     });
 
@@ -60,7 +72,7 @@ describe('Space (mockClient)', () => {
       await space.enter();
       const member = space.getMemberFromConnection('testConnectionId');
       expect(member).toEqual({
-        clientId: "1",
+        clientId: '1',
         connections: ['testConnectionId'],
         isConnected: true,
         lastEvent: {

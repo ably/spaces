@@ -58,7 +58,7 @@ class Space extends EventTarget {
     this.channel = this.client.channels.get(this.channelName);
   }
 
-  getMemberFromConnection(connectionId: string){
+  getMemberFromConnection(connectionId: string) {
     return this.members.find((m) => m.connections.includes(connectionId));
   }
 
@@ -69,17 +69,17 @@ class Space extends EventTarget {
       timestamp: message.timestamp,
     };
 
-    if(!member){
+    if (!member) {
       return {
         clientId: message.clientId as string,
         isConnected: message.action !== 'leave',
         profileData: message.data,
         lastEvent,
-        connections: [message.connectionId]
+        connections: [message.connectionId],
       };
     }
 
-    if(!member.connections.includes(message.connectionId)){
+    if (!member.connections.includes(message.connectionId)) {
       member.connections.push(message.connectionId);
     }
 
