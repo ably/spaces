@@ -61,7 +61,6 @@ class Space extends EventTarget {
   getMemberFromConnection(connectionId: string){
     return this.members.find((m) => m.connections.includes(connectionId));
   }
-  
 
   private updateOrCreateMember(message: Types.PresenceMessage): SpaceMember {
     const member = this.getMemberFromConnection(message.connectionId);

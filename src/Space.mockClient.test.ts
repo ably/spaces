@@ -52,6 +52,26 @@ describe('Space (mockClient)', () => {
         { clientId: '2', connections: ['2'], isConnected: true, profileData: { a: 1 }, lastEvent: { name: 'update', timestamp: 1 } },
       ]);
     });
+
+    it<SpaceTestContext>('retrieves active space members by connection', async ({ presence, space }) => {
+      vi.spyOn(presence, 'get').mockImplementationOnce(async () => [
+        createPresenceMessage('enter', { connectionId: 'testConnectionId' }),
+      ]);
+      await space.enter();
+      const member = space.getMemberFromConnection('testConnectionId');
+      expect(member).toEqual({
+        clientId: "1",
+        connections: ['testConnectionId'],
+        isConnected: true,
+        lastEvent: {
+          name: 'enter',
+          timestamp: 1,
+        },
+        profileData: {},
+      });
+      const noMember = space.getMemberFromConnection('nonExistentConnectionId');
+      expect(noMember).toBe(undefined);
+    });
   });
 
   describe('leave', () => {
