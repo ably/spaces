@@ -1,13 +1,16 @@
+# Multiplayer Collaboration
+[Ably](https://ably.com/) is the platform that powers realtime experiences at scale, including live chat, data broadcast, notifications, audience engagement and collaboration. With the Spaces library, we are on a mission to make it easy for developers to add Multiplayer Collaboration features to any web application, in a few lines of code.
+
 # Ably Spaces
 
-This respository consists an API for managing and accessing Ably Spaces. Please note that this is an experimental API. You can try it out by following the usage instructions below.
+This repository contains an API for managing and accessing Ably Spaces. Please note that this is an experimental API. You can try it out by following the usage instructions below.
 
 If you have any feedback or are interested in what we are doing please reach out to us at [beta@ably.com](mailto:beta@ably.com).
 
 ## Concepts
 The Ably Spaces library provides purpose-built methods and properties to enable multiplayer collaboration in any web application. You can set up a collaborative "space" and subscribe to different kind of updates to see who else is in the space with you, their live location within the app and any updates they are making.
 
-This library is built as an extention to our [existing JS SDK](https://github.com/ably/ably-js), so you'll need to an Ably JS client to be able to use this library. The usage instructions will help you set that up.
+This library is built as an extension to our [existing JS SDK](https://github.com/ably/ably-js), so you'll need an Ably JS client to be able to use this library. The usage instructions will help you set that up.
 
 ### Glossary
 As part of this library, we are introducing some new concepts:
@@ -21,8 +24,6 @@ As part of this library, we are introducing some new concepts:
 
 ## Usage
 
-**Class definitions are available [in the docs folder](/docs/class-definitions.md).**
-
 ### Pre-requisites
 
 To use the Space API, you'll need to have an Ably JS client set up and authenticated. To get started quickly, you can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication) which only requires an Ably API Key. 
@@ -32,7 +33,7 @@ To use the Space API, you'll need to have an Ably JS client set up and authentic
 
 ### Quickstart 
 
-Create a new instance of the promisified realtime client and pass that as a parameter to the Spaces constructor:
+Create a new instance of the promise version of realtime client and pass that as a parameter to the Spaces constructor:
 
 ```ts
 import { Realtime } from 'ably/promise';
@@ -81,7 +82,10 @@ space.on('membersUpdate', (members) => {
 ]
 ```
 
-2. When a member has left the space via `space.leave()` or has closed the tab or abruptly disconnected from the internet for more than 2min:
+2. When a member has left the space in one of the following ways:
+- called `space.leave()`
+- has closed the tab
+- abruptly disconnected from the internet for more than 2min (which is configurable via [`offlineTimeout`](https://github.com/ably-labs/spaces/blob/main/docs/class-definitions.md#offlinetimeout):
 
 ```json
 [
