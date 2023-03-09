@@ -12,7 +12,7 @@ This library is built as an extention to our [existing JS SDK](https://github.co
 ### Glossary
 As part of this library, we are introducing some new concepts:
 
-1. Space: Avirtual collaborative space where members can collaborate in realtime with each other.
+1. Space: A virtual collaborative space where members can collaborate in realtime with each other.
 2. Members: Users connected to the virtual collaborative space. The same user (identified by the clientId) can be present multiple times via different connections.
 3. Avatar Stack: A visual representation of the currently present and recently left list of members in the collaborative space. This is usually presented as a stack of profile pictures or initials along with other profile information such as name or role.
 3. (Coming soon) User Location: The live location of a member within the app. Depending on the nature of the app, this could be a slide number, a URL, a cell id, component id, etc.
