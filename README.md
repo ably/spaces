@@ -1,21 +1,38 @@
-# Ably Spaces
+# Multiplayer Collaboration
+[Ably](https://ably.com/) is the platform that powers realtime experiences at scale, including live chat, data broadcast, notifications, audience engagement and collaboration. 
 
-**This is an experimental API, not meant for production usage.**
+Multiplayer Collaboration enables virtual teams to work together efficiently by having the contextual awareness of who else is currently with them on the app, where exactly they are and the updates they are making. With the Ably Spaces SDK, we are on a mission to make it easy for developers to add Multiplayer Collaboration features to any web application, in a few lines of code.
 
-If you have any feedback or are interested in what we are doing please [contact us](https://ably.com/contact).
+> **Note**
+> The **Ably Spaces SDK** is a work in progress. It is currently meant for early adopters to trial and test out while some features are still under development. If you are interested to try it out, please follow the usage instructions below.
 
-API for managing and accessing Ably Spaces.
+If you have any feedback or are interested in getting early access to new features, please reach out to us at [beta@ably.com](mailto:beta@ably.com).
 
-**Class definitions are available [here](/docs/class-definitions.md).**
+## Overview
+The Ably Spaces SDK provides purpose-built APIs to enable multiplayer collaboration in any web application. You can set up a collaborative "space" and subscribe to different kinds of updates to see who else is in the space with you, their live location within the app and any updates they are making.
 
-### Usage
+It is built as an extension to our [existing JS SDK](https://github.com/ably/ably-js), so you'll need an Ably JS client to be able to use this library. The usage instructions will help you set that up.
 
-To use the Space API, you'll need to have an Ably client already set up and authenticated.
-To get started quickly, you can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication)
-by creating an API key with the **publish**, **subscribe** and **presence** capabilities enabled.
+### Glossary 
+1. Space: A virtual collaborative space where members can collaborate in realtime with each other.
+2. Members: Users connected to the virtual collaborative space. The same user (identified by the clientId) can be present multiple times via different connections.
+3. Avatar Stack: A visual representation of the currently present and recently left list of members in the collaborative space. This is usually presented as a stack of profile pictures or initials along with other profile information such as name or role.
+3. (Coming soon) User Location: The live location of a member within the app. Depending on the nature of the app, this could be a slide number, a URL, a cell id, component id, etc.
+4. (Coming soon) Live cursor: The pointer location of a member within the app. 
 
 
-Here's an example of how you can create a new instance of the client and pass it to the Spaces constructor:
+## Usage
+
+### Pre-requisites
+
+To use the Ably Spaces SDK, you'll need to have an Ably JS client set up and authenticated. To get started quickly, you can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication) which only requires an Ably API Key. 
+
+1. [Sign up to a free Ably account](https://ably.com/signup)
+2. [Get your API Key](https://faqs.ably.com/setting-up-and-managing-api-keys) with publish, subscribe and presence capabilities enabled.
+
+### Quickstart 
+
+Create a new instance of the promise version of realtime client and pass that as a parameter to the Spaces constructor:
 
 ```ts
 import { Realtime } from 'ably/promise';
@@ -25,7 +42,7 @@ const client = new Realtime(ABLY_API_KEY);
 const spaces = new Spaces(client);
 ```
 
-A new space can then be created and entered:
+Create a new space instance and have members enter that space:
 
 ```ts
 const space = spaces.get("mySpace");
@@ -35,14 +52,17 @@ space.enter({
 });
 ```
 
-The membersUpdate event will fire when a member's connection status updates, e.g. when a member joins or leaves the space:
+Subscribe to updates from other members in the space. The `membersUpdate` event will fire when a member's connection status updates, e.g. when a member joins or leaves the space:
 
 ```ts
 space.on('membersUpdate', (members) => {
   console.log(members);
 });
 ```
-This code would output the following in console when `space.enter` is called:
+
+### Example payload returned
+
+1. When a member has entered the space via `space.enter()`:
 
 ```json
 [
@@ -60,3 +80,27 @@ This code would output the following in console when `space.enter` is called:
   }
 ]
 ```
+
+2. When a member has left the space in one of the following ways:
+- called `space.leave()`
+- has closed the tab
+- abruptly disconnected from the internet for more than 2min (which is configurable via [`offlineTimeout`](https://github.com/ably-labs/spaces/blob/main/docs/class-definitions.md#offlinetimeout):
+
+```json
+[
+  {
+    "clientId": "user1234",
+    "isConnected": false,
+    "lastEvent": {
+      "name": "enter",
+      "timestamp": 1677595689759
+    },
+    "profileData": {
+      "username": "Example User",
+      "avatar": "https://example.com/users/1234.png"
+    }
+  }
+]
+```
+
+**Class definitions are available [in the docs folder](/docs/class-definitions.md).**
