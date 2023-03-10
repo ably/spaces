@@ -10,7 +10,7 @@ class Spaces {
 
   constructor(optionsOrAbly: Types.RealtimePromise | Types.ClientOptions | string) {
     this.spaces = {};
-    if (optionsOrAbly instanceof Realtime) {
+    if (optionsOrAbly['options']) {
       this.ably = optionsOrAbly as Types.RealtimePromise;
       this.addAgent(this.ably['options'], false);
     } else {
