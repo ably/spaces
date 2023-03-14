@@ -7,6 +7,7 @@ import { getSpaceNameFromUrl } from './utils/url';
 
 import Spaces from '../../src/Spaces';
 import { renderAvatars, renderSelfAvatar } from './components/avatar-stack';
+import { renderFeatureDisplay } from './components/feature-display';
 
 (async () => {
   const clientId = nanoid();
@@ -24,4 +25,5 @@ import { renderAvatars, renderSelfAvatar } from './components/avatar-stack';
 
   renderSelfAvatar(name);
   renderAvatars(initialMembers);
+  renderFeatureDisplay();
 })();
