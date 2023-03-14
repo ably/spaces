@@ -1,12 +1,17 @@
+![development-status](https://badgen.net/badge/development-status/alpha/yellow?icon=github)
+
 # Multiplayer Collaboration
 [Ably](https://ably.com/) is the platform that powers realtime experiences at scale, including live chat, data broadcast, notifications, audience engagement and collaboration. 
 
 Multiplayer Collaboration enables virtual teams to work together efficiently by having the contextual awareness of who else is currently with them on the app, where exactly they are and the updates they are making. With the Ably Spaces SDK, we are on a mission to make it easy for developers to add Multiplayer Collaboration features to any web application, in a few lines of code.
 
-> **Note**
-> The **Ably Spaces SDK** is a work in progress. It is currently meant for early adopters to trial and test out while some features are still under development. If you are interested to try it out, please follow the usage instructions below.
+![Multiplayer Collaboration Demo](https://user-images.githubusercontent.com/5900152/225078635-a0a33fbe-89cd-4652-8232-2f7ee054039c.png)
 
-If you have any feedback or are interested in getting early access to new features, please reach out to us at [beta@ably.com](mailto:beta@ably.com).
+
+> **Note**
+> The **Ably Spaces SDK** is a work in progress. It is currently meant for early adopters to trial and test out while some features are still under development. You can try it out with the usage instructions below.
+
+> If you are interested in seeing new API features that are still under development, [sign up for exclusive early access](https://go.ably.com/spaces-early-access). If you have any feedback or feature requests, [please fill out this form](https://go.ably.com/spaces-feedback) or reach out to us at [beta@ably.com](mailto:beta@ably.com).
 
 ## Overview
 The Ably Spaces SDK provides purpose-built APIs to enable multiplayer collaboration in any web application. You can set up a collaborative "space" and subscribe to different kinds of updates to see who else is in the space with you, their live location within the app and any updates they are making.
