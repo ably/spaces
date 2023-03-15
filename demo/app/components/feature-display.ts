@@ -1,4 +1,4 @@
-import { SlideImgElement, SlideTextElement } from "../data/default-slide-data";
+import { SlideData, SlideImgElement, SlideTextElement } from "../data/default-slide-data";
 import { slideData } from "../data/slide-data";
 import { createFragment } from "../utils/dom";
 
@@ -9,7 +9,13 @@ export const renderFeatureDisplay = () => {
 };
 
 const renderSlidePreviewMenu = () => {
-
+  const slidePreviewMenuContainer = document.querySelector('#slide-left-preview-list');
+  slideData.forEach(slide => {
+    const slidePreviewFragment = createFragment('#slide-preview') as HTMLElement;
+    const slidePreviewContainer = slidePreviewFragment.querySelector('li[data-id=slide-preview-container]') as HTMLElement;
+    renderSlide(slidePreviewContainer, slide);
+    slidePreviewMenuContainer.appendChild(slidePreviewContainer);
+  });
 };
 
 const renderSlideTextElement = (slideElement: SlideTextElement, htmlElement: HTMLElement) => {
@@ -31,46 +37,50 @@ const renderSlideImgElement = (slideElement: SlideImgElement, htmlElement: HTMLI
   return htmlElement;
 }
 
+const renderSlide = (containerElement: HTMLElement, slideData: SlideData) => {
+  slideData.elements.forEach((element) => {
+    let slideElementFragment: HTMLElement;
+    switch(element.elementType) {
+      case 'title':
+        slideElementFragment = createFragment('#slide-title') as HTMLElement;
+        renderSlideTextElement(
+          element,
+          slideElementFragment.querySelector('[data-id=slide-title-text]')
+        );
+        break;
+      case 'title-caption':
+        slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
+        renderSlideTextElement(
+          element,
+          slideElementFragment.querySelector('[data-id=slide-title-caption-text]')
+        );
+        break;
+      case 'text':
+        slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
+        renderSlideTextElement(
+          element,
+          slideElementFragment.querySelector('[data-id=slide-text-block-text]')
+        );
+        break;
+      case 'img':
+        slideElementFragment = createFragment('#slide-image') as HTMLElement;
+        renderSlideImgElement(
+          element,
+          slideElementFragment.querySelector('img[data-id=slide-image-placeholder]')
+        );
+        break;
+      default:
+        throw `Element Type not recognized`;
+    }
+    containerElement.appendChild(slideElementFragment);
+  });
+}
+
 const renderSelectedSlide = () => {
   const selectedSlide = slideData.find((data) => data.selected);
   if(selectedSlide) {
-    const selectedSlideContainer = document.querySelector('#slide-selected');
-    selectedSlide.elements.forEach((element) => {
-      let slideElementFragment: HTMLElement;
-      switch(element.elementType) {
-        case 'title':
-          slideElementFragment = createFragment('#slide-title') as HTMLElement;
-          renderSlideTextElement(
-            element,
-            slideElementFragment.querySelector('[data-id=slide-title-text]')
-          );
-          break;
-        case 'title-caption':
-          slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
-          renderSlideTextElement(
-            element,
-            slideElementFragment.querySelector('[data-id=slide-title-caption-text]')
-          );
-          break;
-        case 'text':
-          slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
-          renderSlideTextElement(
-            element,
-            slideElementFragment.querySelector('[data-id=slide-text-block-text]')
-          );
-          break;
-        case 'img':
-          slideElementFragment = createFragment('#slide-image') as HTMLElement;
-          renderSlideImgElement(
-            element,
-            slideElementFragment.querySelector('img[data-id=slide-image-placeholder]')
-          );
-          break;
-        default:
-          throw `Element Type not recognized`;
-      }
-      selectedSlideContainer.appendChild(slideElementFragment);
-    })
+    const selectedSlideContainer = document.querySelector('#slide-selected') as HTMLElement;
+    renderSlide(selectedSlideContainer, selectedSlide);
   }
 };
 

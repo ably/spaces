@@ -54,7 +54,7 @@ const slideImgElement = (
   lockedBy,
 });
 
-type SlideData = {
+export type SlideData = {
   id: string,
   elements: SlideElement[],
   selected: boolean,
@@ -86,6 +86,10 @@ const defaultSelectedSlide = slideData(
     slideImgElement(
       'assets/svg/collaborative-document.svg',
       [543,166]
+    ),
+    slideTextElement('text')(
+      '2022',
+      [952,626]
     )
   ],
   IS_SELECTED
