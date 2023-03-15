@@ -5,7 +5,7 @@
 
 Multiplayer Collaboration enables virtual teams to work together efficiently by having the contextual awareness of who else is currently with them on the app, where exactly they are and the updates they are making. With the Ably Spaces SDK, we are on a mission to make it easy for developers to add Multiplayer Collaboration features to any web application, in a few lines of code.
 
-![Multiplayer Collaboration Demo](https://user-images.githubusercontent.com/5900152/225078635-a0a33fbe-89cd-4652-8232-2f7ee054039c.png)
+![Multiplayer Collaboration Demo](https://user-images.githubusercontent.com/5900152/225328262-2b63bb49-57a0-4f40-b78e-b87565f4c98c.png)
 
 
 > **Note**
