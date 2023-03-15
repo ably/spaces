@@ -11,7 +11,7 @@ module.exports = {
         'ably-avatar-stack-demo-slide-text': '#32394E',
         'ably-avatar-stack-demo-show-replies': '#3E3E3E',
         'ably-avatar-stack-demo-new-slide': '#848484',
-        'ably-avatar-stack-demo-slide-title-caption': '#116AEB',
+        'ably-avatar-stack-demo-slide-title-highlight': '#116AEB',
       },
       backdropBlur: {
         'ably-xs': '2.5px',

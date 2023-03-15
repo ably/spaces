@@ -73,12 +73,12 @@ const defaultSelectedSlide = slideData(
     slideTextElement('title-caption')('HOW USERS READ', [64,170]),
     slideTextElement('title')('Add graphics', [64,197]),
     slideTextElement('text')(
-      'No one likes boring text blocks on a website. And images and icons are the fastest way to get information.',
+      'No one likes boring text blocks on a website. And <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span> are the fastest way to get information.',
       [64,288],
       423,
     ),
     slideTextElement('text')(
-      `But don't overdo it. If you can't explain for what purpose you put this line or icon, it's better to abandon it.`,
+      `But <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>. If you can't explain for what purpose you put this line or icon, it's better to abandon it.`,
       [64,416],
       396,
       'Lauren',
