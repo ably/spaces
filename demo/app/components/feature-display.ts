@@ -1,4 +1,4 @@
-import { SlideTextElement } from "../data/default-slide-data";
+import { SlideImgElement, SlideTextElement } from "../data/default-slide-data";
 import { slideData } from "../data/slide-data";
 import { createFragment } from "../utils/dom";
 
@@ -20,6 +20,14 @@ const renderSlideTextElement = (slideElement: SlideTextElement, htmlElement: HTM
   if(slideElement.width) {
     htmlElement.style.width = `${slideElement.width}px`;
   }
+  return htmlElement;
+}
+
+const renderSlideImgElement = (slideElement: SlideImgElement, htmlElement: HTMLImageElement) => {
+  htmlElement.src = slideElement.src;
+  htmlElement.style.position = 'absolute';
+  htmlElement.style.left = `${slideElement.position[0]}px`;
+  htmlElement.style.top = `${slideElement.position[1]}px`;
   return htmlElement;
 }
 
@@ -53,6 +61,10 @@ const renderSelectedSlide = () => {
           break;
         case 'img':
           slideElementFragment = createFragment('#slide-image') as HTMLElement;
+          renderSlideImgElement(
+            element,
+            slideElementFragment.querySelector('img[data-id=slide-image-placeholder]')
+          );
           break;
         default:
           throw `Element Type not recognized`;

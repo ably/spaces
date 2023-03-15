@@ -84,7 +84,7 @@ const defaultSelectedSlide = slideData(
       'Lauren',
     ),
     slideImgElement(
-      'svg/collaborative-document.svg',
+      'assets/svg/collaborative-document.svg',
       [543,166]
     )
   ],
