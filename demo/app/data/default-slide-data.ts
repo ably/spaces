@@ -5,15 +5,16 @@ const IS_SELECTED = true;
 
 type Position = [x: number, y: number];
 
-type SlideTextElement = {
+export type SlideTextElement = {
   elementType: SlideTextElementName,
   text: string,
   position: Position,
+  width?: number,
   commentThreadId?: string,
   lockedBy?: string,
 };
 
-type SlideImgElement = {
+export type SlideImgElement = {
   elementType: SlideImgElementName,
   src: string,
   position: Position,
@@ -23,16 +24,18 @@ type SlideImgElement = {
   lockedBy?: string,
 }
 
-type SlideElement = SlideTextElement | SlideImgElement;
+export type SlideElement = SlideTextElement | SlideImgElement;
 
 const slideTextElement = (elementType: SlideTextElementName) => (
   text: string,
   position: Position,
+  width?: number,
   lockedBy?: string,
 ): SlideTextElement => ({
   elementType,
   text,
   position,
+  width,
   lockedBy,
 });
 
@@ -68,14 +71,17 @@ const defaultSelectedSlide = slideData(
   '2',
   [
     slideTextElement('title-caption')('HOW USERS READ', [64,170]),
-    slideTextElement('title')('Add Graphics', [64,197]),
+    slideTextElement('title')('Add graphics', [64,197]),
     slideTextElement('text')(
       'No one likes boring text blocks on a website. And images and icons are the fastest way to get information.',
-      [64,288]
+      [64,288],
+      423,
     ),
     slideTextElement('text')(
       `But don't overdo it. If you can't explain for what purpose you put this line or icon, it's better to abandon it.`,
-      [64,416]
+      [64,416],
+      396,
+      'Lauren',
     ),
     slideImgElement(
       'svg/collaborative-document.svg',
