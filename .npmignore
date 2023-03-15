@@ -1,7 +1,12 @@
 /**/*.test.ts
+/**/*.test.js
+/**/*.test.js.map
+/**/*.test.d.ts
 /**/*/node_modules
 scripts
 test
+demo
+netlify.toml
 examples
 __mocks__
 vitest.config.ts
