@@ -96,5 +96,9 @@ const defaultSelectedSlide = slideData(
 );
 
 export const defaultSlides = [
+  slideData('1', [slideImgElement('assets/svg/placeholder-slide-1.svg', [100, 160])]),
   defaultSelectedSlide,
+  slideData('3', [slideImgElement('assets/svg/placeholder-slide-2.svg', [100, 200])]),
+  slideData('4', [slideImgElement('assets/svg/placeholder-slide-3.svg', [200, 200])]),
+  slideData('5', [slideImgElement('assets/svg/placeholder-slide-2.svg', [100, 200])])
 ];
