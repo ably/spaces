@@ -45,9 +45,9 @@ const renderAvatar = (member, index) => {
   const fragment = createFragment('#avatar-template');
 
   const initials = queryDataId(fragment, 'name');
-  initials.innerHTML = nameToInitials(member.data.name);
+  initials.innerHTML = nameToInitials(member.profileData.name);
   const fullNameEl = queryDataId(fragment, 'avatar-full-name');
-  fullNameEl.innerHTML = member.data.name;
+  fullNameEl.innerHTML = member.profileData.name;
 
   const innerWrapper = queryDataId(fragment, 'avatar-inner-wrapper');
 
@@ -91,7 +91,7 @@ const renderAvatarOverflow = (members) => {
   members.forEach((member) => {
     const fragmentMember = createFragment('#avatar-hover');
     const fullNameEl = queryDataId(fragmentMember, 'avatar-full-name');
-    fullNameEl.innerHTML = member.data.name;
+    fullNameEl.innerHTML = member.profileData.name;
     changeStatusIndicator(fragmentMember, member.isConnected, member.lastEvent);
     avatarHover.appendChild(fragmentMember);
   });
