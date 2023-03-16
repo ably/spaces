@@ -2,12 +2,12 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 import { gradients } from '../utils/gradients';
-import { queryDataId, createFragment } from '../utils/dom';
+import { queryDataId, updateDataId, createFragment } from '../utils/dom';
 import { nameToInitials } from '../utils/fake-names';
 
 dayjs.extend(relativeTime);
 
-const changeStatusIndicator = (fragment, isConnected, lastEvent) => {
+const updateStatusIndicator = (fragment, isConnected, lastEvent) => {
   const statusIndicatorEl = queryDataId(fragment, 'avatar-status-indicator');
   const statusEl = queryDataId(fragment, 'avatar-status');
 
@@ -44,11 +44,8 @@ const renderAvatarStack = (members) => {
 const renderAvatar = (member, index) => {
   const fragment = createFragment('#avatar-template');
 
-  const initials = queryDataId(fragment, 'name');
-  initials.innerHTML = nameToInitials(member.profileData.name);
-  const fullNameEl = queryDataId(fragment, 'avatar-full-name');
-  fullNameEl.innerHTML = member.profileData.name;
-
+  updateDataId(fragment, 'name', nameToInitials(member.data.name));
+  updateDataId(fragment, 'avatar-full-name', member.data.name);
   const innerWrapper = queryDataId(fragment, 'avatar-inner-wrapper');
 
   if (member.isConnected) {
@@ -59,7 +56,7 @@ const renderAvatar = (member, index) => {
     innerWrapper.classList.remove('bg-gradient-to-b', gradients[index][0], gradients[index][1]);
   }
 
-  changeStatusIndicator(fragment, member.isConnected, member.lastEvent);
+  updateStatusIndicator(fragment, member.isConnected, member.lastEvent);
 
   return fragment;
 };
@@ -68,8 +65,7 @@ const renderSelfAvatar = (name) => {
   const container = document.querySelector('#avatar-self');
   container.innerHTML = '';
   const fragment = createFragment('#avatar-self-template');
-  const initials = queryDataId(fragment, 'name');
-  initials.innerHTML = nameToInitials(name);
+  updateDataId(fragment, 'name', nameToInitials(name));
   container.appendChild(fragment);
 };
 
@@ -82,17 +78,13 @@ const renderAvatarOverflow = (members) => {
   container.innerHTML = '';
 
   const fragment = createFragment('#avatar-overflow-template');
-
-  const countEl = queryDataId(fragment, 'count');
-  countEl.innerHTML = count;
-
+  updateDataId(fragment, 'count', count);
   const avatarHover = queryDataId(fragment, 'avatar-hover');
 
   members.forEach((member) => {
     const fragmentMember = createFragment('#avatar-hover');
-    const fullNameEl = queryDataId(fragmentMember, 'avatar-full-name');
-    fullNameEl.innerHTML = member.profileData.name;
-    changeStatusIndicator(fragmentMember, member.isConnected, member.lastEvent);
+    updateDataId(fragmentMember, 'avatar-full-name', member.data.name);
+    updateStatusIndicator(fragmentMember, member.isConnected, member.lastEvent);
     avatarHover.appendChild(fragmentMember);
   });
 
