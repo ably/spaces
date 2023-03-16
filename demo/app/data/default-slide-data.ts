@@ -26,6 +26,8 @@ export type SlideImgElement = {
 
 export type SlideElement = SlideTextElement | SlideImgElement;
 
+// TODO: Define and render behaviour for elements that are `lockedBy` a user
+// TODO: Define and render behaviour for elements that have a `commentThreadId` started by a particular user
 const slideTextElement = (elementType: SlideTextElementName) => (
   text: string,
   position: Position,
@@ -95,6 +97,7 @@ const defaultSelectedSlide = slideData(
   IS_SELECTED
 );
 
+// TODO: Define and render users associated with a particular slide
 export const defaultSlides = [
   slideData('1', [slideImgElement('assets/svg/placeholder-slide-1.svg', [100, 160])]),
   defaultSelectedSlide,
