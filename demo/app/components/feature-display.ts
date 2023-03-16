@@ -10,11 +10,25 @@ export const renderFeatureDisplay = () => {
 
 const renderSlidePreviewMenu = () => {
   const slidePreviewMenuContainer = document.querySelector('#slide-left-preview-list');
-  slideData.forEach(slide => {
+  slideData.forEach((slide, i) => {
+    
     const slidePreviewFragment = createFragment('#slide-preview') as HTMLElement;
-    const slidePreviewContainer = slidePreviewFragment.querySelector('li[data-id=slide-preview-container]') as HTMLElement;
+    const slidePreviewListItem = slidePreviewFragment.querySelector('li[data-id=slide-preview-list-item]') as HTMLLIElement;
+    if(slide.selected) {
+      slidePreviewListItem.style.backgroundColor = '#EEE9FF';
+    }
+    
+    const slidePreviewContainer = slidePreviewFragment.querySelector('div[data-id=slide-preview-container]') as HTMLElement;
+    
     renderSlide(slidePreviewContainer, slide);
-    slidePreviewMenuContainer.appendChild(slidePreviewContainer);
+
+    const slidePreviewNumber = slidePreviewFragment.querySelector('p[data-id=slide-preview-number]') as HTMLElement;
+    slidePreviewNumber.innerText = `${i+1}`;
+    
+    slidePreviewListItem.appendChild(slidePreviewNumber);
+    slidePreviewListItem.appendChild(slidePreviewContainer);
+
+    slidePreviewMenuContainer.appendChild(slidePreviewListItem);
   });
 };
 
@@ -38,6 +52,7 @@ const renderSlideImgElement = (slideElement: SlideImgElement, htmlElement: HTMLI
 }
 
 const renderSlide = (containerElement: HTMLElement, slideData: SlideData) => {
+  containerElement.style.backgroundColor = '#FFF';
   slideData.elements.forEach((element) => {
     let slideElementFragment: HTMLElement;
     switch(element.elementType) {
