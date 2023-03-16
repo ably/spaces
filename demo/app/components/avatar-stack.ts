@@ -18,7 +18,7 @@ const changeStatusIndicator = (fragment, isConnected, lastEvent) => {
   } else {
     statusIndicatorEl.classList.remove('text-[#11CB24]');
     statusIndicatorEl.classList.add('text-slate-500');
-    statusEl.innerHTML = dayjs().from(lastEvent.timestamp);
+    statusEl.innerHTML = dayjs().to(lastEvent.timestamp);
   }
 };
 
