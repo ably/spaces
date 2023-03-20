@@ -5,8 +5,6 @@ import SpaceOptions from './options/SpaceOptions';
 // Unique prefix to avoid conflicts with channels
 const SPACE_CHANNEL_PREFIX = '_ably_space_';
 
-type SpaceEvents = 'membersUpdate';
-
 export type SpaceMember = {
   clientId: string;
   isConnected: boolean;
@@ -46,6 +44,7 @@ class Space extends EventTarget {
 
   constructor(private name: string, private client: Types.RealtimePromise, options?: SpaceOptions) {
     super();
+    this.onPresenceMessage = this.onPresenceMessage.bind(this);
     this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
     this.clientId = this.client.auth.clientId;
     this.members = [];
@@ -54,8 +53,13 @@ class Space extends EventTarget {
   }
 
   private setChannel(rootName: string) {
+    // Unsubscribe from the old channel if we are switching channels
+    if (this.channel) {
+      this.channel.presence.unsubscribe(this.onPresenceMessage);
+    }
     this.channelName = `${SPACE_CHANNEL_PREFIX}${rootName}`;
     this.channel = this.client.channels.get(this.channelName);
+    this.channel.presence.subscribe(this.onPresenceMessage);
   }
 
   getMemberFromConnection(connectionId: string) {
@@ -149,10 +153,20 @@ class Space extends EventTarget {
     }
   }
 
-  private subscribeToPresence() {
-    this.channel.presence.subscribe((message) => {
-      this.dispatchEvent(new SpaceMembersUpdateEvent(message));
-    });
+  private onPresenceMessage(message: Types.PresenceMessage) {
+    if (!message) return;
+    // By default, we only return data about other connected clients, not the whole set
+    if (message.clientId === this.clientId) return;
+
+    // TODO: this is not called anywhere
+    //if (markForRemoval) {
+    //  this.removeMember(message.clientId);
+    //} else {
+    this.updateLeavers(message);
+    this.updateMembers(message);
+    //}
+
+    this.dispatchEvent(new SpaceMembersUpdateEvent(message));
   }
 
   async enter(profileData?: unknown) {
@@ -167,29 +181,6 @@ class Space extends EventTarget {
 
   leave(data?: unknown) {
     return this.channel.presence.leave(data);
-  }
-
-  on(spaceEvent: SpaceEvents, callback) {
-    if (spaceEvent === 'membersUpdate') {
-      this.subscribeToPresence();
-      this.addEventListener('membersUpdate', (event: SpaceMembersUpdateEvent) => {
-        if (!event.message) return;
-        // By default, we only return data about other connected clients, not the whole set
-        if (event.message.clientId === this.clientId) return;
-
-        if (event.markForRemoval) {
-          this.removeMember(event.message.clientId);
-        } else {
-          this.updateLeavers(event.message);
-          this.updateMembers(event.message);
-        }
-
-        callback(this.members);
-      });
-    } else {
-      // TODO: align with ably-js error policy here
-      throw new Error(`Event "${spaceEvent}" is unsupported`);
-    }
   }
 }
 
