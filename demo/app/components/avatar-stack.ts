@@ -18,7 +18,7 @@ const changeStatusIndicator = (fragment, isConnected, lastEvent) => {
   } else {
     statusIndicatorEl.classList.remove('text-[#11CB24]');
     statusIndicatorEl.classList.add('text-slate-500');
-    statusEl.innerHTML = dayjs().from(lastEvent.timestamp);
+    statusEl.innerHTML = dayjs().to(lastEvent.timestamp);
   }
 };
 
@@ -45,9 +45,9 @@ const renderAvatar = (member, index) => {
   const fragment = createFragment('#avatar-template');
 
   const initials = queryDataId(fragment, 'name');
-  initials.innerHTML = nameToInitials(member.data.name);
+  initials.innerHTML = nameToInitials(member.profileData.name);
   const fullNameEl = queryDataId(fragment, 'avatar-full-name');
-  fullNameEl.innerHTML = member.data.name;
+  fullNameEl.innerHTML = member.profileData.name;
 
   const innerWrapper = queryDataId(fragment, 'avatar-inner-wrapper');
 
@@ -91,7 +91,7 @@ const renderAvatarOverflow = (members) => {
   members.forEach((member) => {
     const fragmentMember = createFragment('#avatar-hover');
     const fullNameEl = queryDataId(fragmentMember, 'avatar-full-name');
-    fullNameEl.innerHTML = member.data.name;
+    fullNameEl.innerHTML = member.profileData.name;
     changeStatusIndicator(fragmentMember, member.isConnected, member.lastEvent);
     avatarHover.appendChild(fragmentMember);
   });
