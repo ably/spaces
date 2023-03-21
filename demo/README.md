@@ -6,7 +6,7 @@ An app showcasing the usage of different multiplayer features enabled by the spa
 
 First, create a `.env` file in this folder, based on the `.env.example`. You will need environment variables listed in there.
 
-You will need [node.js](https://nodejs.org/en/) & the [netlify cli](https://docs.netlify.com/cli/get-started/) installed. The demo has separate depdendecies to the library, you will need to run `npm install` in this folder as well as the root one.
+You will need [node.js](https://nodejs.org/en/) & the [netlify cli](https://docs.netlify.com/cli/get-started/) installed. The demo has separate dependencies to the library, you will need to run `npm install` in this folder as well as the root one.
 
 To run the development server, do `npm run start`. This will start a Netlify dev server, and will make sure the auth endpoint in `api` works correctly locally.
 
