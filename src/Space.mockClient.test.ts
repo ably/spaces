@@ -101,6 +101,11 @@ describe('Space (mockClient)', () => {
       expect(spy).toHaveBeenCalledOnce();
     });
 
+    it<SpaceTestContext>('returns an unsubscribe function', async ({ presence, space }) => {
+      let unsubscribeFunc = space.on('membersUpdate', () => {});
+      expect(unsubscribeFunc).toBeTypeOf('function');
+    });
+
     it<SpaceTestContext>('errors if an unrecognized event is passed in', async ({ space }) => {
       await space.enter();
       // @ts-expect-error
@@ -328,6 +333,16 @@ describe('Space (mockClient)', () => {
         ]);
 
         expect(callbackSpy).toHaveBeenCalledTimes(4);
+      });
+
+      it<SpaceTestContext>('unsubscribes when the unsubscribe function is called', async ({ space, client }) => {
+        const spy = vi.fn();
+        const unsubscribeFunc = space.on('membersUpdate', spy);
+        space.dispatchEvent(createPresenceEvent('enter', { clientId: '123456' }));
+        unsubscribeFunc();
+        space.dispatchEvent(createPresenceEvent('enter', { clientId: '123456' }));
+
+        expect(spy).toHaveBeenCalledOnce();
       });
     });
   });
