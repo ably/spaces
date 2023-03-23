@@ -95,27 +95,17 @@ describe('Space (mockClient)', () => {
   });
 
   describe('on', () => {
-    it<SpaceTestContext>('subscribes to presence updates', async ({ presence, space }) => {
+    it('subscribes to presence updates', async () => {
+      const client = new Realtime({});
+      const presence = client.channels.get('').presence;
       const spy = vi.spyOn(presence, 'subscribe');
-      space.on('membersUpdate', () => {});
+      new Space('test', client);
       expect(spy).toHaveBeenCalledOnce();
-    });
-
-    it<SpaceTestContext>('errors if an unrecognized event is passed in', async ({ space }) => {
-      await space.enter();
-      // @ts-expect-error
-      expect(() => space.on('invalidEvent', () => {})).toThrowError('Event "invalidEvent" is unsupported');
-    });
-
-    it<SpaceTestContext>('subscribes to presence events', async ({ presence, space }) => {
-      const spy = vi.spyOn(presence, 'subscribe');
-      space.on('membersUpdate', vi.fn());
-      expect(spy).toHaveBeenCalled();
     });
 
     it<SpaceTestContext>('does not include the connected client in the members result', async ({ space, client }) => {
       const spy = vi.fn();
-      space.dispatchEvent(createPresenceEvent('enter', { clientId: client.auth.clientId }));
+      space['onPresenceUpdate'](createPresenceMessage('enter', { clientId: client.auth.clientId }));
       space.on('membersUpdate', spy);
       expect(spy).not.toHaveBeenCalled();
     });
@@ -124,7 +114,8 @@ describe('Space (mockClient)', () => {
       const callbackSpy = vi.fn();
       space.on('membersUpdate', callbackSpy);
 
-      space.dispatchEvent(createPresenceEvent('enter'));
+      createPresenceEvent(space, 'enter');
+
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
@@ -135,7 +126,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', connectionId: '2', data: { a: 1 } }));
+      createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2', data: { a: 1 } });
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
@@ -158,7 +149,7 @@ describe('Space (mockClient)', () => {
       const callbackSpy = vi.fn();
       space.on('membersUpdate', callbackSpy);
 
-      space.dispatchEvent(createPresenceEvent('enter'));
+      createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
@@ -169,7 +160,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('update', { data: { a: 1 } }));
+      createPresenceEvent(space, 'update', { data: { a: 1 } });
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
@@ -185,7 +176,7 @@ describe('Space (mockClient)', () => {
       const callbackSpy = vi.fn();
       space.on('membersUpdate', callbackSpy);
 
-      space.dispatchEvent(createPresenceEvent('enter'));
+      createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
@@ -196,7 +187,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      space.dispatchEvent(createPresenceEvent('leave'));
+      createPresenceEvent(space, 'leave');
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
@@ -221,7 +212,7 @@ describe('Space (mockClient)', () => {
         const callbackSpy = vi.fn();
         space.on('membersUpdate', callbackSpy);
 
-        space.dispatchEvent(createPresenceEvent('enter'));
+        createPresenceEvent(space, 'enter');
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
@@ -232,7 +223,7 @@ describe('Space (mockClient)', () => {
           },
         ]);
 
-        space.dispatchEvent(createPresenceEvent('leave'));
+        createPresenceEvent(space, 'leave');
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
@@ -253,8 +244,8 @@ describe('Space (mockClient)', () => {
         const callbackSpy = vi.fn();
         space.on('membersUpdate', callbackSpy);
 
-        space.dispatchEvent(createPresenceEvent('enter'));
-        space.dispatchEvent(createPresenceEvent('enter', { clientId: '2', connectionId: '2' }));
+        createPresenceEvent(space, 'enter');
+        createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2' });
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
@@ -272,7 +263,7 @@ describe('Space (mockClient)', () => {
           },
         ]);
 
-        space.dispatchEvent(createPresenceEvent('leave'));
+        createPresenceEvent(space, 'leave');
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
@@ -291,7 +282,7 @@ describe('Space (mockClient)', () => {
         ]);
 
         vi.advanceTimersByTime(60_000);
-        space.dispatchEvent(createPresenceEvent('enter'));
+        createPresenceEvent(space, 'enter');
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',

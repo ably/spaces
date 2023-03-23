@@ -2,8 +2,10 @@ function callListener(eventThis: { event: string }, listener: Function, args: un
   try {
     listener.apply(eventThis, args);
   } catch (e) {
-    console.error('EventEmitter.emit()',
-      'Unexpected listener exception: ' + e + '; stack = ' + (e && (e as Error).stack))
+    console.error(
+      'EventEmitter.emit()',
+      'Unexpected listener exception: ' + e + '; stack = ' + (e && (e as Error).stack)
+    );
   }
 }
 
@@ -45,7 +47,7 @@ function removeListener(targetListeners: any, listener: Function, eventFilter?: 
 }
 
 // Equivalent of Platform.config.inspect from ably-js for browser/RN
-function inspect(args: any): string{
+function inspect(args: any): string {
   return JSON.stringify(args);
 }
 
@@ -53,7 +55,6 @@ function inspect(args: any): string{
 function isObject(arg: unknown): arg is Record<string, unknown> {
   return Object.prototype.toString.call(arg).slice(8, -1) === '[object Object]';
 }
-
 
 // Equivalent of Platform.isEmptyArg from ably-js
 function isEmptyArg(arg: unknown): arg is null | undefined {
@@ -222,7 +223,6 @@ export default class EventEmitter {
     if (eventsListeners) {
       Array.prototype.push.apply(listeners, eventsListeners);
     }
-
 
     listeners.forEach(function (listener) {
       callListener(eventThis, listener, args);
