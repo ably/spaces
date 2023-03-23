@@ -42,7 +42,7 @@ module.exports = {
     },
   ],
   ignorePatterns: [
-    "build",
+    "dist"
   ],
   settings: {
     jsdoc: {
