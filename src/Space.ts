@@ -7,6 +7,8 @@ const SPACE_CHANNEL_PREFIX = '_ably_space_';
 
 type SpaceEvents = 'membersUpdate';
 
+type UnsubscribeFunc = () => void;
+
 export type SpaceMember = {
   clientId: string;
   isConnected: boolean;
@@ -169,10 +171,10 @@ class Space extends EventTarget {
     return this.channel.presence.leave(data);
   }
 
-  on(spaceEvent: SpaceEvents, callback) {
+  on(spaceEvent: SpaceEvents, callback): UnsubscribeFunc {
     if (spaceEvent === 'membersUpdate') {
       this.subscribeToPresence();
-      this.addEventListener('membersUpdate', (event: SpaceMembersUpdateEvent) => {
+      const eventListener = (event: SpaceMembersUpdateEvent) => {
         if (!event.message) return;
         // By default, we only return data about other connected clients, not the whole set
         if (event.message.clientId === this.clientId) return;
@@ -185,7 +187,11 @@ class Space extends EventTarget {
         }
 
         callback(this.members);
-      });
+      };
+      this.addEventListener('membersUpdate', eventListener);
+      return () => {
+        this.removeEventListener('membersUpdate', eventListener);
+      };
     } else {
       // TODO: align with ably-js error policy here
       throw new Error(`Event "${spaceEvent}" is unsupported`);
