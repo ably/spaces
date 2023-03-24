@@ -1,5 +1,3 @@
-import { SpaceMembersUpdateEvent } from '../../Space';
-
 const enterPresenceMessage = {
   clientId: '1',
   data: {},
@@ -34,8 +32,8 @@ const createPresenceMessage = (type, override?) => {
   }
 };
 
-const createPresenceEvent = (type, override?) => {
-  return new SpaceMembersUpdateEvent(createPresenceMessage(type, override));
+const createPresenceEvent = (space, type, override?) => {
+  space.onPresenceUpdate(createPresenceMessage(type, override));
 };
 
 export { createPresenceMessage, createPresenceEvent };

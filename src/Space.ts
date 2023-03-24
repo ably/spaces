@@ -1,13 +1,10 @@
 import { Types } from 'ably';
 
 import SpaceOptions from './options/SpaceOptions';
+import EventEmitter from './utilities/EventEmitter';
 
 // Unique prefix to avoid conflicts with channels
 const SPACE_CHANNEL_PREFIX = '_ably_space_';
-
-type SpaceEvents = 'membersUpdate';
-
-type UnsubscribeFunc = () => void;
 
 export type SpaceMember = {
   clientId: string;
@@ -29,14 +26,7 @@ const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
 };
 
-class SpaceMembersUpdateEvent extends Event {
-  constructor(public message?: Types.PresenceMessage, public markForRemoval?: boolean) {
-    super('membersUpdate', {});
-    this.markForRemoval = typeof markForRemoval !== 'boolean' ? false : markForRemoval;
-  }
-}
-
-class Space extends EventTarget {
+class Space extends EventEmitter {
   private channelName: string;
   private clientId: string;
   private channel: Types.RealtimeChannelPromise;
@@ -44,20 +34,24 @@ class Space extends EventTarget {
   private leavers: SpaceLeaver[];
   private options: SpaceOptions;
 
-  eventTarget: EventTarget;
-
   constructor(private name: string, private client: Types.RealtimePromise, options?: SpaceOptions) {
     super();
     this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
     this.clientId = this.client.auth.clientId;
     this.members = [];
     this.leavers = [];
+    this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
     this.setChannel(this.name);
   }
 
   private setChannel(rootName: string) {
+    // Remove the old subscription if the channel is switching
+    if (this.channel) {
+      this.channel.presence.unsubscribe(this.onPresenceUpdate);
+    }
     this.channelName = `${SPACE_CHANNEL_PREFIX}${rootName}`;
     this.channel = this.client.channels.get(this.channelName);
+    this.channel.presence.subscribe(this.onPresenceUpdate);
   }
 
   getMemberFromConnection(connectionId: string) {
@@ -100,7 +94,8 @@ class Space extends EventTarget {
 
   private addLeaver(message: Types.PresenceMessage) {
     const timeoutCallback = () => {
-      this.dispatchEvent(new SpaceMembersUpdateEvent(message, true));
+      this.removeMember(message.clientId);
+      this.emit('membersUpdate', this.members);
     };
 
     this.leavers.push({
@@ -151,10 +146,15 @@ class Space extends EventTarget {
     }
   }
 
-  private subscribeToPresence() {
-    this.channel.presence.subscribe((message) => {
-      this.dispatchEvent(new SpaceMembersUpdateEvent(message));
-    });
+  private onPresenceUpdate(message: Types.PresenceMessage) {
+    if (!message) return;
+    // By default, we only return data about other connected clients, not the whole set
+    if (message.clientId === this.clientId) return;
+
+    this.updateLeavers(message);
+    this.updateMembers(message);
+
+    this.emit('membersUpdate', this.members);
   }
 
   async enter(profileData?: unknown) {
@@ -170,34 +170,6 @@ class Space extends EventTarget {
   leave(data?: unknown) {
     return this.channel.presence.leave(data);
   }
-
-  on(spaceEvent: SpaceEvents, callback): UnsubscribeFunc {
-    if (spaceEvent === 'membersUpdate') {
-      this.subscribeToPresence();
-      const eventListener = (event: SpaceMembersUpdateEvent) => {
-        if (!event.message) return;
-        // By default, we only return data about other connected clients, not the whole set
-        if (event.message.clientId === this.clientId) return;
-
-        if (event.markForRemoval) {
-          this.removeMember(event.message.clientId);
-        } else {
-          this.updateLeavers(event.message);
-          this.updateMembers(event.message);
-        }
-
-        callback(this.members);
-      };
-      this.addEventListener('membersUpdate', eventListener);
-      return () => {
-        this.removeEventListener('membersUpdate', eventListener);
-      };
-    } else {
-      // TODO: align with ably-js error policy here
-      throw new Error(`Event "${spaceEvent}" is unsupported`);
-    }
-  }
 }
 
-export { SpaceMembersUpdateEvent };
 export default Space;
