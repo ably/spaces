@@ -15,30 +15,34 @@ function callListener(eventThis: { event: string }, listener: Function, args: un
  * @param listener the listener callback to remove
  * @param eventFilter (optional) event name instructing the function to only remove listeners for the specified event
  */
-function removeListener(targetListeners: any, listener: Function, eventFilter?: string) {
-  let listeners: Record<string, unknown>;
+function removeListener(
+  targetListeners: (Function[] | Record<string, Function[]>)[],
+  listener: Function,
+  eventFilter?: string
+) {
+  let listeners: Function[] | Record<string, Function[]>;
   let index;
   let eventName;
 
   for (let targetListenersIndex = 0; targetListenersIndex < targetListeners.length; targetListenersIndex++) {
     listeners = targetListeners[targetListenersIndex];
+
     if (eventFilter) {
-      listeners = listeners[eventFilter] as Record<string, unknown>;
+      listeners = listeners[eventFilter];
     }
 
-    if (Array.isArray(listeners)) {
+    if (isArray(listeners)) {
       while ((index = listeners.indexOf(listener)) !== -1) {
         listeners.splice(index, 1);
       }
       /* If events object has an event name key with no listeners then
-					remove the key to stop the list growing indefinitely */
+				 remove the key to stop the list growing indefinitely */
       if (eventFilter && listeners.length === 0) {
         delete targetListeners[targetListenersIndex][eventFilter];
       }
     } else if (isObject(listeners)) {
-      /* events */
       for (eventName in listeners) {
-        if (Object.prototype.hasOwnProperty.call(listeners, eventName) && Array.isArray(listeners[eventName])) {
+        if (Object.prototype.hasOwnProperty.call(listeners, eventName) && isArray(listeners[eventName])) {
           removeListener([listeners], listener, eventName);
         }
       }
@@ -51,9 +55,25 @@ function inspect(args: any): string {
   return JSON.stringify(args);
 }
 
+function typeOf(arg: unknown): unknown {
+  return Object.prototype.toString.call(arg).slice(8, -1);
+}
+
 // Equivalent of Util.isObject from ably-js
 function isObject(arg: unknown): arg is Record<string, unknown> {
-  return Object.prototype.toString.call(arg).slice(8, -1) === 'Object';
+  return typeOf(arg) === 'Object';
+}
+
+function isFunction(arg: unknown): arg is Function {
+  return typeOf(arg) === 'Function';
+}
+
+function isString(arg: unknown): arg is String {
+  return typeOf(arg) === 'String';
+}
+
+function isArray<T>(arg: unknown): arg is Array<T> {
+  return Array.isArray(arg);
 }
 
 // Equivalent of Platform.isEmptyArg from ably-js
@@ -61,11 +81,16 @@ function isEmptyArg(arg: unknown): arg is null | undefined {
   return arg === null || arg === undefined;
 }
 
-export default class EventEmitter {
+type EventMap = Record<string, any>;
+// extract all the keys of an event map and use them as a type
+type EventKey<T extends EventMap> = string & keyof T;
+type EventListener<T> = (params: T) => void;
+
+export default class EventEmitter<T extends EventMap> {
   any: Array<Function>;
-  events: Record<string, Array<Function>>;
+  events: Record<string, Function[]>;
   anyOnce: Array<Function>;
-  eventsOnce: Record<string, Array<Function>>;
+  eventsOnce: Record<string, Function[]>;
 
   constructor() {
     this.any = [];
@@ -76,112 +101,86 @@ export default class EventEmitter {
 
   /**
    * Add an event listener
-   * @param listener the listener to be called
+   * @param listenerOrEvents (optional) the name of the event to listen to or the listener to be called.
+   * @param listener (optional) the listener to be called.
    */
-  on(listener: Function): void;
-
-  /**
-   * Add an event listener
-   * @param event (optional) the name of the event to listen to
-   * @param listener the listener to be called
-   */
-  on(event: null | string | string[], listener: Function): void;
-
-  on(...args: unknown[]) {
-    if (args.length === 1) {
-      const listener = args[0];
-      if (typeof listener === 'function') {
-        this.any.push(listener);
-      } else {
-        throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect(args));
-      }
+  on<K extends EventKey<T>>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
+    // .on(() => {})
+    if (isFunction(listenerOrEvents)) {
+      this.any.push(listenerOrEvents);
+      return;
     }
-    if (args.length === 2) {
-      const [event, listener] = args;
-      if (typeof listener !== 'function') {
-        throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect(args));
-      }
-      if (isEmptyArg(event)) {
-        this.any.push(listener);
-      } else if (Array.isArray(event)) {
-        event.forEach((eventName) => {
-          this.on(eventName, listener);
-        });
-      } else {
-        if (typeof event !== 'string') {
-          throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect(args));
-        }
-        const listeners = this.events[event] || (this.events[event] = []);
-        listeners.push(listener);
-      }
+
+    // .on("eventName", () => {})
+    if (isString(listenerOrEvents) && isFunction(listener)) {
+      const listeners = this.events[listenerOrEvents] || (this.events[listenerOrEvents] = []);
+      listeners.push(listener);
+      return;
     }
+
+    // .on(["eventName"], () => {})
+    if (isArray(listenerOrEvents) && isFunction(listener)) {
+      listenerOrEvents.forEach((eventName) => {
+        this.on(eventName, listener);
+      });
+      return;
+    }
+
+    throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect([listenerOrEvents, listener]));
   }
 
   /**
    * Remove one or more event listeners
-   * @param listener (optional) the listener to remove. If not
-   *        supplied, all listeners are removed.
+   * @param listenerOrEvents (optional) the name of the event whose listener is to be removed. If not supplied,
+   * the listener is treated as an 'any' listener.
+   * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
    */
-  off(listener?: Function): void;
-
-  /**
-   * Remove one or more event listeners
-   * @param event (optional) the name of the event whose listener
-   *        is to be removed. If not supplied, the listener is
-   *        treated as an 'any' listener
-   * @param listener (optional) the listener to remove. If not
-   *        supplied, all listeners are removed.
-   */
-  off(event: string | string[] | null, listener?: Function | null): void;
-
-  off(...args: unknown[]) {
-    if (args.length == 0 || (isEmptyArg(args[0]) && isEmptyArg(args[1]))) {
+  off<K extends EventKey<T>>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
+    // .off()
+    if (arguments.length === 0) {
       this.any = [];
       this.events = Object.create(null);
       this.anyOnce = [];
       this.eventsOnce = Object.create(null);
       return;
     }
-    const [firstArg, secondArg] = args;
-    let listener: Function | null = null;
-    let event: unknown = null;
-    if (args.length === 1 || !secondArg) {
-      if (typeof firstArg === 'function') {
-        /* we take this to be the listener and treat the event as "any" .. */
-        listener = firstArg;
-      } else {
-        event = firstArg;
-      }
-      /* ... or we take event to be the actual event name and listener to be all */
-    } else {
-      if (typeof secondArg !== 'function') {
-        throw new Error('EventEmitter.off(): invalid arguments:' + inspect(args));
-      }
-      [event, listener] = [firstArg, secondArg];
-    }
 
-    if (listener && isEmptyArg(event)) {
-      removeListener([this.any, this.events, this.anyOnce, this.eventsOnce], listener);
+    // .off(() => {})
+    if (isFunction(listenerOrEvents)) {
+      removeListener([this.any, this.events, this.anyOnce, this.eventsOnce], listenerOrEvents);
       return;
     }
 
-    if (Array.isArray(event)) {
-      event.forEach((eventName) => {
+    // .off("eventName", () => {})
+    if (isString(listenerOrEvents) && isFunction(listener)) {
+      removeListener([this.events, this.eventsOnce], listener, listenerOrEvents);
+      return;
+    }
+
+    // .off("eventName")
+    if (isString(listenerOrEvents)) {
+      delete this.events[listenerOrEvents];
+      delete this.eventsOnce[listenerOrEvents];
+      return;
+    }
+
+    // .off(["eventName"], () => {})
+    if (isArray(listenerOrEvents) && isFunction(listener)) {
+      listenerOrEvents.forEach((eventName) => {
         this.off(eventName, listener);
       });
       return;
     }
 
-    /* "normal" case where event is an actual event */
-    if (typeof event !== 'string') {
-      throw new Error('EventEmitter.off(): invalid arguments:' + inspect(args));
+    // .off(["eventName"])
+    if (isArray(listenerOrEvents)) {
+      listenerOrEvents.forEach((eventName) => {
+        this.off(eventName);
+      });
+      return;
     }
-    if (listener) {
-      removeListener([this.events, this.eventsOnce], listener, event);
-    } else {
-      delete this.events[event];
-      delete this.eventsOnce[event];
-    }
+
+    throw new Error('EventEmitter.off(): invalid arguments:' + inspect([listenerOrEvents, listener]));
   }
 
   /**
@@ -189,12 +188,17 @@ export default class EventEmitter {
    * @param event (optional) the name of the event, or none for 'any'
    * @return array of events, or null if none
    */
-  listeners(event: string) {
+  listeners<K extends EventKey<T>>(event: K): Function[] | null {
     if (event) {
       const listeners = this.events[event] || [];
-      if (this.eventsOnce[event]) Array.prototype.push.apply(listeners, this.eventsOnce[event]);
+
+      if (isArray(this.eventsOnce[event])) {
+        Array.prototype.push.apply(listeners, this.eventsOnce[event]);
+      }
+
       return listeners.length ? listeners : null;
     }
+
     return this.any.length ? this.any : null;
   }
 
@@ -203,22 +207,25 @@ export default class EventEmitter {
    * @param event the event name
    * @param args the arguments to pass to the listener
    */
-  emit(event: string, ...args: unknown[] /* , args... */) {
+  emit<K extends EventKey<T>>(event: K, ...args: unknown[] /* , args... */) {
     const eventThis = { event };
     const listeners: Function[] = [];
 
-    if (this.anyOnce.length) {
+    if (this.anyOnce.length > 0) {
       Array.prototype.push.apply(listeners, this.anyOnce);
       this.anyOnce = [];
     }
-    if (this.any.length) {
+
+    if (this.any.length > 0) {
       Array.prototype.push.apply(listeners, this.any);
     }
+
     const eventsOnceListeners = this.eventsOnce[event];
     if (eventsOnceListeners) {
       Array.prototype.push.apply(listeners, eventsOnceListeners);
       delete this.eventsOnce[event];
     }
+
     const eventsListeners = this.events[event];
     if (eventsListeners) {
       Array.prototype.push.apply(listeners, eventsListeners);
@@ -231,67 +238,61 @@ export default class EventEmitter {
 
   /**
    * Listen for a single occurrence of an event
-   * @param event the name of the event to listen to
+   * @param listenerOrEvents (optional) the name of the event to listen to
+   * @param listener (optional) the listener to be called
    */
-  once(event: string): Promise<void>;
-
-  /**
-   * Listen for a single occurrence of any event
-   * @param listener the listener to be called
-   */
-  once(listener: Function): void;
-
-  /**
-   * Listen for a single occurrence of an event
-   * @param event the name of the event to listen to
-   * @param listener the listener to be called
-   */
-  once(event?: string | string[] | null, listener?: Function): void;
-
-  once(...args: unknown[]): void | Promise<void> {
-    const argCount = args.length;
-    if ((argCount === 0 || (argCount === 1 && typeof args[0] !== 'function')) && Promise) {
-      const event = args[0];
+  once<K extends EventKey<T>>(
+    listenerOrEvents?: K | K[] | EventListener<T[K]>,
+    listener?: EventListener<T[K]>
+  ): void | Promise<void> {
+    // .once()
+    if ([listenerOrEvents, listener].filter((i) => i).length === 0) {
       return new Promise((resolve) => {
-        this.once(event as string | string[] | null, resolve);
+        this.once(null, resolve);
       });
     }
 
-    const [firstArg, secondArg] = args;
-    if (args.length === 1 && typeof firstArg === 'function') {
-      this.anyOnce.push(firstArg);
-    } else if (isEmptyArg(firstArg)) {
-      if (typeof secondArg !== 'function') {
-        throw new Error('EventEmitter.once(): Invalid arguments:' + inspect(args));
-      }
-      this.anyOnce.push(secondArg);
-    } else if (Array.isArray(firstArg)) {
+    // .once("eventName", () => {})
+    if (isString(listenerOrEvents) && isFunction(listener)) {
+      const listeners = this.eventsOnce[listenerOrEvents] || (this.eventsOnce[listenerOrEvents] = []);
+      listeners.push(listener);
+      return;
+    }
+
+    // .on(["eventName"], () => {})
+    if (isArray(listenerOrEvents) && isFunction(listener)) {
       const self = this;
       const listenerWrapper = function (this: any) {
         const innerArgs = Array.prototype.slice.call(arguments);
-        firstArg.forEach(function (eventName) {
+
+        listenerOrEvents.forEach(function (eventName) {
           self.off(eventName, listenerWrapper);
         });
-        if (typeof secondArg !== 'function') {
-          throw new Error('EventEmitter.once(): Invalid arguments:' + inspect(args));
-        }
-        secondArg.apply(this, innerArgs);
+
+        listener.apply(this, innerArgs);
       };
-      firstArg.forEach(function (eventName) {
+
+      listenerOrEvents.forEach(function (eventName) {
         self.on(eventName, listenerWrapper);
       });
-    } else {
-      if (typeof firstArg !== 'string') {
-        throw new Error('EventEmitter.once(): Invalid arguments:' + inspect(args));
-      }
-      const listeners = this.eventsOnce[firstArg] || (this.eventsOnce[firstArg] = []);
-      if (secondArg) {
-        if (typeof secondArg !== 'function') {
-          throw new Error('EventEmitter.once(): Invalid arguments:' + inspect(args));
-        }
-        listeners.push(secondArg);
-      }
+
+      return;
     }
+
+    // .once(() => {})
+    if (isFunction(listenerOrEvents)) {
+      this.anyOnce.push(listenerOrEvents);
+      return;
+    }
+
+    // .once(null)
+    if (!isEmptyArg(listenerOrEvents)) {
+      return new Promise((resolve) => {
+        this.once(null, resolve);
+      });
+    }
+
+    throw new Error('EventEmitter.once(): invalid arguments:' + inspect([listenerOrEvents, listener]));
   }
 
   /**
