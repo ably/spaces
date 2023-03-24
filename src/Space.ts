@@ -6,9 +6,6 @@ import EventEmitter from './utilities/EventEmitter';
 // Unique prefix to avoid conflicts with channels
 const SPACE_CHANNEL_PREFIX = '_ably_space_';
 
-
-type UnsubscribeFunc = () => void;
-
 export type SpaceMember = {
   clientId: string;
   isConnected: boolean;
