@@ -93,13 +93,13 @@ export default class EventEmitter {
       if (typeof listener === 'function') {
         this.any.push(listener);
       } else {
-        throw new Error('EventListener.on(): Invalid arguments: ' + inspect(args));
+        throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect(args));
       }
     }
     if (args.length === 2) {
       const [event, listener] = args;
       if (typeof listener !== 'function') {
-        throw new Error('EventListener.on(): Invalid arguments: ' + inspect(args));
+        throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect(args));
       }
       if (isEmptyArg(event)) {
         this.any.push(listener);
@@ -109,7 +109,7 @@ export default class EventEmitter {
         });
       } else {
         if (typeof event !== 'string') {
-          throw new Error('EventListener.on(): Invalid arguments: ' + inspect(args));
+          throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect(args));
         }
         const listeners = this.events[event] || (this.events[event] = []);
         listeners.push(listener);
