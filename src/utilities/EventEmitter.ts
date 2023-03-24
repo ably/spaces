@@ -53,7 +53,7 @@ function inspect(args: any): string {
 
 // Equivalent of Util.isObject from ably-js
 function isObject(arg: unknown): arg is Record<string, unknown> {
-  return Object.prototype.toString.call(arg).slice(8, -1) === '[object Object]';
+  return Object.prototype.toString.call(arg).slice(8, -1) === 'Object';
 }
 
 // Equivalent of Platform.isEmptyArg from ably-js
