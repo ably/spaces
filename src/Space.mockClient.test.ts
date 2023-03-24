@@ -102,7 +102,7 @@ describe('Space (mockClient)', () => {
       new Space('test', client);
       expect(spy).toHaveBeenCalledOnce();
     });
-
+    
     it<SpaceTestContext>('does not include the connected client in the members result', async ({ space, client }) => {
       const spy = vi.fn();
       space['onPresenceUpdate'](createPresenceMessage('enter', { clientId: client.auth.clientId }));
@@ -319,6 +319,16 @@ describe('Space (mockClient)', () => {
         ]);
 
         expect(callbackSpy).toHaveBeenCalledTimes(4);
+      });
+
+      it<SpaceTestContext>('unsubscribes when the unsubscribe function is called', async ({ space }) => {
+        const spy = vi.fn();
+        const unsubscribeFunc = space.on('membersUpdate', spy);
+        space.dispatchEvent(createPresenceEvent('enter', { clientId: '123456' }));
+        unsubscribeFunc();
+        space.dispatchEvent(createPresenceEvent('enter', { clientId: '123456' }));
+
+        expect(spy).toHaveBeenCalledOnce();
       });
     });
   });
