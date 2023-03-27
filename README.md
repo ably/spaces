@@ -1,7 +1,7 @@
 ![development-status](https://badgen.net/badge/development-status/alpha/yellow?icon=github)
 
 # Multiplayer Collaboration
-[Ably](https://ably.com/) is the platform that powers realtime experiences at scale, including live chat, data broadcast, notifications, audience engagement and collaboration. 
+[Ably](https://ably.com/) is the platform that powers realtime experiences at scale, including live chat, data broadcast, notifications, audience engagement and collaboration.
 
 Multiplayer Collaboration enables virtual teams to work together efficiently by having the contextual awareness of who else is currently with them on the app, where exactly they are and the updates they are making. With the Ably Spaces SDK, we are on a mission to make it easy for developers to add Multiplayer Collaboration features to any web application, in a few lines of code.
 
@@ -18,24 +18,24 @@ The Ably Spaces SDK provides purpose-built APIs to enable multiplayer collaborat
 
 It is built as an extension to our [existing JS SDK](https://github.com/ably/ably-js), so you'll need an Ably JS client to be able to use this library. The usage instructions will help you set that up.
 
-### Glossary 
+### Glossary
 1. Space: A virtual collaborative space where members can collaborate in realtime with each other.
 2. Members: Users connected to the virtual collaborative space. The same user (identified by the clientId) can be present multiple times via different connections.
 3. Avatar Stack: A visual representation of the currently present and recently left list of members in the collaborative space. This is usually presented as a stack of profile pictures or initials along with other profile information such as name or role.
-3. (Coming soon) User Location: The live location of a member within the app. Depending on the nature of the app, this could be a slide number, a URL, a cell id, component id, etc.
-4. (Coming soon) Live cursor: The pointer location of a member within the app. 
+4. (Coming soon) User Location: The live location of a member within the app. Depending on the nature of the app, this could be a slide number, a URL, a cell id, component id, etc.
+5. (Coming soon) Live cursor: The pointer location of a member within the app.
 
 
 ## Usage
 
 ### Pre-requisites
 
-To use the Ably Spaces SDK, you'll need to have an Ably JS client set up and authenticated. To get started quickly, you can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication) which only requires an Ably API Key. 
+To use the Ably Spaces SDK, you'll need to have an Ably JS client set up and authenticated. To get started quickly, you can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication) which only requires an Ably API Key.
 
 1. [Sign up to a free Ably account](https://ably.com/signup)
 2. [Get your API Key](https://faqs.ably.com/setting-up-and-managing-api-keys) with publish, subscribe and presence capabilities enabled.
 
-### Quickstart 
+### Quickstart
 
 Create a new instance of the promise version of realtime client and pass that as a parameter to the Spaces constructor:
 
@@ -78,6 +78,7 @@ space.on('membersUpdate', (members) => {
       "name": "enter",
       "timestamp": 1677595689759
     },
+    "location": null,
     "profileData": {
       "username": "Example User",
       "avatar": "https://example.com/users/1234.png"
@@ -100,6 +101,7 @@ space.on('membersUpdate', (members) => {
       "name": "enter",
       "timestamp": 1677595689759
     },
+    "location": null,
     "profileData": {
       "username": "Example User",
       "avatar": "https://example.com/users/1234.png"
