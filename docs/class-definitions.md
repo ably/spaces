@@ -6,6 +6,7 @@
 - [SpaceOptions](#spaceoptions)
 - [Space](#space)
 - [SpaceMember](#spacemember)
+- [Locations](#locations)
 
 ### Spaces
 
@@ -59,6 +60,14 @@ Used for subscribing to realtime events within the space. Currently, only one ev
 ##### membersUpdate
 Fires when a member enters or leaves the space. The argument supplied to the event listener callback is the current array of all [SpaceMember](#spacemember) objects within the space.
 
+#### getMembers()
+Returns an array of all [SpaceMember](#spacemember) objects currently in the space, including any members who have left and not yet timed out. (_see: [SpaceOptions.offlineTimeout](#offlinetimeout)_)
+
+#### getSelf()
+Gets the [SpaceMember](#spacemember) object which relates to the local client.
+
+#### locations
+Get the [Locations](#locations-1) object for this space.
 
 ### SpaceMember
 
@@ -71,3 +80,27 @@ This could be the local client or other remote clients which are connected to th
 | isConnected | bool                              |
 | profileData | Object                            |
 | lastEvent   | {name: string, timestamp: number} |
+
+
+### Locations
+
+Handles the tracking of member locations within a space.
+
+#### set(location)
+Set your current location. Location can be any JSON-serializable object. Fires a [locationUpdate](#locationupdate) event for all connected clients in this space.
+
+| Property | Type |
+|----------|------|
+| location | Any  |
+
+#### on(event, callback)
+Used for subscribing to location specific updates. Currently, only one event is supported:
+
+##### locationUpdate
+Fires when a member updates their location. The argument supplied to the event listener is an object with the following fields:
+
+| Property         | Type                        |
+|------------------|-----------------------------|
+| member           | [SpaceMember](#spacemember) |
+| currentLocation  | Any                         |
+| previousLocation | Any &#124; undefined        |
