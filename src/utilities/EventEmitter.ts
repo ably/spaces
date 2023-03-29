@@ -18,7 +18,7 @@ function callListener(eventThis: { event: string }, listener: Function, args: un
 export function removeListener(
   targetListeners: (Function[] | Record<string, Function[]>)[],
   listener: Function,
-  eventFilter?: string
+  eventFilter?: string,
 ) {
   let listeners: Function[] | Record<string, Function[]>;
   let index;
@@ -193,7 +193,7 @@ export default class EventEmitter<T extends EventMap> {
       const listeners = [...(this.events[event] ?? [])];
 
       if (isArray(this.eventsOnce[event])) {
-        listeners.push(...this.eventsOnce[event]);
+        Array.prototype.push.apply(listeners, this.eventsOnce[event]);
       }
 
       return listeners.length ? listeners : null;
@@ -243,7 +243,7 @@ export default class EventEmitter<T extends EventMap> {
    */
   once<K extends EventKey<T>>(
     listenerOrEvents?: K | K[] | EventListener<T[K]>,
-    listener?: EventListener<T[K]>
+    listener?: EventListener<T[K]>,
   ): void | Promise<any> {
     // .once()
     if ([listenerOrEvents, listener].filter((i) => i).length === 0) {
@@ -304,7 +304,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param listener the listener to be called
    * @param listenerArgs
    */
-  whenState(targetState: string, currentState: string, listener: Function, ...listenerArgs: unknown[]) {
+  whenState(targetState: string, currentState: string, listener: EventListener<T>, ...listenerArgs: unknown[]) {
     const eventThis = { event: targetState };
 
     if (typeof targetState !== 'string' || typeof currentState !== 'string') {
