@@ -3,6 +3,7 @@ import { Realtime, Types } from 'ably/promises';
 
 import Space, { SpaceMember } from './Space';
 import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes';
+import Locations from './Locations';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
@@ -38,7 +39,7 @@ describe('Space (mockClient)', () => {
     it<SpaceTestContext>('enter a space successfully', async ({ presence, space }) => {
       const spy = vi.spyOn(presence, 'enter').mockResolvedValueOnce();
       await space.enter({ a: 1 });
-      expect(spy).toHaveBeenNthCalledWith(1, { a: 1 });
+      expect(spy).toHaveBeenNthCalledWith(1, { profileData: { a: 1 } });
     });
 
     it<SpaceTestContext>('returns current space members', async ({ presence, space }) => {
@@ -53,6 +54,7 @@ describe('Space (mockClient)', () => {
           connections: ['1'],
           isConnected: true,
           profileData: {},
+          location: null,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
         {
@@ -60,6 +62,7 @@ describe('Space (mockClient)', () => {
           connections: ['2'],
           isConnected: true,
           profileData: { a: 1 },
+          location: null,
           lastEvent: { name: 'update', timestamp: 1 },
         },
       ]);
@@ -71,10 +74,11 @@ describe('Space (mockClient)', () => {
       ]);
       await space.enter();
       const member = space.getMemberFromConnection('testConnectionId');
-      expect(member).toEqual({
+      expect(member).toEqual<SpaceMember>({
         clientId: '1',
         connections: ['testConnectionId'],
         isConnected: true,
+        location: null,
         lastEvent: {
           name: 'enter',
           timestamp: 1,
@@ -100,7 +104,8 @@ describe('Space (mockClient)', () => {
       const presence = client.channels.get('').presence;
       const spy = vi.spyOn(presence, 'subscribe');
       new Space('test', client);
-      expect(spy).toHaveBeenCalledOnce();
+      // Called by Space instantiation and by Locations instantiation
+      expect(spy).toHaveBeenCalledTimes(2);
     });
 
     it<SpaceTestContext>('does not include the connected client in the members result', async ({ space, client }) => {
@@ -122,17 +127,19 @@ describe('Space (mockClient)', () => {
           connections: ['1'],
           profileData: {},
           isConnected: true,
+          location: null,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
       ]);
 
-      createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2', data: { a: 1 } });
+      createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2', data: { profileData: { a: 1 } } });
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           connections: ['1'],
           profileData: {},
           isConnected: true,
+          location: null,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
         {
@@ -140,6 +147,7 @@ describe('Space (mockClient)', () => {
           connections: ['2'],
           profileData: { a: 1 },
           isConnected: true,
+          location: null,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
       ]);
@@ -156,17 +164,19 @@ describe('Space (mockClient)', () => {
           connections: ['1'],
           profileData: {},
           isConnected: true,
+          location: null,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
       ]);
 
-      createPresenceEvent(space, 'update', { data: { a: 1 } });
+      createPresenceEvent(space, 'update', { data: { profileData: { a: 1 } } });
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
           connections: ['1'],
           profileData: { a: 1 },
           isConnected: true,
+          location: null,
           lastEvent: { name: 'update', timestamp: 1 },
         },
       ]);
@@ -183,6 +193,7 @@ describe('Space (mockClient)', () => {
           connections: ['1'],
           profileData: {},
           isConnected: true,
+          location: null,
           lastEvent: { name: 'enter', timestamp: 1 },
         },
       ]);
@@ -194,6 +205,7 @@ describe('Space (mockClient)', () => {
           connections: ['1'],
           profileData: {},
           isConnected: false,
+          location: null,
           lastEvent: { name: 'leave', timestamp: 1 },
         },
       ]);
@@ -219,6 +231,7 @@ describe('Space (mockClient)', () => {
             connections: ['1'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
         ]);
@@ -230,6 +243,7 @@ describe('Space (mockClient)', () => {
             connections: ['1'],
             profileData: {},
             isConnected: false,
+            location: null,
             lastEvent: { name: 'leave', timestamp: 1 },
           },
         ]);
@@ -252,6 +266,7 @@ describe('Space (mockClient)', () => {
             connections: ['1'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
@@ -259,6 +274,7 @@ describe('Space (mockClient)', () => {
             connections: ['2'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
         ]);
@@ -270,6 +286,7 @@ describe('Space (mockClient)', () => {
             connections: ['1'],
             profileData: {},
             isConnected: false,
+            location: null,
             lastEvent: { name: 'leave', timestamp: 1 },
           },
           {
@@ -277,6 +294,7 @@ describe('Space (mockClient)', () => {
             connections: ['2'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
         ]);
@@ -289,6 +307,7 @@ describe('Space (mockClient)', () => {
             connections: ['1'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
@@ -296,6 +315,7 @@ describe('Space (mockClient)', () => {
             connections: ['2'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
         ]);
@@ -307,6 +327,7 @@ describe('Space (mockClient)', () => {
             connections: ['1'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
           {
@@ -314,6 +335,7 @@ describe('Space (mockClient)', () => {
             connections: ['2'],
             profileData: {},
             isConnected: true,
+            location: null,
             lastEvent: { name: 'enter', timestamp: 1 },
           },
         ]);
@@ -340,6 +362,12 @@ describe('Space (mockClient)', () => {
 
         expect(spy).toHaveBeenCalledOnce();
       });
+    });
+  });
+
+  describe('locations', () => {
+    it<SpaceTestContext>('returns a Locations object', ({ space }) => {
+      expect(space.locations).toBeInstanceOf(Locations);
     });
   });
 });

@@ -46,6 +46,7 @@ class Space extends EventEmitter {
     this.leavers = [];
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
     this.setChannel(this.name);
+    this.locations = new Locations(this, this.channel);
   }
 
   private setChannel(rootName: string) {
@@ -92,8 +93,7 @@ class Space extends EventEmitter {
   }
 
   private mapPresenceMembersToSpaceMembers(messages: Types.PresenceMessage[]) {
-    return messages
-      .map((message) => this.updateOrCreateMember(message));
+    return messages.map((message) => this.updateOrCreateMember(message));
   }
 
   private addLeaver(message: Types.PresenceMessage) {
