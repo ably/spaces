@@ -15,7 +15,7 @@ function callListener(eventThis: { event: string }, listener: Function, args: un
  * @param listener the listener callback to remove
  * @param eventFilter (optional) event name instructing the function to only remove listeners for the specified event
  */
-function removeListener(
+export function removeListener(
   targetListeners: (Function[] | Record<string, Function[]>)[],
   listener: Function,
   eventFilter?: string
@@ -55,7 +55,7 @@ function inspect(args: any): string {
   return JSON.stringify(args);
 }
 
-function typeOf(arg: unknown): unknown {
+function typeOf(arg: unknown): string {
   return Object.prototype.toString.call(arg).slice(8, -1);
 }
 
@@ -190,10 +190,10 @@ export default class EventEmitter<T extends EventMap> {
    */
   listeners<K extends EventKey<T>>(event: K): Function[] | null {
     if (event) {
-      const listeners = this.events[event] || [];
+      const listeners = [...(this.events[event] ?? [])];
 
       if (isArray(this.eventsOnce[event])) {
-        Array.prototype.push.apply(listeners, this.eventsOnce[event]);
+        listeners.push(...this.eventsOnce[event]);
       }
 
       return listeners.length ? listeners : null;
@@ -248,7 +248,7 @@ export default class EventEmitter<T extends EventMap> {
     // .once()
     if ([listenerOrEvents, listener].filter((i) => i).length === 0) {
       return new Promise((resolve) => {
-        this.once(null, resolve);
+        this.once(undefined, resolve);
       });
     }
 
@@ -259,7 +259,7 @@ export default class EventEmitter<T extends EventMap> {
       return;
     }
 
-    // .on(["eventName"], () => {})
+    // .once(["eventName"], () => {})
     if (isArray(listenerOrEvents) && isFunction(listener)) {
       const self = this;
       const listenerWrapper = function (this: any) {
@@ -273,7 +273,7 @@ export default class EventEmitter<T extends EventMap> {
       };
 
       listenerOrEvents.forEach(function (eventName) {
-        self.on(eventName, listenerWrapper);
+        self.once(eventName, listenerWrapper);
       });
 
       return;
@@ -286,9 +286,9 @@ export default class EventEmitter<T extends EventMap> {
     }
 
     // .once(null)
-    if (!isEmptyArg(listenerOrEvents)) {
+    if (isEmptyArg(listenerOrEvents)) {
       return new Promise((resolve) => {
-        this.once(null, resolve);
+        this.once(undefined, resolve);
       });
     }
 
