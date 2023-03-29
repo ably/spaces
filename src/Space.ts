@@ -85,7 +85,7 @@ class Space extends EventEmitter {
     }
 
     member.isConnected = message.action !== 'leave';
-    member.profileData = message.data ?? member.profileData;
+    member.profileData = message.data?.profileData ?? member.profileData;
     member.lastEvent = lastEvent;
 
     return member;
