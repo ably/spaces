@@ -7,48 +7,37 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    sourceType: "module",
+    sourceType: 'module',
   },
-  plugins: [
-    "@typescript-eslint",
-    "security",
-    'jsdoc',
-  ],
-  extends: [
-    "eslint:recommended",
-    "plugin:security/recommended",
-  ],
+  plugins: ['@typescript-eslint', 'security', 'jsdoc'],
+  extends: ['eslint:recommended', 'plugin:security/recommended'],
   rules: {
-    "eol-last": "error",
+    'eol-last': 'error',
     // security/detect-object-injection just gives a lot of false positives
     // see https://github.com/nodesecurity/eslint-plugin-security/issues/21
-    "security/detect-object-injection": "off",
+    'security/detect-object-injection': 'off',
   },
   overrides: [
     {
-      files: ["**/*.{ts,tsx}"],
+      files: ['**/*.{ts,tsx}'],
       rules: {
-	"@typescript-eslint/no-unused-vars": ["error"],
-	// TypeScript already enforces these rules better than any eslint setup can
-	"no-undef": "off",
-	"no-dupe-class-members": "off",
+        '@typescript-eslint/no-unused-vars': ['error'],
+        // TypeScript already enforces these rules better than any eslint setup can
+        'no-undef': 'off',
+        'no-dupe-class-members': 'off',
       },
     },
     {
       files: 'ably.d.ts',
-      extends: [
-        'plugin:jsdoc/recommended',
-      ],
+      extends: ['plugin:jsdoc/recommended'],
     },
   ],
-  ignorePatterns: [
-    "dist"
-  ],
+  ignorePatterns: ["dist", "build"],
   settings: {
     jsdoc: {
       tagNamePreference: {
-        'default': 'defaultValue',
+        default: 'defaultValue',
       },
     },
   },
-}
+};

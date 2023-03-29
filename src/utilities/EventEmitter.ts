@@ -4,7 +4,7 @@ function callListener(eventThis: { event: string }, listener: Function, args: un
   } catch (e) {
     console.error(
       'EventEmitter.emit()',
-      'Unexpected listener exception: ' + e + '; stack = ' + (e && (e as Error).stack)
+      'Unexpected listener exception: ' + e + '; stack = ' + (e && (e as Error).stack),
     );
   }
 }
@@ -313,7 +313,7 @@ export default class EventEmitter {
       return new Promise((resolve) => {
         EventEmitter.prototype.whenState.apply(
           this,
-          [targetState, currentState, resolve].concat(listenerArgs as any[]) as any
+          [targetState, currentState, resolve].concat(listenerArgs as any[]) as any,
         );
       });
     }
