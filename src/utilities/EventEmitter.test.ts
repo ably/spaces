@@ -1,4 +1,4 @@
-import { it, describe, expect, beforeEach, afterEach, beforeAll } from 'vitest';
+import { it, describe, expect, beforeEach, afterEach, beforeAll, vi } from 'vitest';
 import EventEmitter, { removeListener } from './EventEmitter';
 
 describe('Removes a listener from an array or object of listeners', () => {
@@ -184,6 +184,17 @@ describe('Event emitter class', () => {
       eventEmitter = new EventEmitter();
     });
 
+    it('Responds to an emit event when calling `once` without any parameters', () => {
+      const promise = eventEmitter.once() as Promise<void>;
+      const spy = vi.fn();
+      promise.then(() => {
+        spy();
+        expect(spy).toHaveBeenCalledOnce();
+
+      });
+      eventEmitter.emit('myEvent');
+    });
+
     it('Adds a listener to anyOnce on calling `once` with a listener', () => {
       eventEmitter.once(listener);
       expect(eventEmitter.anyOnce).toHaveLength(1);
@@ -236,7 +247,4 @@ describe('Event emitter class', () => {
       expect(eventEmitter.anyOnce).toStrictEqual([]);
     });
   });
-
-
-
 });

@@ -244,11 +244,11 @@ export default class EventEmitter<T extends EventMap> {
   once<K extends EventKey<T>>(
     listenerOrEvents?: K | K[] | EventListener<T[K]>,
     listener?: EventListener<T[K]>
-  ): void | Promise<void> {
+  ): void | Promise<any> {
     // .once()
     if ([listenerOrEvents, listener].filter((i) => i).length === 0) {
       return new Promise((resolve) => {
-        this.once(undefined, resolve);
+        this.once(resolve);
       });
     }
 
@@ -288,7 +288,7 @@ export default class EventEmitter<T extends EventMap> {
     // .once(null)
     if (isEmptyArg(listenerOrEvents)) {
       return new Promise((resolve) => {
-        this.once(undefined, resolve);
+        this.once(resolve);
       });
     }
 
