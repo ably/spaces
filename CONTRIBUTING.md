@@ -19,11 +19,13 @@
          1. A major update in the AblyJS SDK will also require a major update in the Spaces API.
       2. The second number represents a minor release, which lets users know new functionality or features have been added.
       3. The third number represents a patch release, which represents bug-fixes and may be used when no action should be required from users.
-4. Update the version number in `Spaces.ts` to match the new version.  
-5. Ensure that the GitHub release action (.github/workflows/release.yml) has run successfully.  
+4. Update the version number in `Spaces.ts` to match the new version.
+5. Ensure that the GitHub release action (.github/workflows/release.yml) has run successfully.
 
 ## Test suite
 
 To run the Jest tests, simply run the following command:
 
-  npm test
+```bash
+npm test
+```
