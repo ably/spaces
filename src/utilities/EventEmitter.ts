@@ -262,17 +262,14 @@ export default class EventEmitter<T extends EventMap> {
     // .once(["eventName"], () => {})
     if (isArray(listenerOrEvents) && isFunction(listener)) {
       const self = this;
-      const listenerWrapper = function (this: any) {
-        const innerArgs = Array.prototype.slice.call(arguments);
-
-        listenerOrEvents.forEach(function (eventName) {
-          self.off(eventName, listenerWrapper);
-        });
-
-        listener.apply(this, innerArgs);
-      };
-
       listenerOrEvents.forEach(function (eventName) {
+        const listenerWrapper = function (listenerThis: any) {
+          const innerArgs = Array.prototype.slice.call(arguments);
+          listenerOrEvents.forEach((eventName) => {
+            self.off(eventName, this);
+          });
+          listener.apply(listenerThis, innerArgs);
+        };
         self.once(eventName, listenerWrapper);
       });
 

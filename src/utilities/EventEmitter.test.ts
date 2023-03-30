@@ -1,4 +1,4 @@
-import { it, describe, expect, beforeEach, afterEach, vi } from 'vitest';
+import { it, describe, expect, beforeEach, afterEach, vi, Mock } from 'vitest';
 import EventEmitter, { removeListener } from './EventEmitter';
 
 describe('removeListener', () => {
@@ -76,6 +76,7 @@ describe('removeListener', () => {
 declare module 'vitest' {
   export interface TestContext {
     eventEmitter: EventEmitter<{ myEvent: string; myOtherEvent: string; myThirdEvent: string }>;
+    spy: Mock;
   }
 }
 
@@ -90,84 +91,113 @@ describe('EventEmitter', () => {
   describe('calling the on method', () => {
     beforeEach(async (context) => {
       context.eventEmitter = new EventEmitter();
+      context.spy = vi.fn();
     });
     it('adds a listener to the "any" set of event listeners', (context) => {
-      context.eventEmitter.on(listener);
-      expect(context.eventEmitter.any).toStrictEqual([listener]);
+      context.eventEmitter.on(context.spy);
+      expect(context.eventEmitter.any).toStrictEqual([context.spy]);
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).toHaveBeenCalledOnce();
     });
+
     it('adds a listener to a provided field of an event listener', (context) => {
-      context.eventEmitter.on('myEvent', listener);
-      expect(context.eventEmitter.events['myEvent']).toStrictEqual([listener]);
+      context.eventEmitter.on('myEvent', context.spy);
+      expect(context.eventEmitter.events['myEvent']).toStrictEqual([context.spy]);
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).toHaveBeenCalledOnce();
     });
     it('adds a listener to all provided fields of an event listener', (context) => {
-      context.eventEmitter.on(['myEvent', 'myOtherEvent', 'myThirdEvent'], listener);
-      expect(context.eventEmitter.events['myEvent']).toStrictEqual([listener]);
-      expect(context.eventEmitter.events['myOtherEvent']).toStrictEqual([listener]);
-      expect(context.eventEmitter.events['myThirdEvent']).toStrictEqual([listener]);
+      context.eventEmitter.on(['myEvent', 'myOtherEvent', 'myThirdEvent'], context.spy);
+      expect(context.eventEmitter.events['myEvent']).toStrictEqual([context.spy]);
+      expect(context.eventEmitter.events['myOtherEvent']).toStrictEqual([context.spy]);
+      expect(context.eventEmitter.events['myThirdEvent']).toStrictEqual([context.spy]);
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).toHaveBeenCalledTimes(1);
+      context.eventEmitter.emit('myOtherEvent');
+      expect(context.spy).toHaveBeenCalledTimes(2);
+      context.eventEmitter.emit('myThirdEvent');
+      expect(context.spy).toHaveBeenCalledTimes(3);
     });
   });
 
   describe('calling the off method', () => {
     beforeEach(async (context) => {
+      context.spy = vi.fn();
       const eventEmitter: EventEmitter<{ myEvent: string; myOtherEvent: string; myThirdEvent: string }> =
         new EventEmitter();
-      eventEmitter.on(listener);
+      eventEmitter.on(context.spy);
       eventEmitter.on(altListener);
-      eventEmitter.on('myEvent', listener);
-      eventEmitter.on(['myEvent', 'myOtherEvent', 'myThirdEvent'], listener);
+      eventEmitter.on('myEvent', context.spy);
+      eventEmitter.on(['myEvent', 'myOtherEvent', 'myThirdEvent'], context.spy);
       eventEmitter.on('myEvent', altListener);
       eventEmitter.on(['myEvent', 'myOtherEvent', 'myThirdEvent'], altListener);
-      eventEmitter.once(listener);
+      eventEmitter.once(context.spy);
       eventEmitter.once(altListener);
-      eventEmitter.once('myEvent', listener);
-      eventEmitter.once(['myEvent', 'myOtherEvent', 'myThirdEvent'], listener);
+      eventEmitter.once('myEvent', context.spy);
       eventEmitter.once('myEvent', altListener);
       eventEmitter.once(['myEvent', 'myOtherEvent', 'myThirdEvent'], altListener);
       context.eventEmitter = eventEmitter;
     });
 
-    it('Removes all listeners from all lists', (context) => {
+    it('removes all listeners from all event queues', (context) => {
       context.eventEmitter.off();
       expect(context.eventEmitter.any).toStrictEqual([]);
       expect(context.eventEmitter.anyOnce).toStrictEqual([]);
       expect(context.eventEmitter.events).toStrictEqual(Object.create(null));
       expect(context.eventEmitter.eventsOnce).toStrictEqual(Object.create(null));
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).not.toHaveBeenCalled();
     });
 
     it('removes one listener from all lists', (context) => {
-      context.eventEmitter.off(listener);
+      context.eventEmitter.off(context.spy);
       expect(context.eventEmitter.any).toStrictEqual([altListener]);
       expect(context.eventEmitter.anyOnce).toStrictEqual([altListener]);
-      expect(context.eventEmitter.events['myEvent']).not.toContain(listener);
-      expect(context.eventEmitter.eventsOnce['myEvent']).not.toContain(listener);
+      expect(context.eventEmitter.events['myEvent']).not.toContain(context.spy);
+      expect(context.eventEmitter.eventsOnce['myEvent']).not.toContain(context.spy);
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).not.toHaveBeenCalled();
     });
 
     it('removes a specific listener from one event', (context) => {
-      context.eventEmitter.off('myEvent', listener);
-      expect(context.eventEmitter.any).toStrictEqual([listener, altListener]);
-      expect(context.eventEmitter.anyOnce).toStrictEqual([listener, altListener]);
-      expect(context.eventEmitter.events['myEvent']).not.toContain(listener);
-      expect(context.eventEmitter.events['myOtherEvent']).toContain(listener);
+      context.eventEmitter.off('myEvent', context.spy);
+      expect(context.eventEmitter.any).toStrictEqual([context.spy, altListener]);
+      expect(context.eventEmitter.anyOnce).toStrictEqual([context.spy, altListener]);
+      expect(context.eventEmitter.events['myEvent']).not.toContain(context.spy);
+      expect(context.eventEmitter.events['myOtherEvent']).toContain(context.spy);
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).toHaveBeenCalledTimes(2);
+      context.eventEmitter.emit('myOtherEvent');
+      expect(context.spy).toHaveBeenCalledTimes(3);
     });
 
-    it('removes a specific listener from multiple events', (context) => {
-      context.eventEmitter.off(['myEvent', 'myOtherEvent'], listener);
-      expect(context.eventEmitter.events['myEvent']).not.toContain(listener);
-      expect(context.eventEmitter.events['myOtherEvent']).not.toContain(listener);
-      expect(context.eventEmitter.events['myThirdEvent']).toContain(listener);
+    it('removes a specific listener from multiple events', () => {
+      const eventEmitter = new EventEmitter();
+      const specificListener = vi.fn();
+      eventEmitter.on(['myEvent', 'myOtherEvent', 'myThirdEvent'], specificListener);
+      eventEmitter.off(['myEvent', 'myOtherEvent'], specificListener);
+      expect(eventEmitter.events['myEvent']).toBe(undefined);
+      expect(eventEmitter.events['myOtherEvent']).toBe(undefined);
+      expect(eventEmitter.events['myThirdEvent']).toContain(specificListener);
+      eventEmitter.emit('myEvent');
+      eventEmitter.emit('myOtherEvent');
+      expect(specificListener).not.toHaveBeenCalled();
+      expect(eventEmitter.events['myThirdEvent']).toContain(specificListener);
+      eventEmitter.emit('myThirdEvent');
+      expect(specificListener).toHaveBeenCalledOnce();
     });
 
     it('removes all listeners from an event', (context) => {
       context.eventEmitter.off('myEvent');
       expect(context.eventEmitter.events['myEvent']).toBe(undefined);
-      expect(context.eventEmitter.events['myOtherEvent']).toContain(listener);
+      expect(context.eventEmitter.events['myOtherEvent']).toContain(context.spy);
     });
 
     it('removes all listeners from multiple events', (context) => {
       context.eventEmitter.off(['myEvent', 'myOtherEvent']);
       expect(context.eventEmitter.events['myEvent']).toBe(undefined);
       expect(context.eventEmitter.events['myOtherEvent']).toBe(undefined);
-      expect(context.eventEmitter.events['myThirdEvent']).toContain(listener);
+      expect(context.eventEmitter.events['myThirdEvent']).toContain(context.spy);
     });
   });
 
@@ -198,30 +228,37 @@ describe('EventEmitter', () => {
   describe('calling the once method', () => {
     beforeEach(async (context) => {
       context.eventEmitter = new EventEmitter();
+      context.spy = vi.fn();
     });
 
     it('responds to an emit event when calling `once` without any parameters', (context) => {
       const promise = context.eventEmitter.once() as Promise<void>;
-      const spy = vi.fn();
       promise.then(() => {
-        spy();
-        expect(spy).toHaveBeenCalledOnce();
+        context.spy();
+        expect(context.spy).toHaveBeenCalledOnce();
       });
       context.eventEmitter.emit('myEvent');
     });
 
     it('adds a listener to anyOnce on calling `once` with a listener', (context) => {
-      context.eventEmitter.once(listener);
+      context.eventEmitter.once(context.spy);
       expect(context.eventEmitter.anyOnce).toHaveLength(1);
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).toHaveBeenCalledOnce();
+      context.eventEmitter.emit('myOtherEvent');
     });
 
     it('adds a listener to an eventOnce on calling `once` with a listener and event name', (context) => {
-      context.eventEmitter.once('myEvent', listener);
+      context.eventEmitter.once('myEvent', context.spy);
       expect(context.eventEmitter.eventsOnce['myEvent']).toHaveLength(1);
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).toHaveBeenCalledOnce();
+      context.eventEmitter.emit('myEvent');
+      expect(context.spy).toHaveBeenCalledOnce();
     });
 
     it('adds a listener to multiple eventOnce fields on calling `once` with a listener and event name; and after emitting any of the events, all are removed', (context) => {
-      context.eventEmitter.once(['myEvent', 'myOtherEvent', 'myThirdEvent'], listener);
+      context.eventEmitter.once(['myEvent', 'myOtherEvent', 'myThirdEvent'], context.spy);
       expect(context.eventEmitter.eventsOnce['myEvent']).toHaveLength(1);
       expect(context.eventEmitter.eventsOnce['myOtherEvent']).toHaveLength(1);
       expect(context.eventEmitter.eventsOnce['myThirdEvent']).toHaveLength(1);
@@ -229,43 +266,41 @@ describe('EventEmitter', () => {
       expect(context.eventEmitter.eventsOnce['myEvent']).toBe(undefined);
       expect(context.eventEmitter.eventsOnce['myOtherEvent']).toBe(undefined);
       expect(context.eventEmitter.eventsOnce['myThirdEvent']).toBe(undefined);
+      expect(context.spy).toHaveBeenCalledOnce();
     });
   });
 
   describe('calling the emit method', () => {
-    const listener = () => true;
     beforeEach(async (context) => {
       context.eventEmitter = new EventEmitter();
+      context.spy = vi.fn();
       context.eventEmitter.once(listener);
     });
 
     it('emits an event on being called', (context) => {
-      const spy = vi.fn();
-      context.eventEmitter.on('myEvent', spy);
-      expect(context.eventEmitter.listeners('myEvent')).toContain(spy);
-      expect(spy).not.toHaveBeenCalled();
+      context.eventEmitter.on('myEvent', context.spy);
+      expect(context.eventEmitter.listeners('myEvent')).toContain(context.spy);
+      expect(context.spy).not.toHaveBeenCalled();
       context.eventEmitter.emit('myEvent');
-      expect(spy).toHaveBeenCalled();
+      expect(context.spy).toHaveBeenCalledOnce();
       // anyOnce must also be emptied
       expect(context.eventEmitter.anyOnce).toStrictEqual([]);
     });
 
     it('emits any events in anyOnce on emitting specific events', (context) => {
-      context.eventEmitter.on('myEvent', listener);
+      context.eventEmitter.on('myEvent', context.spy);
       context.eventEmitter.emit('myEvent');
       expect(context.eventEmitter.anyOnce).toStrictEqual([]);
+      expect(context.spy).toHaveBeenCalledOnce();
     });
 
     it('emits an event and removes it on being called for a once operation', (context) => {
-      let target: boolean | undefined;
-      const targetMutatorListener = () => (target = true);
-      context.eventEmitter.once('myEvent', targetMutatorListener);
-      expect(context.eventEmitter.listeners('myEvent')).toContain(targetMutatorListener);
-      expect(target).toBe(undefined);
+      context.eventEmitter.once('myEvent', context.spy);
+      expect(context.eventEmitter.listeners('myEvent')).toContain(context.spy);
       context.eventEmitter.emit('myEvent');
-      expect(target).toBe(true);
-      expect(context.eventEmitter.listeners('myEvent')).not.toContain(targetMutatorListener);
+      expect(context.eventEmitter.listeners('myEvent')).toBe(null);
       expect(context.eventEmitter.anyOnce).toStrictEqual([]);
+      expect(context.spy).toHaveBeenCalledOnce();
     });
   });
 });
