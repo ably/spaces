@@ -12,7 +12,7 @@ export type SpaceMember = {
   isConnected: boolean;
   connections: string[];
   profileData: { [key: string]: any };
-  location: any | null;
+  location: any;
   lastEvent: {
     name: Types.PresenceAction;
     timestamp: number;
