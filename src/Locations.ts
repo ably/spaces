@@ -14,8 +14,9 @@ export default class Locations extends EventEmitter {
     const { location } = message.data;
     const member = this.space.getMemberFromConnection(message.connectionId);
 
-    this.emit('locationUpdate', { member, currentLocation: message.data, previousLocation: member.location });
+    const previousLocation = member.location;
     member.location = location;
+    this.emit('locationUpdate', { member, currentLocation: location, previousLocation });
   }
 
   set(location: any) {
