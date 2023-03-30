@@ -19,8 +19,8 @@ module.exports = {
         'ably-xs': '2.5px',
       },
       boxShadow: {
-        'ably-paper': '0px 0px 19px rgba(0, 0, 0, 0.08)'
-      }
+        'ably-paper': '0px 0px 19px rgba(0, 0, 0, 0.08)',
+      },
     },
   },
   plugins: [],

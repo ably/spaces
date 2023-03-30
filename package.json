@@ -8,8 +8,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "format": "prettier --write --ignore-path .gitignore src",
-    "format:check": "prettier --check --ignore-path .gitignore src",
+    "format": "prettier --write --ignore-path .gitignore src demo",
+    "format:check": "prettier --check --ignore-path .gitignore src demo",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "build": "npm run build:cjs && npm run build:mjs",

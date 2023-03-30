@@ -1,3 +1,3 @@
-import { defaultSlides } from "./default-slide-data";
+import { defaultSlides } from './default-slide-data';
 
 export const slideData = defaultSlides;

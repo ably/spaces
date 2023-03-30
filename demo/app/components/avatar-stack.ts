@@ -46,7 +46,7 @@ const renderAvatar = (member, index) => {
 
   const memberName = member.profileData?.name;
 
-  if(!memberName) {
+  if (!memberName) {
     return;
   }
 
