@@ -78,10 +78,11 @@ A SpaceMember represents a member within a Space instance.
 This could be the local client or other remote clients which are connected to the same space.
 
 | Property    | Type                              |
-| ----------- | --------------------------------- |
+|-------------|-----------------------------------|
 | clientId    | string                            |
 | isConnected | bool                              |
 | profileData | Object                            |
+| location    | Any                               |
 | lastEvent   | {name: string, timestamp: number} |
 
 
@@ -106,4 +107,4 @@ Fires when a member updates their location. The argument supplied to the event l
 |------------------|-----------------------------|
 | member           | [SpaceMember](#spacemember) |
 | currentLocation  | Any                         |
-| previousLocation | Any &#124; undefined        |
+| previousLocation | Any                         |
