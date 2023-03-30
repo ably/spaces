@@ -38,7 +38,7 @@
       >
         <div class="max-w-screen-2xl px-16 py-4 flex items-center mx-auto">
           <section>
-            <p class="text-2xl font-semibold">Team Argo</p>
+            <p class="md:text-2xl font-semibold">Team Argo</p>
             <p class="leading-5">Pitch deck</p>
           </section>
 
@@ -287,13 +287,13 @@
         id="feature-display"
         class="absolute flex flex-row gap-12 bg-[#F7F6F9] w-full h-[calc(100%-80px)] -z-10 overflow-y-hidden overflow-x-hidden"
       >
-        <menu class="w-[20%] h-0">
+        <menu class="w-[300px] h-0">
           <ol
             id="slide-left-preview-list"
             class="relative top-[68px] -left-[26px] flex flex-col scale-[0.2] w-[20%] h-[20%] max-h-[80vh]"
           ></ol>
           <button
-            class="absolute bottom-6 bg-white flex flex-row items-center gap-3 text-ably-avatar-stack-demo-new-slide ml-[60px]"
+            class="absolute bottom-6 flex flex-row items-center gap-3 text-ably-avatar-stack-demo-new-slide ml-[60px]"
           >
             <svg
               width="28"
@@ -311,7 +311,7 @@
                 stroke-linecap="round"
               />
             </svg>
-            <span>+ Add new slide</span>
+            <span class="">+ Add new slide</span>
             <svg
               width="28"
               height="1"
@@ -332,7 +332,7 @@
         </menu>
         <section
           id="slide-selected"
-          class="relative shadow-ably-paper w-[1020px] h-[687px] min-w-[1020px] min-h-[687px] top-[79px]"
+          class="relative shadow-ably-paper lg:mr-[380px] w-[1020px] h-[687px] min-w-[1020px] min-h-[687px] top-[79px]"
         ></section>
         <section id="comments-container"></section>
       </section>
@@ -508,7 +508,7 @@
         ></p>
         <div
           data-id="slide-preview-container"
-          class="relative shadow-xl rounded-[30px] border-2 border-ably-avatar-stack-demo-slide-preview-border w-[1020px] h-[687px] min-w-[1020px] min-h-[687px]"
+          class="relative rounded-[30px] border-2 border-ably-avatar-stack-demo-slide-preview-border w-[1020px] h-[687px] min-w-[1020px] min-h-[687px]"
         ></div>
       </li>
     </template>
@@ -561,7 +561,7 @@
 
     <!-- COMMENTS -->
     <template id="comment-drawer">
-      <aside class="absolute w-[354] h-full bg-white right-0 top-0 p-8">
+      <aside class="absolute w-[354] h-full bg-white right-0 top-0 p-8 hidden lg:block">
         <div class="flex flex-row justify-between">
           <h3 class="text-xl font-medium mb-14">Comments</h3>
           <svg
