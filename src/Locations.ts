@@ -2,7 +2,11 @@ import Space from './Space';
 import EventEmitter from './utilities/EventEmitter';
 import { Types } from 'ably';
 
-export default class Locations extends EventEmitter {
+type LocationUpdate = 'locationUpdate';
+
+type LocationEventMap = Record<LocationUpdate, any>;
+
+export default class Locations extends EventEmitter<LocationEventMap> {
   constructor(public space: Space, private channel: Types.RealtimeChannelPromise) {
     super();
     this.channel.presence.subscribe(this.onPresenceUpdate);
@@ -14,9 +18,11 @@ export default class Locations extends EventEmitter {
     const { location } = message.data;
     const member = this.space.getMemberFromConnection(message.connectionId);
 
-    const previousLocation = member.location;
-    member.location = location;
-    this.emit('locationUpdate', { member, currentLocation: location, previousLocation });
+    if (member) {
+      const previousLocation = member.location;
+      member.location = location;
+      this.emit('locationUpdate', { member, currentLocation: location, previousLocation });
+    }
   }
 
   set(location: any) {
