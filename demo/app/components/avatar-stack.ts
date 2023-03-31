@@ -44,8 +44,8 @@ const renderAvatarStack = (members) => {
 const renderAvatar = (member, index) => {
   const fragment = createFragment('#avatar-template');
 
-  updateDataId(fragment, 'name', nameToInitials(member.data.name));
-  updateDataId(fragment, 'avatar-full-name', member.data.name);
+  updateDataId(fragment, 'name', nameToInitials(member.profileData.name));
+  updateDataId(fragment, 'avatar-full-name', member.profileData.name);
   const innerWrapper = queryDataId(fragment, 'avatar-inner-wrapper');
 
   if (member.isConnected) {
@@ -83,7 +83,7 @@ const renderAvatarOverflow = (members) => {
 
   members.forEach((member) => {
     const fragmentMember = createFragment('#avatar-hover');
-    updateDataId(fragmentMember, 'avatar-full-name', member.data.name);
+    updateDataId(fragmentMember, 'avatar-full-name', member.profileData.name);
     updateStatusIndicator(fragmentMember, member.isConnected, member.lastEvent);
     avatarHover.appendChild(fragmentMember);
   });
