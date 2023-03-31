@@ -76,11 +76,6 @@ function isArray<T>(arg: unknown): arg is Array<T> {
   return Array.isArray(arg);
 }
 
-// Equivalent of Platform.isEmptyArg from ably-js
-function isEmptyArg(arg: unknown): arg is null | undefined {
-  return arg === null || arg === undefined;
-}
-
 type EventMap = Record<string, any>;
 // extract all the keys of an event map and use them as a type
 type EventKey<T extends EventMap> = string & keyof T;
