@@ -13,6 +13,7 @@ describe('removeListener', () => {
     removeListener(targetListeners, listener);
     expect(targetListeners).toStrictEqual([[altListener, altListener], [altListener]]);
   });
+
   it('successfully removes a listener from objects', () => {
     const targetListeners = [
       {
@@ -93,6 +94,7 @@ describe('EventEmitter', () => {
       context.eventEmitter = new EventEmitter();
       context.spy = vi.fn();
     });
+
     it('adds a listener to the "any" set of event listeners', (context) => {
       context.eventEmitter.on(context.spy);
       expect(context.eventEmitter.any).toStrictEqual([context.spy]);
@@ -106,6 +108,7 @@ describe('EventEmitter', () => {
       context.eventEmitter.emit('myEvent');
       expect(context.spy).toHaveBeenCalledOnce();
     });
+
     it('adds a listener to all provided fields of an event listener', (context) => {
       context.eventEmitter.on(['myEvent', 'myOtherEvent', 'myThirdEvent'], context.spy);
       expect(context.eventEmitter.events['myEvent']).toStrictEqual([context.spy]);
