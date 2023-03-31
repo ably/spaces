@@ -22,7 +22,24 @@ const cursorSVG = `
 </svg>
 `;
 
-const createOrUpdateCursor = ({ x, y, connectionId }, members, cursorsContainer) => {
+function cubicBezierCurve(P0, P1, P2, P3, numPoints) {
+  const points = [];
+
+  for (let i = 0; i <= numPoints; i++) {
+    const t = i / numPoints;
+    const x = Math.round(
+      (1 - t) ** 3 * P0.x + 3 * t * (1 - t) ** 2 * P1.x + 3 * t ** 2 * (1 - t) * P2.x + t ** 3 * P3.x
+    );
+    const y = Math.round(
+      (1 - t) ** 3 * P0.y + 3 * t * (1 - t) ** 2 * P1.y + 3 * t ** 2 * (1 - t) * P2.y + t ** 3 * P3.y
+    );
+    points.push({ x, y, connectionId: P0.connectionId });
+  }
+
+  return points;
+}
+
+const createOrUpdateCursor = ({ x, y }, members, cursorsContainer, connectionId) => {
   const node = members[connectionId];
 
   if (node) {
@@ -31,7 +48,9 @@ const createOrUpdateCursor = ({ x, y, connectionId }, members, cursorsContainer)
   } else {
     const userCursor = document.createElement('span');
     userCursor.innerHTML = cursorSVG;
+    userCursor.style.display = 'block';
     userCursor.style.position = 'fixed';
+    userCursor.style.transition = 'all 16ms';
     userCursor.style.top = `${y}px`;
     userCursor.style.left = `${x}px`;
     members[connectionId] = userCursor;
@@ -46,31 +65,54 @@ const cursorTracking = (client) => {
   const members = {};
   let receivedMsgCounter = 0;
   let publishedMsgCounter = 0;
-  let lastMessageTime = 0;
+  let finalBatchLength = 0;
 
+  const PUBLISH_THROTTLE = 100;
+  const BEZIER_RESOLUTION = 60;
+  const BATCH_BOUNDARY = 4;
+
+  // Naive message counting
   setInterval(() => {
     console.log('Messages received: ', receivedMsgCounter);
+    console.log('----------');
     console.log('Messages published: ', publishedMsgCounter);
+    console.log('Current batch length: ', finalBatchLength);
     receivedMsgCounter = 0;
     publishedMsgCounter = 0;
   }, 1000);
 
+  let batch = [];
+
+  const throttledPublish = throttle(() => {
+    if (batch.length > BATCH_BOUNDARY) {
+      const step = Math.floor(batch.length / 4);
+      batch = cubicBezierCurve(batch[0], batch[step], batch[step * 2], batch[batch.length - 1], BEZIER_RESOLUTION);
+    }
+
+    publishedMsgCounter++;
+    cursorChannel.publish('update', { type: 'move', positions: batch, connectionId });
+    finalBatchLength = batch.length;
+    batch = [];
+  }, PUBLISH_THROTTLE);
+
   window.addEventListener(
     'mousemove',
     throttle(({ clientX, clientY }) => {
-      publishedMsgCounter++;
-      cursorChannel.publish('update', { x: clientX, y: clientY, connectionId });
+      batch.push({ x: clientX, y: clientY, connectionId });
+      throttledPublish(batch);
     }, 0)
   );
 
   cursorChannel.subscribe((message) => {
-    if (connectionId === message.data.connectionId) return;
-    createOrUpdateCursor(message.data, members, cursorsContainer);
-    receivedMsgCounter++;
-    const diff = message.timestamp - lastMessageTime;
-    lastMessageTime = message.timestamp;
+    message.data.positions.forEach((position) => {
+      // Ignore echo
+      if (connectionId === position.connectionId) return;
+      window.requestAnimationFrame(() =>
+        createOrUpdateCursor(position, members, cursorsContainer, message.data.connectionId)
+      );
+    });
 
-    // console.log({ diff, lastMessageTime });
+    receivedMsgCounter++;
   });
 };
 
