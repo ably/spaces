@@ -2,6 +2,7 @@ import { Types } from 'ably';
 
 import SpaceOptions from './options/SpaceOptions';
 import EventEmitter from './utilities/EventEmitter';
+import Locations from './Locations';
 
 // Unique prefix to avoid conflicts with channels
 const SPACE_CHANNEL_PREFIX = '_ably_space_';
@@ -11,6 +12,7 @@ export type SpaceMember = {
   isConnected: boolean;
   connections: string[];
   profileData: { [key: string]: any };
+  location: any;
   lastEvent: {
     name: Types.PresenceAction;
     timestamp: number;
@@ -34,6 +36,8 @@ class Space extends EventEmitter {
   private leavers: SpaceLeaver[];
   private options: SpaceOptions;
 
+  locations: Locations;
+
   constructor(private name: string, private client: Types.RealtimePromise, options?: SpaceOptions) {
     super();
     this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
@@ -42,6 +46,7 @@ class Space extends EventEmitter {
     this.leavers = [];
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
     this.setChannel(this.name);
+    this.locations = new Locations(this, this.channel);
   }
 
   private setChannel(rootName: string) {
@@ -69,7 +74,8 @@ class Space extends EventEmitter {
       return {
         clientId: message.clientId as string,
         isConnected: message.action !== 'leave',
-        profileData: message.data,
+        profileData: message.data.profileData,
+        location: null,
         lastEvent,
         connections: [message.connectionId],
       };
@@ -80,16 +86,14 @@ class Space extends EventEmitter {
     }
 
     member.isConnected = message.action !== 'leave';
-    member.profileData = message.data ?? member.profileData;
+    member.profileData = message.data?.profileData ?? member.profileData;
     member.lastEvent = lastEvent;
 
     return member;
   }
 
   private mapPresenceMembersToSpaceMembers(messages: Types.PresenceMessage[]) {
-    return messages
-      .filter((message) => message.clientId !== this.clientId)
-      .map((message) => this.updateOrCreateMember(message));
+    return messages.map((message) => this.updateOrCreateMember(message));
   }
 
   private addLeaver(message: Types.PresenceMessage) {
@@ -160,15 +164,23 @@ class Space extends EventEmitter {
   async enter(profileData?: unknown) {
     const presence = this.channel.presence;
 
-    await presence.enter(profileData);
+    await presence.enter({ profileData });
     const presenceMessages = await presence.get();
     this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);
 
     return this.members;
   }
 
-  leave(data?: unknown) {
-    return this.channel.presence.leave(data);
+  leave(profileData?: unknown) {
+    return this.channel.presence.leave({ profileData });
+  }
+
+  getMembers(): SpaceMember[] {
+    return this.members;
+  }
+
+  getSelf(): SpaceMember | undefined {
+    return this.members.find((m) => m.clientId === this.clientId);
   }
 }
 

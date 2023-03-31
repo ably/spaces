@@ -7,6 +7,7 @@ const methodReturningVoidPromise = () => mockPromisify<void>((() => {})());
 
 const mockPresence = {
   get: () => mockPromisify<Types.PresenceMessage[]>([]),
+  update: () => mockPromisify<void>(undefined),
   enter: methodReturningVoidPromise,
   leave: methodReturningVoidPromise,
   subscribe: () => {},

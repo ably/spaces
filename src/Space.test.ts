@@ -62,7 +62,7 @@ describe('Space (mockSocket)', () => {
         channel.presence.subscribe('enter', (d) => fulfill(JSON.parse(d.data)));
       });
 
-      expect(data).toEqual(spaceData);
+      expect(data).toEqual({ profileData: spaceData });
     });
   });
 });

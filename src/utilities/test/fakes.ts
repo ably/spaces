@@ -1,6 +1,6 @@
 const enterPresenceMessage = {
   clientId: '1',
-  data: {},
+  data: { profileData: {} },
   action: 'enter',
   connectionId: '1',
   id: '1',
@@ -10,7 +10,7 @@ const enterPresenceMessage = {
 
 const updatePresenceMessage = {
   ...enterPresenceMessage,
-  data: { a: 1 },
+  data: { profileData: { a: 1 } },
   action: 'update',
 };
 

@@ -79,6 +79,7 @@ space.on('membersUpdate', (members) => {
       "name": "enter",
       "timestamp": 1677595689759
     },
+    "location": null,
     "profileData": {
       "username": "Example User",
       "avatar": "https://example.com/users/1234.png"
@@ -102,6 +103,7 @@ space.on('membersUpdate', (members) => {
       "name": "enter",
       "timestamp": 1677595689759
     },
+    "location": null,
     "profileData": {
       "username": "Example User",
       "avatar": "https://example.com/users/1234.png"
