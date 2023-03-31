@@ -232,12 +232,7 @@ describe('EventEmitter', () => {
     });
 
     it('responds to an emit event when calling `once` without any parameters', (context) => {
-      const promise = context.eventEmitter.once() as Promise<void>;
-      promise.then(() => {
-        context.spy();
-        expect(context.spy).toHaveBeenCalledOnce();
-      });
-      context.eventEmitter.emit('myEvent');
+      expect(context.eventEmitter.once).toThrowError('invalid arguments:[null,null]');
     });
 
     it('adds a listener to anyOnce on calling `once` with a listener', (context) => {

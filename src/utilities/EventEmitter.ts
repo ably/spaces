@@ -242,16 +242,9 @@ export default class EventEmitter<T extends EventMap> {
    * @param listener (optional) the listener to be called
    */
   once<K extends EventKey<T>>(
-    listenerOrEvents?: K | K[] | EventListener<T[K]>,
+    listenerOrEvents: K | K[] | EventListener<T[K]>,
     listener?: EventListener<T[K]>,
   ): void | Promise<any> {
-    // .once()
-    if ([listenerOrEvents, listener].filter((i) => i).length === 0) {
-      return new Promise((resolve) => {
-        this.once(resolve);
-      });
-    }
-
     // .once("eventName", () => {})
     if (isString(listenerOrEvents) && isFunction(listener)) {
       const listeners = this.eventsOnce[listenerOrEvents] || (this.eventsOnce[listenerOrEvents] = []);
@@ -280,13 +273,6 @@ export default class EventEmitter<T extends EventMap> {
     if (isFunction(listenerOrEvents)) {
       this.anyOnce.push(listenerOrEvents);
       return;
-    }
-
-    // .once(null)
-    if (isEmptyArg(listenerOrEvents)) {
-      return new Promise((resolve) => {
-        this.once(resolve);
-      });
     }
 
     throw new Error('EventEmitter.once(): invalid arguments:' + inspect([listenerOrEvents, listener]));
