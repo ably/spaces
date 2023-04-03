@@ -69,15 +69,32 @@ const defaultSelectedSlide = slideData(
   '2',
   [
     slideTextElement('title-caption')('HOW USERS READ', [64, 170]),
-    slideTextElement('title')('Add graphics', [64, 197]),
+    slideTextElement('title')(
+      `<div class="border-2 border-dashed border-[#FF007A] p-2 relative">
+				<div class="absolute w-11 h-11 rounded-full shadow-xl -right-11 -top-11 before:h-4 before:w-4 before:ml-1 before:mb-1 before:-rotate-12 before:content-[' '] before:inline-block before:bg-white before:rounded-1">
+					<div class="absolute w-10 h-10 top-0.5 left-0.5 rounded-full bg-purple-500 flex justify-center items-center">
+						<span class="font-medium text-base text-white">MH</span>
+					</div>
+				</div>
+				<span>Add graphics</span>
+			</div>
+			`,
+      [56, 197],
+    ),
     slideTextElement('text')(
       'No one likes boring text blocks on a website. And <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span> are the fastest way to get information.',
       [64, 288],
       423,
     ),
     slideTextElement('text')(
-      `But <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>. If you can't explain for what purpose you put this line or icon, it's better to abandon it.`,
-      [64, 416],
+      `<div class="border-2 border-[#22BB5E] p-2 relative">
+				<span class="absolute w-2 h-2 bg-white border border-[#22BB5E] -top-1 -right-1"></span>
+				<span class="absolute w-2 h-2 bg-white border border-[#22BB5E] -bottom-1 -right-1"></span>
+				<span class="absolute w-2 h-2 bg-white border border-[#22BB5E] -bottom-1 -left-1"></span>
+				<span class="absolute -top-5 -left-0.5 py-0.5 px-2 rounded-t border-[#22BB5E] bg-[#22BB5E] text-white text-xs">Lauren</span>
+				But <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>. If you can't explain for what purpose you put this line or icon, it's better to abandon it.
+			</div>`,
+      [56, 416],
       396,
       'Lauren',
     ),
