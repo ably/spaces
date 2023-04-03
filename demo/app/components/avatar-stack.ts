@@ -44,6 +44,12 @@ const renderAvatarStack = (members) => {
 const renderAvatar = (member, index) => {
   const fragment = createFragment('#avatar-template');
 
+  const memberName = member.profileData?.name;
+
+  if (!memberName) {
+    return;
+  }
+
   const initials = queryDataId(fragment, 'name');
   initials.innerHTML = nameToInitials(member.profileData.name);
   const fullNameEl = queryDataId(fragment, 'avatar-full-name');
@@ -104,7 +110,6 @@ const MAX_SHOWN_MEMBERS = 5;
 const renderAvatars = (members) => {
   const showMembers = members.slice(0, MAX_SHOWN_MEMBERS);
   const hiddenMembers = members.slice(MAX_SHOWN_MEMBERS);
-
   renderAvatarStack(showMembers);
   renderAvatarOverflow(hiddenMembers);
 };
