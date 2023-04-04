@@ -163,7 +163,6 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
 
   async enter(profileData?: unknown) {
     const presence = this.channel.presence;
-
     await presence.enter({ profileData });
     const presenceMessages = await presence.get();
     this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);

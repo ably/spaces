@@ -1,7 +1,7 @@
 import Space, { SpaceMember } from './Space.js';
 import EventEmitter from './utilities/EventEmitter.js';
 import { Types } from 'ably';
-import LocationTracker, { LocationTrackerFunction } from './LocationTracker.js';
+import LocationTracker, { LocationTrackerPredicate } from './LocationTracker.js';
 
 type LocationUpdate = 'locationUpdate';
 
@@ -9,7 +9,7 @@ type LocationEventMap = Record<LocationUpdate, any>;
 
 export type LocationChange<T> = {
   member: SpaceMember;
-  previousLocation: T;
+  previousLocation: any;
   currentLocation: T;
 };
 export default class Locations extends EventEmitter<LocationEventMap> {
@@ -42,7 +42,7 @@ export default class Locations extends EventEmitter<LocationEventMap> {
     });
   }
 
-  createTracker<T>(locationTrackerFunction: LocationTrackerFunction<T>) {
-    return new LocationTracker<T>(this, locationTrackerFunction);
+  createTracker<T>(locationTrackerPredicate: LocationTrackerPredicate<T>) {
+    return new LocationTracker<T>(this, locationTrackerPredicate);
   }
 }

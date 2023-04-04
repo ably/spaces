@@ -79,7 +79,7 @@ function isArray<T>(arg: unknown): arg is Array<T> {
 type EventMap = Record<string, any>;
 // extract all the keys of an event map and use them as a type
 type EventKey<T extends EventMap> = string & keyof T;
-type EventListener<T> = (params: T) => void;
+export type EventListener<T> = (params: T) => void;
 
 export default class EventEmitter<T extends EventMap> {
   any: Array<Function>;

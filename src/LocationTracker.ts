@@ -1,16 +1,18 @@
 import Locations, { LocationChange } from './Locations.js';
+import { SpaceMember } from './Space.js';
+import { EventListener } from './utilities/EventEmitter.js';
 
-export type LocationTrackerFunction<T> = (locationChange: LocationChange<T>) => boolean;
+export type LocationTrackerPredicate<T> = (locationChange: LocationChange<T>) => boolean;
 
 export default class LocationTracker<T> {
   #locations: Locations;
-  #locationTrackerFunction: LocationTrackerFunction<T>;
+  #locationTrackerPredicate: LocationTrackerPredicate<T>;
 
-  #locationListenerWrappers: Map<Function, Function>;
+  #locationListenerWrappers: Map<EventListener<any>, EventListener<any>>;
 
-  constructor(locations: Locations, locationTrackerFunction: LocationTrackerFunction<T>) {
+  constructor(locations: Locations, locationTrackerPredicate: LocationTrackerPredicate<T>) {
     this.#locations = locations;
-    this.#locationTrackerFunction = locationTrackerFunction;
+    this.#locationTrackerPredicate = locationTrackerPredicate;
     this.#locationListenerWrappers = new Map();
   }
 
@@ -25,24 +27,31 @@ export default class LocationTracker<T> {
     );
   }
 
-  on(listener: Function): void {
-    const self = this;
-    const listenerWrapper = function () {
-      const maybeChange: unknown = arguments[0];
-      const shouldFire = self.#isChange(maybeChange) && self.#locationTrackerFunction(maybeChange);
-      console.log(maybeChange);
-      console.log(self.#isChange(maybeChange));
+  on(listener: EventListener<any>): void {
+    const listenerWrapper = (maybeChange?: LocationChange<T>) => {
+      const shouldFire = this.#isChange(maybeChange) && this.#locationTrackerPredicate(maybeChange);
       if (!shouldFire) {
         return;
       }
-      listener(arguments);
+      listener(maybeChange);
     };
     this.#locationListenerWrappers.set(listener, listenerWrapper);
     this.#locations.on('locationUpdate', listenerWrapper);
   }
 
-  off(listener: Function): void {
+  off(listener: EventListener<any>): void {
     const actualListener = this.#locationListenerWrappers.get(listener);
     this.#locations.off(actualListener);
+  }
+
+  members(): SpaceMember[] {
+    const allMembers = this.#locations.space.getMembers();
+    return allMembers.filter((member) =>
+      this.#locationTrackerPredicate({
+        member,
+        previousLocation: {},
+        currentLocation: member.location,
+      }),
+    );
   }
 }
