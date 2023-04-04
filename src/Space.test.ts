@@ -2,14 +2,14 @@ import { it, describe, expect, beforeEach, afterEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 import { WebSocket } from 'mock-socket';
 
-import Space from './Space';
-import Server from './utilities/test/mock-server';
-import defaultClientConfig from './utilities/test/default-client-config';
+import Space from './Space.js';
+import Server from './utilities/test/mock-server.js';
+import defaultClientConfig from './utilities/test/default-client-config.js';
 import {
   enterPresenceAction,
   getPresenceAction,
   createChannelAction,
-} from './utilities/test/mock-server-action-responses';
+} from './utilities/test/mock-server-action-responses.js';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;

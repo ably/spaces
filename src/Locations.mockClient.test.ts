@@ -1,7 +1,7 @@
 import { it, describe, expect, vi, beforeEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
-import Space, { SpaceMember } from './Space';
-import { createPresenceMessage } from './utilities/test/fakes';
+import Space, { SpaceMember } from './Space.js';
+import { createPresenceMessage } from './utilities/test/fakes.js';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;

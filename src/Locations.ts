@@ -1,5 +1,5 @@
-import Space from './Space';
-import EventEmitter from './utilities/EventEmitter';
+import Space from './Space.js';
+import EventEmitter from './utilities/EventEmitter.js';
 import { Types } from 'ably';
 
 export default class Locations extends EventEmitter {
