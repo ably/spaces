@@ -108,3 +108,22 @@ Fires when a member updates their location. The argument supplied to the event l
 | member           | [SpaceMember](#spacemember) |
 | currentLocation  | Any                         |
 | previousLocation | Any                         |
+
+#### createTracker(locationTrackerPredicate)
+Used to create a tracker for a specific location using a predicate for the [locationUpdate](#locationUpdate) change event. Returns a [LocationTracker][#LocationTracker].
+
+##### locationUpdatePredicate(locationUpdate)
+Returns a boolean based on the properties of `members`, `previousLocation`, and `currentLocation`.
+
+### LocationTracker
+
+Handles the tracking of a specific location within a space.
+
+#### on(callback)
+Used for subscribing to a listener once the locations class has emitted a `locationUpdate` event, filtered by the [locationUpdatePredicate](#locationupdatepredicatelocationupdate).
+
+#### off(callback)
+Used for unsubscribing from a listener.
+
+#### members()
+Used to retrieve a list of members in the Space for whom the [locationUpdatePredicate](#locationupdatepredicatelocationupdate) would return true based on their current location.

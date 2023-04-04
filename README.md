@@ -25,6 +25,7 @@ It is built as an extension to our [existing JS SDK](https://github.com/ably/abl
 2. Members: Users connected to the virtual collaborative space. The same user (identified by the clientId) can be present multiple times via different connections.
 3. Avatar Stack: A visual representation of the currently present and recently left list of members in the collaborative space. This is usually presented as a stack of profile pictures or initials along with other profile information such as name or role.
 4. (Coming soon) User Location: The live location of a member within the app. Depending on the nature of the app, this could be a slide number, a URL, a cell id, component id, etc.
+   1. Location Tracker: A dedicated component for tracking changes to a specific User Location
 5. (Coming soon) Live cursor: The pointer location of a member within the app.
 
 ## Usage
