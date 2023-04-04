@@ -1,11 +1,17 @@
-import Space from './Space.js';
+import Space, { SpaceMember } from './Space.js';
 import EventEmitter from './utilities/EventEmitter.js';
 import { Types } from 'ably';
+import LocationTracker, { LocationTrackerFunction } from './LocationTracker.js';
 
 type LocationUpdate = 'locationUpdate';
 
 type LocationEventMap = Record<LocationUpdate, any>;
 
+export type LocationChange<T> = {
+  member: SpaceMember;
+  previousLocation: T;
+  currentLocation: T;
+};
 export default class Locations extends EventEmitter<LocationEventMap> {
   constructor(public space: Space, private channel: Types.RealtimeChannelPromise) {
     super();
@@ -25,7 +31,7 @@ export default class Locations extends EventEmitter<LocationEventMap> {
     }
   }
 
-  set(location: any) {
+  set(location) {
     const self = this.space.getSelf();
     if (!self) {
       throw new Error('Must enter a space before setting a location');
@@ -34,5 +40,9 @@ export default class Locations extends EventEmitter<LocationEventMap> {
       profileData: self.profileData,
       location,
     });
+  }
+
+  createTracker<T>(locationTrackerFunction: LocationTrackerFunction<T>) {
+    return new LocationTracker<T>(this, locationTrackerFunction);
   }
 }
