@@ -1,6 +1,6 @@
 import { Types } from 'ably/promises';
 
-export const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
+const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
 const mockPromisify = <T>(expectedReturnValue): Promise<T> => new Promise((resolve) => resolve(expectedReturnValue));
 const methodReturningVoidPromise = () => mockPromisify<void>((() => {})());

@@ -75,7 +75,7 @@ describe('LocationTracker', () => {
     };
   });
 
-  it<LocationsTrackerTestContext>('fires when a valid location event is fired', async ({
+  it<LocationsTrackerTestContext>('fires when a valid location event is fired', ({
     locationTracker,
     locations,
     validEvent,
@@ -86,14 +86,14 @@ describe('LocationTracker', () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 
-  it<LocationsTrackerTestContext>('fires multiple times', async ({ locationTracker, locations, validEvent, spy }) => {
+  it<LocationsTrackerTestContext>('fires multiple times', ({ locationTracker, locations, validEvent, spy }) => {
     locationTracker.on(spy);
     locations.emit('locationUpdate', validEvent);
     locations.emit('locationUpdate', validEvent);
     expect(spy).toHaveBeenCalledTimes(2);
   });
 
-  it<LocationsTrackerTestContext>('does not fire when an invalid location event is fired', async ({
+  it<LocationsTrackerTestContext>('does not fire when a location event is fired but the predicate does not match', ({
     locationTracker,
     locations,
     spaceMember,
@@ -110,7 +110,7 @@ describe('LocationTracker', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it<LocationsTrackerTestContext>('turns off through the LocationTracker and is not fired after that', async ({
+  it<LocationsTrackerTestContext>('turns off through the LocationTracker and is not fired after that', ({
     locationTracker,
     locations,
     validEvent,
@@ -122,7 +122,7 @@ describe('LocationTracker', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it<LocationsTrackerTestContext>('does not turn off through the LocationTracker when a different LocationTracker event is turned off', async ({
+  it<LocationsTrackerTestContext>('does not turn off through the LocationTracker when a different LocationTracker event is turned off', ({
     locationTracker,
     locations,
     validEvent,

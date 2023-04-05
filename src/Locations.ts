@@ -12,6 +12,7 @@ export type LocationChange<T> = {
   previousLocation: any;
   currentLocation: T;
 };
+
 export default class Locations extends EventEmitter<LocationEventMap> {
   constructor(public space: Space, private channel: Types.RealtimeChannelPromise) {
     super();
