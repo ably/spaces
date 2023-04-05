@@ -1,8 +1,8 @@
 import { Types } from 'ably';
 
-import SpaceOptions from './options/SpaceOptions';
-import EventEmitter from './utilities/EventEmitter';
-import Locations from './Locations';
+import SpaceOptions from './options/SpaceOptions.js';
+import EventEmitter from './utilities/EventEmitter.js';
+import Locations from './Locations.js';
 
 // Unique prefix to avoid conflicts with channels
 const SPACE_CHANNEL_PREFIX = '_ably_space_';

@@ -1,1 +1,1 @@
-export * from './Spaces';
+export * from './Spaces.js';
