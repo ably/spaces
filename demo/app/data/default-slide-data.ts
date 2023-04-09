@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 type SlideTextElementName = 'text' | 'title' | 'title-caption';
 type SlideImgElementName = 'img';
 
@@ -6,6 +8,7 @@ const IS_SELECTED = true;
 type Position = [x: number, y: number];
 
 export type SlideTextElement = {
+  id: string;
   elementType: SlideTextElementName;
   text: string;
   position: Position;
@@ -15,6 +18,7 @@ export type SlideTextElement = {
 };
 
 export type SlideImgElement = {
+  id: string;
   elementType: SlideImgElementName;
   src: string;
   position: Position;
@@ -31,6 +35,7 @@ export type SlideElement = SlideTextElement | SlideImgElement;
 const slideTextElement =
   (elementType: SlideTextElementName) =>
   (text: string, position: Position, width?: number, lockedBy?: string): SlideTextElement => ({
+    id: nanoid(),
     elementType,
     text,
     position,
@@ -45,6 +50,7 @@ const slideImgElement = (
   caption?: string,
   lockedBy?: string,
 ): SlideImgElement => ({
+  id: nanoid(),
   elementType: 'img',
   src,
   position,
@@ -87,13 +93,7 @@ const defaultSelectedSlide = slideData(
       423,
     ),
     slideTextElement('text')(
-      `<div class="border-2 border-[#22BB5E] p-2 relative">
-				<span class="absolute w-2 h-2 bg-white border border-[#22BB5E] -top-1 -right-1"></span>
-				<span class="absolute w-2 h-2 bg-white border border-[#22BB5E] -bottom-1 -right-1"></span>
-				<span class="absolute w-2 h-2 bg-white border border-[#22BB5E] -bottom-1 -left-1"></span>
-				<span class="absolute -top-5 -left-0.5 py-0.5 px-2 rounded-t border-[#22BB5E] bg-[#22BB5E] text-white text-xs">Lauren</span>
-				But <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>. If you can't explain for what purpose you put this line or icon, it's better to abandon it.
-			</div>`,
+      `But <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>. If you can't explain for what purpose you put this line or icon, it's better to abandon it.`,
       [56, 416],
       396,
       'Lauren',

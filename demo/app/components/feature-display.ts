@@ -2,6 +2,8 @@ import { SlideData, SlideImgElement, SlideTextElement } from '../data/default-sl
 import { slideData } from '../data/slide-data';
 import { createFragment } from '../utils/dom';
 import { gradients } from '../utils/gradients';
+import { getSpaceNameFromUrl } from '../utils/url';
+import { spaces as spacesInstance } from '../script';
 
 export const renderFeatureDisplay = () => {
   renderSlidePreviewMenu();
@@ -64,30 +66,51 @@ const renderSlideImgElement = (slideElement: SlideImgElement, htmlElement: HTMLI
   return htmlElement;
 };
 
+const addLocationTracking = async (element: SlideTextElement, currentSlideId: string, htmlElement: HTMLElement) => {
+  const spaces = await spacesInstance;
+  const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 });
+
+  htmlElement.addEventListener('click', () => {
+    console.log(space);
+    console.log(`slide-${currentSlideId}-element-${element.id}`);
+    space.locations.set(`slide-${currentSlideId}-element-${element.id}`);
+  });
+};
+
 const renderSlide = (containerElement: HTMLElement, slideData: SlideData) => {
+  const { id: currentSlideId } = slideData;
   containerElement.style.backgroundColor = '#FFF';
   slideData.elements.forEach((element) => {
     let slideElementFragment: HTMLElement;
+    let slotElement: HTMLElement | HTMLImageElement;
     switch (element.elementType) {
       case 'title':
         slideElementFragment = createFragment('#slide-title') as HTMLElement;
-        renderSlideTextElement(element, slideElementFragment.querySelector('[data-id=slide-title-text]'));
+        slotElement = slideElementFragment.querySelector('[data-id=slide-title-text]');
+        addLocationTracking(element, currentSlideId, slotElement);
+        renderSlideTextElement(element, slotElement);
         break;
       case 'title-caption':
         slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
-        renderSlideTextElement(element, slideElementFragment.querySelector('[data-id=slide-title-caption-text]'));
+        slotElement = slideElementFragment.querySelector('[data-id=slide-title-caption-text]');
+        addLocationTracking(element, currentSlideId, slotElement);
+        renderSlideTextElement(element, slotElement);
         break;
       case 'text':
         slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
-        renderSlideTextElement(element, slideElementFragment.querySelector('[data-id=slide-text-block-text]'));
+        slotElement = slideElementFragment.querySelector('[data-id=slide-text-block-text]');
+        addLocationTracking(element, currentSlideId, slotElement);
+        renderSlideTextElement(element, slotElement);
         break;
       case 'img':
         slideElementFragment = createFragment('#slide-image') as HTMLElement;
-        renderSlideImgElement(element, slideElementFragment.querySelector('img[data-id=slide-image-placeholder]'));
+        slotElement = slideElementFragment.querySelector('[data-id=slide-image-placeholder]');
+        renderSlideImgElement(element, slotElement as HTMLImageElement);
         break;
       default:
         throw `Element Type not recognized`;
     }
+
     containerElement.appendChild(slideElementFragment);
   });
 };

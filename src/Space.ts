@@ -179,6 +179,8 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
   }
 
   getSelf(): SpaceMember | undefined {
+    console.log(this.members);
+    console.log(this.clientId);
     return this.members.find((m) => m.clientId === this.clientId);
   }
 }
