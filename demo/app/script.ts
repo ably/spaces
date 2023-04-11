@@ -4,30 +4,44 @@ import { nanoid } from 'nanoid';
 
 import { getRandomName } from './utils/fake-names';
 import { getSpaceNameFromUrl } from './utils/url';
-
 import Spaces from '../../src/Spaces';
 import { renderAvatars, renderSelfAvatar } from './components/avatar-stack';
 import { renderFeatureDisplay } from './components/feature-display';
 
-export const spaces = (async () => {
-  const clientId = nanoid();
-  const ably = new Ably.Realtime.Promise({ authUrl: `/api/ably-token-request?clientId=${clientId}`, clientId });
+declare global {
+  interface Window {
+    AblySlidesDemo: {
+      clientId?: string;
+      selfName?: string;
+    };
+  }
+}
 
-  const spaces = new Spaces(ably);
-  const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 });
+if (!window.AblySlidesDemo) {
+  window.AblySlidesDemo = {};
+}
 
-  const name = getRandomName();
-  console.log(name);
-  const initialMembers = await space.enter({ name });
+const clientId = window.AblySlidesDemo.clientId ?? nanoid();
 
-  space.on('membersUpdate', (members) => {
-    console.log(members);
-    renderAvatars(members);
-  });
+const ably = new Ably.Realtime.Promise({ authUrl: `/api/ably-token-request?clientId=${clientId}`, clientId });
 
-  renderSelfAvatar(name);
-  renderAvatars(initialMembers);
-  renderFeatureDisplay();
+const spaces = new Spaces(ably);
 
-  return spaces;
-})();
+export const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 });
+
+export const selfName = window.AblySlidesDemo.selfName ?? getRandomName();
+
+space.on('membersUpdate', (members) => {
+  console.log('firing');
+  renderSelfAvatar(selfName);
+  renderAvatars(members.filter((member) => member.profileData.name !== selfName));
+  renderFeatureDisplay(space);
+});
+
+renderSelfAvatar(selfName);
+renderFeatureDisplay(space);
+
+space.enter({ name: selfName });
+
+window.AblySlidesDemo.clientId = clientId;
+window.AblySlidesDemo.selfName = selfName;

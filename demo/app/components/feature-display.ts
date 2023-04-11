@@ -2,16 +2,15 @@ import { SlideData, SlideImgElement, SlideTextElement } from '../data/default-sl
 import { slideData } from '../data/slide-data';
 import { createFragment } from '../utils/dom';
 import { gradients } from '../utils/gradients';
-import { getSpaceNameFromUrl } from '../utils/url';
-import { spaces as spacesInstance } from '../script';
+import Space from '../../../src/Space';
 
-export const renderFeatureDisplay = () => {
-  renderSlidePreviewMenu();
-  renderSelectedSlide();
+export const renderFeatureDisplay = (space: Space) => {
+  renderSlidePreviewMenu(space);
+  renderSelectedSlide(space);
   renderComments();
 };
 
-const renderSlidePreviewMenu = () => {
+const renderSlidePreviewMenu = (space: Space) => {
   const slidePreviewMenuContainer = document.querySelector('#slide-left-preview-list');
   slideData.forEach((slide, i) => {
     const slidePreviewFragment = createFragment('#slide-preview') as HTMLElement;
@@ -38,7 +37,7 @@ const renderSlidePreviewMenu = () => {
       'div[data-id=slide-preview-container]',
     ) as HTMLElement;
 
-    renderSlide(slidePreviewContainer, slide);
+    renderSlide(slidePreviewContainer, slide, space);
 
     slidePreviewListItem.appendChild(slidePreviewNumber);
     slidePreviewListItem.appendChild(slidePreviewContainer);
@@ -66,18 +65,19 @@ const renderSlideImgElement = (slideElement: SlideImgElement, htmlElement: HTMLI
   return htmlElement;
 };
 
-const addLocationTracking = async (element: SlideTextElement, currentSlideId: string, htmlElement: HTMLElement) => {
-  const spaces = await spacesInstance;
-  const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 });
-
+const addLocationTracking = (
+  element: SlideTextElement,
+  currentSlideId: string,
+  htmlElement: HTMLElement,
+  space: Space,
+) => {
   htmlElement.addEventListener('click', () => {
-    console.log(space);
     console.log(`slide-${currentSlideId}-element-${element.id}`);
     space.locations.set(`slide-${currentSlideId}-element-${element.id}`);
   });
 };
 
-const renderSlide = (containerElement: HTMLElement, slideData: SlideData) => {
+const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space: Space) => {
   const { id: currentSlideId } = slideData;
   containerElement.style.backgroundColor = '#FFF';
   slideData.elements.forEach((element) => {
@@ -87,19 +87,19 @@ const renderSlide = (containerElement: HTMLElement, slideData: SlideData) => {
       case 'title':
         slideElementFragment = createFragment('#slide-title') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-text]');
-        addLocationTracking(element, currentSlideId, slotElement);
+        addLocationTracking(element, currentSlideId, slotElement, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'title-caption':
         slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-caption-text]');
-        addLocationTracking(element, currentSlideId, slotElement);
+        addLocationTracking(element, currentSlideId, slotElement, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'text':
         slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-text-block-text]');
-        addLocationTracking(element, currentSlideId, slotElement);
+        addLocationTracking(element, currentSlideId, slotElement, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'img':
@@ -115,11 +115,11 @@ const renderSlide = (containerElement: HTMLElement, slideData: SlideData) => {
   });
 };
 
-const renderSelectedSlide = () => {
+const renderSelectedSlide = (space: Space) => {
   const selectedSlide = slideData.find((data) => data.selected);
   if (selectedSlide) {
     const selectedSlideContainer = document.querySelector('#slide-selected') as HTMLElement;
-    renderSlide(selectedSlideContainer, selectedSlide);
+    renderSlide(selectedSlideContainer, selectedSlide, space);
   }
 };
 

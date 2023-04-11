@@ -32,10 +32,13 @@ const renderAvatarStack = (members) => {
   const showMembers = members.slice(0, 5);
 
   showMembers.forEach((member, index) => {
-    const li = document.createElement('li');
-    li.classList.add('ml-[-9px]', 'relative');
-    li.appendChild(renderAvatar(member, index));
-    ul.appendChild(li);
+    const avatar = renderAvatar(member, index);
+    if (avatar) {
+      const li = document.createElement('li');
+      li.classList.add('ml-[-9px]', 'relative');
+      li.appendChild(renderAvatar(member, index));
+      ul.appendChild(li);
+    }
   });
 
   container.appendChild(ul);
