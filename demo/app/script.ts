@@ -19,7 +19,6 @@ export const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 
 export const selfName = getRandomName();
 
 space.on('membersUpdate', (members) => {
-  console.log('firing');
   renderSelfAvatar(selfName);
   renderAvatars(members.filter((member) => member.profileData.name !== selfName));
   renderFeatureDisplay(space);
