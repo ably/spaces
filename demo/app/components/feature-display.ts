@@ -3,7 +3,7 @@ import { slideData } from '../data/slide-data';
 import { createFragment } from '../utils/dom';
 import { gradients } from '../utils/gradients';
 import Space from '../../../src/Space';
-import { colors } from '../utils/colors';
+import { addLocationTracking } from '../location-tracking/add-location-tracking';
 
 export const renderFeatureDisplay = (space: Space) => {
   renderSlidePreviewMenu(space);
@@ -66,72 +66,6 @@ const renderSlideImgElement = (slideElement: SlideImgElement, htmlElement: HTMLI
   return htmlElement;
 };
 
-const addLocationTracking = (
-  element: SlideTextElement,
-  currentSlideId: string,
-  htmlElement: HTMLElement,
-  space: Space,
-) => {
-  const qualifiedElementId = `slide-${currentSlideId}-element-${element.id}`;
-
-  const selectedTracker = space.locations.createTracker(
-    (locationChange) => locationChange.currentLocation === qualifiedElementId,
-  );
-  const unselectedTracker = space.locations.createTracker(
-    (locationChange) =>
-      locationChange.previousLocation === qualifiedElementId && locationChange.currentLocation !== qualifiedElementId,
-  );
-
-  const selectedClasses = ['outline-2', 'outline-dashed'];
-  selectedTracker.on((change) => {
-    const self = space.getSelf();
-
-    htmlElement.setAttribute(`data-client-${change.member.clientId}`, 'true');
-
-    if (change.member.clientId === self.clientId) {
-      htmlElement.classList.add(...selectedClasses, 'outline-blue-400');
-      return;
-    }
-
-    const members = space.getMembers();
-
-    const memberIndex = members
-      .filter((member) => member.clientId === change.member.clientId)
-      .findIndex((member) => member.clientId === change.member.clientId);
-    const color = colors[memberIndex % colors.length];
-    const outlineColor = `outline-${color[0]}-${color[1]}`;
-    htmlElement.classList.add(...selectedClasses, outlineColor);
-  });
-
-  unselectedTracker.on((change) => {
-    const self = space.getSelf();
-
-    htmlElement.removeAttribute(`data-client-${change.member.clientId}`);
-
-    const classesToRemove =
-      htmlElement.getAttributeNames().filter((name) => name.startsWith('data-client-')).length > 0
-        ? []
-        : selectedClasses;
-
-    if (change.member.clientId === self.clientId) {
-      htmlElement.classList.remove(...classesToRemove, 'outline-blue-400');
-      return;
-    }
-    const members = space.getMembers();
-    const memberIndex = members
-      .filter((member) => member.clientId === change.member.clientId)
-      .findIndex((member) => member.clientId === change.member.clientId);
-    const color = colors[memberIndex % colors.length];
-    const outlineColor = `outline-${color[0]}-${color[1]}`;
-
-    htmlElement.classList.remove(...classesToRemove, outlineColor);
-  });
-
-  htmlElement.addEventListener('click', () => {
-    space.locations.set(qualifiedElementId);
-  });
-};
-
 const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space: Space) => {
   const { id: currentSlideId } = slideData;
   containerElement.style.backgroundColor = '#FFF';
@@ -139,23 +73,24 @@ const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space:
   slideData.elements.forEach((element) => {
     let slideElementFragment: HTMLElement;
     let slotElement: HTMLElement | HTMLImageElement;
+    const elementId = `slide-${currentSlideId}-element-${element.id}`;
     switch (element.elementType) {
       case 'title':
         slideElementFragment = createFragment('#slide-title') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-text]');
-        addLocationTracking(element, currentSlideId, slotElement, space);
+        addLocationTracking(elementId, slotElement, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'title-caption':
         slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-caption-text]');
-        addLocationTracking(element, currentSlideId, slotElement, space);
+        addLocationTracking(elementId, slotElement, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'text':
         slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-text-block-text]');
-        addLocationTracking(element, currentSlideId, slotElement, space);
+        addLocationTracking(elementId, slotElement, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'img':
