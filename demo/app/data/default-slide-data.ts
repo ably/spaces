@@ -1,3 +1,7 @@
+import collaborativeDocumentUrl from '../assets/svg/collaborative-document.svg';
+import placeholderSlide1 from '../assets/svg/placeholder-slide-1.svg';
+import placeholderSlide2 from '../assets/svg/placeholder-slide-2.svg';
+import placeholderSlide3 from '../assets/svg/placeholder-slide-3.svg';
 import { nanoid } from 'nanoid';
 
 type SlideTextElementName = 'text' | 'title' | 'title-caption';
@@ -98,7 +102,7 @@ const defaultSelectedSlide = slideData(
       396,
       'Lauren',
     ),
-    slideImgElement('assets/svg/collaborative-document.svg', [543, 166]),
+    slideImgElement(collaborativeDocumentUrl, [543, 166]),
     slideTextElement('text')('2022', [952, 626]),
   ],
   IS_SELECTED,
@@ -106,9 +110,9 @@ const defaultSelectedSlide = slideData(
 
 // TODO: Define and render users associated with a particular slide
 export const defaultSlides = [
-  slideData('1', [slideImgElement('assets/svg/placeholder-slide-1.svg', [100, 160])]),
+  slideData('1', [slideImgElement(placeholderSlide1, [100, 160])]),
   defaultSelectedSlide,
-  slideData('3', [slideImgElement('assets/svg/placeholder-slide-2.svg', [100, 200])]),
-  slideData('4', [slideImgElement('assets/svg/placeholder-slide-3.svg', [200, 200])]),
-  slideData('5', [slideImgElement('assets/svg/placeholder-slide-2.svg', [100, 200])]),
+  slideData('3', [slideImgElement(placeholderSlide2, [100, 200])]),
+  slideData('4', [slideImgElement(placeholderSlide3, [200, 200])]),
+  slideData('5', [slideImgElement(placeholderSlide2, [100, 200])]),
 ];
