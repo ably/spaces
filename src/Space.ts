@@ -152,8 +152,6 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
 
   private onPresenceUpdate(message: Types.PresenceMessage) {
     if (!message) return;
-    // By default, we only return data about other connected clients, not the whole set
-    if (message.clientId === this.clientId) return;
 
     this.updateLeavers(message);
     this.updateMembers(message);
