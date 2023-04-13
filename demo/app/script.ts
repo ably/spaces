@@ -18,13 +18,15 @@ export const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 
 
 export const selfName = getRandomName();
 
+const memberIsNotSelf = (member) => member.profileData.name !== selfName;
+
 space.on('membersUpdate', (members) => {
-  renderSelfAvatar(selfName);
-  renderAvatars(members.filter((member) => member.profileData.name !== selfName));
-  renderFeatureDisplay(space);
+  renderAvatars(members.filter(memberIsNotSelf));
 });
 
 renderSelfAvatar(selfName);
 renderFeatureDisplay(space);
+const initialMembers = await space.getMembers();
+renderAvatars(initialMembers.filter(memberIsNotSelf));
 
 space.enter({ name: selfName });

@@ -3,6 +3,7 @@ import { slideData } from '../data/slide-data';
 import { createFragment } from '../utils/dom';
 import { gradients } from '../utils/gradients';
 import Space from '../../../src/Space';
+import { colors } from '../utils/colors';
 
 export const renderFeatureDisplay = (space: Space) => {
   renderSlidePreviewMenu(space);
@@ -72,8 +73,61 @@ const addLocationTracking = (
   space: Space,
 ) => {
   const qualifiedElementId = `slide-${currentSlideId}-element-${element.id}`;
+
+  const selectedTracker = space.locations.createTracker(
+    (locationChange) => locationChange.currentLocation === qualifiedElementId,
+  );
+  const unselectedTracker = space.locations.createTracker(
+    (locationChange) =>
+      locationChange.previousLocation === qualifiedElementId && locationChange.currentLocation !== qualifiedElementId,
+  );
+
+  const selectedClasses = ['outline-2', 'outline-dashed'];
+  selectedTracker.on((change) => {
+    const self = space.getSelf();
+
+    htmlElement.setAttribute(`data-client-${change.member.clientId}`, 'true');
+
+    if (change.member.clientId === self.clientId) {
+      htmlElement.classList.add(...selectedClasses, 'outline-blue-400');
+      return;
+    }
+
+    const members = space.getMembers();
+
+    const memberIndex = members
+      .filter((member) => member.clientId === change.member.clientId)
+      .findIndex((member) => member.clientId === change.member.clientId);
+    const color = colors[memberIndex % colors.length];
+    const outlineColor = `outline-${color[0]}-${color[1]}`;
+    htmlElement.classList.add(...selectedClasses, outlineColor);
+  });
+
+  unselectedTracker.on((change) => {
+    const self = space.getSelf();
+
+    htmlElement.removeAttribute(`data-client-${change.member.clientId}`);
+
+    const classesToRemove =
+      htmlElement.getAttributeNames().filter((name) => name.startsWith('data-client-')).length > 0
+        ? []
+        : selectedClasses;
+
+    if (change.member.clientId === self.clientId) {
+      htmlElement.classList.remove(...classesToRemove, 'outline-blue-400');
+      return;
+    }
+    const members = space.getMembers();
+    const memberIndex = members
+      .filter((member) => member.clientId === change.member.clientId)
+      .findIndex((member) => member.clientId === change.member.clientId);
+    const color = colors[memberIndex % colors.length];
+    const outlineColor = `outline-${color[0]}-${color[1]}`;
+
+    htmlElement.classList.remove(...classesToRemove, outlineColor);
+  });
+
   htmlElement.addEventListener('click', () => {
-    console.log(qualifiedElementId);
     space.locations.set(qualifiedElementId);
   });
 };

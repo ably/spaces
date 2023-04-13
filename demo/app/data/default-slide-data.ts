@@ -36,8 +36,8 @@ export type SlideElement = SlideTextElement | SlideImgElement;
 
 const slideTextElement =
   (elementType: SlideTextElementName) =>
-  (text: string, position: Position, width?: number, lockedBy?: string): SlideTextElement => ({
-    id: nanoid(),
+  (id: string, text: string, position: Position, width?: number, lockedBy?: string): SlideTextElement => ({
+    id,
     elementType,
     text,
     position,
@@ -46,6 +46,7 @@ const slideTextElement =
   });
 
 const slideImgElement = (
+  id: string,
   src: string,
   position: Position,
   alt?: string,
@@ -76,30 +77,31 @@ const slideData = (id: string, elements = [], selected = !IS_SELECTED): SlideDat
 const defaultSelectedSlide = slideData(
   '2',
   [
-    slideTextElement('title-caption')('HOW USERS READ', [64, 170]),
-    slideTextElement('title')(`Add graphics`, [56, 197]),
+    slideTextElement('title-caption')('0', 'HOW USERS READ', [64, 170]),
+    slideTextElement('title')('1', `Add graphics`, [56, 197]),
     slideTextElement('text')(
+      '2',
       'No one likes boring text blocks on a website. And <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span> are the fastest way to get information.',
       [64, 288],
       423,
     ),
     slideTextElement('text')(
+      '3',
       `But <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>. If you can't explain for what purpose you put this line or icon, it's better to abandon it.`,
       [56, 416],
       396,
       'Lauren',
     ),
-    slideImgElement(collaborativeDocumentUrl, [543, 166]),
-    slideTextElement('text')('2022', [952, 626]),
+    slideImgElement('4', collaborativeDocumentUrl, [543, 166]),
+    slideTextElement('text')('5', '2022', [952, 626]),
   ],
   IS_SELECTED,
 );
 
-// TODO: Define and render users associated with a particular slide
 export const defaultSlides = [
-  slideData('1', [slideImgElement(placeholderSlide1, [100, 160])]),
+  slideData('1', [slideImgElement('0', placeholderSlide1, [100, 160])]),
   defaultSelectedSlide,
-  slideData('3', [slideImgElement(placeholderSlide2, [100, 200])]),
-  slideData('4', [slideImgElement(placeholderSlide3, [200, 200])]),
-  slideData('5', [slideImgElement(placeholderSlide2, [100, 200])]),
+  slideData('3', [slideImgElement('0', placeholderSlide2, [100, 200])]),
+  slideData('4', [slideImgElement('0', placeholderSlide3, [200, 200])]),
+  slideData('5', [slideImgElement('0', placeholderSlide2, [100, 200])]),
 ];
