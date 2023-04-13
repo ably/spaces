@@ -71,15 +71,17 @@ const addLocationTracking = (
   htmlElement: HTMLElement,
   space: Space,
 ) => {
+  const qualifiedElementId = `slide-${currentSlideId}-element-${element.id}`;
   htmlElement.addEventListener('click', () => {
-    console.log(`slide-${currentSlideId}-element-${element.id}`);
-    space.locations.set(`slide-${currentSlideId}-element-${element.id}`);
+    console.log(qualifiedElementId);
+    space.locations.set(qualifiedElementId);
   });
 };
 
 const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space: Space) => {
   const { id: currentSlideId } = slideData;
   containerElement.style.backgroundColor = '#FFF';
+  containerElement.innerHTML = '';
   slideData.elements.forEach((element) => {
     let slideElementFragment: HTMLElement;
     let slotElement: HTMLElement | HTMLImageElement;
