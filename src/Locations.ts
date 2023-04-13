@@ -16,7 +16,7 @@ export type LocationChange<T> = {
 export default class Locations extends EventEmitter<LocationEventMap> {
   constructor(public space: Space, private channel: Types.RealtimeChannelPromise) {
     super();
-    this.channel.presence.subscribe(this.onPresenceUpdate);
+    this.channel.presence.subscribe(this.onPresenceUpdate.bind(this));
   }
 
   private onPresenceUpdate(message: Types.PresenceMessage) {
