@@ -23,5 +23,10 @@ module.exports = {
       },
     },
   },
+  safelist: [
+    {
+      pattern: /(outline|bg|text|from|to)-(orange|pink|green|violet|rose|lime)-(400|500)/,
+    },
+  ],
   plugins: [],
 };

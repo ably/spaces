@@ -4,26 +4,30 @@ import { nanoid } from 'nanoid';
 
 import { getRandomName } from './utils/fake-names';
 import { getSpaceNameFromUrl } from './utils/url';
-
 import Spaces from '../../src/Spaces';
 import { renderAvatars, renderSelfAvatar } from './components/avatar-stack';
 import { renderFeatureDisplay } from './components/feature-display';
+import { SpaceMember } from '../../src/Space';
 
-(async () => {
-  const clientId = nanoid();
-  const ably = new Ably.Realtime.Promise({ authUrl: `/api/ably-token-request?clientId=${clientId}`, clientId });
+const clientId = nanoid();
 
-  const spaces = new Spaces(ably);
-  const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 });
+const ably = new Ably.Realtime.Promise({ authUrl: `/api/ably-token-request?clientId=${clientId}`, clientId });
 
-  const name = getRandomName();
-  const initialMembers = await space.enter({ name });
+const spaces = new Spaces(ably);
 
-  space.on('membersUpdate', (members) => {
-    renderAvatars(members);
-  });
+const space = spaces.get(getSpaceNameFromUrl(), { offlineTimeout: 60_000 });
 
-  renderSelfAvatar(name);
-  renderAvatars(initialMembers);
-  renderFeatureDisplay();
-})();
+const selfName = getRandomName();
+
+const memberIsNotSelf = (member: SpaceMember) => member.clientId !== clientId;
+
+space.on('membersUpdate', (members) => {
+  renderAvatars(members.filter(memberIsNotSelf));
+});
+
+renderSelfAvatar(selfName);
+renderFeatureDisplay(space);
+const initialMembers = space.getMembers();
+renderAvatars(initialMembers.filter(memberIsNotSelf));
+
+space.enter({ name: selfName });
