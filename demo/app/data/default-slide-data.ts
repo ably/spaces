@@ -82,8 +82,8 @@ const defaultSelectedSlide = slideData(
     slideTextElement('text')(
       '2',
       'No one likes boring text blocks on a website. And <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span> are the fastest way to get information.',
-      [64, 288],
-      396,
+      [56, 288],
+      423,
     ),
     slideTextElement('text')(
       '3',
