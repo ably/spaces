@@ -14,7 +14,7 @@ export const locationChangeHandlers = (htmlElement: HTMLElement, selectedClasses
     }
 
     const members = space.getMembers();
-    console.log(members);
+
     const memberIndex = members
       .filter((member) => member.clientId !== self.clientId)
       .findIndex((member) => member.clientId === change.member.clientId);
