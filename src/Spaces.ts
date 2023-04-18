@@ -1,6 +1,7 @@
 import { Types, Realtime } from 'ably';
 import SpaceOptions from './options/SpaceOptions.js';
 import Space from './Space.js';
+
 class Spaces {
   private spaces: Record<string, Space>;
   private channel: Types.RealtimeChannelPromise;

@@ -1,1 +1,2 @@
-export * from './Spaces.js';
+import Spaces from './Spaces.js';
+export default Spaces;
