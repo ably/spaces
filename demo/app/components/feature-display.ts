@@ -4,6 +4,7 @@ import { createFragment } from '../utils/dom';
 import { gradients } from '../utils/gradients';
 import Space from '../../../src/Space';
 import { addLocationTracking } from '../location-tracking/add-location-tracking';
+import { textElementManager } from '../location-tracking/track-text-elements';
 
 export const renderFeatureDisplay = (space: Space) => {
   renderSlidePreviewMenu(space);
@@ -78,19 +79,19 @@ const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space:
       case 'title':
         slideElementFragment = createFragment('#slide-title') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-text]');
-        addLocationTracking(elementId, slotElement, space);
+        addLocationTracking(elementId, slotElement, textElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'title-caption':
         slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-caption-text]');
-        addLocationTracking(elementId, slotElement, space);
+        addLocationTracking(elementId, slotElement, textElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'text':
         slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-text-block-text]');
-        addLocationTracking(elementId, slotElement, space);
+        addLocationTracking(elementId, slotElement, textElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'img':

@@ -1,13 +1,18 @@
 import Space from '../../../src/Space';
-import { locationChangeHandlers } from './location-change-handlers';
+import { HTMLElementManager, locationChangeHandlers } from './location-change-handlers';
 
-export const addLocationTracking = (id: string, htmlElement: HTMLElement, space: Space) => {
+export const addLocationTracking = (
+  id: string,
+  htmlElement: HTMLElement,
+  htmlElementManager: HTMLElementManager,
+  space: Space,
+) => {
   const selectedTracker = space.locations.createTracker((locationChange) => locationChange.currentLocation === id);
   const unselectedTracker = space.locations.createTracker(
     (locationChange) => locationChange.previousLocation === id && locationChange.currentLocation !== id,
   );
 
-  const { selectLocation, deselectLocation } = locationChangeHandlers(htmlElement, space);
+  const { selectLocation, deselectLocation } = locationChangeHandlers(htmlElement, htmlElementManager, space);
 
   selectedTracker.on(selectLocation);
 

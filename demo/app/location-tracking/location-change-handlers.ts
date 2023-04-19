@@ -1,10 +1,26 @@
 import { LocationChange } from '../../../src/Locations';
 import Space, { SpaceMember } from '../../../src/Space';
-import { deselectTextElement, selectTextElement } from './track-text-elements';
+
+type HTMLElementSelector = (
+  htmlElement: HTMLElement,
+  userName: string,
+  newClientId: string,
+  selfId: string,
+  memberIndex: number,
+) => void;
+
+export type HTMLElementManager = {
+  selector: HTMLElementSelector;
+  deselector: HTMLElementSelector;
+};
 
 const getShortName = (name?: string) => (name ? name.split(/\s/)[0] : '');
 
-export const locationChangeHandlers = (htmlElement: HTMLElement, space: Space) => ({
+export const locationChangeHandlers = (
+  htmlElement: HTMLElement,
+  { selector, deselector }: HTMLElementManager,
+  space: Space,
+) => ({
   selectLocation: (change: LocationChange<string>) => {
     const self = space.getSelf();
 
@@ -16,7 +32,7 @@ export const locationChangeHandlers = (htmlElement: HTMLElement, space: Space) =
       .filter((member: SpaceMember) => member.clientId !== self.clientId)
       .findIndex((member: SpaceMember) => member.clientId === change.member.clientId);
 
-    selectTextElement(htmlElement, shortName, change.member.clientId, self.clientId, memberIndex);
+    selector(htmlElement, shortName, change.member.clientId, self.clientId, memberIndex);
   },
   deselectLocation: (change: LocationChange<string>) => {
     const self = space.getSelf();
@@ -29,6 +45,6 @@ export const locationChangeHandlers = (htmlElement: HTMLElement, space: Space) =
       .filter((member) => member.clientId !== self.clientId)
       .findIndex((member) => member.clientId === change.member.clientId);
 
-    deselectTextElement(htmlElement, shortName, change.member.clientId, self.clientId, memberIndex);
+    deselector(htmlElement, shortName, change.member.clientId, self.clientId, memberIndex);
   },
 });

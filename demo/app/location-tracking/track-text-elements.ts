@@ -1,4 +1,5 @@
 import { colors } from '../utils/colors';
+import { HTMLElementManager } from './location-change-handlers';
 
 const textSelectedClasses = [
   'outline-2',
@@ -13,7 +14,7 @@ const textSelectedClasses = [
   'before:rounded-t-lg',
 ];
 
-export const selectTextElement = (
+const selectTextElement = (
   htmlElement: HTMLElement,
   userName: string,
   newClientId: string,
@@ -40,7 +41,7 @@ export const selectTextElement = (
   htmlElement.classList.add(...textSelectedClasses, outlineColor, `before:bg-${cssColor}`);
 };
 
-export const deselectTextElement = (
+const deselectTextElement = (
   htmlElement: HTMLElement,
   userName: string,
   oldClientId: string,
@@ -75,4 +76,9 @@ export const deselectTextElement = (
   const outlineColor = `outline-${cssColor}`;
 
   htmlElement.classList.remove(...classesToRemove, outlineColor, `before:bg-${cssColor}`);
+};
+
+export const textElementManager: HTMLElementManager = {
+  selector: selectTextElement,
+  deselector: deselectTextElement,
 };
