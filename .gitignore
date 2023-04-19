@@ -2,7 +2,6 @@
 *.iml
 dist/
 node_modules/
-.tool-versions
 .vscode
 coverage
 .env
