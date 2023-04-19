@@ -9,7 +9,8 @@ import { nanoid } from 'nanoid';
 type SlideTextElementName = 'text' | 'title' | 'subtitle' | 'title-caption' | 'aside-text';
 type SlideImgElementName = 'img';
 
-const IS_SELECTED = true;
+export const IS_SELECTED = true;
+export const IS_NOT_SELECTED = false;
 
 type Position = [x: number, y: number];
 
@@ -88,10 +89,10 @@ const defaultSlideOne = slideData('1', [
   slideImgElement('3', repetition, [738, 105]),
   slideImgElement('4', alignment, [491, 356]),
   slideImgElement('5', proximity, [738, 356]),
-  slideTextElement('subtitle')('6', 'Contrast', [511, 193], 106),
-  slideTextElement('subtitle')('7', 'Repetition', [758, 193], 106),
-  slideTextElement('subtitle')('8', 'Alignment', [511, 444], 106),
-  slideTextElement('subtitle')('9', 'Proximity', [758, 444], 106),
+  slideTextElement('subtitle')('6', 'Contrast', [511, 193]),
+  slideTextElement('subtitle')('7', 'Repetition', [758, 193]),
+  slideTextElement('subtitle')('8', 'Alignment', [511, 444]),
+  slideTextElement('subtitle')('9', 'Proximity', [758, 444]),
   slideTextElement('aside-text')(
     '10',
     'When a design uses several elements, the goal is to make each one distinct.',

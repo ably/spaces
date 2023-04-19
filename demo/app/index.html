@@ -292,43 +292,6 @@
             id="slide-left-preview-list"
             class="relative top-[68px] -left-[26px] flex flex-col scale-[0.2] w-[20%] h-[20%] max-h-[80vh]"
           ></ol>
-          <button
-            class="absolute bottom-6 flex flex-row items-center gap-3 text-ably-avatar-stack-demo-new-slide ml-[60px]"
-          >
-            <svg
-              width="28"
-              height="1"
-              viewBox="0 0 28 1"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line
-                x1="0.5"
-                y1="0.5"
-                x2="27.5"
-                y2="0.499998"
-                stroke="#585858"
-                stroke-linecap="round"
-              />
-            </svg>
-            <span class="">+ Add new slide</span>
-            <svg
-              width="28"
-              height="1"
-              viewBox="0 0 28 1"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line
-                x1="0.5"
-                y1="0.5"
-                x2="27.5"
-                y2="0.499998"
-                stroke="#585858"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
         </menu>
         <section
           id="slide-selected"
@@ -496,7 +459,7 @@
     <template id="slide-preview">
       <li
         data-id="slide-preview-list-item"
-        class="relative flex flex-row py-11 w-[1320px] rounded-tr-[20px] rounded-br-[20px]"
+        class="relative flex flex-row py-11 w-[1320px] rounded-tr-[20px] rounded-br-[20px] cursor-pointer"
       >
         <div
           data-id="slide-preview-selected-indicator"

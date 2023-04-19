@@ -1,4 +1,4 @@
-import { SlideData, SlideImgElement, SlideTextElement } from '../data/default-slide-data';
+import { IS_NOT_SELECTED, IS_SELECTED, SlideData, SlideImgElement, SlideTextElement } from '../data/default-slide-data';
 import { slideData } from '../data/slide-data';
 import { createFragment } from '../utils/dom';
 import { gradients } from '../utils/gradients';
@@ -14,12 +14,24 @@ export const renderFeatureDisplay = (space: Space) => {
 
 const renderSlidePreviewMenu = (space: Space) => {
   const slidePreviewMenuContainer = document.querySelector('#slide-left-preview-list');
+  slidePreviewMenuContainer.innerHTML = '';
   slideData.forEach((slide, i) => {
     const slidePreviewFragment = createFragment('#slide-preview') as HTMLElement;
 
     const slidePreviewListItem = slidePreviewFragment.querySelector(
       'li[data-id=slide-preview-list-item]',
     ) as HTMLLIElement;
+
+    slidePreviewListItem.onclick = () => {
+      const currentSlideIndex = slideData.findIndex((slide) => slide.selected === IS_SELECTED);
+      if (currentSlideIndex > -1) {
+        slideData[currentSlideIndex].selected = IS_NOT_SELECTED;
+      }
+      slideData[i].selected = IS_SELECTED;
+      renderSlidePreviewMenu(space);
+      renderSelectedSlide(space);
+    };
+
     if (slide.selected) {
       slidePreviewListItem.style.backgroundColor = '#EEE9FF';
 
