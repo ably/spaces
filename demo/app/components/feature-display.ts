@@ -5,6 +5,7 @@ import { gradients } from '../utils/gradients';
 import Space from '../../../src/Space';
 import { addLocationTracking } from '../location-tracking/add-location-tracking';
 import { textElementManager } from '../location-tracking/track-text-elements';
+import { createSlideElementManager } from '../location-tracking/track-slide-elements';
 
 export const renderFeatureDisplay = (space: Space) => {
   renderSlidePreviewMenu(space);
@@ -12,31 +13,56 @@ export const renderFeatureDisplay = (space: Space) => {
   renderComments();
 };
 
+const rerenderSelectedSlidePreviews = () => {
+  slideData.forEach((slide, i) => {
+    const element = document.getElementById(`preview-slide-${i}`);
+    delete element.style.backgroundColor;
+    (element.querySelector('div[data-id=slide-preview-selected-indicator]') as HTMLElement).innerHTML = '';
+    if (slide.selected === IS_SELECTED) {
+      element.style.backgroundColor = '#EEE9FF';
+
+      const slidePreviewSelectedIndicator = element.querySelector(
+        'div[data-id=slide-preview-selected-indicator]',
+      ) as HTMLElement;
+      const selectedIndicatorSVG = createFragment('#selected-slide-preview');
+      slidePreviewSelectedIndicator.appendChild(selectedIndicatorSVG);
+
+      element.prepend(slidePreviewSelectedIndicator);
+    } else {
+      element.style.backgroundColor = 'transparent';
+    }
+  });
+};
+
 const renderSlidePreviewMenu = (space: Space) => {
   const slidePreviewMenuContainer = document.querySelector('#slide-left-preview-list');
-  slidePreviewMenuContainer.innerHTML = '';
+
   slideData.forEach((slide, i) => {
     const slidePreviewFragment = createFragment('#slide-preview') as HTMLElement;
 
     const slidePreviewListItem = slidePreviewFragment.querySelector(
       'li[data-id=slide-preview-list-item]',
     ) as HTMLLIElement;
+    slidePreviewListItem.setAttribute('id', `preview-slide-${i}`);
 
-    slidePreviewListItem.onclick = () => {
+    addLocationTracking(`slide-${i}`, slidePreviewListItem, createSlideElementManager(space, `slide-${i}`), space);
+
+    slidePreviewListItem.addEventListener('click', () => {
       const currentSlideIndex = slideData.findIndex((slide) => slide.selected === IS_SELECTED);
       if (currentSlideIndex > -1) {
         slideData[currentSlideIndex].selected = IS_NOT_SELECTED;
       }
       slideData[i].selected = IS_SELECTED;
-      renderSlidePreviewMenu(space);
+      rerenderSelectedSlidePreviews();
       renderSelectedSlide(space);
-    };
+      space.locations.set(`slide-${i}`);
+    });
 
     if (slide.selected) {
       slidePreviewListItem.style.backgroundColor = '#EEE9FF';
 
       const slidePreviewSelectedIndicator = slidePreviewFragment.querySelector(
-        'div[data-id=slide-preview-selected-indicator',
+        'div[data-id=slide-preview-selected-indicator]',
       ) as HTMLElement;
       const selectedIndicatorSVG = createFragment('#selected-slide-preview');
       slidePreviewSelectedIndicator.appendChild(selectedIndicatorSVG);

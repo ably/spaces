@@ -36,7 +36,7 @@ const renderAvatarStack = (members) => {
     if (avatar) {
       const li = document.createElement('li');
       li.classList.add('ml-[-9px]', 'relative');
-      li.appendChild(renderAvatar(member, index));
+      li.appendChild(avatar);
       ul.appendChild(li);
     }
   });

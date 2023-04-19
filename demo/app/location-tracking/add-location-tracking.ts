@@ -7,9 +7,14 @@ export const addLocationTracking = (
   htmlElementManager: HTMLElementManager,
   space: Space,
 ) => {
-  const selectedTracker = space.locations.createTracker((locationChange) => locationChange.currentLocation === id);
-  const unselectedTracker = space.locations.createTracker(
-    (locationChange) => locationChange.previousLocation === id && locationChange.currentLocation !== id,
+  const selectedTracker = space.locations.createTracker<string>((locationChange) =>
+    locationChange.currentLocation ? locationChange.currentLocation.startsWith(id) : false,
+  );
+  const unselectedTracker = space.locations.createTracker<string>(
+    (locationChange) =>
+      locationChange.previousLocation &&
+      locationChange.previousLocation.startsWith(id) &&
+      (!locationChange.currentLocation || !locationChange.currentLocation.startsWith(id)),
   );
 
   const { selectLocation, deselectLocation } = locationChangeHandlers(htmlElement, htmlElementManager, space);

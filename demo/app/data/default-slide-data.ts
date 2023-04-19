@@ -77,7 +77,7 @@ const slideData = (id: string, elements = [], selected = !IS_SELECTED): SlideDat
   selected,
 });
 
-const defaultSlideOne = slideData('1', [
+const defaultSlideOne = slideData('0', [
   slideTextElement('title')('0', 'Key Design Principles', [64, 216], 401),
   slideTextElement('text')(
     '1',
@@ -120,7 +120,7 @@ const defaultSlideOne = slideData('1', [
 ]);
 
 const defaultSlideTwo = slideData(
-  '2',
+  '1',
   [
     slideTextElement('title-caption')('0', 'HOW USERS READ', [64, 170]),
     slideTextElement('title')('1', `Add graphics`, [56, 197]),
@@ -143,7 +143,7 @@ const defaultSlideTwo = slideData(
   IS_SELECTED,
 );
 
-const defaultSlideThree = slideData('3', [
+const defaultSlideThree = slideData('2', [
   slideTextElement('title')('0', 'Design Statistics', [64, 97], 401),
   slideTextElement('text')('1', 'How do SMBs rate the importance of graphic design to their success?', [64, 186], 354),
   slideImgElement(
