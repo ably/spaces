@@ -1,10 +1,12 @@
 import collaborativeDocumentUrl from '../assets/svg/collaborative-document.svg';
-import placeholderSlide1 from '../assets/svg/placeholder-slide-1.svg';
-import placeholderSlide2 from '../assets/svg/placeholder-slide-2.svg';
-import placeholderSlide3 from '../assets/svg/placeholder-slide-3.svg';
+import alignment from '../assets/svg/alignment.svg';
+import contrast from '../assets/svg/contrast.svg';
+import proximity from '../assets/svg/proximity.svg';
+import repetition from '../assets/svg/repetition.svg';
+import bubbleChart from '../assets/svg/bubble-diagram.svg';
 import { nanoid } from 'nanoid';
 
-type SlideTextElementName = 'text' | 'title' | 'title-caption';
+type SlideTextElementName = 'text' | 'title' | 'subtitle' | 'title-caption' | 'aside-text';
 type SlideImgElementName = 'img';
 
 const IS_SELECTED = true;
@@ -74,7 +76,49 @@ const slideData = (id: string, elements = [], selected = !IS_SELECTED): SlideDat
   selected,
 });
 
-const defaultSelectedSlide = slideData(
+const defaultSlideOne = slideData('1', [
+  slideTextElement('title')('0', 'Key Design Principles', [64, 216], 401),
+  slideTextElement('text')(
+    '1',
+    'Effective design centres on four basic principles: contrast, repetition, alignment and proximity. These appear in every design.',
+    [64, 351],
+    354,
+  ),
+  slideImgElement('2', contrast, [491, 105]),
+  slideImgElement('3', repetition, [738, 105]),
+  slideImgElement('4', alignment, [491, 356]),
+  slideImgElement('5', proximity, [738, 356]),
+  slideTextElement('subtitle')('6', 'Contrast', [511, 193], 106),
+  slideTextElement('subtitle')('7', 'Repetition', [758, 193], 106),
+  slideTextElement('subtitle')('8', 'Alignment', [511, 444], 106),
+  slideTextElement('subtitle')('9', 'Proximity', [758, 444], 106),
+  slideTextElement('aside-text')(
+    '10',
+    'When a design uses several elements, the goal is to make each one distinct.',
+    [510, 225],
+    183,
+  ),
+  slideTextElement('aside-text')(
+    '11',
+    'Repetition helps designers establish relationships, develop organization and strengthen unity.',
+    [757, 225],
+    183,
+  ),
+  slideTextElement('aside-text')(
+    '12',
+    'Alignment creates a clean, sophisticated look. All elements should relate to all others in some way.',
+    [510, 476],
+    183,
+  ),
+  slideTextElement('aside-text')(
+    '13',
+    'When items are grouped, they become a single visual unit, rather than several separate entities.',
+    [757, 476],
+    183,
+  ),
+]);
+
+const defaultSlideTwo = slideData(
   '2',
   [
     slideTextElement('title-caption')('0', 'HOW USERS READ', [64, 170]),
@@ -98,10 +142,17 @@ const defaultSelectedSlide = slideData(
   IS_SELECTED,
 );
 
-export const defaultSlides = [
-  slideData('1', [slideImgElement('0', placeholderSlide1, [100, 160])]),
-  defaultSelectedSlide,
-  slideData('3', [slideImgElement('0', placeholderSlide2, [100, 200])]),
-  slideData('4', [slideImgElement('0', placeholderSlide3, [200, 200])]),
-  slideData('5', [slideImgElement('0', placeholderSlide2, [100, 200])]),
-];
+const defaultSlideThree = slideData('3', [
+  slideTextElement('title')('0', 'Design Statistics', [64, 97], 401),
+  slideTextElement('text')('1', 'How do SMBs rate the importance of graphic design to their success?', [64, 186], 354),
+  slideImgElement(
+    '3',
+    bubbleChart,
+    [289, 180],
+    'Bubble chart showing: Very important - 49%, Neutral - 42%, Unimportant - 9 %',
+  ),
+]);
+
+const defaultSelectedSlide = defaultSlideTwo;
+
+export const defaultSlides = [defaultSlideOne, defaultSelectedSlide, defaultSlideThree];

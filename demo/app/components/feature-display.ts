@@ -82,6 +82,12 @@ const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space:
         addLocationTracking(elementId, slotElement, textElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
+      case 'subtitle':
+        slideElementFragment = createFragment('#slide-subtitle') as HTMLElement;
+        slotElement = slideElementFragment.querySelector('[data-id=slide-subtitle-text]');
+        addLocationTracking(elementId, slotElement, textElementManager, space);
+        renderSlideTextElement(element, slotElement);
+        break;
       case 'title-caption':
         slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-caption-text]');
@@ -91,6 +97,12 @@ const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space:
       case 'text':
         slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-text-block-text]');
+        addLocationTracking(elementId, slotElement, textElementManager, space);
+        renderSlideTextElement(element, slotElement);
+        break;
+      case 'aside-text':
+        slideElementFragment = createFragment('#slide-aside-text') as HTMLElement;
+        slotElement = slideElementFragment.querySelector('[data-id=slide-aside-text]');
         addLocationTracking(elementId, slotElement, textElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
@@ -118,7 +130,7 @@ const renderSelectedSlide = (space: Space) => {
 const renderComments = () => {
   const commentData = [
     {
-      name: 'John Doe',
+      name: 'Mark Harris',
       comment: 'Hey - that looks amazing! Can we make this title larger?',
       position: '#3 - Slide 2',
     },
