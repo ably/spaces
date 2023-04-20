@@ -25,9 +25,9 @@ space.on('membersUpdate', (members) => {
   renderAvatars(members.filter(memberIsNotSelf));
 });
 
+await space.enter({ name: selfName });
+
 renderSelfAvatar(selfName);
 renderFeatureDisplay(space);
 const initialMembers = space.getMembers();
 renderAvatars(initialMembers.filter(memberIsNotSelf));
-
-space.enter({ name: selfName });

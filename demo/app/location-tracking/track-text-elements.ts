@@ -12,6 +12,7 @@ const textSelectedClasses = [
   'before:text-sm',
   'before:text-white',
   'before:rounded-t-lg',
+  'before:normal-case',
 ];
 
 const selectTextElement = (
