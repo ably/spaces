@@ -105,7 +105,7 @@ describe('Space (mockClient)', () => {
       const spy = vi.spyOn(presence, 'subscribe');
       new Space('test', client);
       // Called by Space instantiation and by Locations instantiation
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
     });
 
     it<SpaceTestContext>('does not include the connected client in the members result', async ({ space, client }) => {

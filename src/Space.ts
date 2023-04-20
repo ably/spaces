@@ -3,9 +3,10 @@ import { Types } from 'ably';
 import SpaceOptions from './options/SpaceOptions.js';
 import EventEmitter from './utilities/EventEmitter.js';
 import Locations from './Locations.js';
+import Cursors from './Cursors';
 
 // Unique prefix to avoid conflicts with channels
-const SPACE_CHANNEL_PREFIX = '_ably_space_';
+import { SPACE_CHANNEL_PREFIX } from './utilities/Constants';
 
 export type SpaceMember = {
   clientId: string;
@@ -36,9 +37,10 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
   private leavers: SpaceLeaver[];
   private options: SpaceOptions;
 
-  locations: Locations;
+  readonly locations: Locations;
+  readonly cursors: Cursors;
 
-  constructor(private name: string, private client: Types.RealtimePromise, options?: SpaceOptions) {
+  constructor(readonly name: string, readonly client: Types.RealtimePromise, options?: SpaceOptions) {
     super();
     this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
     this.clientId = this.client.auth.clientId;
@@ -47,6 +49,7 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
     this.setChannel(this.name);
     this.locations = new Locations(this, this.channel);
+    this.cursors = new Cursors(this);
   }
 
   private setChannel(rootName: string) {

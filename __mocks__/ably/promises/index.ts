@@ -15,6 +15,7 @@ const mockPresence = {
 
 const mockChannel = {
   presence: mockPresence,
+  subscribe: ()=>{},
 };
 
 class MockRealtime {
