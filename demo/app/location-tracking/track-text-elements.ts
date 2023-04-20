@@ -58,7 +58,7 @@ const deselectTextElement = (
     htmlElement.removeAttribute('data-all-present');
   } else {
     const filteredAllPresent = allPresentList.filter((name) => name !== userName);
-    htmlElement.setAttribute('data-before', filteredAllPresent[filteredAllPresent.length - 1]);
+    htmlElement.setAttribute('data-before', filteredAllPresent[0]);
     htmlElement.setAttribute('data-all-present', filteredAllPresent.join(' '));
   }
 
