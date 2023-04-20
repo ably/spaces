@@ -32,13 +32,13 @@ const renderPreviewAvatar = (member: SpaceMember, index: number) => {
   return fragment;
 };
 
-const renderPreviewStack = (slideMembers: SpaceMember[], slideId) => {
+const renderPreviewStack = (slideMembers: { member: SpaceMember; i: number }[], slideId: string) => {
   const ul = document.createElement('ul');
   ul.classList.add('flex', 'absolute', 'scale-[3]', 'top-[800px]', 'left-[1220px]', 'translate-x-[-100%]');
   ul.setAttribute('id', `preview-stack-${slideId}`);
 
-  slideMembers.forEach((member, index) => {
-    const avatar = renderPreviewAvatar(member, index);
+  slideMembers.forEach(({ member, i }) => {
+    const avatar = renderPreviewAvatar(member, i);
     if (avatar) {
       const li = document.createElement('li');
       li.classList.add('ml-[-9px]', 'relative');
@@ -51,9 +51,10 @@ const renderPreviewStack = (slideMembers: SpaceMember[], slideId) => {
 
 const updatePreviewAvatarStack = (space: Space, htmlElement: HTMLElement, selfId: string, slideId: string) => {
   const members = space.getMembers();
-  const slideMembers = members.filter(
-    (member) => member.location && member.location.startsWith(slideId) && member.clientId !== selfId,
-  );
+  const slideMembers = members
+    .filter((member) => member.clientId !== selfId)
+    .map((member, i) => ({ member, i }))
+    .filter(({ member }) => member.location && member.location.startsWith(slideId));
 
   if (slideMembers.length > 0) {
     htmlElement.classList.add(...slideSelectedClasses);
