@@ -1,4 +1,4 @@
-export const colors: [string, number][] = [
+const colors: [string, number][] = [
   ['orange', 400],
   ['pink', 400],
   ['green', 400],
@@ -6,3 +6,5 @@ export const colors: [string, number][] = [
   ['rose', 400],
   ['lime', 400],
 ];
+
+export { colors };

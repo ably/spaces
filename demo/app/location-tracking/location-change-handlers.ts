@@ -9,14 +9,14 @@ type HTMLElementSelector = (
   memberIndex: number,
 ) => void;
 
-export type HTMLElementManager = {
+type HTMLElementManager = {
   selector: HTMLElementSelector;
   deselector: HTMLElementSelector;
 };
 
 const getShortName = (name?: string) => (name ? name.split(/\s/)[0] : '');
 
-export const locationChangeHandlers = (
+const locationChangeHandlers = (
   htmlElement: HTMLElement,
   { selector, deselector }: HTMLElementManager,
   space: Space,
@@ -48,3 +48,5 @@ export const locationChangeHandlers = (
     deselector(htmlElement, shortName, change.member.clientId, self.clientId, memberIndex);
   },
 });
+
+export { locationChangeHandlers, type HTMLElementManager };

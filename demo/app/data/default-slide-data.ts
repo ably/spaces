@@ -9,12 +9,12 @@ import { nanoid } from 'nanoid';
 type SlideTextElementName = 'text' | 'title' | 'subtitle' | 'title-caption' | 'aside-text';
 type SlideImgElementName = 'img';
 
-export const IS_SELECTED = true;
-export const IS_NOT_SELECTED = false;
+const IS_SELECTED = true;
+const IS_NOT_SELECTED = false;
 
 type Position = [x: number, y: number];
 
-export type SlideTextElement = {
+type SlideTextElement = {
   id: string;
   elementType: SlideTextElementName;
   text: string;
@@ -24,7 +24,7 @@ export type SlideTextElement = {
   lockedBy?: string;
 };
 
-export type SlideImgElement = {
+type SlideImgElement = {
   id: string;
   elementType: SlideImgElementName;
   src: string;
@@ -35,7 +35,7 @@ export type SlideImgElement = {
   lockedBy?: string;
 };
 
-export type SlideElement = SlideTextElement | SlideImgElement;
+type SlideElement = SlideTextElement | SlideImgElement;
 
 const slideTextElement =
   (elementType: SlideTextElementName) =>
@@ -65,7 +65,7 @@ const slideImgElement = (
   lockedBy,
 });
 
-export type SlideData = {
+type SlideData = {
   id: string;
   elements: SlideElement[];
   selected: boolean;
@@ -156,4 +156,14 @@ const defaultSlideThree = slideData('2', [
 
 const defaultSelectedSlide = defaultSlideTwo;
 
-export const defaultSlides = [defaultSlideOne, defaultSelectedSlide, defaultSlideThree];
+const defaultSlides = [defaultSlideOne, defaultSelectedSlide, defaultSlideThree];
+
+export {
+  defaultSlides,
+  IS_SELECTED,
+  IS_NOT_SELECTED,
+  type SlideTextElement,
+  type SlideImgElement,
+  type SlideElement,
+  type SlideData,
+};

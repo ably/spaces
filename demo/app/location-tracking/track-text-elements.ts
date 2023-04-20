@@ -78,7 +78,9 @@ const deselectTextElement = (
   htmlElement.classList.remove(...classesToRemove, outlineColor, `before:bg-${cssColor}`);
 };
 
-export const textElementManager: HTMLElementManager = {
+const textElementManager: HTMLElementManager = {
   selector: selectTextElement,
   deselector: deselectTextElement,
 };
+
+export { textElementManager };

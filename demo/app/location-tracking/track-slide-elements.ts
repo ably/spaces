@@ -32,7 +32,7 @@ const renderPreviewAvatar = (member: SpaceMember, index: number) => {
   return fragment;
 };
 
-export const renderPreviewStack = (slideMembers: SpaceMember[], slideId) => {
+const renderPreviewStack = (slideMembers: SpaceMember[], slideId) => {
   const ul = document.createElement('ul');
   ul.classList.add('flex', 'absolute', 'scale-[3]', 'top-[800px]', 'left-[1220px]', 'translate-x-[-100%]');
   ul.setAttribute('id', `preview-stack-${slideId}`);
@@ -78,7 +78,9 @@ const deselectSlideElement =
     updatePreviewAvatarStack(space, htmlElement, selfId, slideId);
   };
 
-export const createSlideElementManager = (space: Space, slideId: string) => ({
+const createSlideElementManager = (space: Space, slideId: string) => ({
   selector: selectSlideElement(space, slideId),
   deselector: deselectSlideElement(space, slideId),
 });
+
+export { renderPreviewStack, createSlideElementManager };

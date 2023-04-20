@@ -1,7 +1,7 @@
 import Space from '../../../src/Space';
 import { HTMLElementManager, locationChangeHandlers } from './location-change-handlers';
 
-export const addLocationTracking = (
+const addLocationTracking = (
   id: string,
   htmlElement: HTMLElement,
   htmlElementManager: HTMLElementManager,
@@ -27,3 +27,5 @@ export const addLocationTracking = (
     space.locations.set(id);
   });
 };
+
+export { addLocationTracking };
