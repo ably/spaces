@@ -1,9 +1,7 @@
 import EventEmitter from './utilities/EventEmitter';
-import Cursors, { CursorPosition } from './Cursors';
+import { CursorPosition } from './Cursors';
 import CursorBatching from './CursorBatching';
 import Space from './Space';
-import { SPACE_CHANNEL_PREFIX } from './utilities/Constants';
-import { Types } from 'ably';
 
 type CursorEventMap = { positionUpdate: CursorPosition[] };
 

@@ -22,7 +22,7 @@ export default class CursorBatching {
     this.channel.presence.enter();
   }
 
-  async onPresenceUpdate(message: Types.PresenceMessage) {
+  async onPresenceUpdate() {
     const members = await this.channel.presence.get();
     console.log(members);
     this.shouldSend = members.length > 1;
@@ -44,7 +44,7 @@ export default class CursorBatching {
     }
   }
 
-  private async batchCursors() {
+  async batchCursors() {
     if (!this.hasMovements) {
       this.isRunning = false;
       return;

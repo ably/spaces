@@ -4,6 +4,7 @@ import { Realtime, Types } from 'ably/promises';
 import Space, { SpaceMember } from './Space.js';
 import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
 import Locations from './Locations.js';
+import Cursors from './Cursors';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
@@ -368,6 +369,12 @@ describe('Space (mockClient)', () => {
   describe('locations', () => {
     it<SpaceTestContext>('returns a Locations object', ({ space }) => {
       expect(space.locations).toBeInstanceOf(Locations);
+    });
+  });
+
+  describe('cursors', () => {
+    it<SpaceTestContext>('returns a Cursors object', ({ space }) => {
+      expect(space.cursors).toBeInstanceOf(Cursors);
     });
   });
 });
