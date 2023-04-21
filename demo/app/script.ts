@@ -25,10 +25,11 @@ space.on('membersUpdate', (members) => {
   renderAvatars(members.filter(memberIsNotSelf));
 });
 
-/** Avoids issues with top-level await: an alternative fix is to change build target to esnext */
-(async () => await space.enter({ name: selfName }))();
-
-renderSelfAvatar(selfName);
-renderFeatureDisplay(space);
-const initialMembers = space.getMembers();
-renderAvatars(initialMembers.filter(memberIsNotSelf));
+/** Avoids issues with top-level await: an alternative fix is to change build target to es */
+(async () => {
+  await space.enter({ name: selfName });
+  renderSelfAvatar(selfName);
+  renderFeatureDisplay(space);
+  const initialMembers = space.getMembers();
+  renderAvatars(initialMembers.filter(memberIsNotSelf));
+})();
