@@ -4,7 +4,6 @@ import contrast from '../assets/svg/contrast.svg';
 import proximity from '../assets/svg/proximity.svg';
 import repetition from '../assets/svg/repetition.svg';
 import bubbleChart from '../assets/svg/bubble-diagram.svg';
-import { nanoid } from 'nanoid';
 
 type SlideTextElementName = 'text' | 'title' | 'subtitle' | 'title-caption' | 'aside-text';
 type SlideImgElementName = 'img';
