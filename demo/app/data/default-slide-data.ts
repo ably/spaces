@@ -56,7 +56,7 @@ const slideImgElement = (
   caption?: string,
   lockedBy?: string,
 ): SlideImgElement => ({
-  id: nanoid(),
+  id: id,
   elementType: 'img',
   src,
   position,
