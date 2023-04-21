@@ -1,4 +1,4 @@
-export const fakeNames = [
+const fakeNames = [
   'Anum Reeve',
   'Tiernan Stubbs',
   'Hakim Hernandez',
@@ -114,7 +114,7 @@ export const fakeNames = [
   'Hanna Tretyak',
 ];
 
-export const nameToInitials = (name) =>
+const nameToInitials = (name) =>
   name
     .split(' ')
     .map((str) => str[0])
@@ -122,4 +122,6 @@ export const nameToInitials = (name) =>
     .join('')
     .toUpperCase();
 
-export const getRandomName = () => fakeNames[Math.floor(Math.random() * fakeNames.length)];
+const getRandomName = () => fakeNames[Math.floor(Math.random() * fakeNames.length)];
+
+export { fakeNames, nameToInitials, getRandomName };

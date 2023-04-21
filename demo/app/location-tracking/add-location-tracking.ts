@@ -1,26 +1,23 @@
 import Space from '../../../src/Space';
-import { locationChangeHandlers } from './location-change-handlers';
+import { HTMLElementManager, locationChangeHandlers } from './location-change-handlers';
 
-export const addLocationTracking = (id: string, htmlElement: HTMLElement, space: Space) => {
-  const selectedTracker = space.locations.createTracker((locationChange) => locationChange.currentLocation === id);
-  const unselectedTracker = space.locations.createTracker(
-    (locationChange) => locationChange.previousLocation === id && locationChange.currentLocation !== id,
+const addLocationTracking = (
+  id: string,
+  htmlElement: HTMLElement,
+  htmlElementManager: HTMLElementManager,
+  space: Space,
+) => {
+  const selectedTracker = space.locations.createTracker<string>((locationChange) =>
+    locationChange.currentLocation ? locationChange.currentLocation.startsWith(id) : false,
+  );
+  const unselectedTracker = space.locations.createTracker<string>(
+    (locationChange) =>
+      locationChange.previousLocation &&
+      locationChange.previousLocation.startsWith(id) &&
+      (!locationChange.currentLocation || !locationChange.currentLocation.startsWith(id)),
   );
 
-  const selectedClasses = [
-    'outline-2',
-    'outline',
-    `before:content-[attr(data-before)]`,
-    'before:absolute',
-    'before:-top-[22px]',
-    'before:-left-[2px]',
-    'before:px-[10px]',
-    'before:text-sm',
-    'before:text-white',
-    'before:rounded-t-lg',
-  ];
-
-  const { selectLocation, deselectLocation } = locationChangeHandlers(htmlElement, selectedClasses, space);
+  const { selectLocation, deselectLocation } = locationChangeHandlers(htmlElement, htmlElementManager, space);
 
   selectedTracker.on(selectLocation);
 
@@ -30,3 +27,5 @@ export const addLocationTracking = (id: string, htmlElement: HTMLElement, space:
     space.locations.set(id);
   });
 };
+
+export { addLocationTracking };

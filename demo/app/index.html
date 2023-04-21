@@ -292,43 +292,6 @@
             id="slide-left-preview-list"
             class="relative top-[68px] -left-[26px] flex flex-col scale-[0.2] w-[20%] h-[20%] max-h-[80vh]"
           ></ol>
-          <button
-            class="absolute bottom-6 flex flex-row items-center gap-3 text-ably-avatar-stack-demo-new-slide ml-[60px]"
-          >
-            <svg
-              width="28"
-              height="1"
-              viewBox="0 0 28 1"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line
-                x1="0.5"
-                y1="0.5"
-                x2="27.5"
-                y2="0.499998"
-                stroke="#585858"
-                stroke-linecap="round"
-              />
-            </svg>
-            <span class="">+ Add new slide</span>
-            <svg
-              width="28"
-              height="1"
-              viewBox="0 0 28 1"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line
-                x1="0.5"
-                y1="0.5"
-                x2="27.5"
-                y2="0.499998"
-                stroke="#585858"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
         </menu>
         <section
           id="slide-selected"
@@ -496,7 +459,7 @@
     <template id="slide-preview">
       <li
         data-id="slide-preview-list-item"
-        class="relative flex flex-row py-11 w-[1320px] rounded-tr-[20px] rounded-br-[20px]"
+        class="relative flex flex-row py-8 w-[1320px] rounded-tr-[20px] rounded-br-[20px] cursor-pointer"
       >
         <div
           data-id="slide-preview-selected-indicator"
@@ -534,8 +497,15 @@
     <template id="slide-title">
       <h1
         data-id="slide-title-text"
-        class="font-semibold text-[45px] ably-avatar-stack-demo-slide-text cursor-pointer"
+        class="font-semibold text-[45px] text-ably-avatar-stack-demo-slide-text cursor-pointer"
       ></h1>
+    </template>
+
+    <template id="slide-subtitle">
+      <h2
+        data-id="slide-subtitle-text"
+        class="font-semibold text-2xl text-ably-avatar-stack-demo-slide-text cursor-pointer"
+      ></h2>
     </template>
 
     <template id="slide-title-caption">
@@ -548,13 +518,23 @@
     <template id="slide-text-block">
       <p
         data-id="slide-text-block-text"
-        class="ably-avatar-stack-demo-slide-text text-[19px] p-[12px] cursor-pointer"
+        class="text-ably-avatar-stack-demo-slide-text text-[19px] p-[12px] cursor-pointer"
+      ></p>
+    </template>
+
+    <template id="slide-aside-text">
+      <p
+        data-id="slide-aside-text"
+        class="text-ably-avatar-stack-demo-slide-text text-[13px] leading-6 p-0 cursor-pointer"
       ></p>
     </template>
 
     <template id="slide-image">
       <figure>
-        <img data-id="slide-image-placeholder" />
+        <img
+          data-id="slide-image-placeholder"
+          class="cursor-pointer"
+        />
         <span data-id="slide-figcaption-placeholder"></span>
       </figure>
     </template>
