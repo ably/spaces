@@ -3,7 +3,7 @@ import { IS_NOT_SELECTED, IS_SELECTED } from '../data/default-slide-data';
 import { slideData } from '../data/slide-data';
 import { addLocationTracking } from '../location-tracking/add-location-tracking';
 import { HTMLElementManager } from '../location-tracking/location-change-handlers';
-import { createSlideElementManager } from '../location-tracking/track-slide-elements';
+import { createSlideElementManager } from '../location-tracking/track-slides';
 import { createFragment } from '../utils/dom';
 import { renderSelectedSlide, renderSlide } from './render-slide';
 

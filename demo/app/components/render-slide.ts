@@ -2,13 +2,13 @@ import Space, { SpaceMember } from '../../../src/Space';
 import { SlideData } from '../data/default-slide-data';
 import { slideData } from '../data/slide-data';
 import { addLocationTracking } from '../location-tracking/add-location-tracking';
-import { textElementManager } from '../location-tracking/track-text-elements';
+import { slideElementManager } from '../location-tracking/track-slide-elements';
 import { createFragment } from '../utils/dom';
 import { renderSlideImgElement, renderSlideTextElement } from './render-slide-elements';
 
 const addPresentMembers = (members: { member: SpaceMember; i: number }[], selfId: string, slotElement: HTMLElement) =>
   members.forEach(({ member, i }) => {
-    textElementManager.selector(
+    slideElementManager.selector(
       slotElement,
       member.profileData.name ? member.profileData.name.split(/\s/)[0] : '',
       member.clientId,
@@ -38,40 +38,42 @@ const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space:
         slideElementFragment = createFragment('#slide-title') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-text]');
         addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, textElementManager, space);
+        addLocationTracking(elementId, slotElement, slideElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'subtitle':
         slideElementFragment = createFragment('#slide-subtitle') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-subtitle-text]');
         addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, textElementManager, space);
+        addLocationTracking(elementId, slotElement, slideElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'title-caption':
         slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-title-caption-text]');
         addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, textElementManager, space);
+        addLocationTracking(elementId, slotElement, slideElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'text':
         slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-text-block-text]');
         addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, textElementManager, space);
+        addLocationTracking(elementId, slotElement, slideElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'aside-text':
         slideElementFragment = createFragment('#slide-aside-text') as HTMLElement;
         slotElement = slideElementFragment.querySelector('[data-id=slide-aside-text]');
         addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, textElementManager, space);
+        addLocationTracking(elementId, slotElement, slideElementManager, space);
         renderSlideTextElement(element, slotElement);
         break;
       case 'img':
         slideElementFragment = createFragment('#slide-image') as HTMLElement;
-        slotElement = slideElementFragment.querySelector('[data-id=slide-image-placeholder]');
+        slotElement = slideElementFragment.querySelector('figure');
+        addPresentMembers(presentMembers, selfId, slotElement);
+        addLocationTracking(elementId, slotElement, slideElementManager, space);
         renderSlideImgElement(element, slotElement as HTMLImageElement);
         break;
       default:
