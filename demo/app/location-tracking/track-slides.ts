@@ -75,7 +75,7 @@ const updatePreviewAvatarStack = (space: Space, htmlElement: HTMLElement, selfId
     .filter(({ member }) => member.location && member.location.startsWith(slideId));
 
   const self = space.getSelf();
-  const selfIsPresent = self.location && self.location.startsWith(slideId);
+  const selfIsPresent = self?.location && self?.location.startsWith(slideId);
 
   if (slideMembers.length > 0 || selfIsPresent) {
     htmlElement.classList.add(...slideSelectedClasses);
