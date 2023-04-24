@@ -41,7 +41,7 @@ describe('Spaces', () => {
     const spaces = new Spaces(client);
     const space = spaces.get('test');
 
-    expect(spy).toHaveBeenCalledOnce();
+    expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith('_ably_space_test');
     // Note: This is matching the class type. This is not a TypeScript type.
     expectTypeOf(space).toMatchTypeOf<Space>();

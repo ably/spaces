@@ -7,6 +7,9 @@
 - [Space](#space)
 - [SpaceMember](#spacemember)
 - [Locations](#locations-1)
+- [Cursors](#cursors-1)
+- [Cursor](#cursor)
+- [CursorPosition](#cursorposition)
 
 ### Spaces
 
@@ -71,6 +74,9 @@ Gets the [SpaceMember](#spacemember) object which relates to the local client.
 
 #### locations
 Get the [Locations](#locations-1) object for this space.
+
+#### cursors
+Get the [Cursors](#cursors-1) object for this space.
 
 ### SpaceMember
 
@@ -138,3 +144,52 @@ Used for unsubscribing from a listener.
 
 #### members()
 Used to retrieve a list of members in the Space for whom the [locationUpdatePredicate](#locationupdatepredicatelocationupdate) would return `true` based on their current location.
+
+### Cursors
+
+#### get(name)
+Get a [Cursor](#cursor) with a specific name. Names are unique per space.
+
+| Property | Type   |
+|----------|--------|
+| name     | string |
+
+#### on(event, callback)
+Used for subscribing to all cursor updates. Currently, only one event is supported:
+
+##### positionsUpdate
+Fires when a cursors position is updated. The argument supplied is an object of one or more cursors by name and their respective cursor movements since the last update.
+
+| Property         | Type                                                |
+|------------------|-----------------------------------------------------|
+| positions        | Record<string, [CursorPosition](#cursorposition)[]> |
+
+### Cursor
+
+An individual cursor.
+
+#### setPosition(position)
+Set the position of this cursor. The position will be updated for each other member of the space via a Cursors [positionsUpdate](#positionsupdate) or Cursor [positionUpdate](#positionupdate).
+
+| Property | Type                              |
+|----------|-----------------------------------|
+| position | [CursorPosition](#cursorposition) |
+
+#### on(event, callback)
+Used for subscribing to a specific cursors updates. Currently, only one event is supported:
+
+##### positionUpdate
+Fires when this cursors location is updated. Contains an array of cursor positions since the last update.
+
+| Property  | Type                                |
+|-----------|-------------------------------------|
+| positions | [CursorPosition](#cursorposition)[] |
+
+
+### CursorPosition
+Represents the position of a cursor.
+
+| Property | Type   |
+|----------|--------|
+| x        | number |
+| y        | number |

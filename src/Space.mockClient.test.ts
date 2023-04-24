@@ -4,6 +4,7 @@ import { Realtime, Types } from 'ably/promises';
 import Space, { SpaceMember } from './Space.js';
 import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
 import Locations from './Locations.js';
+import Cursors from './Cursors';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
@@ -105,7 +106,7 @@ describe('Space (mockClient)', () => {
       const spy = vi.spyOn(presence, 'subscribe');
       new Space('test', client);
       // Called by Space instantiation and by Locations instantiation
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
     });
 
     it<SpaceTestContext>('does not include the connected client in the members result', async ({ space, client }) => {
@@ -368,6 +369,12 @@ describe('Space (mockClient)', () => {
   describe('locations', () => {
     it<SpaceTestContext>('returns a Locations object', ({ space }) => {
       expect(space.locations).toBeInstanceOf(Locations);
+    });
+  });
+
+  describe('cursors', () => {
+    it<SpaceTestContext>('returns a Cursors object', ({ space }) => {
+      expect(space.cursors).toBeInstanceOf(Cursors);
     });
   });
 });
