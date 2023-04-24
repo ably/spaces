@@ -16,9 +16,9 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
 
   constructor(private space: Space) {
     super();
-    this.cursorBatching = new CursorBatching(this, space);
     this.channel = space.client.channels.get(`${SPACE_CHANNEL_PREFIX}_${space.name}_cursors`);
     this.channel.subscribe('cursors', this.onIncomingCursorMovement.bind(this));
+    this.cursorBatching = new CursorBatching(this, this.channel);
   }
 
   private onIncomingCursorMovement(message: Types.Message) {
@@ -34,7 +34,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
 
   get(name: string): Cursor {
     if (!this.cursors[name]) {
-      this.cursors[name] = new Cursor(name, this.cursorBatching, this.space);
+      this.cursors[name] = new Cursor(name, this.cursorBatching);
     }
     return this.cursors[name];
   }

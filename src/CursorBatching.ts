@@ -1,13 +1,11 @@
 import Cursors, { CursorPosition } from './Cursors';
-import Space from './Space';
 import { Types } from 'ably';
-import { SPACE_CHANNEL_PREFIX } from './utilities/Constants';
 
 const BATCH_TIME_UPDATE = 100;
 
 export default class CursorBatching {
   outgoingBuffer: Record<string, CursorPosition[]> = {};
-  readonly channel: Types.RealtimeChannelPromise;
+
   batchTime: number = 100;
   // Set to `true` when the buffer is actively being emptied
   isRunning: boolean = false;
@@ -16,15 +14,13 @@ export default class CursorBatching {
   // Set to `true` if there is more than one user listening to cursors
   shouldSend: boolean = false;
 
-  constructor(readonly cursors: Cursors, readonly space: Space) {
-    this.channel = space.client.channels.get(`${SPACE_CHANNEL_PREFIX}_${space.name}_cursors`);
+  constructor(readonly cursors: Cursors, readonly channel: Types.RealtimeChannelPromise) {
     this.channel.presence.subscribe(this.onPresenceUpdate.bind(this));
     this.channel.presence.enter();
   }
 
   async onPresenceUpdate() {
     const members = await this.channel.presence.get();
-    console.log(members);
     this.shouldSend = members.length > 1;
     this.batchTime = (members.length - 1) * BATCH_TIME_UPDATE;
   }
