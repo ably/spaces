@@ -3,7 +3,8 @@ import { Realtime, Types } from 'ably/promises';
 import Space from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import Cursor from './Cursor';
-import CursorBatching, { CURSOR_POSITION_EVENT } from './CursorBatching';
+import CursorBatching from './CursorBatching';
+import { CURSOR_POSITION_EVENT } from './utilities/Constants.js';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;

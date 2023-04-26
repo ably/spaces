@@ -1,10 +1,8 @@
 import Cursors, { CursorData, CursorPosition } from './Cursors';
 import { Types } from 'ably';
+import { CURSOR_DATA_EVENT, CURSOR_POSITION_EVENT } from './utilities/Constants';
 
 const BATCH_TIME_UPDATE = 100;
-
-const CURSOR_POSITION_EVENT = 'cursorPosition';
-const CURSOR_DATA_EVENT = 'cursorDataUpdate';
 
 type OutgoingBuffers = {
   movement: Record<string, CursorPosition[]>;
@@ -79,7 +77,7 @@ export default class CursorBatching {
   }
 
   private async batchToChannel(bufferName: keyof OutgoingBuffers, eventName: string) {
-    if (!this.has.movement) {
+    if (!this.has[bufferName]) {
       this.isRunning = false;
       return;
     }
@@ -92,5 +90,3 @@ export default class CursorBatching {
     this.isRunning = true;
   }
 }
-
-export { CURSOR_DATA_EVENT, CURSOR_POSITION_EVENT };

@@ -1,7 +1,7 @@
 import Space from './Space';
 import Cursor from './Cursor';
-import CursorBatching, { CURSOR_DATA_EVENT, CURSOR_POSITION_EVENT } from './CursorBatching';
-import { SPACE_CHANNEL_PREFIX } from './utilities/Constants';
+import CursorBatching from './CursorBatching';
+import { CURSOR_DATA_EVENT, CURSOR_POSITION_EVENT, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
 import { Types } from 'ably';
 import EventEmitter from './utilities/EventEmitter';
 
