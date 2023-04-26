@@ -3,8 +3,8 @@ import { Types } from 'ably';
 
 const BATCH_TIME_UPDATE = 100;
 
-const CURSOR_POSITION_CHANNEL = 'cursorPosition';
-const CURSOR_DATA_CHANNEL = 'cursorDataUpdate';
+const CURSOR_POSITION_EVENT = 'cursorPosition';
+const CURSOR_DATA_EVENT = 'cursorDataUpdate';
 
 type OutgoingBuffers = {
   movement: Record<string, CursorPosition[]>;
@@ -45,7 +45,7 @@ export default class CursorBatching {
     if (!this.shouldSend) return;
     this.has.movement = true;
     this.pushToBuffer<CursorPosition>('movement', name, pos);
-    this.publishFromBuffer('movement', CURSOR_POSITION_CHANNEL);
+    this.publishFromBuffer('movement', CURSOR_POSITION_EVENT);
   }
 
   pushCursorData(name: string, data: CursorData) {
@@ -53,7 +53,7 @@ export default class CursorBatching {
     if (!this.shouldSend) return;
     this.has.data = true;
     this.pushToBuffer<CursorData>('data', name, data);
-    this.publishFromBuffer('data', CURSOR_DATA_CHANNEL);
+    this.publishFromBuffer('data', CURSOR_DATA_EVENT);
   }
 
   private async onPresenceUpdate() {
@@ -71,26 +71,26 @@ export default class CursorBatching {
     }
   }
 
-  private async publishFromBuffer(bufferName: keyof OutgoingBuffers, channelName: string) {
+  private async publishFromBuffer(bufferName: keyof OutgoingBuffers, eventName: string) {
     if (!this.isRunning) {
       this.isRunning = true;
-      await this.batchToChannel(bufferName, channelName);
+      await this.batchToChannel(bufferName, eventName);
     }
   }
 
-  private async batchToChannel(bufferName: keyof OutgoingBuffers, channelName: string) {
+  private async batchToChannel(bufferName: keyof OutgoingBuffers, eventName: string) {
     if (!this.has.movement) {
       this.isRunning = false;
       return;
     }
     // Must be copied here to avoid a race condition where the buffer is cleared before the publish happens
     const bufferCopy = { ...this.outgoingBuffers[bufferName] };
-    await this.channel.publish(channelName, bufferCopy);
-    setTimeout(() => this.batchToChannel(bufferName, channelName), this.batchTime);
+    await this.channel.publish(eventName, bufferCopy);
+    setTimeout(() => this.batchToChannel(bufferName, eventName), this.batchTime);
     this.outgoingBuffers[bufferName] = {};
     this.has[bufferName] = false;
     this.isRunning = true;
   }
 }
 
-export { CURSOR_DATA_CHANNEL, CURSOR_POSITION_CHANNEL };
+export { CURSOR_DATA_EVENT, CURSOR_POSITION_EVENT };
