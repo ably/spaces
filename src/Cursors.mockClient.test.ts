@@ -4,7 +4,7 @@ import Space from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
-import { CURSOR_POSITION_EVENT } from './utilities/Constants.js';
+import { CURSOR_EVENT } from './utilities/Constants.js';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
@@ -37,16 +37,16 @@ describe('Cursors (mockClient)', () => {
     it<CursorsTestContext>('emits a positionsUpdate event', ({ space }) => {
       const fakeMessage = { data: { cursor1: [], cursor2: [] } };
       const spy = vitest.fn();
-      space.cursors.on('positionsUpdate', spy);
-      space.cursors['onIncomingCursorMovement'](fakeMessage as Types.Message);
+      space.cursors.on('cursorsUpdate', spy);
+      space.cursors['onIncomingCursorUpdate'](fakeMessage as Types.Message);
       expect(spy).toHaveBeenCalledWith(fakeMessage.data);
     });
 
     it<CursorsTestContext>('emits positionUpdate for a specific cursor event', ({ space }) => {
       const fakeMessage = { data: { cursor1: [{ x: 1, y: 1 }] } };
       const spy = vitest.fn();
-      space.cursors.get('cursor1').on('positionUpdate', spy);
-      space.cursors['onIncomingCursorMovement'](fakeMessage as Types.Message);
+      space.cursors.get('cursor1').on('cursorUpdate', spy);
+      space.cursors['onIncomingCursorUpdate'](fakeMessage as Types.Message);
       expect(spy).toHaveBeenCalledWith(fakeMessage.data.cursor1);
     });
   });
@@ -86,32 +86,32 @@ describe('Cursors (mockClient)', () => {
       it<CursorsTestContext>('should ignore cursor updates if shouldSend is false', (context) => {
         const batching = context.batching as any;
         batching.shouldSend = false;
-        expect(batching.has.movement).toBeFalsy();
+        expect(batching.hasMovement).toBeFalsy();
         batching.pushCursorPosition('cursor1', { x: 1, y: 1 });
-        expect(batching.has.movement).toBeFalsy();
+        expect(batching.hasMovement).toBeFalsy();
       });
 
-      it<CursorsTestContext>('sets has.movements to true', (context) => {
+      it<CursorsTestContext>('sets hasMovements to true', (context) => {
         const batching = context.batching as any;
-        expect(batching.has.movement).toBeFalsy();
+        expect(batching.hasMovement).toBeFalsy();
         batching.pushCursorPosition('cursor1', { x: 1, y: 1 });
-        expect(batching.has.movement).toBeTruthy();
+        expect(batching.hasMovement).toBeTruthy();
       });
 
       it<CursorsTestContext>('creates an outgoingBuffer for a new cursor movement', (context) => {
         const batching = context.batching as any;
-        batching.pushCursorPosition('cursor1', { x: 1, y: 1 });
-        expect(batching.outgoingBuffers.movement.cursor1).toEqual([{ x: 1, y: 1 }]);
+        batching.pushCursorPosition('cursor1', { position: { x: 1, y: 1 }, data: {} });
+        expect(batching.outgoingBuffers.cursor1).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
       });
 
       it<CursorsTestContext>('adds cursor data to an existing buffer', (context) => {
         const batching = context.batching as any;
-        batching.pushCursorPosition('cursor1', { x: 1, y: 1 });
-        expect(batching.outgoingBuffers.movement.cursor1).toEqual([{ x: 1, y: 1 }]);
-        batching.pushCursorPosition('cursor1', { x: 2, y: 2 });
-        expect(batching.outgoingBuffers.movement.cursor1).toEqual([
-          { x: 1, y: 1 },
-          { x: 2, y: 2 },
+        batching.pushCursorPosition('cursor1', { position: { x: 1, y: 1 }, data: {} });
+        expect(batching.outgoingBuffers.cursor1).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
+        batching.pushCursorPosition('cursor1', { position: { x: 2, y: 2 }, data: {} });
+        expect(batching.outgoingBuffers.cursor1).toEqual([
+          { position: { x: 1, y: 1 }, data: {} },
+          { position: { x: 2, y: 2 }, data: {} },
         ]);
       });
 
@@ -119,56 +119,8 @@ describe('Cursors (mockClient)', () => {
         const batching = context.batching as any;
         batching.isRunning = false;
         batching.batchToChannel = vitest.fn();
-        batching.pushCursorPosition('cursor1', { x: 1, y: 1 });
-        batching.pushCursorPosition('cursor1', { x: 1, y: 1 });
-        expect(batching.batchToChannel).toHaveBeenCalledOnce();
-        expect(batching.isRunning).toBeTruthy();
-      });
-    });
-
-    describe('pushCursorData', () => {
-      beforeEach<CursorsTestContext>((context) => {
-        const batching = context.batching as any;
-        // Set isRunning to true to avoid starting the loop here
-        batching.isRunning = true;
-        batching.shouldSend = true;
-      });
-
-      it<CursorsTestContext>('should ignore cursor updates if shouldSend is false', (context) => {
-        const batching = context.batching as any;
-        batching.shouldSend = false;
-        expect(batching.has.data).toBeFalsy();
-        batching.pushCursorData('cursor1', { color: 'red' });
-        expect(batching.has.data).toBeFalsy();
-      });
-
-      it<CursorsTestContext>('sets has.movements to true', (context) => {
-        const batching = context.batching as any;
-        expect(batching.has.data).toBeFalsy();
-        batching.pushCursorData('cursor1', { color: 'red' });
-        expect(batching.has.data).toBeTruthy();
-      });
-
-      it<CursorsTestContext>('creates an outgoingBuffer for a new cursor movement', (context) => {
-        const batching = context.batching as any;
-        batching.pushCursorData('cursor1', { color: 'red' });
-        expect(batching.outgoingBuffers.data.cursor1).toEqual([{ color: 'red' }]);
-      });
-
-      it<CursorsTestContext>('adds cursor data to an existing buffer', (context) => {
-        const batching = context.batching as any;
-        batching.pushCursorData('cursor1', { color: 'red' });
-        expect(batching.outgoingBuffers.data.cursor1).toEqual([{ color: 'red' }]);
-        batching.pushCursorData('cursor1', { color: 'green' });
-        expect(batching.outgoingBuffers.data.cursor1).toEqual([{ color: 'red' }, { color: 'green' }]);
-      });
-
-      it<CursorsTestContext>('should start batchToChannel correctly', (context) => {
-        const batching = context.batching as any;
-        batching.isRunning = false;
-        batching.batchToChannel = vitest.fn();
-        batching.pushCursorData('cursor1', { color: 'red' });
-        batching.pushCursorData('cursor1', { color: 'green' });
+        batching.pushCursorPosition('cursor1', { position: { x: 1, y: 1 } });
+        batching.pushCursorPosition('cursor1', { position: { x: 1, y: 1 } });
         expect(batching.batchToChannel).toHaveBeenCalledOnce();
         expect(batching.isRunning).toBeTruthy();
       });
@@ -183,13 +135,13 @@ describe('Cursors (mockClient)', () => {
         vi.useRealTimers();
       });
 
-      it<CursorsTestContext>('should stop when has.movement is false', async (context) => {
+      it<CursorsTestContext>('should stop when hasMovement is false', async (context) => {
         const space = context.space;
         const batching = context.batching as any;
-        batching.has.movement = false;
+        batching.hasMovement = false;
         batching.isRunning = true;
         const spy = vi.spyOn(space.cursors['channel'], 'publish');
-        await batching.batchToChannel('movement', CURSOR_POSITION_EVENT);
+        await batching.batchToChannel('movement', CURSOR_EVENT);
         expect(batching.isRunning).toBeFalsy();
         expect(spy).not.toHaveBeenCalled();
       });
@@ -197,26 +149,26 @@ describe('Cursors (mockClient)', () => {
       it<CursorsTestContext>('should publish the cursor buffer', async (context) => {
         const space = context.space;
         const batching = context.batching as any;
-        batching.has.movement = true;
-        batching.outgoingBuffers.movement = { cursor1: [{ x: 1, y: 1 }] };
+        batching.hasMovement = true;
+        batching.outgoingBuffers = { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] };
         const spy = vi.spyOn(space.cursors['channel'], 'publish');
-        await batching.batchToChannel('movement', CURSOR_POSITION_EVENT);
-        expect(spy).toHaveBeenCalledWith(CURSOR_POSITION_EVENT, { cursor1: [{ x: 1, y: 1 }] });
+        await batching.batchToChannel(CURSOR_EVENT);
+        expect(spy).toHaveBeenCalledWith(CURSOR_EVENT, { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] });
       });
 
       it<CursorsTestContext>('should clear the buffer', async (context) => {
         const batching = context.batching as any;
-        batching.has.movement = true;
-        batching.outgoingBuffers.movement = { cursor1: [{ x: 1, y: 1 }] };
-        await batching.batchToChannel('movement', CURSOR_POSITION_EVENT);
-        expect(batching.outgoingBuffers.movement).toEqual({});
+        batching.hasMovement = true;
+        batching.outgoingBuffers = { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] };
+        await batching.batchToChannel(CURSOR_EVENT);
+        expect(batching.outgoingBuffers).toEqual({});
       });
 
-      it<CursorsTestContext>('should set has.movements to false', async (context) => {
+      it<CursorsTestContext>('should set hasMovements to false', async (context) => {
         const batching = context.batching as any;
-        batching.has.movement = true;
-        await batching.batchToChannel('movement', CURSOR_POSITION_EVENT);
-        expect(batching.has.movement).toBeFalsy();
+        batching.hasMovement = true;
+        await batching.batchToChannel(CURSOR_EVENT);
+        expect(batching.hasMovement).toBeFalsy();
       });
     });
   });

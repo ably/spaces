@@ -1,18 +1,22 @@
 import Space from './Space';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
-import { CURSOR_DATA_EVENT, CURSOR_POSITION_EVENT, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
+import { CURSOR_EVENT, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
 import { Types } from 'ably';
 import EventEmitter from './utilities/EventEmitter';
-
-type CursorsEventMap = {
-  positionsUpdate: Record<string, CursorPosition[]>;
-  cursorsDataUpdate: Record<string, CursorData[]>;
-};
 
 type CursorPosition = { x: number; y: number };
 
 type CursorData = Record<string, unknown>;
+
+type CursorUpdate = {
+  position: CursorPosition;
+  data: CursorData;
+};
+
+type CursorsEventMap = {
+  cursorsUpdate: Record<string, CursorUpdate[]>;
+};
 
 export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
@@ -23,30 +27,18 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   constructor(private space: Space) {
     super();
     this.channel = space.client.channels.get(`${SPACE_CHANNEL_PREFIX}_${space.name}_cursors`);
-    this.channel.subscribe(CURSOR_POSITION_EVENT, this.onIncomingCursorMovement.bind(this));
-    this.channel.subscribe(CURSOR_DATA_EVENT, this.onIncomingCursorData.bind(this));
+    this.channel.subscribe(CURSOR_EVENT, this.onIncomingCursorUpdate.bind(this));
     this.cursorBatching = new CursorBatching(this, this.channel);
   }
 
-  private onIncomingCursorMovement(message: Types.Message) {
-    const cursorData: Record<string, CursorPosition[]> = message.data;
-    this.emit('positionsUpdate', cursorData);
+  private onIncomingCursorUpdate(message: Types.Message) {
+    const cursorData: Record<string, CursorUpdate[]> = message.data;
+    this.emit('cursorsUpdate', cursorData);
     for (let cursorName in cursorData) {
       const cursor = this.cursors[cursorName];
       if (!cursor) continue;
       const cursorPositions = cursorData[cursorName];
-      cursor.emit('positionUpdate', cursorPositions);
-    }
-  }
-
-  private onIncomingCursorData(message: Types.Message) {
-    const cursorData: Record<string, CursorData[]> = message.data;
-    this.emit('cursorsDataUpdate', cursorData);
-    for (let cursorName in cursorData) {
-      const cursor = this.cursors[cursorName];
-      if (!cursor) continue;
-      const cursorDataUpdate = cursorData[cursorName];
-      cursor.emit('cursorDataUpdate', cursorDataUpdate);
+      cursor.emit('cursorUpdate', cursorPositions);
     }
   }
 
@@ -58,4 +50,4 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 }
 
-export { type CursorPosition, type CursorData };
+export { type CursorPosition, type CursorData, type CursorUpdate };
