@@ -61,10 +61,17 @@ Leave the space. This removes the member from the space and notifies other space
 
 #### on(event, callback)
 
-Used for subscribing to realtime events within the space. Currently, only one event is supported:
+Used for subscribing to realtime events within the space.
 
 ##### membersUpdate
 Fires when a member enters or leaves the space. The argument supplied to the event listener callback is the current array of all [SpaceMember](#spacemember) objects within the space.
+
+##### enter
+Fires when a member enters the space. The argument supplied to the event listener callback is the [SpaceMember](#spacemember) which entered the space.
+
+##### leave
+Fires when a member leaves the space. The argument supplied to the event listener callback is the [SpaceMember](#spacemember) which left the space.
+Note that the leave event will only fire once the [offlineTimeout](#offlinetimeout) has passed.
 
 #### getMembers()
 Returns an array of all [SpaceMember](#spacemember) objects currently in the space, including any members who have left and not yet timed out. (_see: [SpaceOptions.offlineTimeout](#offlinetimeout)_)
