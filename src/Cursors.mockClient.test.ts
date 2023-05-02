@@ -4,7 +4,7 @@ import Space from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
-import { CURSOR_EVENT } from './utilities/Constants.js';
+import { CURSOR_UPDATE } from './utilities/Constants.js';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
@@ -141,7 +141,7 @@ describe('Cursors (mockClient)', () => {
         batching.hasMovement = false;
         batching.isRunning = true;
         const spy = vi.spyOn(space.cursors['channel'], 'publish');
-        await batching.batchToChannel('movement', CURSOR_EVENT);
+        await batching.batchToChannel('movement', CURSOR_UPDATE);
         expect(batching.isRunning).toBeFalsy();
         expect(spy).not.toHaveBeenCalled();
       });
@@ -152,22 +152,22 @@ describe('Cursors (mockClient)', () => {
         batching.hasMovement = true;
         batching.outgoingBuffers = { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] };
         const spy = vi.spyOn(space.cursors['channel'], 'publish');
-        await batching.batchToChannel(CURSOR_EVENT);
-        expect(spy).toHaveBeenCalledWith(CURSOR_EVENT, { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] });
+        await batching.batchToChannel(CURSOR_UPDATE);
+        expect(spy).toHaveBeenCalledWith(CURSOR_UPDATE, { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] });
       });
 
       it<CursorsTestContext>('should clear the buffer', async (context) => {
         const batching = context.batching as any;
         batching.hasMovement = true;
         batching.outgoingBuffers = { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] };
-        await batching.batchToChannel(CURSOR_EVENT);
+        await batching.batchToChannel(CURSOR_UPDATE);
         expect(batching.outgoingBuffers).toEqual({});
       });
 
       it<CursorsTestContext>('should set hasMovements to false', async (context) => {
         const batching = context.batching as any;
         batching.hasMovement = true;
-        await batching.batchToChannel(CURSOR_EVENT);
+        await batching.batchToChannel(CURSOR_UPDATE);
         expect(batching.hasMovement).toBeFalsy();
       });
     });

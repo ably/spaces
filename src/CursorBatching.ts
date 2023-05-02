@@ -1,6 +1,6 @@
 import Cursors, { CursorUpdate } from './Cursors';
 import { Types } from 'ably';
-import { CURSOR_EVENT } from './utilities/Constants';
+import { CURSOR_UPDATE } from './utilities/Constants';
 
 const BATCH_TIME_UPDATE = 100;
 
@@ -28,7 +28,7 @@ export default class CursorBatching {
     if (!this.shouldSend) return;
     this.hasMovement = true;
     this.pushToBuffer(name, cursor);
-    this.publishFromBuffer(CURSOR_EVENT);
+    this.publishFromBuffer(CURSOR_UPDATE);
   }
 
   private async onPresenceUpdate() {

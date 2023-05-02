@@ -1,7 +1,7 @@
 import Space from './Space';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
-import { CURSOR_EVENT, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
+import { CURSOR_UPDATE, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
 import { Types } from 'ably';
 import EventEmitter from './utilities/EventEmitter';
 
@@ -27,7 +27,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   constructor(private space: Space) {
     super();
     this.channel = space.client.channels.get(`${SPACE_CHANNEL_PREFIX}_${space.name}_cursors`);
-    this.channel.subscribe(CURSOR_EVENT, this.onIncomingCursorUpdate.bind(this));
+    this.channel.subscribe(CURSOR_UPDATE, this.onIncomingCursorUpdate.bind(this));
     this.cursorBatching = new CursorBatching(this, this.channel);
   }
 
