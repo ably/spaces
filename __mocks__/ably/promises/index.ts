@@ -13,10 +13,20 @@ const mockPresence = {
   subscribe: () => {},
 };
 
+const mockHistory = {
+  items: [],
+  first: () => mockPromisify(mockHistory),
+  next: () => mockPromisify(mockHistory),
+  current: () => mockPromisify(mockHistory),
+  hasNext: () => false,
+  isLast: () => true,
+};
+
 const mockChannel = {
   presence: mockPresence,
-  subscribe: ()=>{},
-  publish: ()=>{}
+  history: () => mockHistory,
+  subscribe: () => {},
+  publish: () => {},
 };
 
 class MockRealtime {

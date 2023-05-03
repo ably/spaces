@@ -6,12 +6,14 @@ import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
 import CursorDispensing, { INCOMING_BUFFER_INTERVAL } from './CursorDispensing';
+import CursorHistory, { PAGINATION_LIMIT } from './CursorHistory';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
   space: Space;
   batching: CursorBatching;
   dispensing: CursorDispensing;
+  history: CursorHistory;
 }
 
 vi.mock('ably/promises');
@@ -23,6 +25,7 @@ describe('Cursors (mockClient)', () => {
     context.space = new Space('test', client);
     context.batching = context.space.cursors['cursorBatching'];
     context.dispensing = context.space.cursors['cursorDispensing'];
+    context.history = context.space.cursors['cursorHistory'];
   });
 
   describe('get', () => {
@@ -356,6 +359,181 @@ describe('Cursors (mockClient)', () => {
 
         vi.useRealTimers();
       });
+    });
+  });
+
+  describe('CursorHistory', () => {
+    it<CursorsTestContext>('returns an empty object if there is no members in the space', async ({
+      space,
+      history,
+    }) => {
+      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(createPresenceCount(0));
+      expect(await space.cursors.getAll()).toEqual({});
+    });
+
+    it<CursorsTestContext>('gets the last position of all cursors from all connected clients', async ({
+      space,
+      history,
+    }) => {
+      const client1Message = {
+        connectionId: 'connectionId1',
+        clientId: 'clientId1',
+        data: {
+          cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
+          cursor2: [{ position: { x: 5, y: 4 } }],
+        },
+      };
+
+      const client2Message = {
+        connectionId: 'connectionId2',
+        clientId: 'clientId2',
+        data: {
+          cursor2: [{ position: { x: 25, y: 44 } }],
+        },
+      };
+
+      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
+        createPresenceMessage('enter', { connectionId: 'connectionId1' }),
+        createPresenceMessage('enter', { connectionId: 'connectionId2' }),
+      ]);
+
+      const page = await history['channel'].history();
+      vi.spyOn(page, 'current').mockImplementationOnce(async () => {
+        return {
+          ...history['channel']['history'](),
+          items: [client1Message, client2Message],
+        };
+      });
+
+      expect(await space.cursors.getAll()).toEqual({
+        connectionId1: {
+          cursor1: {
+            connectionId: 'connectionId1',
+            clientId: 'clientId1',
+            data: {
+              color: 'blue',
+            },
+            name: 'cursor1',
+            position: {
+              x: 2,
+              y: 3,
+            },
+          },
+          cursor2: {
+            connectionId: 'connectionId1',
+            clientId: 'clientId1',
+            data: undefined,
+            name: 'cursor2',
+            position: {
+              x: 5,
+              y: 4,
+            },
+          },
+        },
+        connectionId2: {
+          cursor2: {
+            connectionId: 'connectionId2',
+            clientId: 'clientId2',
+            data: undefined,
+            name: 'cursor2',
+            position: {
+              x: 25,
+              y: 44,
+            },
+          },
+        },
+      });
+    });
+
+    it<CursorsTestContext>('gets the last position of a given cursor from all connected clients', async ({
+      space,
+      history,
+    }) => {
+      const client1Message = {
+        connectionId: 'connectionId1',
+        clientId: 'clientId1',
+        data: {
+          cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
+          cursor2: [{ position: { x: 5, y: 4 } }],
+        },
+      };
+
+      const client2Message = {
+        connectionId: 'connectionId2',
+        clientId: 'clientId2',
+        data: {
+          cursor2: [{ position: { x: 25, y: 44 } }],
+        },
+      };
+
+      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
+        createPresenceMessage('enter', { connectionId: 'connectionId1' }),
+        createPresenceMessage('enter', { connectionId: 'connectionId2' }),
+      ]);
+
+      const page = await history['channel'].history();
+      vi.spyOn(page, 'current').mockImplementationOnce(async () => {
+        return {
+          ...history['channel']['history'](),
+          items: [client1Message, client2Message],
+        };
+      });
+
+      expect(await space.cursors.getAll()).toEqual({
+        connectionId1: {
+          cursor1: {
+            connectionId: 'connectionId1',
+            clientId: 'clientId1',
+            data: {
+              color: 'blue',
+            },
+            name: 'cursor1',
+            position: {
+              x: 2,
+              y: 3,
+            },
+          },
+          cursor2: {
+            connectionId: 'connectionId1',
+            clientId: 'clientId1',
+            data: undefined,
+            name: 'cursor2',
+            position: {
+              x: 5,
+              y: 4,
+            },
+          },
+        },
+        connectionId2: {
+          cursor2: {
+            connectionId: 'connectionId2',
+            clientId: 'clientId2',
+            data: undefined,
+            name: 'cursor2',
+            position: {
+              x: 25,
+              y: 44,
+            },
+          },
+        },
+      });
+    });
+
+    it<CursorsTestContext>('calls the history API up to the PAGINATION_LIMIT limit', async ({ space, history }) => {
+      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
+        createPresenceMessage('enter', { connectionId: 'connectionId1' }),
+        createPresenceMessage('enter', { connectionId: 'connectionId2' }),
+      ]);
+
+      const page = await history['channel'].history();
+      const currentSpy = vi.spyOn(page, 'current');
+      const nextSpy = vi.spyOn(page, 'next');
+
+      vi.spyOn(page, 'hasNext').mockImplementation(() => true);
+
+      await space.cursors.getAll();
+      expect(currentSpy).toHaveBeenCalledOnce();
+      expect(nextSpy).toHaveBeenCalledTimes(PAGINATION_LIMIT - 1);
     });
   });
 });

@@ -1,10 +1,12 @@
+import { Types } from 'ably';
+
 import Space from './Space';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
 import CursorDispensing from './CursorDispensing';
 import { CURSOR_UPDATE, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
-import { Types } from 'ably';
 import EventEmitter from './utilities/EventEmitter';
+import CursorHistory from './CursorHistory';
 
 type CursorPosition = { x: number; y: number };
 
@@ -25,6 +27,7 @@ type CursorsEventMap = {
 export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
   private readonly cursorDispensing: CursorDispensing;
+  private readonly cursorHistory: CursorHistory;
   private channel: Types.RealtimeChannelPromise;
 
   cursors: Record<string, Cursor> = {};
@@ -37,6 +40,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
 
     this.cursorDispensing = new CursorDispensing(this);
     this.channel.subscribe(CURSOR_UPDATE, (message) => this.cursorDispensing.processBatch(message));
+
+    this.cursorHistory = new CursorHistory(this.channel);
   }
 
   get(name: string): Cursor {
@@ -45,6 +50,10 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     }
 
     return this.cursors[name];
+  }
+
+  async getAll(cursorName?: string) {
+    return await this.cursorHistory.getLastCursorUpdate(cursorName);
   }
 }
 
