@@ -29,7 +29,9 @@ const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
 };
 
-class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
+type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter: SpaceMember };
+
+class Space extends EventEmitter<SpaceEventsMap> {
   private channelName: string;
   private clientId: string;
   private channel: Types.RealtimeChannelPromise;
@@ -102,6 +104,8 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
 
   private addLeaver(message: Types.PresenceMessage) {
     const timeoutCallback = () => {
+      const member = this.getMemberFromConnection(message.connectionId);
+      this.emit('leave', member);
       this.removeMember(message.clientId);
       this.emit('membersUpdate', this.members);
     };
@@ -111,13 +115,9 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
       timeoutId: setTimeout(timeoutCallback, this.options.offlineTimeout),
     });
   }
-
   private removeLeaver(leaverIndex) {
-    this.leavers.splice(leaverIndex, 1);
-  }
-
-  private resetLeaver(leaverIndex) {
     clearTimeout(this.leavers[leaverIndex].timeoutId);
+    this.leavers.splice(leaverIndex, 1);
   }
 
   private updateLeavers(message: Types.PresenceMessage) {
@@ -126,11 +126,9 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
     if (message.action === 'leave' && index < 0) {
       this.addLeaver(message);
     } else if (message.action === 'leave' && index >= 0) {
-      this.resetLeaver(index);
       this.removeLeaver(index);
       this.addLeaver(message);
     } else if (index >= 0) {
-      this.resetLeaver(index);
       this.removeLeaver(index);
     }
   }
@@ -142,6 +140,7 @@ class Space extends EventEmitter<{ membersUpdate: SpaceMember[] }> {
     if (index >= 0) {
       this.members[index] = spaceMember;
     } else {
+      this.emit('enter', spaceMember);
       this.members.push(spaceMember);
     }
   }

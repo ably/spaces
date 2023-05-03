@@ -212,6 +212,22 @@ describe('Space (mockClient)', () => {
       ]);
     });
 
+    it<SpaceTestContext>('fires an enter message on join', async ({ space }) => {
+      const callbackSpy = vi.fn();
+      space.on('enter', callbackSpy);
+
+      createPresenceEvent(space, 'enter');
+
+      expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[]>(1, {
+        clientId: '1',
+        connections: ['1'],
+        profileData: {},
+        isConnected: true,
+        location: null,
+        lastEvent: { name: 'enter', timestamp: 1 },
+      });
+    });
+
     describe('leavers', () => {
       beforeEach(() => {
         vi.useFakeTimers();
@@ -253,6 +269,25 @@ describe('Space (mockClient)', () => {
 
         expect(callbackSpy).toHaveBeenNthCalledWith(1, []);
         expect(callbackSpy).toHaveBeenCalledTimes(3);
+      });
+
+      it<SpaceTestContext>('sends a leave event after offlineTimeout', async ({ space }) => {
+        const callbackSpy = vi.fn();
+        space.on('leave', callbackSpy);
+
+        createPresenceEvent(space, 'enter');
+        createPresenceEvent(space, 'leave');
+
+        vi.advanceTimersByTime(130_000);
+
+        expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[]>(1, {
+          clientId: '1',
+          connections: ['1'],
+          profileData: {},
+          isConnected: false,
+          location: null,
+          lastEvent: { name: 'leave', timestamp: 1 },
+        });
       });
 
       it<SpaceTestContext>('does not remove a member that has rejoined', async ({ space }) => {
