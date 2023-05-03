@@ -26,10 +26,18 @@ space.on('membersUpdate', (members) => {
 });
 
 /** Avoids issues with top-level await: an alternative fix is to change build target to es */
-(async () => {
+
+const init = async () => {
   await space.enter({ name: selfName });
-  renderSelfAvatar(selfName);
-  renderFeatureDisplay(space);
-  const initialMembers = space.getMembers();
-  renderAvatars(initialMembers.filter(memberIsNotSelf));
+};
+
+(async () => {
+  space.once('membersUpdate', () => {
+    renderSelfAvatar(selfName);
+    renderFeatureDisplay(space);
+    const initialMembers = space.getMembers();
+    renderAvatars(initialMembers.filter(memberIsNotSelf));
+  });
+
+  init();
 })();
