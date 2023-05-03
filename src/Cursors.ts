@@ -11,7 +11,7 @@ type CursorData = Record<string, unknown>;
 
 type CursorUpdate = {
   position: CursorPosition;
-  data: CursorData;
+  data?: CursorData;
 };
 
 type CursorsEventMap = {
