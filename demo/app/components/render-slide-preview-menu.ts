@@ -82,6 +82,7 @@ const renderSlidePreviewMenu = (space: Space) => {
 
     if (slide.selected) {
       slidePreviewListItem.style.backgroundColor = '#EEE9FF';
+      space.locations.set(`slide-${slide.id}`);
 
       const slidePreviewSelectedIndicator = slidePreviewFragment.querySelector(
         'div[data-id=slide-preview-selected-indicator]',
