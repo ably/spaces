@@ -29,7 +29,9 @@ const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
 };
 
-class Space extends EventEmitter<{ membersUpdate: SpaceMember[]; leave: SpaceMember; enter: SpaceMember }> {
+type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter: SpaceMember };
+
+class Space extends EventEmitter<SpaceEventsMap> {
   private channelName: string;
   private clientId: string;
   private channel: Types.RealtimeChannelPromise;
