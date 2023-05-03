@@ -1,55 +1,68 @@
-import Cursors, { CursorPosition } from './Cursors';
+import Cursors, { CursorUpdate } from './Cursors';
 import { Types } from 'ably';
+import { CURSOR_UPDATE } from './utilities/Constants';
 
 const BATCH_TIME_UPDATE = 100;
 
+type OutgoingBuffer = Record<string, CursorUpdate[]>;
+
 export default class CursorBatching {
-  outgoingBuffer: Record<string, CursorPosition[]> = {};
+  outgoingBuffers: OutgoingBuffer = {};
 
   batchTime: number = 100;
-  // Set to `true` when the buffer is actively being emptied
-  isRunning: boolean = false;
+
+  hasMovement = false;
   // Set to `true` when a cursor position is in the buffer
-  hasMovements: boolean = false;
-  // Set to `true` if there is more than one user listening to cursors
+  isRunning: boolean = false;
+  // Set to `true` when the buffer is actively being emptied
   shouldSend: boolean = false;
+  // Set to `true` if there is more than one user listening to cursors
 
   constructor(readonly cursors: Cursors, readonly channel: Types.RealtimeChannelPromise) {
     this.channel.presence.subscribe(this.onPresenceUpdate.bind(this));
     this.channel.presence.enter();
   }
 
-  async onPresenceUpdate() {
+  pushCursorPosition(name: string, cursor: CursorUpdate) {
+    // Ignore the cursor update if there is no one listening
+    if (!this.shouldSend) return;
+    this.hasMovement = true;
+    this.pushToBuffer(name, cursor);
+    this.publishFromBuffer(CURSOR_UPDATE);
+  }
+
+  private async onPresenceUpdate() {
     const members = await this.channel.presence.get();
     this.shouldSend = members.length > 1;
     this.batchTime = (members.length - 1) * BATCH_TIME_UPDATE;
   }
 
-  pushCursorPosition(name: string, pos: CursorPosition) {
-    // Ignore the cursor update if there is no one listening
-    if (!this.shouldSend) return;
-    this.hasMovements = true;
-    if (this.outgoingBuffer[name]) {
-      this.outgoingBuffer[name].push(pos);
+  private pushToBuffer(key: string, value: CursorUpdate) {
+    if (this.outgoingBuffers[key]) {
+      this.outgoingBuffers[key].push(value);
     } else {
-      this.outgoingBuffer[name] = [pos];
-    }
-    if (!this.isRunning) {
-      this.batchCursors();
-      this.isRunning = true;
+      this.outgoingBuffers[key] = [value];
     }
   }
 
-  async batchCursors() {
-    if (!this.hasMovements) {
+  private async publishFromBuffer(eventName: string) {
+    if (!this.isRunning) {
+      this.isRunning = true;
+      await this.batchToChannel(eventName);
+    }
+  }
+
+  private async batchToChannel(eventName: string) {
+    if (!this.hasMovement) {
       this.isRunning = false;
       return;
     }
     // Must be copied here to avoid a race condition where the buffer is cleared before the publish happens
-    const bufferCopy = { ...this.outgoingBuffer };
-    this.outgoingBuffer = {};
-    this.hasMovements = false;
-    await this.channel.publish('cursors', bufferCopy);
-    setTimeout(this.batchCursors, this.batchTime);
+    const bufferCopy = { ...this.outgoingBuffers };
+    await this.channel.publish(eventName, bufferCopy);
+    setTimeout(() => this.batchToChannel(eventName), this.batchTime);
+    this.outgoingBuffers = {};
+    this.hasMovement = false;
+    this.isRunning = true;
   }
 }
