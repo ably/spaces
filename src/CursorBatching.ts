@@ -4,7 +4,7 @@ import { CURSOR_UPDATE } from './utilities/Constants';
 
 const BATCH_TIME_UPDATE = 100;
 
-type OutgoingBuffer = Record<string, CursorUpdate[]>;
+type OutgoingBuffer = Record<string, Pick<CursorUpdate, 'position' | 'data'>[]>;
 
 export default class CursorBatching {
   outgoingBuffers: OutgoingBuffer = {};
@@ -23,7 +23,7 @@ export default class CursorBatching {
     this.channel.presence.enter();
   }
 
-  pushCursorPosition(name: string, cursor: CursorUpdate) {
+  pushCursorPosition(name: string, cursor: Pick<CursorUpdate, 'position' | 'data'>) {
     // Ignore the cursor update if there is no one listening
     if (!this.shouldSend) return;
     this.hasMovement = true;
@@ -37,7 +37,7 @@ export default class CursorBatching {
     this.batchTime = (members.length - 1) * BATCH_TIME_UPDATE;
   }
 
-  private pushToBuffer(key: string, value: CursorUpdate) {
+  private pushToBuffer(key: string, value: Pick<CursorUpdate, 'position' | 'data'>) {
     if (this.outgoingBuffers[key]) {
       this.outgoingBuffers[key].push(value);
     } else {
@@ -59,7 +59,7 @@ export default class CursorBatching {
     }
     // Must be copied here to avoid a race condition where the buffer is cleared before the publish happens
     const bufferCopy = { ...this.outgoingBuffers };
-    await this.channel.publish(eventName, bufferCopy);
+    this.channel.publish(eventName, bufferCopy);
     setTimeout(() => this.batchToChannel(eventName), this.batchTime);
     this.outgoingBuffers = {};
     this.hasMovement = false;

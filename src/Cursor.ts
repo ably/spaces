@@ -1,8 +1,8 @@
 import EventEmitter from './utilities/EventEmitter';
-import { CursorUpdate } from './Cursors';
+import { type CursorUpdate } from './Cursors';
 import CursorBatching from './CursorBatching';
 
-type CursorEventMap = { cursorUpdate: CursorUpdate[] };
+type CursorEventMap = { cursorUpdate: CursorUpdate };
 
 /** Class that enables updating and emitting events for a specific cursor. */
 export default class Cursor extends EventEmitter<CursorEventMap> {
@@ -20,7 +20,7 @@ export default class Cursor extends EventEmitter<CursorEventMap> {
    * @param {CursorUpdate} cursor
    * @return {void}
    */
-  set(cursor: CursorUpdate): void {
+  set(cursor: Pick<CursorUpdate, 'position' | 'data'>): void {
     this.cursorBatching.pushCursorPosition(this.name, cursor);
   }
 }
