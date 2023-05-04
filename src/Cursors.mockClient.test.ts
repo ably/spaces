@@ -5,11 +5,13 @@ import { createPresenceMessage } from './utilities/test/fakes.js';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
+import CursorDispensing, { INCOMING_BUFFER_INTERVAL } from './CursorDispensing';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
   space: Space;
   batching: CursorBatching;
+  dispensing: CursorDispensing;
 }
 
 vi.mock('ably/promises');
@@ -20,9 +22,18 @@ describe('Cursors (mockClient)', () => {
     context.client = client;
     context.space = new Space('test', client);
     context.batching = context.space.cursors['cursorBatching'];
+    context.dispensing = context.space.cursors['cursorDispensing'];
   });
 
   describe('get', () => {
+    beforeEach<CursorsTestContext>(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach<CursorsTestContext>(() => {
+      vi.useRealTimers();
+    });
+
     it<CursorsTestContext>('creates a cursor and returns it', ({ space }) => {
       expectTypeOf(space.cursors.get('cursor1')).toMatchTypeOf<Cursor>();
     });
@@ -34,20 +45,69 @@ describe('Cursors (mockClient)', () => {
       expect(space.cursors.get('cursor1')).toEqual(cursor1);
     });
 
-    it<CursorsTestContext>('emits a positionsUpdate event', ({ space }) => {
-      const fakeMessage = { data: { cursor1: [], cursor2: [] } };
+    it<CursorsTestContext>('emits a cursorsUpdate event', ({ space, dispensing }) => {
+      const fakeMessage = {
+        connectionId: 'connectionId',
+        clientId: 'clientId',
+        data: {
+          cursor1: [{ position: { x: 1, y: 1 } }],
+          cursor2: [{ position: { x: 1, y: 2 }, data: { color: 'red' } }],
+        },
+      };
+
       const spy = vitest.fn();
-      space.cursors.on('cursorsUpdate', spy);
-      space.cursors['onIncomingCursorUpdate'](fakeMessage as Types.Message);
-      expect(spy).toHaveBeenCalledWith(fakeMessage.data);
+      space.cursors.on(spy);
+      dispensing.processBatch(fakeMessage);
+
+      vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+
+      expect(spy).toHaveBeenCalledWith({
+        position: { x: 1, y: 1 },
+        data: undefined,
+        clientId: 'clientId',
+        connectionId: 'connectionId',
+        name: 'cursor1',
+      });
+
+      vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL * 2);
+
+      expect(spy).toHaveBeenCalledWith({
+        position: { x: 1, y: 2 },
+        data: { color: 'red' },
+        clientId: 'clientId',
+        connectionId: 'connectionId',
+        name: 'cursor2',
+      });
     });
 
-    it<CursorsTestContext>('emits positionUpdate for a specific cursor event', ({ space }) => {
-      const fakeMessage = { data: { cursor1: [{ x: 1, y: 1 }] } };
+    it<CursorsTestContext>('emits cursorUpdate for a specific cursor event', ({ space, dispensing }) => {
+      const fakeMessage = {
+        connectionId: 'connectionId',
+        clientId: 'clientId',
+        data: {
+          cursor1: [{ position: { x: 1, y: 1 } }],
+          cursor2: [{ position: { x: 1, y: 2 }, data: { color: 'red' } }],
+        },
+      };
+
       const spy = vitest.fn();
-      space.cursors.get('cursor1').on('cursorUpdate', spy);
-      space.cursors['onIncomingCursorUpdate'](fakeMessage as Types.Message);
-      expect(spy).toHaveBeenCalledWith(fakeMessage.data.cursor1);
+      const catchAllSpy = vitest.fn();
+      space.cursors.on(catchAllSpy);
+      space.cursors.get('cursor1').on(spy);
+      dispensing.processBatch(fakeMessage);
+
+      vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+
+      const result = {
+        position: { x: 1, y: 1 },
+        data: undefined,
+        clientId: 'clientId',
+        connectionId: 'connectionId',
+        name: 'cursor1',
+      };
+
+      expect(spy).toHaveBeenCalledWith(result);
+      expect(catchAllSpy).toHaveBeenCalledWith(result);
     });
   });
 
@@ -169,6 +229,132 @@ describe('Cursors (mockClient)', () => {
         batching.hasMovement = true;
         await batching.batchToChannel(CURSOR_UPDATE);
         expect(batching.hasMovement).toBeFalsy();
+      });
+    });
+  });
+
+  describe('CursorDispensing', () => {
+    describe('processBatch', () => {
+      it<CursorsTestContext>('does not call emitFromBatch if there are no updates', async ({ dispensing }) => {
+        const spy = vi.spyOn(dispensing, 'emitFromBatch');
+
+        const fakeMessage = {
+          connectionId: 'connectionId',
+          clientId: 'clientId',
+          data: {
+            cursor1: [],
+          },
+        };
+
+        dispensing.processBatch(fakeMessage);
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it<CursorsTestContext>('does not call emitFromBatch if the loop is already running', async ({ dispensing }) => {
+        const spy = vi.spyOn(dispensing, 'emitFromBatch');
+
+        const fakeMessage = {
+          connectionId: 'connectionId',
+          clientId: 'clientId',
+          data: {
+            cursor1: [{ position: { x: 1, y: 1 } }],
+          },
+        };
+
+        dispensing['handlerRunning'] = true;
+        dispensing.processBatch(fakeMessage);
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it<CursorsTestContext>('call emitFromBatch if there are updates', async ({ dispensing }) => {
+        const spy = vi.spyOn(dispensing, 'emitFromBatch');
+
+        const fakeMessage = {
+          connectionId: 'connectionId',
+          clientId: 'clientId',
+          data: {
+            cursor1: [{ position: { x: 1, y: 1 } }],
+          },
+        };
+
+        dispensing.processBatch(fakeMessage);
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it<CursorsTestContext>('puts a message into the buffer in the correct format', async ({ dispensing }) => {
+        const fakeMessage = {
+          connectionId: 'connectionId',
+          clientId: 'clientId',
+          data: {
+            cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
+            cursor2: [{ position: { x: 5, y: 4 } }],
+          },
+        };
+
+        dispensing.processBatch(fakeMessage);
+        expect(dispensing['buffer']).toEqual({
+          connectionId: [
+            {
+              position: { x: 1, y: 1 },
+              data: undefined,
+              clientId: 'clientId',
+              connectionId: 'connectionId',
+              name: 'cursor1',
+            },
+            {
+              position: { x: 2, y: 3 },
+              data: { color: 'blue' },
+              clientId: 'clientId',
+              connectionId: 'connectionId',
+              name: 'cursor1',
+            },
+            {
+              position: { x: 5, y: 4 },
+              data: undefined,
+              clientId: 'clientId',
+              connectionId: 'connectionId',
+              name: 'cursor2',
+            },
+          ],
+        });
+      });
+
+      it<CursorsTestContext>('runs until the batch is empty', async ({ dispensing }) => {
+        vi.useFakeTimers();
+
+        const fakeMessage = {
+          connectionId: 'connectionId',
+          clientId: 'clientId',
+          data: {
+            cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
+            cursor2: [{ position: { x: 5, y: 4 } }],
+          },
+        };
+
+        expect(dispensing['handlerRunning']).toBe(false);
+        expect(dispensing['bufferHasData']).toBe(false);
+
+        dispensing.processBatch(fakeMessage);
+        expect(dispensing['buffer']['connectionId']).toHaveLength(3);
+        expect(dispensing['handlerRunning']).toBe(true);
+        expect(dispensing['bufferHasData']).toBe(true);
+        vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+
+        expect(dispensing['buffer']['connectionId']).toHaveLength(2);
+        expect(dispensing['handlerRunning']).toBe(true);
+        expect(dispensing['bufferHasData']).toBe(true);
+
+        vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+        expect(dispensing['buffer']['connectionId']).toHaveLength(1);
+        expect(dispensing['handlerRunning']).toBe(true);
+        expect(dispensing['bufferHasData']).toBe(true);
+
+        vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+        expect(dispensing['buffer']['connectionId']).toHaveLength(0);
+        expect(dispensing['handlerRunning']).toBe(false);
+        expect(dispensing['bufferHasData']).toBe(false);
+
+        vi.useRealTimers();
       });
     });
   });
