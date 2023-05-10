@@ -37,4 +37,4 @@ class MockRealtime {
   }
 }
 
-export { MockRealtime as Realtime };
+export { MockRealtime as Realtime, mockPromisify };

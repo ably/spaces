@@ -10,8 +10,8 @@ import { SPACE_CHANNEL_PREFIX } from './utilities/Constants';
 
 export type SpaceMember = {
   clientId: string;
+  connectionId: string;
   isConnected: boolean;
-  connections: string[];
   profileData: { [key: string]: any };
   location: any;
   lastEvent: {
@@ -33,7 +33,7 @@ type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter:
 
 class Space extends EventEmitter<SpaceEventsMap> {
   private channelName: string;
-  private clientId: string;
+  private connectionId?: string;
   private channel: Types.RealtimeChannelPromise;
   private members: SpaceMember[];
   private leavers: SpaceLeaver[];
@@ -45,7 +45,11 @@ class Space extends EventEmitter<SpaceEventsMap> {
   constructor(readonly name: string, readonly client: Types.RealtimePromise, options?: SpaceOptions) {
     super();
     this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
-    this.clientId = this.client.auth.clientId;
+    if (!this.client.connection.id) {
+      this.client.connection.whenState('connected').then(() => (this.connectionId = this.client.connection.id));
+    } else {
+      this.connectionId = this.client.connection.id;
+    }
     this.members = [];
     this.leavers = [];
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
@@ -65,7 +69,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
   }
 
   getMemberFromConnection(connectionId: string) {
-    return this.members.find((m) => m.connections.includes(connectionId));
+    return this.members.find((m) => m.connectionId === connectionId);
   }
 
   private updateOrCreateMember(message: Types.PresenceMessage): SpaceMember {
@@ -78,16 +82,12 @@ class Space extends EventEmitter<SpaceEventsMap> {
     if (!member) {
       return {
         clientId: message.clientId as string,
+        connectionId: message.connectionId,
         isConnected: message.action !== 'leave',
         profileData: message.data.profileData,
         location: null,
         lastEvent,
-        connections: [message.connectionId],
       };
-    }
-
-    if (!member.connections.includes(message.connectionId)) {
-      member.connections.push(message.connectionId);
     }
 
     member.isConnected = message.action !== 'leave';
@@ -180,7 +180,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
   }
 
   getSelf(): SpaceMember | undefined {
-    return this.members.find((m) => m.clientId === this.clientId);
+    return this.getMemberFromConnection(this.connectionId);
   }
 }
 

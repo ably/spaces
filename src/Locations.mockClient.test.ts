@@ -2,6 +2,7 @@ import { it, describe, expect, vi, beforeEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 import Space, { SpaceMember } from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
+import { mockPromisify } from '../__mocks__/ably/promises/index.js';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
@@ -14,6 +15,39 @@ vi.mock('ably/promises');
 describe('Locations (mockClient)', () => {
   beforeEach<SpaceTestContext>((context) => {
     const client = new Realtime({});
+    client.connection = {
+      id: '1',
+      ping: () => mockPromisify<number>(100),
+      whenState: () =>
+        mockPromisify<{
+          current: 'connected';
+          previous: 'disconnected';
+        }>({
+          current: 'connected',
+          previous: 'disconnected',
+        }),
+      errorReason: {
+        code: 20000,
+        message: '',
+        statusCode: 200,
+      },
+      recoveryKey: ``,
+      serial: 1,
+      state: `connected`,
+      close: () => mockPromisify(undefined),
+      on: () => mockPromisify(undefined),
+      off: () => mockPromisify(undefined),
+      connect: () => mockPromisify(undefined),
+      once: () =>
+        mockPromisify<{
+          current: 'connected';
+          previous: 'disconnected';
+        }>({
+          current: 'connected',
+          previous: 'disconnected',
+        }),
+      listeners: () => [],
+    };
     const presence = client.channels.get('').presence;
 
     vi.spyOn(presence, 'get').mockImplementationOnce(async () => [
@@ -61,11 +95,11 @@ describe('Locations (mockClient)', () => {
       expect(spy).toHaveBeenLastCalledWith<{ member: SpaceMember; currentLocation: any; previousLocation: any }[]>({
         member: {
           clientId: '2',
+          connectionId: '2',
           isConnected: true,
           profileData: { a: 1 },
           location: 'location2',
           lastEvent: { name: 'update', timestamp: 1 },
-          connections: ['2'],
         },
         currentLocation: 'location2',
         previousLocation: 'location1',
