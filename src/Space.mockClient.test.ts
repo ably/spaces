@@ -2,7 +2,7 @@ import { it, describe, expect, vi, beforeEach, expectTypeOf, afterEach } from 'v
 import { Realtime, Types } from 'ably/promises';
 
 import Space, { SpaceMember } from './Space.js';
-import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
+import { clientConnection, createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
 import Locations from './Locations.js';
 import Cursors from './Cursors';
 
@@ -17,6 +17,7 @@ vi.mock('ably/promises');
 describe('Space (mockClient)', () => {
   beforeEach<SpaceTestContext>((context) => {
     const client = new Realtime({});
+    client.connection = clientConnection;
     const presence = client.channels.get('').presence;
 
     context.client = client;
@@ -31,7 +32,6 @@ describe('Space (mockClient)', () => {
       const space = new Space('test', client);
 
       expect(channelSpy).toHaveBeenNthCalledWith(1, '_ably_space_test');
-      // Note: This is matching the class type. This is not a TypeScript type.
       expectTypeOf(space).toMatchTypeOf<Space>();
     });
   });
@@ -52,7 +52,7 @@ describe('Space (mockClient)', () => {
       expect(spaceMembers).toEqual<SpaceMember[]>([
         {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           isConnected: true,
           profileData: {},
           location: null,
@@ -60,7 +60,7 @@ describe('Space (mockClient)', () => {
         },
         {
           clientId: '2',
-          connections: ['2'],
+          connectionId: '2',
           isConnected: true,
           profileData: { a: 1 },
           location: null,
@@ -77,7 +77,7 @@ describe('Space (mockClient)', () => {
       const member = space.getMemberFromConnection('testConnectionId');
       expect(member).toEqual<SpaceMember>({
         clientId: '1',
-        connections: ['testConnectionId'],
+        connectionId: 'testConnectionId',
         isConnected: true,
         location: null,
         lastEvent: {
@@ -102,6 +102,7 @@ describe('Space (mockClient)', () => {
   describe('on', () => {
     it('subscribes to presence updates', async () => {
       const client = new Realtime({});
+      client.connection = clientConnection;
       const presence = client.channels.get('').presence;
       const spy = vi.spyOn(presence, 'subscribe');
       new Space('test', client);
@@ -125,7 +126,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           profileData: {},
           isConnected: true,
           location: null,
@@ -137,7 +138,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           profileData: {},
           isConnected: true,
           location: null,
@@ -145,7 +146,7 @@ describe('Space (mockClient)', () => {
         },
         {
           clientId: '2',
-          connections: ['2'],
+          connectionId: '2',
           profileData: { a: 1 },
           isConnected: true,
           location: null,
@@ -162,7 +163,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           profileData: {},
           isConnected: true,
           location: null,
@@ -174,7 +175,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           profileData: { a: 1 },
           isConnected: true,
           location: null,
@@ -191,7 +192,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           profileData: {},
           isConnected: true,
           location: null,
@@ -203,7 +204,7 @@ describe('Space (mockClient)', () => {
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           profileData: {},
           isConnected: false,
           location: null,
@@ -220,7 +221,7 @@ describe('Space (mockClient)', () => {
 
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[]>(1, {
         clientId: '1',
-        connections: ['1'],
+        connectionId: '1',
         profileData: {},
         isConnected: true,
         location: null,
@@ -245,7 +246,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
-            connections: ['1'],
+            connectionId: '1',
             profileData: {},
             isConnected: true,
             location: null,
@@ -257,7 +258,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
-            connections: ['1'],
+            connectionId: '1',
             profileData: {},
             isConnected: false,
             location: null,
@@ -282,7 +283,7 @@ describe('Space (mockClient)', () => {
 
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[]>(1, {
           clientId: '1',
-          connections: ['1'],
+          connectionId: '1',
           profileData: {},
           isConnected: false,
           location: null,
@@ -299,7 +300,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
-            connections: ['1'],
+            connectionId: '1',
             profileData: {},
             isConnected: true,
             location: null,
@@ -307,7 +308,7 @@ describe('Space (mockClient)', () => {
           },
           {
             clientId: '2',
-            connections: ['2'],
+            connectionId: '2',
             profileData: {},
             isConnected: true,
             location: null,
@@ -319,7 +320,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
-            connections: ['1'],
+            connectionId: '1',
             profileData: {},
             isConnected: false,
             location: null,
@@ -327,7 +328,7 @@ describe('Space (mockClient)', () => {
           },
           {
             clientId: '2',
-            connections: ['2'],
+            connectionId: '2',
             profileData: {},
             isConnected: true,
             location: null,
@@ -340,7 +341,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
-            connections: ['1'],
+            connectionId: '1',
             profileData: {},
             isConnected: true,
             location: null,
@@ -348,7 +349,7 @@ describe('Space (mockClient)', () => {
           },
           {
             clientId: '2',
-            connections: ['2'],
+            connectionId: '2',
             profileData: {},
             isConnected: true,
             location: null,
@@ -360,7 +361,7 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
           {
             clientId: '1',
-            connections: ['1'],
+            connectionId: '1',
             profileData: {},
             isConnected: true,
             location: null,
@@ -368,7 +369,7 @@ describe('Space (mockClient)', () => {
           },
           {
             clientId: '2',
-            connections: ['2'],
+            connectionId: '2',
             profileData: {},
             isConnected: true,
             location: null,

@@ -1,7 +1,7 @@
 import { it, describe, expect, vi, expectTypeOf, beforeEach, vitest, afterEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 import Space from './Space.js';
-import { createPresenceMessage } from './utilities/test/fakes.js';
+import { clientConnection, createPresenceMessage } from './utilities/test/fakes.js';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
@@ -19,6 +19,7 @@ vi.mock('ably/promises');
 describe('Cursors (mockClient)', () => {
   beforeEach<CursorsTestContext>((context) => {
     const client = new Realtime({});
+    client.connection = clientConnection;
     context.client = client;
     context.space = new Space('test', client);
     context.batching = context.space.cursors['cursorBatching'];
