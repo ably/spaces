@@ -50,6 +50,7 @@ const clientConnection = {
       previous: 'disconnected',
     }),
   errorReason: {
+    name: 'Success',
     code: 20000,
     message: '',
     statusCode: 200,
