@@ -1,4 +1,4 @@
-import { mockPromisify } from '../../../__mocks__/ably/promises';
+const mockPromisify = <T>(expectedReturnValue: T): Promise<T> => new Promise((resolve) => resolve(expectedReturnValue));
 
 const enterPresenceMessage = {
   clientId: '1',
