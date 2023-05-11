@@ -10,6 +10,11 @@ const mockPresence = {
   update: () => mockPromisify<void>(undefined),
   enter: methodReturningVoidPromise,
   leave: methodReturningVoidPromise,
+  subscriptions: {
+    once: async (_, fn) => {
+      return await fn();
+    },
+  },
   subscribe: () => {},
 };
 
