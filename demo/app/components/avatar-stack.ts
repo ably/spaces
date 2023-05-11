@@ -7,6 +7,9 @@ import { nameToInitials } from '../utils/fake-names';
 
 dayjs.extend(relativeTime);
 
+const updateStatusTime = (statusEl: Element, timestamp: number) =>
+  (statusEl.innerHTML = `Left ${dayjs().to(timestamp)}`);
+
 const changeStatusIndicator = (fragment, isConnected, lastEvent) => {
   const statusIndicatorEl = queryDataId(fragment, 'avatar-status-indicator');
   const statusEl = queryDataId(fragment, 'avatar-status');
@@ -18,7 +21,7 @@ const changeStatusIndicator = (fragment, isConnected, lastEvent) => {
   } else {
     statusIndicatorEl.classList.remove('text-[#11CB24]');
     statusIndicatorEl.classList.add('text-slate-500');
-    statusEl.innerHTML = dayjs().to(lastEvent.timestamp);
+    updateStatusTime(statusEl, lastEvent.timestamp);
   }
 };
 
@@ -60,12 +63,19 @@ const renderAvatar = (member, index) => {
 
   const innerWrapper = queryDataId(fragment, 'avatar-inner-wrapper');
 
+  const statusElement = queryDataId(fragment, 'avatar-status');
+
+  const updateStatusElementWithTime = () => {
+    updateStatusTime(statusElement, member.lastEvent.timestamp);
+  };
   if (member.isConnected) {
     innerWrapper.classList.add('bg-gradient-to-b', gradients[index][0], gradients[index][1]);
     innerWrapper.classList.remove('bg-[##D0D3DC]');
+    innerWrapper.removeEventListener('mouseover', updateStatusElementWithTime);
   } else {
     innerWrapper.classList.add('bg-[#D0D3DC]');
     innerWrapper.classList.remove('bg-gradient-to-b', gradients[index][0], gradients[index][1]);
+    innerWrapper.addEventListener('mouseover', updateStatusElementWithTime);
   }
 
   changeStatusIndicator(fragment, member.isConnected, member.lastEvent);
