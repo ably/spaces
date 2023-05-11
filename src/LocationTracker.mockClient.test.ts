@@ -3,8 +3,7 @@ import Space, { SpaceMember } from './Space';
 import Locations, { LocationChange } from './Locations';
 import LocationTracker, { LocationTrackerPredicate } from './LocationTracker';
 import { Realtime } from 'ably/promises';
-import { createPresenceMessage } from './utilities/test/fakes';
-import { mockPromisify } from '../__mocks__/ably/promises';
+import { clientConnection, createPresenceMessage } from './utilities/test/fakes';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
@@ -21,39 +20,7 @@ vi.mock('ably/promises');
 describe('LocationTracker', () => {
   beforeEach<LocationsTrackerTestContext>((context) => {
     const client = new Realtime({});
-    client.connection = {
-      id: '1',
-      ping: () => mockPromisify<number>(100),
-      whenState: () =>
-        mockPromisify<{
-          current: 'connected';
-          previous: 'disconnected';
-        }>({
-          current: 'connected',
-          previous: 'disconnected',
-        }),
-      errorReason: {
-        code: 20000,
-        message: '',
-        statusCode: 200,
-      },
-      recoveryKey: ``,
-      serial: 1,
-      state: `connected`,
-      close: () => mockPromisify(undefined),
-      on: () => mockPromisify(undefined),
-      off: () => mockPromisify(undefined),
-      connect: () => mockPromisify(undefined),
-      once: () =>
-        mockPromisify<{
-          current: 'connected';
-          previous: 'disconnected';
-        }>({
-          current: 'connected',
-          previous: 'disconnected',
-        }),
-      listeners: () => [],
-    };
+    client.connection = clientConnection;
 
     const presence = client.channels.get('').presence;
 

@@ -68,7 +68,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.channel.presence.subscribe(this.onPresenceUpdate);
   }
 
-  getMemberFromConnection(connectionId: string) {
+  getMemberFromConnection(connectionId?: string) {
     return this.members.find((m) => m.connectionId === connectionId);
   }
 

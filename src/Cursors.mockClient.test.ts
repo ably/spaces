@@ -1,12 +1,11 @@
 import { it, describe, expect, vi, expectTypeOf, beforeEach, vitest, afterEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 import Space from './Space.js';
-import { createPresenceMessage } from './utilities/test/fakes.js';
+import { clientConnection, createPresenceMessage } from './utilities/test/fakes.js';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
 import CursorDispensing, { INCOMING_BUFFER_INTERVAL } from './CursorDispensing';
-import { mockPromisify } from '../__mocks__/ably/promises/index.js';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
@@ -20,39 +19,7 @@ vi.mock('ably/promises');
 describe('Cursors (mockClient)', () => {
   beforeEach<CursorsTestContext>((context) => {
     const client = new Realtime({});
-    client.connection = {
-      id: '1',
-      ping: () => mockPromisify<number>(100),
-      whenState: () =>
-        mockPromisify<{
-          current: 'connected';
-          previous: 'disconnected';
-        }>({
-          current: 'connected',
-          previous: 'disconnected',
-        }),
-      errorReason: {
-        code: 20000,
-        message: '',
-        statusCode: 200,
-      },
-      recoveryKey: ``,
-      serial: 1,
-      state: `connected`,
-      close: () => mockPromisify(undefined),
-      on: () => mockPromisify(undefined),
-      off: () => mockPromisify(undefined),
-      connect: () => mockPromisify(undefined),
-      once: () =>
-        mockPromisify<{
-          current: 'connected';
-          previous: 'disconnected';
-        }>({
-          current: 'connected',
-          previous: 'disconnected',
-        }),
-      listeners: () => [],
-    };
+    client.connection = clientConnection;
     context.client = client;
     context.space = new Space('test', client);
     context.batching = context.space.cursors['cursorBatching'];

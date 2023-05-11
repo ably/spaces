@@ -1,3 +1,5 @@
+import { mockPromisify } from '../../../__mocks__/ably/promises';
+
 const enterPresenceMessage = {
   clientId: '1',
   data: { profileData: {} },
@@ -36,4 +38,38 @@ const createPresenceEvent = (space, type, override?) => {
   space.onPresenceUpdate(createPresenceMessage(type, override));
 };
 
-export { createPresenceMessage, createPresenceEvent };
+const clientConnection = {
+  id: '1',
+  ping: () => mockPromisify<number>(100),
+  whenState: () =>
+    mockPromisify<{
+      current: 'connected';
+      previous: 'disconnected';
+    }>({
+      current: 'connected',
+      previous: 'disconnected',
+    }),
+  errorReason: {
+    code: 20000,
+    message: '',
+    statusCode: 200,
+  },
+  recoveryKey: ``,
+  serial: 1,
+  state: `connected`,
+  close: () => mockPromisify(undefined),
+  on: () => mockPromisify(undefined),
+  off: () => mockPromisify(undefined),
+  connect: () => mockPromisify(undefined),
+  once: () =>
+    mockPromisify<{
+      current: 'connected';
+      previous: 'disconnected';
+    }>({
+      current: 'connected',
+      previous: 'disconnected',
+    }),
+  listeners: () => [],
+} as const;
+
+export { createPresenceMessage, createPresenceEvent, clientConnection };
