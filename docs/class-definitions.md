@@ -161,6 +161,13 @@ Get a [Cursor](#cursor) with a specific name. Names are unique per space.
 |----------|--------|
 | name     | string |
 
+#### getAll(name)
+Get the last position of all cursors in this space, for each connection. Pass a cursor name to only get the last position of that cursor for each connection.
+
+| Property | Type   |
+|----------|--------|
+| name     | string |
+
 #### on(event, callback)
 Used for subscribing to all cursor updates. Currently, only one event is supported:
 
