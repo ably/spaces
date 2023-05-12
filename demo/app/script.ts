@@ -11,7 +11,10 @@ import { SpaceMember } from '../../src/Space';
 
 const clientId = nanoid();
 
-const ably = new Ably.Realtime.Promise({ authUrl: `/api/ably-token-request?clientId=${clientId}`, clientId });
+const ably = new Ably.Realtime.Promise({
+  authUrl: `/api/ably-token-request?clientId=${clientId}`,
+  clientId,
+});
 
 const spaces = new Spaces(ably);
 
@@ -28,6 +31,7 @@ space.on('membersUpdate', (members) => {
 /** Avoids issues with top-level await: an alternative fix is to change build target to es */
 (async () => {
   await space.enter({ name: selfName });
+
   renderSelfAvatar(selfName);
   renderFeatureDisplay(space);
   const initialMembers = space.getMembers();

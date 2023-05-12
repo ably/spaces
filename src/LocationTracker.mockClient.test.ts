@@ -3,7 +3,7 @@ import Space, { SpaceMember } from './Space';
 import Locations, { LocationChange } from './Locations';
 import LocationTracker, { LocationTrackerPredicate } from './LocationTracker';
 import { Realtime } from 'ably/promises';
-import { clientConnection, createPresenceMessage } from './utilities/test/fakes';
+import { createPresenceMessage } from './utilities/test/fakes';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
@@ -20,7 +20,6 @@ vi.mock('ably/promises');
 describe('LocationTracker', () => {
   beforeEach<LocationsTrackerTestContext>((context) => {
     const client = new Realtime({});
-    client.connection = clientConnection;
 
     const presence = client.channels.get('').presence;
 

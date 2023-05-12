@@ -162,13 +162,18 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.emit('membersUpdate', this.members);
   }
 
-  async enter(profileData?: unknown) {
-    const presence = this.channel.presence;
-    await presence.enter({ profileData });
-    const presenceMessages = await presence.get();
-    this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);
+  async enter(profileData?: unknown): Promise<SpaceMember[]> {
+    return new Promise((resolve) => {
+      const presence = this.channel.presence;
+      presence.enter({ profileData });
+      // @ts-ignore
+      presence.subscriptions.once('enter', async () => {
+        const presenceMessages = await presence.get();
+        this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);
 
-    return this.members;
+        resolve(this.members);
+      });
+    });
   }
 
   leave(profileData?: unknown) {
