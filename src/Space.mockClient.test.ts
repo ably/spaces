@@ -2,7 +2,7 @@ import { it, describe, expect, vi, beforeEach, expectTypeOf, afterEach } from 'v
 import { Realtime, Types } from 'ably/promises';
 
 import Space, { SpaceMember } from './Space.js';
-import { clientConnection, createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
+import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
 import Locations from './Locations.js';
 import Cursors from './Cursors';
 
@@ -17,7 +17,6 @@ vi.mock('ably/promises');
 describe('Space (mockClient)', () => {
   beforeEach<SpaceTestContext>((context) => {
     const client = new Realtime({});
-    client.connection = clientConnection;
     const presence = client.channels.get('').presence;
 
     context.client = client;
@@ -102,7 +101,6 @@ describe('Space (mockClient)', () => {
   describe('on', () => {
     it('subscribes to presence updates', async () => {
       const client = new Realtime({});
-      client.connection = clientConnection;
       const presence = client.channels.get('').presence;
       const spy = vi.spyOn(presence, 'subscribe');
       new Space('test', client);

@@ -41,6 +41,9 @@ class MockRealtime {
   public auth: {
     clientId: string;
   };
+  public connection: {
+    id?: string;
+  };
 
   constructor() {
     this.channels = {
@@ -48,6 +51,9 @@ class MockRealtime {
     };
     this.auth = {
       clientId: MOCK_CLIENT_ID,
+    };
+    this.connection = {
+      id: '1',
     };
   }
 }
