@@ -42,6 +42,28 @@ Number of milliseconds after a user loses connection or closes their browser win
 
 Default is 120,000ms (2 minutes).
 
+#### cursors
+
+Configure the cursors API.
+
+##### outboundBatchInterval
+
+The interval at which a batch of cursors position is published. This is multiplied by the number of members in the space reduced by 1. (i.e. outboundBatchInterval \* (membersCount - 1)).
+
+Default 100ms.
+
+##### inboundBatchInterval
+
+The interval at which the listener for cursor positions is updated with a single position.
+
+Default is 1ms.
+
+##### paginationLimit
+
+The number of [history API](https://ably.com/docs/realtime/history) pages searched for the last published cursor position.
+
+Default is 5.
+
 ### Space
 
 An instance of a Space created using [spaces.get](#getname-options).
