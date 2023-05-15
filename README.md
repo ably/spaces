@@ -113,4 +113,6 @@ space.on('membersUpdate', (members) => {
 ]
 ```
 
-**Class definitions are available [in the docs folder](/docs/class-definitions.md).**
+**Class definitions are available [here in the documentation folder](/docs/class-definitions.md).**
+
+**Channel behaviors are available [here in the documentation folder](/docs/channel-behaviors.md)**
