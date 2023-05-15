@@ -5,8 +5,8 @@ import { createPresenceMessage } from './utilities/test/fakes.js';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
-import CursorDispensing, { INCOMING_BUFFER_INTERVAL } from './CursorDispensing';
-import CursorHistory, { PAGINATION_LIMIT } from './CursorHistory';
+import CursorDispensing from './CursorDispensing';
+import CursorHistory from './CursorHistory';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
@@ -62,7 +62,7 @@ describe('Cursors (mockClient)', () => {
       space.cursors.on(spy);
       dispensing.processBatch(fakeMessage);
 
-      vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+      vi.advanceTimersByTime(dispensing.inboundBatchInterval);
 
       expect(spy).toHaveBeenCalledWith({
         position: { x: 1, y: 1 },
@@ -72,7 +72,7 @@ describe('Cursors (mockClient)', () => {
         name: 'cursor1',
       });
 
-      vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL * 2);
+      vi.advanceTimersByTime(dispensing.inboundBatchInterval * 2);
 
       expect(spy).toHaveBeenCalledWith({
         position: { x: 1, y: 2 },
@@ -99,7 +99,7 @@ describe('Cursors (mockClient)', () => {
       space.cursors.get('cursor1').on(spy);
       dispensing.processBatch(fakeMessage);
 
-      vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+      vi.advanceTimersByTime(dispensing.inboundBatchInterval);
 
       const result = {
         position: { x: 1, y: 1 },
@@ -341,18 +341,18 @@ describe('Cursors (mockClient)', () => {
         expect(dispensing['buffer']['connectionId']).toHaveLength(3);
         expect(dispensing['handlerRunning']).toBe(true);
         expect(dispensing['bufferHasData']).toBe(true);
-        vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+        vi.advanceTimersByTime(dispensing.inboundBatchInterval);
 
         expect(dispensing['buffer']['connectionId']).toHaveLength(2);
         expect(dispensing['handlerRunning']).toBe(true);
         expect(dispensing['bufferHasData']).toBe(true);
 
-        vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+        vi.advanceTimersByTime(dispensing.inboundBatchInterval);
         expect(dispensing['buffer']['connectionId']).toHaveLength(1);
         expect(dispensing['handlerRunning']).toBe(true);
         expect(dispensing['bufferHasData']).toBe(true);
 
-        vi.advanceTimersByTime(INCOMING_BUFFER_INTERVAL);
+        vi.advanceTimersByTime(dispensing.inboundBatchInterval);
         expect(dispensing['buffer']['connectionId']).toHaveLength(0);
         expect(dispensing['handlerRunning']).toBe(false);
         expect(dispensing['bufferHasData']).toBe(false);
@@ -519,7 +519,7 @@ describe('Cursors (mockClient)', () => {
       });
     });
 
-    it<CursorsTestContext>('calls the history API up to the PAGINATION_LIMIT limit', async ({ space, history }) => {
+    it<CursorsTestContext>('calls the history API up to the paginationLimit', async ({ space, history }) => {
       vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
         createPresenceMessage('enter', { connectionId: 'connectionId1' }),
         createPresenceMessage('enter', { connectionId: 'connectionId2' }),
@@ -533,7 +533,7 @@ describe('Cursors (mockClient)', () => {
 
       await space.cursors.getAll();
       expect(currentSpy).toHaveBeenCalledOnce();
-      expect(nextSpy).toHaveBeenCalledTimes(PAGINATION_LIMIT - 1);
+      expect(nextSpy).toHaveBeenCalledTimes(history.paginationLimit - 1);
     });
   });
 });

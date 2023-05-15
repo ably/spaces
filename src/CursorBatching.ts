@@ -1,15 +1,14 @@
 import Cursors, { CursorUpdate } from './Cursors';
 import { Types } from 'ably';
 import { CURSOR_UPDATE } from './utilities/Constants';
-
-const BATCH_TIME_UPDATE = 100;
+import type { StrictCursorsOptions } from './options/CursorsOptions';
 
 type OutgoingBuffer = Record<string, Pick<CursorUpdate, 'position' | 'data'>[]>;
 
 export default class CursorBatching {
   outgoingBuffers: OutgoingBuffer = {};
 
-  batchTime: number = 100;
+  batchTime: number;
 
   hasMovement = false;
   // Set to `true` when a cursor position is in the buffer
@@ -18,9 +17,14 @@ export default class CursorBatching {
   shouldSend: boolean = false;
   // Set to `true` if there is more than one user listening to cursors
 
-  constructor(readonly cursors: Cursors, readonly channel: Types.RealtimeChannelPromise) {
+  constructor(
+    readonly cursors: Cursors,
+    readonly channel: Types.RealtimeChannelPromise,
+    readonly outboundBatchInterval: StrictCursorsOptions['outboundBatchInterval'],
+  ) {
     this.channel.presence.subscribe(this.onPresenceUpdate.bind(this));
     this.channel.presence.enter();
+    this.batchTime = outboundBatchInterval;
   }
 
   pushCursorPosition(name: string, cursor: Pick<CursorUpdate, 'position' | 'data'>) {
@@ -34,7 +38,7 @@ export default class CursorBatching {
   private async onPresenceUpdate() {
     const members = await this.channel.presence.get();
     this.shouldSend = members.length > 1;
-    this.batchTime = (members.length - 1) * BATCH_TIME_UPDATE;
+    this.batchTime = (members.length - 1) * this.outboundBatchInterval;
   }
 
   private pushToBuffer(key: string, value: Pick<CursorUpdate, 'position' | 'data'>) {

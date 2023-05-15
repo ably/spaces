@@ -1,13 +1,12 @@
 import Cursors, { type CursorUpdate } from './Cursors';
-
-export const INCOMING_BUFFER_INTERVAL = 1000 / 60;
+import type { StrictCursorsOptions } from './options/CursorsOptions';
 
 export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};
   private handlerRunning: boolean = false;
   private bufferHasData: boolean = false;
 
-  constructor(readonly cursors: Cursors) {}
+  constructor(readonly cursors: Cursors, readonly inboundBatchInterval: StrictCursorsOptions['inboundBatchInterval']) {}
 
   emitFromBatch() {
     if (!this.bufferHasData) {
@@ -40,7 +39,7 @@ export default class CursorDispensing {
         this.handlerRunning = false;
         this.bufferHasData = false;
       }
-    }, INCOMING_BUFFER_INTERVAL);
+    }, this.inboundBatchInterval);
   }
 
   processBatch(message) {

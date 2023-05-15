@@ -55,7 +55,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
     this.setChannel(this.name);
     this.locations = new Locations(this, this.channel);
-    this.cursors = new Cursors(this);
+    this.cursors = new Cursors(this, options?.cursors);
   }
 
   private setChannel(rootName: string) {
