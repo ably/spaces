@@ -1,8 +1,7 @@
 import { Types } from 'ably';
 
 import type { CursorUpdate } from './Cursors';
-
-const PAGINATION_LIMIT = 5;
+import type { StrictCursorsOptions } from './options/CursorsOptions';
 
 type LastPosition = null | CursorUpdate;
 type CursorName = string;
@@ -11,7 +10,10 @@ type ConnectionId = string;
 type ConnectionsLastPosition = Record<ConnectionId, null | CursorUpdate | CursorsLastPostion>;
 
 export default class CursorHistory {
-  constructor(private channel: Types.RealtimeChannelPromise) {}
+  constructor(
+    private channel: Types.RealtimeChannelPromise,
+    readonly paginationLimit: StrictCursorsOptions['paginationLimit'],
+  ) {}
 
   private positionsMissing(connections: ConnectionsLastPosition) {
     return Object.keys(connections).some((connectionId) => connections[connectionId] === null);
@@ -116,7 +118,7 @@ export default class CursorHistory {
     connections = this.mapPageToConnections(page, connections, cursorName);
     pageNo++;
 
-    while (pageNo <= PAGINATION_LIMIT && this.positionsMissing(connections) && history.hasNext()) {
+    while (pageNo <= this.paginationLimit && this.positionsMissing(connections) && history.hasNext()) {
       page = await history.next();
       connections = this.mapPageToConnections(page, connections, cursorName);
       pageNo++;
@@ -125,5 +127,3 @@ export default class CursorHistory {
     return connections;
   }
 }
-
-export { PAGINATION_LIMIT };
