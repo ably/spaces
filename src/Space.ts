@@ -105,9 +105,18 @@ class Space extends EventEmitter<SpaceEventsMap> {
   private addLeaver(message: Types.PresenceMessage) {
     const timeoutCallback = () => {
       const member = this.getMemberFromConnection(message.connectionId);
+
       this.emit('leave', member);
       this.removeMember(message.clientId);
       this.emit('membersUpdate', this.members);
+
+      if (member?.location) {
+        this.locations.emit('locationUpdate', {
+          previousLocation: member.location,
+          currentLocation: null,
+          member: { ...member, location: null },
+        });
+      }
     };
 
     this.leavers.push({

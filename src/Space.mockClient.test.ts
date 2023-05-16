@@ -397,6 +397,31 @@ describe('Space (mockClient)', () => {
 
         expect(spy).toHaveBeenCalledOnce();
       });
+
+      it<SpaceTestContext>('emits a location event when a user leaves and when offlineTimeout passes', async ({
+        space,
+      }) => {
+        const spy = vi.spyOn(space.locations, 'emit');
+
+        // These share the same connection/client ids
+        createPresenceEvent(space, 'enter');
+
+        // Simulate a "set" location for a user
+        space.locations['onPresenceUpdate'](createPresenceMessage('update', { data: { location: '1' } }));
+
+        expect(spy).toHaveBeenCalledTimes(1);
+
+        // We need to mock the message for both space & locations
+        const msg = createPresenceMessage('leave', { data: { location: '1' } });
+        space['onPresenceUpdate'](msg);
+        space.locations['onPresenceUpdate'](msg);
+
+        expect(spy).toHaveBeenCalledTimes(2);
+
+        vi.advanceTimersByTime(130_000);
+
+        expect(spy).toHaveBeenCalledTimes(3);
+      });
     });
   });
 
