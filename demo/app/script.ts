@@ -8,6 +8,7 @@ import Spaces from '../../src/Spaces';
 import { renderAvatars, renderSelfAvatar } from './components/avatar-stack';
 import { renderFeatureDisplay } from './components/feature-display';
 import { SpaceMember } from '../../src/Space';
+import { MEMBERS_UPDATE } from '../../src/utilities/Constants';
 
 const clientId = nanoid();
 
@@ -24,7 +25,7 @@ const selfName = getRandomName();
 
 const memberIsNotSelf = (member: SpaceMember) => member.clientId !== clientId;
 
-space.on('membersUpdate', (members) => {
+space.on(MEMBERS_UPDATE, (members) => {
   renderAvatars(members.filter(memberIsNotSelf));
 });
 

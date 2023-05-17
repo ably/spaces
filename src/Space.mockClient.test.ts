@@ -5,6 +5,7 @@ import Space, { SpaceMember } from './Space.js';
 import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
 import Locations from './Locations.js';
 import Cursors from './Cursors';
+import { MEMBERS_UPDATE } from './utilities/Constants.js';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
@@ -111,13 +112,13 @@ describe('Space (mockClient)', () => {
     it<SpaceTestContext>('does not include the connected client in the members result', async ({ space, client }) => {
       const spy = vi.fn();
       space['onPresenceUpdate'](createPresenceMessage('enter', { clientId: client.auth.clientId }));
-      space.on('membersUpdate', spy);
+      space.on(MEMBERS_UPDATE, spy);
       expect(spy).not.toHaveBeenCalled();
     });
 
     it<SpaceTestContext>('adds new members', async ({ space }) => {
       const callbackSpy = vi.fn();
-      space.on('membersUpdate', callbackSpy);
+      space.on(MEMBERS_UPDATE, callbackSpy);
 
       createPresenceEvent(space, 'enter');
 
@@ -155,7 +156,7 @@ describe('Space (mockClient)', () => {
 
     it<SpaceTestContext>('updates the data of members', async ({ space }) => {
       const callbackSpy = vi.fn();
-      space.on('membersUpdate', callbackSpy);
+      space.on(MEMBERS_UPDATE, callbackSpy);
 
       createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
@@ -184,7 +185,7 @@ describe('Space (mockClient)', () => {
 
     it<SpaceTestContext>('updates the connected status of clients who have left', async ({ space }) => {
       const callbackSpy = vi.fn();
-      space.on('membersUpdate', callbackSpy);
+      space.on(MEMBERS_UPDATE, callbackSpy);
 
       createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
@@ -238,7 +239,7 @@ describe('Space (mockClient)', () => {
 
       it<SpaceTestContext>('removes a member who has left after the offlineTimeout', async ({ space }) => {
         const callbackSpy = vi.fn();
-        space.on('membersUpdate', callbackSpy);
+        space.on(MEMBERS_UPDATE, callbackSpy);
 
         createPresenceEvent(space, 'enter');
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
@@ -291,7 +292,7 @@ describe('Space (mockClient)', () => {
 
       it<SpaceTestContext>('does not remove a member that has rejoined', async ({ space }) => {
         const callbackSpy = vi.fn();
-        space.on('membersUpdate', callbackSpy);
+        space.on(MEMBERS_UPDATE, callbackSpy);
 
         createPresenceEvent(space, 'enter');
         createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2' });
@@ -380,9 +381,9 @@ describe('Space (mockClient)', () => {
 
       it<SpaceTestContext>('unsubscribes when off is called', async ({ space }) => {
         const spy = vi.fn();
-        space.on('membersUpdate', spy);
+        space.on(MEMBERS_UPDATE, spy);
         createPresenceEvent(space, 'enter', { clientId: '123456' });
-        space.off('membersUpdate', spy);
+        space.off(MEMBERS_UPDATE, spy);
         createPresenceEvent(space, 'enter', { clientId: '123456' });
 
         expect(spy).toHaveBeenCalledOnce();
@@ -390,7 +391,7 @@ describe('Space (mockClient)', () => {
 
       it<SpaceTestContext>('unsubscribes when off is called with no arguments', async ({ space }) => {
         const spy = vi.fn();
-        space.on('membersUpdate', spy);
+        space.on(MEMBERS_UPDATE, spy);
         createPresenceEvent(space, 'enter', { clientId: '123456' });
         space.off();
         createPresenceEvent(space, 'enter', { clientId: '123456' });

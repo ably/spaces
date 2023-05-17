@@ -2,8 +2,9 @@ import Space, { SpaceMember } from './Space.js';
 import EventEmitter from './utilities/EventEmitter.js';
 import { Types } from 'ably';
 import LocationTracker, { LocationTrackerPredicate } from './LocationTracker.js';
+import { LOCATION_UPDATE } from './utilities/Constants.js';
 
-type LocationUpdate = 'locationUpdate';
+type LocationUpdate = typeof LOCATION_UPDATE;
 
 type LocationEventMap = Record<LocationUpdate, any>;
 
@@ -28,7 +29,7 @@ export default class Locations extends EventEmitter<LocationEventMap> {
     if (member) {
       const previousLocation = member.location;
       member.location = location;
-      this.emit('locationUpdate', { member, currentLocation: location, previousLocation });
+      this.emit(LOCATION_UPDATE, { member, currentLocation: location, previousLocation });
     }
   }
 

@@ -6,7 +6,7 @@ import Locations from './Locations.js';
 import Cursors from './Cursors';
 
 // Unique prefix to avoid conflicts with channels
-import { SPACE_CHANNEL_PREFIX } from './utilities/Constants';
+import { LOCATION_UPDATE, MEMBERS_UPDATE, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
 
 export type SpaceMember = {
   clientId: string;
@@ -68,6 +68,10 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.channel.presence.subscribe(this.onPresenceUpdate);
   }
 
+  getChannelName() {
+    return this.channelName;
+  }
+
   getMemberFromConnection(connectionId?: string) {
     return this.members.find((m) => m.connectionId === connectionId);
   }
@@ -108,10 +112,10 @@ class Space extends EventEmitter<SpaceEventsMap> {
 
       this.emit('leave', member);
       this.removeMember(message.clientId);
-      this.emit('membersUpdate', this.members);
+      this.emit(MEMBERS_UPDATE, this.members);
 
       if (member?.location) {
-        this.locations.emit('locationUpdate', {
+        this.locations.emit(LOCATION_UPDATE, {
           previousLocation: member.location,
           currentLocation: null,
           member: { ...member, location: null },
@@ -168,7 +172,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.updateLeavers(message);
     this.updateMembers(message);
 
-    this.emit('membersUpdate', this.members);
+    this.emit(MEMBERS_UPDATE, this.members);
   }
 
   async enter(profileData?: unknown): Promise<SpaceMember[]> {

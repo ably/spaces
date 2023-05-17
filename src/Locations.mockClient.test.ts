@@ -2,6 +2,7 @@ import { it, describe, expect, vi, beforeEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 import Space, { SpaceMember } from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
+import { LOCATION_UPDATE } from './utilities/Constants.js';
 
 interface SpaceTestContext {
   client: Types.RealtimePromise;
@@ -41,7 +42,7 @@ describe('Locations (mockClient)', () => {
     it<SpaceTestContext>('fires an event when a location is set', async ({ space }) => {
       const spy = vi.fn();
       await space.enter();
-      space.locations.on('locationUpdate', spy);
+      space.locations.on(LOCATION_UPDATE, spy);
       space.locations['onPresenceUpdate'](
         createPresenceMessage('update', { clientId: '2', connectionId: '2', data: { location: 'location2' } }),
       );
@@ -51,7 +52,7 @@ describe('Locations (mockClient)', () => {
     it<SpaceTestContext>('correctly sets previousLocation', async ({ space }) => {
       const spy = vi.fn();
       await space.enter();
-      space.locations.on('locationUpdate', spy);
+      space.locations.on(LOCATION_UPDATE, spy);
       space.locations['onPresenceUpdate'](
         createPresenceMessage('update', { clientId: '2', connectionId: '2', data: { location: 'location1' } }),
       );

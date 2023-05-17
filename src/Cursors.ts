@@ -6,7 +6,6 @@ import CursorBatching from './CursorBatching';
 import CursorDispensing from './CursorDispensing';
 import {
   CURSOR_UPDATE,
-  SPACE_CHANNEL_PREFIX,
   OUTGOING_BATCH_TIME_DEFAULT,
   INCOMING_BATCH_TIME_DEFAULT,
   PAGINATION_LIMIT_DEFAULT,
@@ -51,8 +50,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     for (const option in options) {
       if (options[option]) this.options[option] = options[option];
     }
-
-    this.channel = space.client.channels.get(`${SPACE_CHANNEL_PREFIX}_${space.name}_cursors`);
+    const spaceChannelName = space.getChannelName();
+    this.channel = space.client.channels.get(`${spaceChannelName}_cursors`);
     this.cursorBatching = new CursorBatching(this, this.channel, this.options.outboundBatchInterval);
 
     this.cursorDispensing = new CursorDispensing(this, this.options.inboundBatchInterval);

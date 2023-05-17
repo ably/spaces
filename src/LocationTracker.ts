@@ -1,5 +1,6 @@
 import Locations, { LocationChange } from './Locations.js';
 import { SpaceMember } from './Space.js';
+import { LOCATION_UPDATE } from './utilities/Constants.js';
 import { EventListener } from './utilities/EventEmitter.js';
 
 /**
@@ -60,7 +61,7 @@ export default class LocationTracker<T> {
       listener(maybeChange);
     };
     this.locationListenerWrappers.set(listener, listenerWrapper);
-    this.locations.on('locationUpdate', listenerWrapper);
+    this.locations.on(LOCATION_UPDATE, listenerWrapper);
   }
 
   /**

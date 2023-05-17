@@ -4,6 +4,7 @@ import Locations, { LocationChange } from './Locations';
 import LocationTracker, { LocationTrackerPredicate } from './LocationTracker';
 import { Realtime } from 'ably/promises';
 import { createPresenceMessage } from './utilities/test/fakes';
+import { LOCATION_UPDATE } from './utilities/Constants';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
@@ -82,14 +83,14 @@ describe('LocationTracker', () => {
     spy,
   }) => {
     locationTracker.on(spy);
-    locations.emit('locationUpdate', validEvent);
+    locations.emit(LOCATION_UPDATE, validEvent);
     expect(spy).toHaveBeenCalledOnce();
   });
 
   it<LocationsTrackerTestContext>('fires multiple times', ({ locationTracker, locations, validEvent, spy }) => {
     locationTracker.on(spy);
-    locations.emit('locationUpdate', validEvent);
-    locations.emit('locationUpdate', validEvent);
+    locations.emit(LOCATION_UPDATE, validEvent);
+    locations.emit(LOCATION_UPDATE, validEvent);
     expect(spy).toHaveBeenCalledTimes(2);
   });
 
@@ -100,7 +101,7 @@ describe('LocationTracker', () => {
     spy,
   }) => {
     locationTracker.on(spy);
-    locations.emit('locationUpdate', {
+    locations.emit(LOCATION_UPDATE, {
       member: spaceMember,
       previousLocation: {},
       currentLocation: {
@@ -118,7 +119,7 @@ describe('LocationTracker', () => {
   }) => {
     locationTracker.on(spy);
     locationTracker.off(spy);
-    locations.emit('locationUpdate', validEvent);
+    locations.emit(LOCATION_UPDATE, validEvent);
     expect(spy).not.toHaveBeenCalled();
   });
 
@@ -132,7 +133,7 @@ describe('LocationTracker', () => {
     locationTracker.on(spy);
     locationTracker.on(secondSpy);
     locationTracker.off(spy);
-    locations.emit('locationUpdate', validEvent);
+    locations.emit(LOCATION_UPDATE, validEvent);
     expect(spy).not.toHaveBeenCalled();
     expect(secondSpy).toHaveBeenCalledOnce();
   });
