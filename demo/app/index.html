@@ -340,7 +340,7 @@
             data-id="avatar-full-name"
             class="text-sm font-semibold text-white whitespace-nowrap"
           >
-            Pardhi Sharma
+            
           </p>
           <p class="whitespace-nowrap">
             <span
@@ -359,7 +359,7 @@
 
     <template id="avatar-self-template">
       <div
-        class="h-[46px] w-[46px] rounded-full flex items-center justify-center relative bg-gradient-to-b from-yellow-400 to-yellow-500"
+        class="h-[46px] w-[46px] rounded-full flex items-center justify-center group relative bg-gradient-to-b from-yellow-400 to-yellow-500"
         data-id="avatar-wrapper"
       >
         <svg
@@ -401,6 +401,16 @@
             class="font-medium text-sm text-white"
           ></p>
         </div>
+
+        <div
+        data-id="avatar-hover"
+        class="bg-slate-800 rounded-lg p-2 hidden group-hover:block absolute top-full mt-2"
+      >
+        <p
+          data-id="avatar-full-name"
+          class="text-sm font-semibold text-white whitespace-nowrap"
+        ></p>
+      </div>
       </div>
     </template>
 

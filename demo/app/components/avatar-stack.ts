@@ -89,6 +89,8 @@ const renderSelfAvatar = (name) => {
   const fragment = createFragment('#avatar-self-template');
   const initials = queryDataId(fragment, 'name');
   initials.innerHTML = nameToInitials(name);
+  const fullNameEl = queryDataId(fragment, 'avatar-full-name');
+  fullNameEl.innerHTML = name + ' (You)';
   container.appendChild(fragment);
 };
 
