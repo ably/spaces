@@ -6,9 +6,9 @@ _[Ably](https://ably.com) is the platform that powers synchronized digital exper
 
 ## Collaborative Spaces SDK
 
-The Collaborative Spaces SDK enables you to implement realtime collaborative features in your applications. The requirement to have multiplayer collaboration in applications has only been increasing in recent years. Rather than having to coordinate resources on calls, or send documents and spreadsheets back and forth, features that make collaborating in realtime are becoming a necessity rather than a nice-to-have.
+The Collaborative Spaces SDK enables you to implement realtime collaborative features in your applications. Rather than having to coordinate resources on calls, or send documents and spreadsheets back and forth using a combination of tools, having in-app realtime collaboration features has proven to boost productivity in remote workplaces.
 
-The main three features that you need to make your application collaborative are:
+Realtime collaboration enables users to have contextual awareness of other users within an application. This means knowing:
 
 * Who is in the application?
 * Where is each user within the application?
@@ -18,21 +18,25 @@ The main three features that you need to make your application collaborative are
 
 ### Who is in the application?
 
-To make an application collaborative you first create a `space`. A space is the virtual area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself.
+One of the most important aspects of collaboration is knowing who else you're working with. The most common way to display this is using an avatar stack to show who else is currently online, and those that have recently gone offline.
 
-Once a space has been defined, users can enter that space and register their details. Subscribing to `membersUpdate` will notify you of when anyone joins or leaves the space. The most common way to display this is an avatar stack.
+![Avatar stack image](/docs/images/avatar-stack.png)
+
+To make an application collaborative using the Collaborative Spaces SDK, you first create a `space`. A space is the virtual collaborative area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself. Once a space has been defined, users can enter that space and register their details. Subscribing to updates from a space will notify you of when anyone joins or leaves the space.
 
 ### Where is each user within the application?
 
-To display the live location of each user within an application you again utilize a space. You can show where a user is by highlighting the UI element that they have selected, showing that a cell within a spreadsheet has been clicked on, or showing cursors moving across a page.
+Knowing where each user is within an application helps you understand their attentions without always needing to explicitly ask them. For example, seeing that a colleague is currently viewing slide 2 of a slideshow means that you can carry out your own edits to slide 3 without interfering with their work. Displaying the locations of your users can be achieved by highlighting the UI element they have selected, displaying a miniature avatar stack on the slide they are viewing, or showing the live location of their cursors.
 
-To show users interacting with UI elements or spreadsheet cells, you can set and track locations using the locations API. Subscribing to `locationUpdate` events will notify all subscribers of any changes in user locations.
+![UI selection highlighted](/docs/images/ui-highlight.png)
 
-To display cursors for users within a space, use the cursors API. Subscribing to `positionsUpdate` events will update the location of cursors within an application for all users.
+To display the live location of users within an application using the Collaborative Spaces SDK, you utilize a `space`. You can set and track locations of users using the locations API and subscribe to events for when they move. You can track cursors within a space using the cursors API, and similarly subscribe to events for when they move.
 
 ### What is everyone doing in the application?
 
-The Collaborative Spaces SDK is built as an extension to the existing [Ably JavaScript SDK](https://github.com/ably/ably-js). This means that it is possible to utilize the existing pub/sub functionality available with Ably in a collaborative application to track what users are doing. For example, when a user is updating the contents of a cell or field you can use a [channel](https://ably.com/docs/realtime/channels) to show the new contents to other users as it's being typed.
+Seeing where users are within an application aids in understanding what they may be working on. It's possible to go one step further though and see what changes they're making to an application. For example, you can display a typing indicator when a colleague is editing a cell in a spreadsheet, or even update the contents of the cell as they type it.
+
+The Collaborative Spaces SDK is built as an extension to the existing [Ably JavaScript SDK](https://github.com/ably/ably-js). This means that it is possible to utilize the existing pub/sub functionality available with Ably in a collaborative application to track what users are doing. In the previous example, when a user is updating the contents of a cell or field you can use a [channel](https://ably.com/docs/realtime/channels) to show the new contents to other users as it's being typed.
 
 ## Development status
 
@@ -44,7 +48,7 @@ If you are interested in being an early adopter and providing feedback then you 
 
 Use the following snippets to quickly get up and running. More detailed [usage instructions](/docs/usage.md) are available, as are [class definitions](/docs/class-definitions.md) and information on [channel behavior](/docs/channel-behaviors.md).
 
-You can also view a [live demo](https://spaces-demo.netlify.app/?space=nearby-lips-familiar). This uses an example slideshow to demonstrate updating an avatar stack and displaying user locations.
+You can also view a [live demo](https://space.ably.dev). This uses an example slideshow to demonstrate updating an avatar stack and displaying user locations.
 
 ### Prerequisites
 
@@ -58,7 +62,14 @@ You can use [basic authentication](https://ably.com/docs/realtime/authentication
 
 ### Authenticate and instantiate
 
-Import the Ably JavaScript SDK and the Collaborative Spaces SDK. Create an instance of the Ably JavaScript SDK using your Ably API key and then pass that value to the Collaborative Spaces SDK constructor:
+Install the Ably JavaScript SDK and the Collaborative Spaces SDK:
+
+```sh
+npm install ably
+npm install ably-labs/spaces
+```
+
+Import the SDKs and then create an instance of the Ably JavaScript SDK using your Ably API key and then pass that value to the Collaborative Spaces SDK constructor:
 
 ```ts
 import { Realtime } from 'ably/promise';
@@ -70,7 +81,7 @@ const spaces = new Spaces(client);
 
 ### Space membership
 
-A space is the virtual area of an application you want to monitor, such as a web page, or slideshow. Create a space and subscribe to events for when clients enter and leave it. Space membership is used to build avatar stacks and display which members are online within a space.
+A space is the virtual collaborative area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself. Create a space and subscribe to events for when clients enter and leave it. Space membership is used to build avatar stacks and display which members are online within a space.
 
 ```ts
 // Create a new space
@@ -110,7 +121,7 @@ The following is an example `membersUpdate` event received by subscribers when a
 
 ### Location updates
 
-Locations enable you to track where clients are within an application. Subscribe to all location updates, those for a specific location, such as a single UI element, or a specific client.
+User locations enable you to track where clients are within an application. Subscribe to all location updates, those for a specific location, such as a single UI element, or a specific client.
 
 ```ts
 // Register a listener to subscribe to events of when users change location
