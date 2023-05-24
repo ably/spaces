@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite';
+import commonjs from 'vite-plugin-commonjs';
+import buildcommonjs from '@rollup/plugin-commonjs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,5 +18,8 @@ export default defineConfig({
     sourcemap: true,
     emptyOutDir: true,
   },
-  plugins: [],
+  plugins: [commonjs(), buildcommonjs()],
+  resolve: {
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.cjs'],
+  },
 });
