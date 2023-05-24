@@ -81,7 +81,7 @@ const defaultSlideOne = slideData('0', [
   slideTextElement('text')(
     '1',
     'Effective design centres on four basic principles: contrast, repetition, alignment and proximity. These appear in every design.',
-    [64, 351],
+    [64, 360],
     354,
   ),
   slideImgElement('2', contrast, [491, 105]),
@@ -122,17 +122,17 @@ const defaultSlideTwo = slideData(
   '1',
   [
     slideTextElement('title-caption')('0', 'HOW USERS READ', [64, 170]),
-    slideTextElement('title')('1', `Add graphics`, [56, 197]),
+    slideTextElement('title')('1', `Add graphics`, [64, 197]),
     slideTextElement('text')(
       '2',
       'No one likes boring text blocks on a website. And <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span> are the fastest way to get information.',
-      [44, 288],
+      [64, 288],
       423,
     ),
     slideTextElement('text')(
       '3',
       `But <span class="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>. If you can't explain for what purpose you put this line or icon, it's better to abandon it.`,
-      [44, 416],
+      [64, 416],
       396,
       'Lauren',
     ),

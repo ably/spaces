@@ -122,6 +122,8 @@ const nameToInitials = (name) =>
     .join('')
     .toUpperCase();
 
+const firstName = (name) => name.split(' ')[0];
+
 const getRandomName = () => fakeNames[Math.floor(Math.random() * fakeNames.length)];
 
-export { fakeNames, nameToInitials, getRandomName };
+export { fakeNames, nameToInitials, getRandomName, firstName };

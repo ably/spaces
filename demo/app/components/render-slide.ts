@@ -1,95 +1,141 @@
-import Space, { SpaceMember } from '../../../src/Space';
-import { SlideData } from '../data/default-slide-data';
 import { slideData } from '../data/slide-data';
-import { addLocationTracking } from '../location-tracking/add-location-tracking';
-import { slideElementManager } from '../location-tracking/track-slide-elements';
 import { createFragment } from '../utils/dom';
-import { renderSlideImgElement, renderSlideTextElement } from './render-slide-elements';
+import { queryDataId } from '../utils/dom';
+import { SlideImgElement, SlideTextElement } from '../data/default-slide-data';
+import { firstName } from '../utils/fake-names';
 
-const addPresentMembers = (members: { member: SpaceMember; i: number }[], selfId: string, slotElement: HTMLElement) =>
-  members.forEach(({ member, i }) => {
-    slideElementManager.selector(
-      slotElement,
-      member.profileData.name ? member.profileData.name.split(/\s/)[0] : '',
-      member.clientId,
-      selfId,
-      i,
-    );
-  });
+import type { Space, SpaceMember } from '../../../src';
+import type { SlideData } from '../data/default-slide-data';
 
-const renderSlide = (containerElement: HTMLElement, slideData: SlideData, space: Space) => {
-  const { id: currentSlideId } = slideData;
-  containerElement.style.backgroundColor = '#FFF';
-  containerElement.innerHTML = '';
+const elementSelectedClasses = [
+  'outline-2',
+  'outline',
+  `before:content-[attr(data-before)]`,
+  'before:absolute',
+  'before:-top-[22px]',
+  'before:-left-[2px]',
+  'before:px-[10px]',
+  'before:text-sm',
+  'before:text-white',
+  'before:rounded-t-lg',
+  'before:normal-case',
+];
 
-  const selfId = space.getSelf()?.clientId;
-  const members = space.getMembers().filter((member) => member.clientId !== selfId);
+const amendPresentOutline = (members, htmlElement) => {
+  const lastEnteredMember = members[members.length - 1];
 
+  if (!lastEnteredMember) {
+    htmlElement.setAttribute('data-before', '');
+    htmlElement.classList.remove(...elementSelectedClasses);
+    return;
+  }
+
+  htmlElement.setAttribute('data-before', firstName(lastEnteredMember.profileData.name));
+
+  htmlElement.classList.add(
+    ...elementSelectedClasses,
+    `outline-${lastEnteredMember.profileData.color.name}-${lastEnteredMember.profileData.color.gradientStart.intensity}`,
+    `before:bg-${lastEnteredMember.profileData.color.name}-${lastEnteredMember.profileData.color.gradientStart.intensity}`,
+  );
+};
+
+const renderSlideTextElement = (slideData: SlideTextElement, htmlElement: HTMLElement, members: SpaceMember[]) => {
+  htmlElement.style.left = `${slideData.position[0]}px`;
+  htmlElement.style.top = `${slideData.position[1]}px`;
+  htmlElement.innerHTML = slideData.text;
+
+  if (slideData.width) {
+    htmlElement.style.width = `${slideData.width}px`;
+  }
+
+  amendPresentOutline(members, htmlElement);
+};
+
+const renderSlideImgElement = (slideData: SlideImgElement, htmlElement: HTMLElement, members: SpaceMember[]) => {
+  htmlElement.style.left = `${slideData.position[0]}px`;
+  htmlElement.style.top = `${slideData.position[1]}px`;
+  const imgElement = queryDataId(htmlElement, 'slide-image-placeholder') as HTMLImageElement;
+  imgElement.src = slideData.src;
+
+  amendPresentOutline(members, htmlElement);
+};
+
+const addElementListener = (space, node, slideId, elementId) => {
+  if (space) {
+    node.addEventListener('click', () => {
+      space.locations.set({ slide: slideId, element: elementId });
+    });
+  }
+};
+
+const renderSlide = (slideContainer: HTMLElement, slideData: SlideData, members: SpaceMember[], space?: Space) => {
   slideData.elements.forEach((element) => {
     let slideElementFragment: HTMLElement;
-    let slotElement: HTMLElement | HTMLImageElement;
-    const elementId = `slide-${currentSlideId}-element-${element.id}`;
-    const presentMembers = members
-      .map((member, i) => ({ member, i }))
-      .filter(({ member }) => member.location && member.location.startsWith(elementId));
+    const presentMembers = members.filter(
+      (member) => member.location && member.location.element === element.id && member.isConnected,
+    );
 
     switch (element.elementType) {
-      case 'title':
-        slideElementFragment = createFragment('#slide-title') as HTMLElement;
-        slotElement = slideElementFragment.querySelector('[data-id=slide-title-text]');
-        addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, slideElementManager, space);
-        renderSlideTextElement(element, slotElement);
+      case 'title': {
+        slideElementFragment = createFragment('#slide-title');
+        const slotElement = queryDataId(slideElementFragment, 'slide-title-text');
+        addElementListener(space, slotElement, slideData.id, element.id);
+        renderSlideTextElement(element, slotElement, presentMembers);
         break;
-      case 'subtitle':
-        slideElementFragment = createFragment('#slide-subtitle') as HTMLElement;
-        slotElement = slideElementFragment.querySelector('[data-id=slide-subtitle-text]');
-        addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, slideElementManager, space);
-        renderSlideTextElement(element, slotElement);
+      }
+      case 'subtitle': {
+        slideElementFragment = createFragment('#slide-subtitle');
+        const slotElement = queryDataId(slideElementFragment, 'slide-subtitle-text');
+        addElementListener(space, slotElement, slideData.id, element.id);
+        renderSlideTextElement(element, slotElement, presentMembers);
         break;
-      case 'title-caption':
-        slideElementFragment = createFragment('#slide-title-caption') as HTMLElement;
-        slotElement = slideElementFragment.querySelector('[data-id=slide-title-caption-text]');
-        addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, slideElementManager, space);
-        renderSlideTextElement(element, slotElement);
+      }
+      case 'title-caption': {
+        slideElementFragment = createFragment('#slide-title-caption');
+        const slotElement = queryDataId(slideElementFragment, 'slide-title-caption-text');
+        addElementListener(space, slotElement, slideData.id, element.id);
+        renderSlideTextElement(element, slotElement, presentMembers);
         break;
-      case 'text':
-        slideElementFragment = createFragment('#slide-text-block') as HTMLElement;
-        slotElement = slideElementFragment.querySelector('[data-id=slide-text-block-text]');
-        addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, slideElementManager, space);
-        renderSlideTextElement(element, slotElement);
+      }
+      case 'text': {
+        slideElementFragment = createFragment('#slide-text-block');
+        const slotElement = queryDataId(slideElementFragment, 'slide-text-block-text');
+        addElementListener(space, slotElement, slideData.id, element.id);
+        renderSlideTextElement(element, slotElement, presentMembers);
         break;
-      case 'aside-text':
-        slideElementFragment = createFragment('#slide-aside-text') as HTMLElement;
-        slotElement = slideElementFragment.querySelector('[data-id=slide-aside-text]');
-        addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, slideElementManager, space);
-        renderSlideTextElement(element, slotElement);
+      }
+      case 'aside-text': {
+        slideElementFragment = createFragment('#slide-aside-text');
+        const slotElement = queryDataId(slideElementFragment, 'slide-aside-text');
+        addElementListener(space, slotElement, slideData.id, element.id);
+        renderSlideTextElement(element, slotElement, presentMembers);
         break;
-      case 'img':
-        slideElementFragment = createFragment('#slide-image') as HTMLElement;
-        slotElement = slideElementFragment.querySelector('figure');
-        addPresentMembers(presentMembers, selfId, slotElement);
-        addLocationTracking(elementId, slotElement, slideElementManager, space);
-        renderSlideImgElement(element, slotElement as HTMLImageElement);
+      }
+      case 'img': {
+        slideElementFragment = createFragment('#slide-image');
+        const slotElement = slideElementFragment.querySelector('figure');
+        addElementListener(space, slotElement, slideData.id, element.id);
+        renderSlideImgElement(element, slotElement as HTMLImageElement, presentMembers);
         break;
+      }
       default:
         throw `Element Type not recognized`;
     }
 
-    containerElement.appendChild(slideElementFragment);
+    slideContainer.appendChild(slideElementFragment);
   });
+
+  return slideContainer;
 };
 
 const renderSelectedSlide = (space: Space) => {
   const selectedSlide = slideData.find((data) => data.selected);
-  if (selectedSlide) {
-    const selectedSlideContainer = document.querySelector('#slide-selected') as HTMLElement;
-    renderSlide(selectedSlideContainer, selectedSlide, space);
-  }
+  const members = space.getMembers();
+  const presentMembers = members.filter((member) => member.location && member.location.slide === selectedSlide.id);
+  const selectedSlideContainer = document.querySelector('#slide-selected') as HTMLElement;
+  const wrapper = queryDataId(selectedSlideContainer, 'slide-wrapper');
+  wrapper.innerHTML = '';
+  renderSlide(wrapper, selectedSlide, presentMembers, space);
 };
 
 export { renderSlide, renderSelectedSlide };

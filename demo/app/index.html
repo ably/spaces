@@ -156,7 +156,7 @@
 
       <div
         id="overlay"
-        class="hidden absolute right-0 lg:grid bg-black bg-opacity-25 w-[354px] h-[calc(100%-80px)] select-none"
+        class="hidden absolute right-0 lg:grid bg-black bg-opacity-25 w-[354px] h-[calc(100%-80px)] select-none z-100"
       >
         <aside
           id="coming-soon"
@@ -296,7 +296,16 @@
         <section
           id="slide-selected"
           class="relative shadow-ably-paper lg:mr-[380px] w-[1020px] h-[687px] min-w-[1020px] min-h-[687px] top-[79px]"
-        ></section>
+        >
+          <div
+            data-id="slide-wrapper"
+            class="h-full w-full"
+          ></div>
+          <div
+            data-id="slide-cursor-container"
+            class="absolute h-full w-full z-10 pointer-events-none top-0 left-0"
+          ></div>
+        </section>
         <section id="comments-container"></section>
       </section>
     </main>
@@ -424,7 +433,7 @@
           <p class="font-medium text-sm text-white">+<span data-id="count"></span></p>
         </div>
 
-        <div class="hidden group-hover:block absolute top-full">
+        <div class="hidden group-hover:block absolute top-full z-10">
           <div
             data-id="avatar-hover"
             class="bg-slate-800 rounded-lg p-1 min-w-[225px] max-h-[250px] overflow-scroll mt-2"
@@ -479,7 +488,7 @@
         ></p>
         <div
           data-id="slide-preview-container"
-          class="relative rounded-[30px] border-2 border-ably-avatar-stack-demo-slide-preview-border w-[1020px] h-[687px] min-w-[1020px] min-h-[687px]"
+          class="relative rounded-[30px] border-2 border-ably-avatar-stack-demo-slide-preview-border w-[1020px] h-[687px] min-w-[1020px] min-h-[687px] bg-white"
         ></div>
       </li>
     </template>
@@ -505,46 +514,54 @@
     <template id="slide-title">
       <h1
         data-id="slide-title-text"
-        class="font-semibold text-[45px] text-ably-avatar-stack-demo-slide-text cursor-pointer"
+        class="font-semibold text-[45px] text-ably-avatar-stack-demo-slide-text cursor-pointer absolute"
       ></h1>
     </template>
 
     <template id="slide-subtitle">
       <h2
         data-id="slide-subtitle-text"
-        class="font-semibold text-2xl text-ably-avatar-stack-demo-slide-text cursor-pointer"
+        class="font-semibold text-2xl text-ably-avatar-stack-demo-slide-text cursor-pointer absolute"
       ></h2>
     </template>
 
     <template id="slide-title-caption">
       <h3
         data-id="slide-title-caption-text"
-        class="font-medium text-ably-avatar-stack-demo-slide-title-highlight text-sm uppercase cursor-pointer"
+        class="font-medium text-ably-avatar-stack-demo-slide-title-highlight text-sm uppercase cursor-pointer absolute"
       ></h3>
     </template>
 
     <template id="slide-text-block">
       <p
         data-id="slide-text-block-text"
-        class="text-ably-avatar-stack-demo-slide-text text-[19px] p-[12px] cursor-pointer"
+        class="text-ably-avatar-stack-demo-slide-text text-[19px] cursor-pointer absolute"
       ></p>
     </template>
 
     <template id="slide-aside-text">
       <p
         data-id="slide-aside-text"
-        class="text-ably-avatar-stack-demo-slide-text text-[13px] leading-6 p-0 cursor-pointer"
+        class="text-ably-avatar-stack-demo-slide-text text-[13px] leading-6 p-0 cursor-pointer absolute"
       ></p>
     </template>
 
     <template id="slide-image">
-      <figure>
+      <figure class="absolute">
         <img
           data-id="slide-image-placeholder"
           class="cursor-pointer"
         />
         <span data-id="slide-figcaption-placeholder"></span>
       </figure>
+    </template>
+
+    <template id="slide-preview-avatar-stack">
+      <ul class="flex absolute scale-[3] top-[800px] left-[1220px] translate-x-[-100%]"></ul>
+    </template>
+
+    <template id="slide-preview-avatar-stack-li">
+      <li class="ml-[-9px] relative"></li>
     </template>
 
     <!-- COMMENTS -->
@@ -576,7 +593,7 @@
         <div class="flex mb-2">
           <span
             data-id="comment-avatar"
-            class="flex h-10 w-10 rounded-full justify-center items-center mr-3"
+            class="flex h-10 w-10 rounded-full justify-center items-center mr-3 text-white"
           >
           </span>
           <div>
