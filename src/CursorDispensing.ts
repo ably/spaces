@@ -1,3 +1,5 @@
+import { Types } from 'ably';
+
 import Cursors, { type CursorUpdate } from './Cursors';
 import type { StrictCursorsOptions } from './options/CursorsOptions';
 
@@ -42,7 +44,7 @@ export default class CursorDispensing {
     }, this.inboundBatchInterval);
   }
 
-  processBatch(message) {
+  processBatch(message: Types.Message) {
     let updatesCounter = 0;
 
     Object.keys(message.data).forEach((name) => {
@@ -55,6 +57,7 @@ export default class CursorDispensing {
           name,
           clientId: message.clientId,
           connectionId: message.connectionId,
+          batchTimestamp: message.timestamp,
           position: update.position,
           data: update.data,
         };
