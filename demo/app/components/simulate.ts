@@ -1,6 +1,6 @@
 class CursorMovements {
   private intervalId: NodeJS.Timeout;
-  private startTime: number;
+  private startTime?: number;
   private top: number;
   private left: number;
   private maxX: number;
@@ -17,7 +17,6 @@ class CursorMovements {
     private incrementX: number,
     private incrementY: number,
   ) {
-    this.startTime = Date.now();
     this.container = document.querySelector('#slide-selected');
     const { width, height, left, top } = this.container.getBoundingClientRect();
     this.top = top;
@@ -31,6 +30,8 @@ class CursorMovements {
   }
 
   updateCursorPosition(x = this.initialX, y = this.initialY, interval = this.interval) {
+    this.startTime = this.startTime || Date.now();
+
     this.intervalId = setTimeout(() => {
       this.container.dispatchEvent(
         new MouseEvent('mousemove', {
@@ -59,6 +60,8 @@ class CursorMovements {
         const newY = this.directionY === 'forward' ? y + this.incrementY : y - this.incrementY;
 
         this.updateCursorPosition(newX, newY, interval);
+      } else {
+        this.startTime = null;
       }
     }, interval);
   }
