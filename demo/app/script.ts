@@ -78,4 +78,6 @@ declare global {
   space.on('membersUpdate', (members) => {
     renderAvatars(members.filter(memberIsNotSelf));
   });
+
+  window.Simulate = new Simulate();
 })();
