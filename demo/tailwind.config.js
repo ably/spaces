@@ -25,7 +25,8 @@ module.exports = {
   },
   safelist: [
     {
-      pattern: /(outline|bg|text|from|to)-(orange|pink|green|violet|rose|lime)-(400|500)/,
+      pattern:
+        /(from|to|outline|bg)-(red|orange|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|)-(200|300|400|500|600|700|800)/,
       variants: ['before'],
     },
   ],
