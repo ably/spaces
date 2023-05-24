@@ -14,6 +14,7 @@ interface CursorsTestContext {
   batching: CursorBatching;
   dispensing: CursorDispensing;
   history: CursorHistory;
+  fakeMessageStub: Types.Message;
 }
 
 vi.mock('ably/promises');
@@ -26,6 +27,16 @@ describe('Cursors (mockClient)', () => {
     context.batching = context.space.cursors['cursorBatching'];
     context.dispensing = context.space.cursors['cursorDispensing'];
     context.history = context.space.cursors['cursorHistory'];
+    context.fakeMessageStub = {
+      connectionId: 'connectionId',
+      clientId: 'clientId',
+      data: null,
+      encoding: 'encoding',
+      extras: null,
+      id: '1',
+      name: 'fake',
+      timestamp: 1,
+    };
   });
 
   describe('get', () => {
@@ -48,10 +59,9 @@ describe('Cursors (mockClient)', () => {
       expect(space.cursors.get('cursor1')).toEqual(cursor1);
     });
 
-    it<CursorsTestContext>('emits a cursorsUpdate event', ({ space, dispensing }) => {
+    it<CursorsTestContext>('emits a cursorsUpdate event', ({ space, dispensing, fakeMessageStub }) => {
       const fakeMessage = {
-        connectionId: 'connectionId',
-        clientId: 'clientId',
+        ...fakeMessageStub,
         data: {
           cursor1: [{ position: { x: 1, y: 1 } }],
           cursor2: [{ position: { x: 1, y: 2 }, data: { color: 'red' } }],
@@ -68,6 +78,7 @@ describe('Cursors (mockClient)', () => {
         position: { x: 1, y: 1 },
         data: undefined,
         clientId: 'clientId',
+        batchTimestamp: 1,
         connectionId: 'connectionId',
         name: 'cursor1',
       });
@@ -77,16 +88,20 @@ describe('Cursors (mockClient)', () => {
       expect(spy).toHaveBeenCalledWith({
         position: { x: 1, y: 2 },
         data: { color: 'red' },
+        batchTimestamp: 1,
         clientId: 'clientId',
         connectionId: 'connectionId',
         name: 'cursor2',
       });
     });
 
-    it<CursorsTestContext>('emits cursorUpdate for a specific cursor event', ({ space, dispensing }) => {
+    it<CursorsTestContext>('emits cursorUpdate for a specific cursor event', ({
+      space,
+      dispensing,
+      fakeMessageStub,
+    }) => {
       const fakeMessage = {
-        connectionId: 'connectionId',
-        clientId: 'clientId',
+        ...fakeMessageStub,
         data: {
           cursor1: [{ position: { x: 1, y: 1 } }],
           cursor2: [{ position: { x: 1, y: 2 }, data: { color: 'red' } }],
@@ -104,6 +119,7 @@ describe('Cursors (mockClient)', () => {
       const result = {
         position: { x: 1, y: 1 },
         data: undefined,
+        batchTimestamp: 1,
         clientId: 'clientId',
         connectionId: 'connectionId',
         name: 'cursor1',
@@ -238,12 +254,14 @@ describe('Cursors (mockClient)', () => {
 
   describe('CursorDispensing', () => {
     describe('processBatch', () => {
-      it<CursorsTestContext>('does not call emitFromBatch if there are no updates', async ({ dispensing }) => {
+      it<CursorsTestContext>('does not call emitFromBatch if there are no updates', async ({
+        dispensing,
+        fakeMessageStub,
+      }) => {
         const spy = vi.spyOn(dispensing, 'emitFromBatch');
 
         const fakeMessage = {
-          connectionId: 'connectionId',
-          clientId: 'clientId',
+          ...fakeMessageStub,
           data: {
             cursor1: [],
           },
@@ -253,12 +271,14 @@ describe('Cursors (mockClient)', () => {
         expect(spy).not.toHaveBeenCalled();
       });
 
-      it<CursorsTestContext>('does not call emitFromBatch if the loop is already running', async ({ dispensing }) => {
+      it<CursorsTestContext>('does not call emitFromBatch if the loop is already running', async ({
+        dispensing,
+        fakeMessageStub,
+      }) => {
         const spy = vi.spyOn(dispensing, 'emitFromBatch');
 
         const fakeMessage = {
-          connectionId: 'connectionId',
-          clientId: 'clientId',
+          ...fakeMessageStub,
           data: {
             cursor1: [{ position: { x: 1, y: 1 } }],
           },
@@ -269,12 +289,11 @@ describe('Cursors (mockClient)', () => {
         expect(spy).not.toHaveBeenCalled();
       });
 
-      it<CursorsTestContext>('call emitFromBatch if there are updates', async ({ dispensing }) => {
+      it<CursorsTestContext>('call emitFromBatch if there are updates', async ({ dispensing, fakeMessageStub }) => {
         const spy = vi.spyOn(dispensing, 'emitFromBatch');
 
         const fakeMessage = {
-          connectionId: 'connectionId',
-          clientId: 'clientId',
+          ...fakeMessageStub,
           data: {
             cursor1: [{ position: { x: 1, y: 1 } }],
           },
@@ -284,10 +303,12 @@ describe('Cursors (mockClient)', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it<CursorsTestContext>('puts a message into the buffer in the correct format', async ({ dispensing }) => {
+      it<CursorsTestContext>('puts a message into the buffer in the correct format', async ({
+        dispensing,
+        fakeMessageStub,
+      }) => {
         const fakeMessage = {
-          connectionId: 'connectionId',
-          clientId: 'clientId',
+          ...fakeMessageStub,
           data: {
             cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
             cursor2: [{ position: { x: 5, y: 4 } }],
@@ -302,6 +323,7 @@ describe('Cursors (mockClient)', () => {
               data: undefined,
               clientId: 'clientId',
               connectionId: 'connectionId',
+              batchTimestamp: 1,
               name: 'cursor1',
             },
             {
@@ -309,6 +331,7 @@ describe('Cursors (mockClient)', () => {
               data: { color: 'blue' },
               clientId: 'clientId',
               connectionId: 'connectionId',
+              batchTimestamp: 1,
               name: 'cursor1',
             },
             {
@@ -316,18 +339,18 @@ describe('Cursors (mockClient)', () => {
               data: undefined,
               clientId: 'clientId',
               connectionId: 'connectionId',
+              batchTimestamp: 1,
               name: 'cursor2',
             },
           ],
         });
       });
 
-      it<CursorsTestContext>('runs until the batch is empty', async ({ dispensing }) => {
+      it<CursorsTestContext>('runs until the batch is empty', async ({ dispensing, fakeMessageStub }) => {
         vi.useFakeTimers();
 
         const fakeMessage = {
-          connectionId: 'connectionId',
-          clientId: 'clientId',
+          ...fakeMessageStub,
           data: {
             cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
             cursor2: [{ position: { x: 5, y: 4 } }],
