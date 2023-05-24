@@ -1,110 +1,133 @@
-import Space, { SpaceMember } from '../../../src/Space';
 import { IS_NOT_SELECTED, IS_SELECTED } from '../data/default-slide-data';
-import { slideData } from '../data/slide-data';
-import { addLocationTracking } from '../location-tracking/add-location-tracking';
-import { HTMLElementManager } from '../location-tracking/location-change-handlers';
-import { createSlideElementManager } from '../location-tracking/track-slides';
 import { createFragment } from '../utils/dom';
-import { renderSelectedSlide, renderSlide } from './render-slide';
+import { renderSlide } from './render-slide';
+import { queryDataId } from '../utils/dom';
+import { slideData } from '../data/slide-data';
+import { nameToInitials } from '../utils/fake-names';
 
-const addPresentMembers = (
-  members: { member: SpaceMember; i: number }[],
-  selfId: string,
-  slotElement: HTMLElement,
-  manager: HTMLElementManager,
-) =>
-  members.forEach(({ member, i }) => {
-    manager.selector(
-      slotElement,
-      member.profileData.name ? member.profileData.name.split(/\s/)[0] : '',
-      member.clientId,
-      selfId,
-      i,
+import type { Space, SpaceMember } from '../../../src';
+
+const renderPreviewAvatar = (member: SpaceMember) => {
+  const fragment = createFragment('#avatar-template');
+  const initials = queryDataId(fragment, 'name');
+  initials.innerHTML = nameToInitials(member.profileData.name);
+
+  const innerWrapper = queryDataId(fragment, 'avatar-inner-wrapper');
+  const wrapper = queryDataId(fragment, 'avatar-wrapper');
+  const hover = queryDataId(fragment, 'avatar-hover');
+  wrapper.removeChild(hover);
+
+  if (member.isConnected) {
+    innerWrapper.classList.add(
+      'bg-gradient-to-b',
+      member.profileData.color.gradientStart.tw,
+      member.profileData.color.gradientEnd.tw,
     );
+    innerWrapper.classList.remove('bg-[##D0D3DC]');
+  } else {
+    innerWrapper.classList.add('bg-[#D0D3DC]');
+    innerWrapper.classList.remove(
+      'bg-gradient-to-b',
+      member.profileData.color.gradientStart.tw,
+      member.profileData.color.gradientEnd.tw,
+    );
+  }
+
+  return fragment;
+};
+
+const renderAvatarOverflow = (members) => {
+  const count = members.length;
+  const li = createFragment('#slide-preview-avatar-stack-li').querySelector('li');
+  const fragment = createFragment('#avatar-template');
+  const countNode = queryDataId(fragment, 'name');
+  countNode.innerHTML = `+${count}`;
+
+  const wrapper = queryDataId(fragment, 'avatar-wrapper');
+  wrapper.classList.remove('bg-gradient-to-b');
+  wrapper.classList.add('bg-[#75A3E3]');
+
+  const hover = queryDataId(fragment, 'avatar-hover');
+  wrapper.removeChild(hover);
+
+  li.appendChild(fragment);
+
+  return li;
+};
+
+const MAX_SHOWN_MEMBERS = 3;
+
+const renderPreviewAvatarStack = (slideMembers: SpaceMember[]) => {
+  const ul = createFragment('#slide-preview-avatar-stack').querySelector('ul');
+
+  const showMembers = slideMembers.slice(0, MAX_SHOWN_MEMBERS);
+  const hiddenMembers = slideMembers.slice(MAX_SHOWN_MEMBERS);
+
+  showMembers.forEach((member) => {
+    const avatar = renderPreviewAvatar(member);
+    const li = createFragment('#slide-preview-avatar-stack-li').querySelector('li');
+    li.appendChild(avatar);
+    ul.appendChild(li);
   });
 
-const rerenderSelectedSlidePreviews = () => {
-  slideData.forEach((slide, i) => {
-    const element = document.getElementById(`preview-slide-${i}`);
-    delete element.style.backgroundColor;
-    (element.querySelector('div[data-id=slide-preview-selected-indicator]') as HTMLElement).innerHTML = '';
-    if (slide.selected === IS_SELECTED) {
-      element.style.backgroundColor = '#EEE9FF';
+  if (hiddenMembers.length > 0) {
+    ul.appendChild(renderAvatarOverflow(hiddenMembers));
+  }
 
-      const slidePreviewSelectedIndicator = element.querySelector(
-        'div[data-id=slide-preview-selected-indicator]',
-      ) as HTMLElement;
-      const selectedIndicatorSVG = createFragment('#selected-slide-preview');
-      slidePreviewSelectedIndicator.appendChild(selectedIndicatorSVG);
-
-      element.prepend(slidePreviewSelectedIndicator);
-    } else {
-      element.style.backgroundColor = 'transparent';
-    }
-  });
+  return ul;
 };
 
 const renderSlidePreviewMenu = (space: Space) => {
   const slidePreviewMenuContainer = document.querySelector('#slide-left-preview-list');
+  slidePreviewMenuContainer.innerHTML = '';
 
-  const selfId = space.getSelf()?.clientId;
   const members = space.getMembers();
+  const selectedSlide = slideData.find((data) => data.selected);
 
   slideData.forEach((slide, i) => {
     const slidePreviewFragment = createFragment('#slide-preview') as HTMLElement;
+    const slidePreviewListItem = queryDataId(slidePreviewFragment, 'slide-preview-list-item');
 
-    const slideId = `slide-${i}`;
+    const slideId = `${i}`;
+    const presentMembers: SpaceMember[] = members.filter(
+      (member) => member.location && member.location.slide === slideId,
+    );
+    slidePreviewListItem.id = `preview-${slideId}`;
 
-    const presentMembers = members
-      .map((member, i) => ({ member, i }))
-      .filter(({ member }) => member.location && member.location.startsWith(slideId));
+    const slidePreviewNumber = queryDataId(slidePreviewFragment, 'slide-preview-number');
+    slidePreviewNumber.innerText = `${i + 1}`;
 
-    const slidePreviewListItem = slidePreviewFragment.querySelector(
-      'li[data-id=slide-preview-list-item]',
-    ) as HTMLLIElement;
-    slidePreviewListItem.setAttribute('id', `preview-${slideId}`);
-
-    const slideElementManager = createSlideElementManager(space, slideId);
-
-    addPresentMembers(presentMembers, selfId, slidePreviewListItem, slideElementManager);
-    addLocationTracking(slideId, slidePreviewListItem, slideElementManager, space);
+    const slideContainer = queryDataId(slidePreviewFragment, 'slide-preview-container');
+    renderSlide(slideContainer, slide, presentMembers);
+    const slideAvatarStack = renderPreviewAvatarStack(presentMembers);
 
     slidePreviewListItem.addEventListener('click', () => {
       const currentSlideIndex = slideData.findIndex((slide) => slide.selected === IS_SELECTED);
+
       if (currentSlideIndex > -1) {
         slideData[currentSlideIndex].selected = IS_NOT_SELECTED;
       }
+
       slideData[i].selected = IS_SELECTED;
-      rerenderSelectedSlidePreviews();
-      renderSelectedSlide(space);
-      space.locations.set(slideId);
+      space.locations.set({ slide: slideId, element: null });
     });
 
-    if (slide.selected) {
-      slidePreviewListItem.style.backgroundColor = '#EEE9FF';
-      space.locations.set(`slide-${slide.id}`);
+    if (selectedSlide.id === slide.id) {
+      slidePreviewListItem.classList.add('bg-[#EEE9FF]');
 
-      const slidePreviewSelectedIndicator = slidePreviewFragment.querySelector(
-        'div[data-id=slide-preview-selected-indicator]',
-      ) as HTMLElement;
+      const slidePreviewSelectedIndicator = queryDataId(slidePreviewFragment, 'slide-preview-selected-indicator');
       const selectedIndicatorSVG = createFragment('#selected-slide-preview');
       slidePreviewSelectedIndicator.appendChild(selectedIndicatorSVG);
-
       slidePreviewListItem.appendChild(slidePreviewSelectedIndicator);
     }
 
-    const slidePreviewNumber = slidePreviewFragment.querySelector('p[data-id=slide-preview-number]') as HTMLElement;
-    slidePreviewNumber.innerText = `${i + 1}`;
-
-    const slidePreviewContainer = slidePreviewFragment.querySelector(
-      'div[data-id=slide-preview-container]',
-    ) as HTMLElement;
-
-    renderSlide(slidePreviewContainer, slide, space);
+    if (presentMembers.length > 0) {
+      slidePreviewListItem.classList.add('mb-[140px]');
+    }
 
     slidePreviewListItem.appendChild(slidePreviewNumber);
-    slidePreviewListItem.appendChild(slidePreviewContainer);
-
+    slidePreviewListItem.appendChild(slideContainer);
+    slidePreviewListItem.appendChild(slideAvatarStack);
     slidePreviewMenuContainer.appendChild(slidePreviewListItem);
   });
 };

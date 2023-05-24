@@ -1,5 +1,5 @@
 import { createFragment } from '../utils/dom';
-import { gradients } from '../utils/gradients';
+import { getRandomColor } from '../utils/colors';
 
 const renderComments = () => {
   const commentData = [
@@ -26,7 +26,7 @@ const renderComments = () => {
 
   commentContainer.appendChild(commentDrawer);
 
-  commentData.forEach((comment, index) => {
+  commentData.forEach((comment) => {
     const commentThreadFragment = createFragment('#comment-thread') as HTMLElement;
     const commentThreadName = commentThreadFragment.querySelector('p[data-id=comment-thread-name]') as HTMLElement;
     const commentThreadComment = commentThreadFragment.querySelector(
@@ -46,8 +46,9 @@ const renderComments = () => {
       .map((name) => name[0])
       .join('');
     commentAvatar.innerText = initials;
-    commentAvatar.classList.add('bg-gradient-to-b', gradients[index][0], gradients[index][1]);
 
+    const color = getRandomColor();
+    commentAvatar.classList.add('bg-gradient-to-b', color.gradientStart.tw, color.gradientEnd.tw);
     commentThreadContainer.appendChild(commentThreadFragment);
   });
 };

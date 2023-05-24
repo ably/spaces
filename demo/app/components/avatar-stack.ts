@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-import { gradients } from '../utils/gradients';
 import { queryDataId, createFragment } from '../utils/dom';
 import { nameToInitials } from '../utils/fake-names';
+
+import type { MemberColor } from '../utils/colors';
+import type { SpaceMember } from '../../../src/Space';
 
 dayjs.extend(relativeTime);
 
@@ -34,8 +36,8 @@ const renderAvatarStack = (members) => {
 
   const showMembers = members.slice(0, 5);
 
-  showMembers.forEach((member, index) => {
-    const avatar = renderAvatar(member, index);
+  showMembers.forEach((member) => {
+    const avatar = renderAvatar(member);
     if (avatar) {
       const li = document.createElement('li');
       li.classList.add('ml-[-9px]', 'relative');
@@ -47,14 +49,8 @@ const renderAvatarStack = (members) => {
   container.appendChild(ul);
 };
 
-const renderAvatar = (member, index) => {
+const renderAvatar = (member: SpaceMember) => {
   const fragment = createFragment('#avatar-template');
-
-  const memberName = member.profileData?.name;
-
-  if (!memberName) {
-    return;
-  }
 
   const initials = queryDataId(fragment, 'name');
   initials.innerHTML = nameToInitials(member.profileData.name);
@@ -69,12 +65,20 @@ const renderAvatar = (member, index) => {
     updateStatusTime(statusElement, member.lastEvent.timestamp);
   };
   if (member.isConnected) {
-    innerWrapper.classList.add('bg-gradient-to-b', gradients[index][0], gradients[index][1]);
+    innerWrapper.classList.add(
+      'bg-gradient-to-b',
+      member.profileData.color.gradientStart.tw,
+      member.profileData.color.gradientEnd.tw,
+    );
     innerWrapper.classList.remove('bg-[##D0D3DC]');
     innerWrapper.removeEventListener('mouseover', updateStatusElementWithTime);
   } else {
     innerWrapper.classList.add('bg-[#D0D3DC]');
-    innerWrapper.classList.remove('bg-gradient-to-b', gradients[index][0], gradients[index][1]);
+    innerWrapper.classList.remove(
+      'bg-gradient-to-b',
+      member.profileData.color.gradientStart.tw,
+      member.profileData.color.gradientEnd.tw,
+    );
     innerWrapper.addEventListener('mouseover', updateStatusElementWithTime);
   }
 
@@ -83,7 +87,7 @@ const renderAvatar = (member, index) => {
   return fragment;
 };
 
-const renderSelfAvatar = (name) => {
+const renderSelfAvatar = (name: string, selfColor: MemberColor) => {
   const container = document.querySelector('#avatar-self');
   container.innerHTML = '';
   const fragment = createFragment('#avatar-self-template');
@@ -91,16 +95,18 @@ const renderSelfAvatar = (name) => {
   initials.innerHTML = nameToInitials(name);
   const fullNameEl = queryDataId(fragment, 'avatar-full-name');
   fullNameEl.innerHTML = name + ' (You)';
+  const innerWrapper = queryDataId(fragment, 'avatar-inner-wrapper');
+  innerWrapper.classList.add('bg-gradient-to-b', selfColor.gradientStart.tw, selfColor.gradientEnd.tw);
   container.appendChild(fragment);
 };
 
 const renderAvatarOverflow = (members) => {
+  const container = document.querySelector('#avatar-overflow');
+  container.innerHTML = '';
+
   const count = members.length;
 
   if (count < 1) return [];
-
-  const container = document.querySelector('#avatar-overflow');
-  container.innerHTML = '';
 
   const fragment = createFragment('#avatar-overflow-template');
 
@@ -120,7 +126,7 @@ const renderAvatarOverflow = (members) => {
   container.appendChild(fragment);
 };
 
-const MAX_SHOWN_MEMBERS = 5;
+const MAX_SHOWN_MEMBERS = 4;
 
 const renderAvatars = (members) => {
   const showMembers = members.slice(0, MAX_SHOWN_MEMBERS);
