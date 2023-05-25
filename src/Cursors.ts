@@ -1,5 +1,4 @@
 import { Types } from 'ably';
-
 import Space from './Space';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
@@ -36,6 +35,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorHistory: CursorHistory;
   private channel: Types.RealtimeChannelPromise;
   readonly options: StrictCursorsOptions;
+  cursorUpdateListener: Types.messageCallback<Types.Message>;
 
   cursors: Record<string, Cursor> = {};
 
@@ -55,7 +55,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     this.cursorBatching = new CursorBatching(this, this.channel, this.options.outboundBatchInterval);
 
     this.cursorDispensing = new CursorDispensing(this, this.options.inboundBatchInterval);
-    this.channel.subscribe(CURSOR_UPDATE, (message) => this.cursorDispensing.processBatch(message));
+    this.cursorUpdateListener = (message: Types.Message) => this.onCursorUpdate(message);
+    this.channel.subscribe(CURSOR_UPDATE, this.cursorUpdateListener);
 
     this.cursorHistory = new CursorHistory(this.channel, this.options.paginationLimit);
   }
@@ -70,6 +71,19 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
 
   async getAll(cursorName?: string) {
     return await this.cursorHistory.getLastCursorUpdate(cursorName);
+  }
+
+  onCursorUpdate(message: Types.Message) {
+    console.log('cursor_update message recvd');
+    this.cursorDispensing.processBatch(message);
+  }
+
+  onPageHidden() {
+    this.channel.unsubscribe(CURSOR_UPDATE, this.cursorUpdateListener);
+  }
+
+  onPageVisible() {
+    this.channel.subscribe(CURSOR_UPDATE, this.cursorUpdateListener);
   }
 }
 

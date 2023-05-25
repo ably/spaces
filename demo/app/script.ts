@@ -81,8 +81,10 @@ declare global {
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
+      space.cursors.onPageHidden();
       unattach();
     } else {
+      space.cursors.onPageVisible();
       const currentSlide = slideData.find((slide) => slide.selected === IS_SELECTED);
       unattach = attachCursors(space, currentSlide.id);
     }
