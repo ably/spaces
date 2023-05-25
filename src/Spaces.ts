@@ -32,16 +32,20 @@ class Spaces {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  get(name: string, options?: SpaceOptions): Space {
+  async get(name: string, options?: SpaceOptions): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {
       throw new Error('Spaces must have a non-empty name');
     }
 
     if (this.spaces[name]) return this.spaces[name];
 
+    if (this.ably.connection.state !== 'connected') {
+      await this.ably.connection.once('connected');
+    }
+
     const space = new Space(name, this.ably, options);
     this.spaces[name] = space;
+
     return space;
   }
 }

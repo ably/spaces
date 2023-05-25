@@ -17,7 +17,19 @@ import attachCursors from './components/cursors';
 
 import Simulate from './components/simulate';
 
+declare global {
+  interface Window {
+    Simulate: Simulate;
+  }
+}
+
 const clientId = nanoid();
+const selfName = getRandomName();
+const selfColor = getRandomColor();
+const memberIsNotSelf = (member: SpaceMember) => member.clientId !== clientId;
+const currentSlide = () => slideData.find((slide) => slide.selected === IS_SELECTED);
+const sameSlideDifferentElement = (previousLocation, currentLocation) =>
+  previousLocation?.slide === currentLocation?.slide && previousLocation?.element !== currentLocation?.element;
 
 const ably = new Ably.Realtime.Promise({
   authUrl: `/api/ably-token-request?clientId=${clientId}`,
@@ -25,59 +37,36 @@ const ably = new Ably.Realtime.Promise({
 });
 
 const spaces = new Spaces(ably);
-const space = spaces.get(getSpaceNameFromUrl(), {
+const space = await spaces.get(getSpaceNameFromUrl(), {
   offlineTimeout: 10_000,
   cursors: { outboundBatchInterval: 100, inboundBatchInterval: 1 },
 });
-
-const selfName = getRandomName();
-const selfColor = getRandomColor();
-const memberIsNotSelf = (member: SpaceMember) => member.clientId !== clientId;
 
 space.on(MEMBERS_UPDATE, (members) => {
   renderAvatars(members.filter(memberIsNotSelf));
 });
 
-declare global {
-  interface Window {
-    Simulate: Simulate;
-  }
-}
+const initialMembers = await space.enter({ name: selfName, color: selfColor });
+space.locations.set({ slide: currentSlide().id, element: null });
 
-/** Avoids issues with top-level await: an alternative fix is to change build target to es */
-(async () => {
-  const initialMembers = await space.enter({ name: selfName, color: selfColor });
-  renderSelfAvatar(selfName, selfColor);
+renderSelfAvatar(selfName, selfColor);
+renderAvatars(initialMembers.filter(memberIsNotSelf));
+renderSlidePreviewMenu(space);
+renderSelectedSlide(space);
+renderComments();
+let detachCursors = attachCursors(space, currentSlide().id);
 
-  renderAvatars(initialMembers.filter(memberIsNotSelf));
-
-  const initialSlide = slideData.find((slide) => slide.selected === IS_SELECTED);
-
-  // Set initial location
-  space.locations.set({ slide: initialSlide.id, element: null });
+space.locations.on('locationUpdate', ({ previousLocation, currentLocation }) => {
   renderSlidePreviewMenu(space);
   renderSelectedSlide(space);
-  renderComments();
 
-  let unattach = attachCursors(space, initialSlide.id);
+  if (sameSlideDifferentElement(previousLocation, currentLocation)) return;
+  detachCursors();
+  detachCursors = attachCursors(space, currentSlide().id);
+});
 
-  const sameSlideDifferentElement = (previousLocation, currentLocation) => {
-    return previousLocation?.slide === currentLocation?.slide && previousLocation?.element !== currentLocation?.element;
-  };
+space.on('membersUpdate', (members) => {
+  renderAvatars(members.filter(memberIsNotSelf));
+});
 
-  space.locations.on('locationUpdate', (locationUpdate) => {
-    renderSlidePreviewMenu(space);
-    renderSelectedSlide(space);
-
-    if (sameSlideDifferentElement(locationUpdate.previousLocation, locationUpdate.currentLocation)) return;
-    unattach();
-    const currentSlide = slideData.find((slide) => slide.selected === IS_SELECTED);
-    unattach = attachCursors(space, currentSlide.id);
-  });
-
-  space.on('membersUpdate', (members) => {
-    renderAvatars(members.filter(memberIsNotSelf));
-  });
-
-  window.Simulate = new Simulate();
-})();
+window.Simulate = new Simulate();
