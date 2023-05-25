@@ -35,15 +35,16 @@ describe('Spaces', () => {
     expect(connectSuccess.current).toBe('connected');
   });
 
-  it<SpacesTestContext>('creates and retrieves spaces successfully', ({ client }) => {
+  it<SpacesTestContext>('creates and retrieves spaces successfully', async ({ client, server }) => {
+    server.start();
     const channels = client.channels;
     const spy = vi.spyOn(channels, 'get');
+
     const spaces = new Spaces(client);
-    const space = spaces.get('test');
+    const space = await spaces.get('test');
 
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith('_ably_space_test');
-    // Note: This is matching the class type. This is not a TypeScript type.
     expectTypeOf(space).toMatchTypeOf<Space>();
   });
 

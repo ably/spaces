@@ -33,7 +33,7 @@ type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter:
 
 class Space extends EventEmitter<SpaceEventsMap> {
   private channelName: string;
-  private connectionId?: string;
+  private connectionId: string;
   private channel: Types.RealtimeChannelPromise;
   private members: SpaceMember[];
   private leavers: SpaceLeaver[];
@@ -45,11 +45,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
   constructor(readonly name: string, readonly client: Types.RealtimePromise, options?: SpaceOptions) {
     super();
     this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
-    if (!this.client.connection.id) {
-      this.client.connection.whenState('connected').then(() => (this.connectionId = this.client.connection.id));
-    } else {
-      this.connectionId = this.client.connection.id;
-    }
+    this.connectionId = this.client.connection.id;
     this.members = [];
     this.leavers = [];
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
