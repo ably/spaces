@@ -179,8 +179,8 @@ class Space extends EventEmitter<SpaceEventsMap> {
     return new Promise((resolve) => {
       const presence = this.channel.presence;
       presence.enter({ profileData });
-      // @ts-ignore
-      presence.subscriptions.once('enter', async () => {
+
+      presence['subscriptions'].once('enter', async () => {
         const presenceMessages = await presence.get();
         this.members = this.mapPresenceMembersToSpaceMembers(presenceMessages);
 
