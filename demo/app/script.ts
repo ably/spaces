@@ -79,5 +79,14 @@ declare global {
     renderAvatars(members.filter(memberIsNotSelf));
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      unattach();
+    } else {
+      const currentSlide = slideData.find((slide) => slide.selected === IS_SELECTED);
+      unattach = attachCursors(space, currentSlide.id);
+    }
+  });
+
   window.Simulate = new Simulate();
 })();

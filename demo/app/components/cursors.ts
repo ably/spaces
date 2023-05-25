@@ -54,14 +54,14 @@ const attachCursors = (space, slideId) => {
 
   cursor.on('cursorUpdate', (update) => {
     let cursorNode: HTMLElement = slideContainer.querySelector(`#cursor-${update.connectionId}`);
-    const now = Date.now();
-    const batchTime = space.cursors['cursorBatching']['batchTime'] * 3;
-    const oldBatch = now - update.batchTimestamp > batchTime;
+    // const now = Date.now();
+    // const batchTime = space.cursors['cursorBatching']['batchTime'] * 3;
+    // const oldBatch = now - update.batchTimestamp > batchTime;
 
-    if (oldBatch) {
-      cursorNode ? cursorContainer.removeChild(cursorNode) : null;
-      return;
-    }
+    // if (oldBatch) {
+    //   cursorNode ? cursorContainer.removeChild(cursorNode) : null;
+    //   return;
+    // }
 
     const membersOnSlide = space.getMembers().filter((member) => member.location?.slide === slideId);
     const member = membersOnSlide.find((member) => member.connectionId === update.connectionId);
