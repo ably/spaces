@@ -7,6 +7,7 @@ export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};
   private handlerRunning: boolean = false;
   private bufferHasData: boolean = false;
+  private timerIds: NodeJS.Timeout[] = [];
 
   constructor(readonly cursors: Cursors, readonly inboundBatchInterval: StrictCursorsOptions['inboundBatchInterval']) {}
 
@@ -18,7 +19,7 @@ export default class CursorDispensing {
 
     this.handlerRunning = true;
 
-    setTimeout(() => {
+    const processBuffer = () => {
       let bufferLengths: number[] = [];
 
       for (let connectionId in this.buffer) {
@@ -41,7 +42,17 @@ export default class CursorDispensing {
         this.handlerRunning = false;
         this.bufferHasData = false;
       }
-    }, this.inboundBatchInterval);
+
+      this.timerIds.shift();
+    };
+
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+      this.timerIds.forEach((id) => clearTimeout(id));
+      this.timerIds = [];
+      processBuffer();
+    } else {
+      this.timerIds.push(setTimeout(processBuffer, this.inboundBatchInterval));
+    }
   }
 
   processBatch(message: Types.Message) {
@@ -57,7 +68,7 @@ export default class CursorDispensing {
           name,
           clientId: message.clientId,
           connectionId: message.connectionId,
-          batchTimestamp: message.timestamp,
+          updateTimestamp: message.timestamp,
           position: update.position,
           data: update.data,
         };

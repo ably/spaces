@@ -1,4 +1,4 @@
-import Cursors, { CursorUpdate } from './Cursors';
+import { CursorUpdate } from './Cursors';
 import { Types } from 'ably';
 import { CURSOR_UPDATE } from './utilities/Constants';
 import type { StrictCursorsOptions } from './options/CursorsOptions';
@@ -18,7 +18,6 @@ export default class CursorBatching {
   // Set to `true` if there is more than one user listening to cursors
 
   constructor(
-    readonly cursors: Cursors,
     readonly channel: Types.RealtimeChannelPromise,
     readonly outboundBatchInterval: StrictCursorsOptions['outboundBatchInterval'],
   ) {

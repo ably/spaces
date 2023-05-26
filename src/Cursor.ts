@@ -1,17 +1,54 @@
+import { Types } from 'ably';
+
 import EventEmitter from './utilities/EventEmitter';
 import { type CursorUpdate } from './Cursors';
+
 import CursorBatching from './CursorBatching';
+import CursorDispensing from './CursorDispensing';
+import { CURSOR_UPDATE } from './utilities/Constants';
 
 type CursorEventMap = { cursorUpdate: CursorUpdate };
 
-/** Class that enables updating and emitting events for a specific cursor. */
+const emitterHasListeners = (emitter) => {
+  const flattenEvents = (obj) =>
+    Object.entries(obj)
+      .map((_, v) => v)
+      .flat();
+
+  return (
+    emitter.any.length > 0 ||
+    emitter.anyOnce.length > 0 ||
+    flattenEvents(emitter.events).length > 0 ||
+    flattenEvents(emitter.eventsOnce).length > 0
+  );
+};
+
 export default class Cursor extends EventEmitter<CursorEventMap> {
   /**
    * @param {string} name
-   * @param {CursorBatching} cursorBatching
+   * @param {channel} Types.RealtimeChannelPromise
    */
-  constructor(private name: string, private cursorBatching: CursorBatching) {
+  constructor(
+    readonly name: string,
+    private readonly channel: Types.RealtimeChannelPromise,
+    private cursorBatching: CursorBatching,
+    private cursorDispensing: CursorDispensing,
+  ) {
     super();
+  }
+
+  private isUnsubscribed() {
+    return !emitterHasListeners(this.channel['subscriptions']);
+  }
+
+  private subscribe() {
+    this.channel.subscribe(CURSOR_UPDATE, (message) => {
+      this.cursorDispensing.processBatch(message);
+    });
+  }
+
+  private unsubscribe() {
+    this.channel.unsubscribe();
   }
 
   /**
@@ -22,5 +59,22 @@ export default class Cursor extends EventEmitter<CursorEventMap> {
    */
   set(cursor: Pick<CursorUpdate, 'position' | 'data'>): void {
     this.cursorBatching.pushCursorPosition(this.name, cursor);
+  }
+
+  on(...args) {
+    super.on(...args);
+
+    if (this.isUnsubscribed()) {
+      this.subscribe();
+    }
+  }
+
+  off(...args) {
+    super.off(...args);
+    const hasListeners = emitterHasListeners(this);
+
+    if (args.length > 0 || !hasListeners) {
+      this.unsubscribe();
+    }
   }
 }
