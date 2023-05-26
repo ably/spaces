@@ -9,6 +9,9 @@
 * [Subscribe to location updates](#subscribe-to-location-updates)
   * [Track an individual location or user](#track-an-individual-location-or-user)
 * [Set a location](#set-a-location)
+* [Subscribe to cursor updates](#subscribe-to-cursor-updates)
+  * [Request cursor locations](#request-cursor-locations)
+* [Set a cursor location](#set-a-cursor-location)
 
 ## Authenticate and instantiate
 
@@ -43,6 +46,10 @@ A set of `spaceOptions` can be passed to space when creating or retrieving it. `
 | Property | Description | Type |
 | -------- | ----------- | ---- |
 | offlineTimeout | The time in milliseconds before a member is removed from a space after they have disconnected. The default is 120,000 (2 minutes). | number |
+| outboundBatchInterval | The interval in milliseconds at which a batch of cursor positions are published. This is multiplied  by the number of members in the space minus 1. The default value is 100. | number |
+| inboundBatchInterval | The interval in milliseconds at which a listener is updated with a single cursor position change. The default is 1. | number |
+| paginationLimit | The number of pages searched from [history](https://ably.com/docs/realtime/history) for the last published cursor position. The default is 5. | number |
+
 
 The following is an example of setting `offlineTimeout` to 3 minutes when creating a space:
 
@@ -218,4 +225,110 @@ The following is an example of setting a location update:
 
 ```ts
 space.locations.set({slide: '3', component: 'slide-title'});
+```
+
+## Subscribe to cursor updates
+
+Subscribe to `cursorUpdate` events in order to display the location of user cursors within a space as they move. Use the `space.cursors.on()` method to register a listener for `cursorUpdate` events.
+
+The following is an example of subscribing to all cursor updates in a space:
+
+```ts
+space.cursors.on((event) => {
+    console.log(event);
+});
+```
+
+The following is an example of subscribing to events for only a specific cursor in a space:
+
+```ts
+space.cursors.get('user-a-cursor').on((event) => {
+    console.log(event);
+});
+```
+
+The following is an example `cursorUpdate` event received by subscribers when a cursor changes position:
+
+```json
+{
+    "name": "user-a-cursor",
+    "connectionId": "hd9743gjDc",
+    "clientId": "clemons@slides.com",
+    "position": { "x": 864, "y": 32 },
+    "cursorData": { "color": "red" }
+  }
+```
+
+The following are the properties of a `cursorUpdate` event:
+
+| Property | Description | Type |
+| -------- | ----------- | ---- |
+| name | The name of the cursor. | string |
+| connectionId | The unique connection identifier for the user. | string |
+| clientId | The client identifier for the user. | string |
+| position | The x and y coordinates of the cursor. | cursorPosition |
+| data | Optional additional information about a cursor, such as its color.  | cursorData |
+
+### Request cursor locations
+
+To retrieve the initial location of all cursors within a space, you can use the `cursors.getAll()` method. This returns a `cursorsUpdate` which contains a list of cursors by `connectionId`.
+
+The following is an example of calling `getAll()` to return all cursor positions:
+
+```ts
+const allCursors = space.cursors.getAll();
+```
+
+The following is an example `cursorsUpdate` received when calling `getAll()`:
+
+```json
+{
+    "<connection-id-1>": {
+      "pointer": {
+        "name": "pointer",
+        "connectionId": "someConnectionId",
+        "clientId": "someClientId",
+        "position": { 
+            "x": 864, 
+            "y": 32 
+            },
+        "cursorData": { 
+            "color": "red" 
+            }
+      }
+    },
+    "<connection-id-2>": {
+      "pointer": null
+    }
+  }
+```
+
+The following optional properties can be passed to `getAll()`:
+
+| Property | Description | Type |
+| -------- | ----------- | ---- |
+| name | The name of a cursor to retrieve the position for. This name is set by a user when they [create a cursor instance](#set-a-cursor-position).  | string |
+
+## Set a cursor location
+
+Users create a cursor instance using the `space.cursors.get()` method and then use the `set()` method to publish a `cursorUpdate` event when their cursor moves.
+
+The following is an example of creating a cursor instance and updating its location:
+
+```ts
+const pointer = space.cursors.get('user-a-cursor');
+
+pointer.set({ position: { "x": clientX, "y": clientY } });
+```
+
+The following optional properties can be passed to `set()`:
+
+| Property | Description | Type |
+| -------- | ----------- | ---- |
+| data | Optional cursor information. ||
+
+The following is an example of passing `data` to the `set()` property to set the cursor color for a user:
+
+```ts
+pointer.set({ position: { "x": clientX, "y": clientY }, data: { "color": "red" } });
 ```
