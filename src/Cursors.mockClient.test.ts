@@ -78,7 +78,6 @@ describe('Cursors (mockClient)', () => {
         position: { x: 1, y: 1 },
         data: undefined,
         clientId: 'clientId',
-        batchTimestamp: 1,
         connectionId: 'connectionId',
         name: 'cursor1',
       });
@@ -88,7 +87,6 @@ describe('Cursors (mockClient)', () => {
       expect(spy).toHaveBeenCalledWith({
         position: { x: 1, y: 2 },
         data: { color: 'red' },
-        batchTimestamp: 1,
         clientId: 'clientId',
         connectionId: 'connectionId',
         name: 'cursor2',
@@ -119,7 +117,6 @@ describe('Cursors (mockClient)', () => {
       const result = {
         position: { x: 1, y: 1 },
         data: undefined,
-        batchTimestamp: 1,
         clientId: 'clientId',
         connectionId: 'connectionId',
         name: 'cursor1',
@@ -323,7 +320,6 @@ describe('Cursors (mockClient)', () => {
               data: undefined,
               clientId: 'clientId',
               connectionId: 'connectionId',
-              batchTimestamp: 1,
               name: 'cursor1',
             },
             {
@@ -331,7 +327,6 @@ describe('Cursors (mockClient)', () => {
               data: { color: 'blue' },
               clientId: 'clientId',
               connectionId: 'connectionId',
-              batchTimestamp: 1,
               name: 'cursor1',
             },
             {
@@ -339,7 +334,6 @@ describe('Cursors (mockClient)', () => {
               data: undefined,
               clientId: 'clientId',
               connectionId: 'connectionId',
-              batchTimestamp: 1,
               name: 'cursor2',
             },
           ],

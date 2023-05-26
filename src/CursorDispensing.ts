@@ -68,7 +68,6 @@ export default class CursorDispensing {
           name,
           clientId: message.clientId,
           connectionId: message.connectionId,
-          updateTimestamp: message.timestamp,
           position: update.position,
           data: update.data,
         };
