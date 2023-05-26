@@ -27,11 +27,19 @@ const mockHistory = {
   isLast: () => true,
 };
 
+const mockEmitter = {
+  any: [],
+  events: {},
+  anyOnce: [],
+  eventsOnce: {},
+};
+
 const mockChannel = {
   presence: mockPresence,
   history: () => mockHistory,
   subscribe: () => {},
   publish: () => {},
+  subscriptions: mockEmitter,
 };
 
 class MockRealtime {
