@@ -87,17 +87,24 @@ const attachCursors = (space, slideId) => {
       const { top, left } = cursorContainer.getBoundingClientRect();
       cursor.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'leave' } });
     },
+    tabLeft: (event) => {
+      if (document.visibilityState === 'hidden') {
+        cursorHandlers.leave(event);
+      }
+    },
   };
 
   slideContainer.addEventListener('mouseenter', cursorHandlers.enter);
   slideContainer.addEventListener('mousemove', cursorHandlers.move);
   slideContainer.addEventListener('mouseleave', cursorHandlers.leave);
+  document.addEventListener('visibilitychange', cursorHandlers.tabLeft);
 
   return () => {
     cursor.off();
     slideContainer.removeEventListener('mouseenter', cursorHandlers.enter);
     slideContainer.removeEventListener('mousemove', cursorHandlers.move);
     slideContainer.removeEventListener('mouseleave', cursorHandlers.leave);
+    document.addEventListener('visibilitychange', cursorHandlers.tabLeft);
   };
 };
 
