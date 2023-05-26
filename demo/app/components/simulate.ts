@@ -76,11 +76,11 @@ class Simulate {
 
   cursors(
     interval: number = Math.floor(Math.random() * 50),
-    executeFor: number = 5_000,
-    initialX: number = 10,
-    initialY: number = 10,
-    incrementX: number = 5,
-    incrementY: number = 5,
+    executeFor: number = 30_000,
+    initialX: number = Math.floor(Math.random() * 20),
+    initialY: number = Math.floor(Math.random() * 20),
+    incrementX: number = Math.floor(Math.random() * 5),
+    incrementY: number = Math.floor(Math.random() * 5),
   ) {
     return new CursorMovements(interval, executeFor, initialX, initialY, incrementX, incrementY);
   }
