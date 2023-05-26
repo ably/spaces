@@ -48,6 +48,7 @@ const createCursor = (connectionId: string, profileData: { name: string; color: 
 const attachCursors = (space, slideId) => {
   const slideContainer = document.querySelector('#slide-selected') as HTMLElement;
   const cursorContainer = queryDataId(slideContainer, 'slide-cursor-container');
+  cursorContainer.innerHTML = '';
 
   const cursor = space.cursors.get(slideId);
   const self = space.getSelf();
@@ -94,7 +95,6 @@ const attachCursors = (space, slideId) => {
 
   return () => {
     cursor.off();
-    cursorContainer.innerHTML = '';
     slideContainer.removeEventListener('mouseenter', cursorHandlers.enter);
     slideContainer.removeEventListener('mousemove', cursorHandlers.move);
     slideContainer.removeEventListener('mouseleave', cursorHandlers.leave);
