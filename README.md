@@ -69,15 +69,16 @@ npm install ably
 npm install ably-labs/spaces
 ```
 
-Import the SDKs and then create an instance of the Ably JavaScript SDK using your Ably API key and then pass that value to the Collaborative Spaces SDK constructor:
+Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably API key:
 
 ```ts
 import { Realtime } from 'ably/promise';
 import Spaces from '@ably-labs/spaces';
 
-const client = new Realtime(ABLY_API_KEY);
-const spaces = new Spaces(client);
+const spaces = new Spaces(ABLY_API_KEY);
 ```
+
+In the above example, the client can be accessed using `spaces.ably` to use functionality in the Ably JavaScript SDK.
 
 ### Space membership
 
@@ -104,7 +105,7 @@ The following is an example `membersUpdate` event received by subscribers when a
 ```json
 [
   {
-    "clientId": "clemons@slides.com",
+    "clientId": "clemons#142",
     "isConnected": true,
     "lastEvent": {
       "name": "enter",
@@ -134,7 +135,7 @@ space.locations.set({slide: '3', component: 'slide-title'});
 
 // Create a tracker to only publish locationUpdate events for a specific user using their clientId
 const memberTracker = space.locations.createTracker(
-  (change) => change.member.clientId === 'clemons@slides.com'
+  (change) => change.member.clientId === 'clemons#142'
 );
 
 // Register a listener to subscribe to events for a tracker
@@ -157,19 +158,31 @@ The following is an example `locationUpdate` event received by subscribers when 
 
 ```json
 {
-    "member": {
-    "clientId": "clemons@slides.com",
+  "member": {
+    "clientId": "clemons#142",
+    "connectionId": "hd9743gjDc",
     "isConnected": true,
     "profileData": {
       "username": "Claire Lemons",
       "avatar": "https://slides-internal.com/users/clemons.png"
     },
-    "location": {"slide": "3", "component": "slide-title"},
-    "lastEvent": { "name": "update", "timestamp": 1 },
-    "connections": ["2"],
+    "location": { 
+      "slide": "3", 
+      "component": "slide-title" 
+      },
+    "lastEvent": { 
+      "name": "update", 
+      "timestamp": 1 
+      }
   },
-  "previousLocation": {"slide": "2", "component": null },
-  "currentLocation": {"slide": "3", "component": "slide-title"}
+  "previousLocation": { 
+    "slide": "2", 
+    "component": null 
+    },
+  "currentLocation": { 
+    "slide": "3", 
+    "component": "slide-title" 
+    }
 }
 ```
 
@@ -206,7 +219,7 @@ The following is an example `positionUpdate` received by subscribers when a curs
 {
   "name": "clemons-pointer",
   "connectionId": "hd9743gjDc",
-  "clientId": "clemons@slides.com",
+  "clientId": "clemons#142",
   "position": { "x": 864, "y": 32 },
   "cursorData": { "color": "red" }
 }

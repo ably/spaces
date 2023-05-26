@@ -1,20 +1,38 @@
 # In-depth usage
 
+* [Authenticate and instantiate](#authenticate-and-instantiate)
+* [Create a space](#create-a-space)
+* [Subscribe to member updates](#subscribe-to-member-updates)
+  * [Request member updates](#request-member-updates)
+* [Enter a space](#enter-a-space)
+  * [Leave a space](#leave-a-space)
+* [Subscribe to location updates](#subscribe-to-location-updates)
+  * [Track an individual location or user](#track-an-individual-location-or-user)
+* [Set a location](#set-a-location)
+
 ## Authenticate and instantiate
 
-Import the Ably JavaScript SDK and the Collaborative Spaces SDK. Create an instance of the Ably JavaScript SDK using your Ably API key and then pass that value to the Collaborative Spaces SDK constructor:
+Install the Ably JavaScript SDK and the Collaborative Spaces SDK:
+
+```sh
+npm install ably
+npm install ably-labs/spaces
+```
+
+Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably API key:
 
 ```ts
 import { Realtime } from 'ably/promise';
 import Spaces from '@ably-labs/spaces';
 
-const client = new Realtime(ABLY_API_KEY);
-const spaces = new Spaces(client);
+const spaces = new Spaces(ABLY_API_KEY);
 ```
+
+In the above example, the client can be accessed using `spaces.ably` to use functionality in the Ably JavaScript SDK.
 
 ## Create a space
 
-A space is the virtual area of an application you want to monitor, such as a web page, or slideshow. A `space` is uniquely identified by its name. A space is created, or an existing space retrieved from the `spaces` collection by calling the `get()` method. You can only connect to one space in a single operation. The following is an example of creating a space called "demonSlideshow":
+A space is the virtual area of an application you want to collaborate in, such as a web page, or slideshow. A `space` is uniquely identified by its name. A space is created, or an existing space retrieved from the `spaces` collection by calling the `get()` method. You can only connect to one space in a single operation. The following is an example of creating a space called "demonSlideshow":
 
 ```ts
 const space = spaces.get('demoSlideshow');
@@ -34,7 +52,7 @@ const space = spaces.get('demoSlideshow', { offlineTimeout: 180_000 });
 
 ## Subscribe to member updates
 
-Subscribe to `membersUpdate` events in order to display which users are present in a space, such as in an avatar stack. The `membersUpdate` events for a space notify subscribers when clients join and leave it. Use the `space.on()` method to register a listener for `membersUpdate` events.
+Subscribe to `membersUpdate` events in order to display which users are present in a space, such as in an avatar stack. The `membersUpdate` events for a space notify subscribers when clients join and leave it, or when a user's location changes. Use the `space.on()` method to register a listener for `membersUpdate` events.
 
 The following is an example of subscribing to updates for a space:
 
@@ -49,7 +67,7 @@ The following is an example `membersUpdate` event received by subscribers when a
 ```json
 [
   {
-    "clientId": "clemons@slides.com",
+    "clientId": "clemons#142",
     "isConnected": true,
     "lastEvent": {
       "name": "enter",
@@ -104,11 +122,15 @@ A leave event is sent when a user leaves a space. This can occur for one of the 
 * `space.leave()` is called explicitly.
 * The user closes the tab.
 * The user is abruptly disconnected from the internet for longer than 2 minutes.
-  * Note that the time before they are seen has having left the space is configurable using `offlineTimeout`.
+  * Note that the time before they are seen has having left the space is configurable using [`offlineTimeout`](#create-a-space).
 
 ## Subscribe to location updates
 
-Subscribe to `locationUpdate` events in order to display where users are within a space, such as which slide number they are currently viewing, or which cell or component they have selected. `locationUpdate` events for a space are sent when a user calls `locations.set()`, which can be configured to fire for whichever UI interactions you'd like. Use the `locations.on()` method to register a listener for `locationUpdates` events.
+Subscribe to `locationUpdate` events in order to display where users are within a space, such as which slide number they are currently viewing, or which cell or component they have selected. `locationUpdate` events are sent when a user calls [`locations.set()`](#set-a-location) to update their location when they change position, or select a new UI element. Use the `locations.on()` method to register a listener for `locationUpdates` events.
+
+Locations are defined by you, so that they are most relevant to the application. For example, it could be only the ID of an HTML element, or a map describing a slide number and slide element.
+
+Note that updates to user locations are also received in [`memberUpdates`](#subscribe-to-member-updates) events. This can be useful for managing and reacting to local app state changes, whereas it is often simpler to listen to individual events to update UI elements.
 
 The following is an example of subscribing to location updates for a space:
 
@@ -122,19 +144,31 @@ The following is an example `locationUpdate` event received by subscribers when 
 
 ```json
 {
-    "member": {
-    "clientId": "clemons@slides.com",
+  "member": {
+    "clientId": "clemons#142",
+    "connectionId": "hd9743gjDc",
     "isConnected": true,
     "profileData": {
       "username": "Claire Lemons",
       "avatar": "https://slides-internal.com/users/clemons.png"
     },
-    "location": {"slide": "3", "component": "slide-title"},
-    "lastEvent": { "name": "update", "timestamp": 1 },
-    "connections": ["2"],
+    "location": {
+      "slide": "3", 
+      "component": "slide-title"
+      },
+    "lastEvent": { 
+      "name": "update", 
+      "timestamp": 1 
+      }
   },
-  "previousLocation": {"slide": "2", "component": null },
-  "currentLocation": {"slide": "3", "component": "slide-title"}
+  "previousLocation": {
+    "slide": "2", 
+    "component": null 
+    },
+  "currentLocation": {
+    "slide": "3", 
+    "component": "slide-title"
+    }
 }
 ```
 
@@ -150,13 +184,13 @@ To stop subscribing to location updates, users can call the `locations.off()` me
 
 ### Track an individual location or user
 
-It is also possible to track a specific location or user, rather than subscribing to all events using `createTracker()`.
+It is also possible to track a specific location or user, rather than subscribing to all events using `createTracker()`. All events will still be streamed to the client, however they will be filtered client-side.
 
 The following is an example of creating a tracker for a specific user based on their `clientId`, and then subscribing to updates for only that user:
 
 ```ts
 const memberTracker = space.locations.createTracker(
-  (change) => change.member.clientId === 'clemons@slides.com'
+  (change) => change.member.clientId === 'clemons#142'
 );
 
 memberTracker.on((change) => {
@@ -178,7 +212,7 @@ locationTracker.on((change) => {
 
 ## Set a location
 
-Use `locations.set()` to publish a `locationUpdate` that will be received by all users subscribed to location updates.
+Users call `locations.set()` to publish a `locationUpdate` that will be received by all users subscribed to location updates. This should be called to update their location when they change position, or select a new UI element.
 
 The following is an example of setting a location update: 
 
