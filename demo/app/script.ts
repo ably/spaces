@@ -28,9 +28,9 @@ const selfName = getRandomName();
 const selfColor = getRandomColor();
 const memberIsNotSelf = (member: SpaceMember) => member.clientId !== clientId;
 const currentSlide = () => slideData.find((slide) => slide.selected === IS_SELECTED);
-const sameSlideDifferentElement = (previousLocation, currentLocation) =>
-  previousLocation?.slide === currentLocation?.slide && previousLocation?.element !== currentLocation?.element;
-
+const sameSlide = (previousLocation, currentLocation) => {
+  return previousLocation?.slide === currentLocation?.slide;
+};
 const ably = new Ably.Realtime.Promise({
   authUrl: `/api/ably-token-request?clientId=${clientId}`,
   clientId,
@@ -39,7 +39,7 @@ const ably = new Ably.Realtime.Promise({
 const spaces = new Spaces(ably);
 const space = await spaces.get(getSpaceNameFromUrl(), {
   offlineTimeout: 10_000,
-  cursors: { outboundBatchInterval: 100, inboundBatchInterval: 1 },
+  cursors: { outboundBatchInterval: 50, inboundBatchInterval: 1 },
 });
 
 space.on(MEMBERS_UPDATE, (members) => {
@@ -60,7 +60,7 @@ space.locations.on('locationUpdate', ({ previousLocation, currentLocation }) => 
   renderSlidePreviewMenu(space);
   renderSelectedSlide(space);
 
-  if (sameSlideDifferentElement(previousLocation, currentLocation)) return;
+  if (sameSlide(previousLocation, currentLocation)) return;
   detachCursors();
   detachCursors = attachCursors(space, currentSlide().id);
 });
