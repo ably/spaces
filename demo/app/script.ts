@@ -39,7 +39,6 @@ const ably = new Ably.Realtime.Promise({
 const spaces = new Spaces(ably);
 const space = await spaces.get(getSpaceNameFromUrl(), {
   offlineTimeout: 10_000,
-  cursors: { outboundBatchInterval: 50, inboundBatchInterval: 1 },
 });
 
 space.on(MEMBERS_UPDATE, (members) => {
