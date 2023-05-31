@@ -59,7 +59,7 @@ describe('Cursors (mockClient)', () => {
       expect(space.cursors.get('cursor1')).toEqual(cursor1);
     });
 
-    it<CursorsTestContext>('emits a cursorsUpdate event', ({ space, dispensing, fakeMessageStub }) => {
+    it<CursorsTestContext>('emits a cursorsUpdate event', ({ space, dispensing, batching, fakeMessageStub }) => {
       const fakeMessage = {
         ...fakeMessageStub,
         data: {
@@ -72,7 +72,7 @@ describe('Cursors (mockClient)', () => {
       space.cursors.on(spy);
       dispensing.processBatch(fakeMessage);
 
-      vi.advanceTimersByTime(dispensing.inboundBatchInterval);
+      vi.advanceTimersByTime(batching.batchTime * 2);
 
       expect(spy).toHaveBeenCalledWith({
         position: { x: 1, y: 1 },
@@ -82,7 +82,7 @@ describe('Cursors (mockClient)', () => {
         name: 'cursor1',
       });
 
-      vi.advanceTimersByTime(dispensing.inboundBatchInterval * 2);
+      vi.advanceTimersByTime(batching.batchTime * 2);
 
       expect(spy).toHaveBeenCalledWith({
         position: { x: 1, y: 2 },
@@ -96,6 +96,7 @@ describe('Cursors (mockClient)', () => {
     it<CursorsTestContext>('emits cursorUpdate for a specific cursor event', ({
       space,
       dispensing,
+      batching,
       fakeMessageStub,
     }) => {
       const fakeMessage = {
@@ -112,7 +113,7 @@ describe('Cursors (mockClient)', () => {
       space.cursors.get('cursor1').on(spy);
       dispensing.processBatch(fakeMessage);
 
-      vi.advanceTimersByTime(dispensing.inboundBatchInterval);
+      vi.advanceTimersByTime(batching.batchTime * 2);
 
       const result = {
         position: { x: 1, y: 1 },
@@ -340,7 +341,7 @@ describe('Cursors (mockClient)', () => {
         });
       });
 
-      it<CursorsTestContext>('runs until the batch is empty', async ({ dispensing, fakeMessageStub }) => {
+      it<CursorsTestContext>('runs until the batch is empty', async ({ dispensing, batching, fakeMessageStub }) => {
         vi.useFakeTimers();
 
         const fakeMessage = {
@@ -352,27 +353,27 @@ describe('Cursors (mockClient)', () => {
         };
 
         expect(dispensing['handlerRunning']).toBe(false);
-        expect(dispensing['bufferHasData']).toBe(false);
+        expect(dispensing.bufferHaveData()).toBe(false);
 
         dispensing.processBatch(fakeMessage);
         expect(dispensing['buffer']['connectionId']).toHaveLength(3);
         expect(dispensing['handlerRunning']).toBe(true);
-        expect(dispensing['bufferHasData']).toBe(true);
-        vi.advanceTimersByTime(dispensing.inboundBatchInterval);
+        expect(dispensing.bufferHaveData()).toBe(true);
+        vi.advanceTimersByTime(batching.batchTime / 2);
 
         expect(dispensing['buffer']['connectionId']).toHaveLength(2);
         expect(dispensing['handlerRunning']).toBe(true);
-        expect(dispensing['bufferHasData']).toBe(true);
+        expect(dispensing.bufferHaveData()).toBe(true);
 
-        vi.advanceTimersByTime(dispensing.inboundBatchInterval);
+        vi.advanceTimersByTime(batching.batchTime / 2);
         expect(dispensing['buffer']['connectionId']).toHaveLength(1);
         expect(dispensing['handlerRunning']).toBe(true);
-        expect(dispensing['bufferHasData']).toBe(true);
+        expect(dispensing.bufferHaveData()).toBe(true);
 
-        vi.advanceTimersByTime(dispensing.inboundBatchInterval);
+        vi.advanceTimersByTime(batching.batchTime);
         expect(dispensing['buffer']['connectionId']).toHaveLength(0);
         expect(dispensing['handlerRunning']).toBe(false);
-        expect(dispensing['bufferHasData']).toBe(false);
+        expect(dispensing.bufferHaveData()).toBe(false);
 
         vi.useRealTimers();
       });

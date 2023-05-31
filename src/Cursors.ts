@@ -4,11 +4,7 @@ import Space from './Space';
 import Cursor from './Cursor';
 import CursorBatching from './CursorBatching';
 import CursorDispensing from './CursorDispensing';
-import {
-  OUTGOING_BATCH_TIME_DEFAULT,
-  INCOMING_BATCH_TIME_DEFAULT,
-  PAGINATION_LIMIT_DEFAULT,
-} from './utilities/Constants';
+import { OUTGOING_BATCH_TIME_DEFAULT, PAGINATION_LIMIT_DEFAULT } from './utilities/Constants';
 import EventEmitter from './utilities/EventEmitter';
 import CursorHistory from './CursorHistory';
 import type { CursorsOptions, StrictCursorsOptions } from './options/CursorsOptions';
@@ -42,7 +38,6 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     super();
     this.options = {
       outboundBatchInterval: OUTGOING_BATCH_TIME_DEFAULT,
-      inboundBatchInterval: INCOMING_BATCH_TIME_DEFAULT,
       paginationLimit: PAGINATION_LIMIT_DEFAULT,
     };
 
@@ -53,7 +48,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     this.channel = space.client.channels.get(`${spaceChannelName}_cursors`);
     this.cursorBatching = new CursorBatching(this.channel, this.options.outboundBatchInterval);
     this.cursorHistory = new CursorHistory(this.channel, this.options.paginationLimit);
-    this.cursorDispensing = new CursorDispensing(this, this.options.inboundBatchInterval);
+    this.cursorDispensing = new CursorDispensing(this, this.cursorBatching);
   }
 
   get(name: string): Cursor {

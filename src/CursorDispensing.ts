@@ -1,18 +1,19 @@
 import { Types } from 'ably';
 
 import Cursors, { type CursorUpdate } from './Cursors';
-import type { StrictCursorsOptions } from './options/CursorsOptions';
+import CursorBatching from './CursorBatching';
+
+import { clamp } from './utilities/math';
 
 export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};
   private handlerRunning: boolean = false;
-  private bufferHasData: boolean = false;
   private timerIds: NodeJS.Timeout[] = [];
 
-  constructor(readonly cursors: Cursors, readonly inboundBatchInterval: StrictCursorsOptions['inboundBatchInterval']) {}
+  constructor(readonly cursors: Cursors, readonly cursorsBatching: CursorBatching) {}
 
-  emitFromBatch() {
-    if (!this.bufferHasData) {
+  emitFromBatch(batchDispenseInterval: number) {
+    if (!this.bufferHaveData()) {
       this.handlerRunning = false;
       return;
     }
@@ -20,13 +21,9 @@ export default class CursorDispensing {
     this.handlerRunning = true;
 
     const processBuffer = () => {
-      let bufferLengths: number[] = [];
-
       for (let connectionId in this.buffer) {
         const buffer = this.buffer[connectionId];
         const update = buffer.shift();
-
-        bufferLengths.push(buffer.length);
 
         if (!update) continue;
         this.cursors.emit('cursorsUpdate', update);
@@ -36,11 +33,10 @@ export default class CursorDispensing {
         cursor.emit('cursorUpdate', update);
       }
 
-      if (bufferLengths.some((bufferLength) => bufferLength > 0)) {
-        this.emitFromBatch();
+      if (this.bufferHaveData()) {
+        this.emitFromBatch(this.calculateDispenseInterval());
       } else {
         this.handlerRunning = false;
-        this.bufferHasData = false;
       }
 
       this.timerIds.shift();
@@ -51,17 +47,28 @@ export default class CursorDispensing {
       this.timerIds = [];
       processBuffer();
     } else {
-      this.timerIds.push(setTimeout(processBuffer, this.inboundBatchInterval));
+      this.timerIds.push(setTimeout(processBuffer, batchDispenseInterval));
     }
   }
 
-  processBatch(message: Types.Message) {
-    let updatesCounter = 0;
+  bufferHaveData(): boolean {
+    return (
+      Object.entries(this.buffer)
+        .map(([, v]) => v)
+        .flat().length > 0
+    );
+  }
 
+  calculateDispenseInterval(): number {
+    const bufferLengths = Object.entries(this.buffer).map(([, v]) => v.length);
+    const highest = bufferLengths.sort()[bufferLengths.length - 1];
+    const finalOutboundBatchInterval = this.cursorsBatching.batchTime;
+    return Math.floor(clamp(finalOutboundBatchInterval / highest, 1, 1000 / 15));
+  }
+
+  processBatch(message: Types.Message) {
     Object.keys(message.data).forEach((name) => {
       const updates = message.data[name] || [];
-
-      updatesCounter += updates.length;
 
       updates.forEach((update) => {
         const enhancedMsg = {
@@ -80,12 +87,8 @@ export default class CursorDispensing {
       });
     });
 
-    if (updatesCounter > 0) {
-      this.bufferHasData = true;
-    }
-
-    if (!this.handlerRunning && this.bufferHasData) {
-      this.emitFromBatch();
+    if (!this.handlerRunning && this.bufferHaveData()) {
+      this.emitFromBatch(this.calculateDispenseInterval());
     }
   }
 }
