@@ -52,12 +52,6 @@ The interval at which a batch of cursors position is published. This is multipli
 
 Default 100ms.
 
-##### inboundBatchInterval
-
-The interval at which the listener for cursor positions is updated with a single position.
-
-Default is 1ms.
-
 ##### paginationLimit
 
 The number of [history API](https://ably.com/docs/realtime/history) pages searched for the last published cursor position.
