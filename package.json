@@ -5,6 +5,7 @@
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
   "types": "dist/mjs/index.d.ts",
+  "unpkg": "dist/iife/index.bundle.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -12,9 +13,10 @@
     "format:check": "prettier --check --ignore-path .gitignore src demo",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "build": "npm run build:cjs && npm run build:mjs",
+    "build": "npm run build:mjs && npm run build:cjs && npm run build:iife",
     "build:mjs": "tsc --project tsconfig.mjs.json && cp res/package.mjs.json dist/mjs/package.json",
     "build:cjs": "tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
+    "build:iife": "rm -rf dist/iife && tsc --project tsconfig.iife.json && rollup dist/iife/index.js --file dist/iife/index.bundle.js --format iife --name Spaces -e ably -g ably:Ably",
     "prepare": "husky install"
   },
   "exports": {
