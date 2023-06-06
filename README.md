@@ -76,7 +76,7 @@ You can use [basic authentication](https://ably.com/docs/realtime/authentication
 Install the Ably JavaScript SDK and the Collaborative Spaces SDK:
 
 ```sh
-npm install ably ably-labs/spaces
+npm install ably @ably-labs/spaces
 ```
 
 Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably API key:
