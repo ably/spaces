@@ -22,7 +22,7 @@ export type SpaceMember = {
 
 type SpaceLeaver = {
   clientId: string;
-  timeoutId: NodeJS.Timeout;
+  timeoutId: ReturnType<typeof setTimeout>;
 };
 
 const SPACE_OPTIONS_DEFAULTS = {
