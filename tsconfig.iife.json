@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "strict": false,
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": [],
+    "outDir": "dist/iife"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "src/utilities/test", "./src/**/*.test.ts", "./src/fakes/**/*.ts"]
+}
