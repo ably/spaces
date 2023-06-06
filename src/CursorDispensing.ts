@@ -8,7 +8,7 @@ import { clamp } from './utilities/math';
 export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};
   private handlerRunning: boolean = false;
-  private timerIds: NodeJS.Timeout[] = [];
+  private timerIds: ReturnType<typeof setTimeout>[] = [];
 
   constructor(readonly cursors: Cursors, readonly cursorsBatching: CursorBatching) {}
 

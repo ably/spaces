@@ -1,5 +1,5 @@
 class CursorMovements {
-  private intervalId: NodeJS.Timeout;
+  private intervalId: ReturnType<typeof setTimeout>;
   private startTime?: number;
   private top: number;
   private left: number;
