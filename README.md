@@ -26,7 +26,7 @@ Seeing where users are within an application aids in understanding what they may
 
 ## Development status
 
-The Collaborative Spaces SDK is currently under development. 
+The Collaborative Spaces SDK is currently under development.
 
 If you are interested in being an early adopter and providing feedback then you can [sign up](https://go.ably.com/spaces-early-access) for early access and are welcome to [provide us any feedback](https://go.ably.com/spaces-feedback).
 
@@ -79,16 +79,25 @@ Install the Ably JavaScript SDK and the Collaborative Spaces SDK:
 npm install ably @ably-labs/spaces
 ```
 
-Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably API key:
+Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably API key and pass a [clientId](https://ably.com/docs/realtime/authentication?lang=javascript#identified-clients) (if prototyping, you can use a package like [nanoid](https://www.npmjs.com/package/nanoid) to generate an id):
 
 ```ts
-import { Realtime } from 'ably/promise';
 import Spaces from '@ably-labs/spaces';
 
-const spaces = new Spaces(ABLY_API_KEY);
+const spaces = new Spaces({ key: ABLY_API_KEY, clientId: "id" });
 ```
 
 In the above example, the client can be accessed using `spaces.ably` to use functionality in the Ably JavaScript SDK.
+
+Alternatively, if you already have an Ably client, you can instantiate by passing it to the `Spaces` constructor:
+
+```ts
+import Spaces from '@ably-labs/spaces';
+import { Realtime } from 'ably';
+
+const client = new Realtime.Promise(options)
+const spaces = new Spaces(client);
+```
 
 ### Space membership
 
@@ -96,7 +105,7 @@ A space is the virtual collaborative area of an application you want to monitor.
 
 ```ts
 // Create a new space
-const space = spaces.get('demoSlideshow');
+const space = await spaces.get('demoSlideshow');
 
 // Register a listener to subscribe to events of when users enter or leave the space
 space.on('membersUpdate', (members) => {
@@ -176,22 +185,22 @@ The following is an example `locationUpdate` event received by subscribers when 
       "username": "Claire Lemons",
       "avatar": "https://slides-internal.com/users/clemons.png"
     },
-    "location": { 
-      "slide": "3", 
-      "component": "slide-title" 
+    "location": {
+      "slide": "3",
+      "component": "slide-title"
       },
-    "lastEvent": { 
-      "name": "update", 
-      "timestamp": 1 
+    "lastEvent": {
+      "name": "update",
+      "timestamp": 1
       }
   },
-  "previousLocation": { 
-    "slide": "2", 
-    "component": null 
+  "previousLocation": {
+    "slide": "2",
+    "component": null
     },
-  "currentLocation": { 
-    "slide": "3", 
-    "component": "slide-title" 
+  "currentLocation": {
+    "slide": "3",
+    "component": "slide-title"
     }
 }
 ```
@@ -207,7 +216,7 @@ const pointer = space.cursors.get('space-pointers');
 // Retrieve the initial position of all cursors, returning a positionsUpdate for each client
 const allCursors = space.cursors.getAll();
 
-// Publish a positionUpdate with the location of a pointer, including optional data 
+// Publish a positionUpdate with the location of a pointer, including optional data
 pointer.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
 
 // Register a listener to subscribe to all cursor events
