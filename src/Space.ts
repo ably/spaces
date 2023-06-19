@@ -33,7 +33,7 @@ type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter:
 
 class Space extends EventEmitter<SpaceEventsMap> {
   private channelName: string;
-  private connectionId: string;
+  private connectionId: string | undefined;
   private channel: Types.RealtimeChannelPromise;
   private members: SpaceMember[];
   private leavers: SpaceLeaver[];
