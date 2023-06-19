@@ -7,7 +7,7 @@ class Spaces {
   private channel: Types.RealtimeChannelPromise;
   ably: Types.RealtimePromise;
 
-  readonly version = '0.0.7';
+  readonly version = '0.0.8';
 
   constructor(optionsOrAbly: Types.RealtimePromise | Types.ClientOptions | string) {
     this.spaces = {};
