@@ -23,13 +23,9 @@ class Spaces {
   }
 
   private addAgent(options: any, isDefault: boolean) {
-    const agent = `ably-spaces/${this.version}`;
-    const clientType = isDefault ? 'space-default-client' : 'space-custom-client';
-    if (!options.agents) {
-      options.agents = [agent, clientType];
-    } else if (!options.agents.includes(agent)) {
-      options.agents.push(agent, clientType);
-    }
+    const agent = { 'ably-spaces': this.version, [isDefault ? 'space-default-client' : 'space-custom-client']: true };
+
+    options.agents = { ...(options.agents ?? options.agents), ...agent };
   }
 
   async get(name: string, options?: SpaceOptions): Promise<Space> {
