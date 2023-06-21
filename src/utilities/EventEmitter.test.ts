@@ -1,5 +1,5 @@
 import { it, describe, expect, beforeEach, afterEach, vi, Mock } from 'vitest';
-import EventEmitter, { removeListener } from './EventEmitter';
+import EventEmitter, { removeListener } from './EventEmitter.js';
 
 describe('removeListener', () => {
   const listener = () => true;

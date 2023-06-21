@@ -1,12 +1,13 @@
 import { it, describe, expect, vi, expectTypeOf, beforeEach, vitest, afterEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
+
 import Space from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
-import Cursor from './Cursor';
-import CursorBatching from './CursorBatching';
+import Cursor from './Cursor.js';
+import CursorBatching from './CursorBatching.js';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
-import CursorDispensing from './CursorDispensing';
-import CursorHistory from './CursorHistory';
+import CursorDispensing from './CursorDispensing.js';
+import CursorHistory from './CursorHistory.js';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;

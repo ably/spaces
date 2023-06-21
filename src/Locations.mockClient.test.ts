@@ -1,5 +1,6 @@
 import { it, describe, expect, vi, beforeEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
+
 import Space, { SpaceMember } from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import { LOCATION_UPDATE } from './utilities/Constants.js';

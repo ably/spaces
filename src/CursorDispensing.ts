@@ -1,9 +1,9 @@
 import { Types } from 'ably';
 
-import Cursors, { type CursorUpdate } from './Cursors';
-import CursorBatching from './CursorBatching';
+import Cursors, { type CursorUpdate } from './Cursors.js';
+import CursorBatching from './CursorBatching.js';
 
-import { clamp } from './utilities/math';
+import { clamp } from './utilities/math.js';
 
 export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};

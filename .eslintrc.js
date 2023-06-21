@@ -9,7 +9,7 @@ module.exports = {
   parserOptions: {
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'security', 'jsdoc'],
+  plugins: ['@typescript-eslint', 'security', 'jsdoc', 'import'],
   extends: ['eslint:recommended', 'plugin:security/recommended'],
   rules: {
     'eol-last': 'error',
@@ -25,6 +25,16 @@ module.exports = {
         // TypeScript already enforces these rules better than any eslint setup can
         'no-undef': 'off',
         'no-dupe-class-members': 'off',
+        // see:
+        // https://github.com/ably-labs/spaces/issues/76
+        // https://github.com/microsoft/TypeScript/issues/16577#issuecomment-703190339
+        'import/extensions': [
+          'error',
+          'always',
+          {
+            ignorePackages: true,
+          },
+        ],
       },
     },
     {
@@ -32,7 +42,7 @@ module.exports = {
       extends: ['plugin:jsdoc/recommended'],
     },
   ],
-  ignorePatterns: ["dist", "build"],
+  ignorePatterns: ['dist', 'build'],
   settings: {
     jsdoc: {
       tagNamePreference: {

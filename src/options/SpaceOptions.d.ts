@@ -1,4 +1,4 @@
-import type { CursorsOptions } from './CursorsOptions';
+import type { CursorsOptions } from './CursorsOptions.js';
 
 type SpaceOptions = {
   offlineTimeout?: number;

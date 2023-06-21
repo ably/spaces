@@ -1,4 +1,5 @@
 import { Types, Realtime } from 'ably';
+
 import SpaceOptions from './options/SpaceOptions.js';
 import Space from './Space.js';
 
