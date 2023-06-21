@@ -3,10 +3,10 @@ import { Types } from 'ably';
 import SpaceOptions from './options/SpaceOptions.js';
 import EventEmitter from './utilities/EventEmitter.js';
 import Locations from './Locations.js';
-import Cursors from './Cursors';
+import Cursors from './Cursors.js';
 
 // Unique prefix to avoid conflicts with channels
-import { LOCATION_UPDATE, MEMBERS_UPDATE, SPACE_CHANNEL_PREFIX } from './utilities/Constants';
+import { LOCATION_UPDATE, MEMBERS_UPDATE, SPACE_CHANNEL_PREFIX } from './utilities/Constants.js';
 
 export type SpaceMember = {
   clientId: string;

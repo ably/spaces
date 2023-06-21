@@ -1,6 +1,7 @@
+import { Types } from 'ably';
+
 import Space, { SpaceMember } from './Space.js';
 import EventEmitter from './utilities/EventEmitter.js';
-import { Types } from 'ably';
 import LocationTracker, { LocationTrackerPredicate } from './LocationTracker.js';
 import { LOCATION_UPDATE } from './utilities/Constants.js';
 

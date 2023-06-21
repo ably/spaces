@@ -1,13 +1,13 @@
 import { Types } from 'ably';
 
-import Space from './Space';
-import Cursor from './Cursor';
-import CursorBatching from './CursorBatching';
-import CursorDispensing from './CursorDispensing';
-import { OUTGOING_BATCH_TIME_DEFAULT, PAGINATION_LIMIT_DEFAULT } from './utilities/Constants';
-import EventEmitter from './utilities/EventEmitter';
-import CursorHistory from './CursorHistory';
-import type { CursorsOptions, StrictCursorsOptions } from './options/CursorsOptions';
+import Space from './Space.js';
+import Cursor from './Cursor.js';
+import CursorBatching from './CursorBatching.js';
+import CursorDispensing from './CursorDispensing.js';
+import { OUTGOING_BATCH_TIME_DEFAULT, PAGINATION_LIMIT_DEFAULT } from './utilities/Constants.js';
+import EventEmitter from './utilities/EventEmitter.js';
+import CursorHistory from './CursorHistory.js';
+import type { CursorsOptions, StrictCursorsOptions } from './options/CursorsOptions.js';
 
 type CursorPosition = { x: number; y: number };
 

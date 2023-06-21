@@ -1,11 +1,11 @@
 import { Types } from 'ably';
 
-import EventEmitter from './utilities/EventEmitter';
-import { type CursorUpdate } from './Cursors';
+import EventEmitter from './utilities/EventEmitter.js';
+import { type CursorUpdate } from './Cursors.js';
 
-import CursorBatching from './CursorBatching';
-import CursorDispensing from './CursorDispensing';
-import { CURSOR_UPDATE } from './utilities/Constants';
+import CursorBatching from './CursorBatching.js';
+import CursorDispensing from './CursorDispensing.js';
+import { CURSOR_UPDATE } from './utilities/Constants.js';
 
 type CursorEventMap = { cursorUpdate: CursorUpdate };
 

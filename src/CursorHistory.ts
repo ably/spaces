@@ -1,7 +1,7 @@
 import { Types } from 'ably';
 
-import type { CursorUpdate } from './Cursors';
-import type { StrictCursorsOptions } from './options/CursorsOptions';
+import type { CursorUpdate } from './Cursors.js';
+import type { StrictCursorsOptions } from './options/CursorsOptions.js';
 
 type LastPosition = null | CursorUpdate;
 type CursorName = string;

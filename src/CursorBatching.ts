@@ -1,7 +1,8 @@
-import { CursorUpdate } from './Cursors';
 import { Types } from 'ably';
-import { CURSOR_UPDATE } from './utilities/Constants';
-import type { StrictCursorsOptions } from './options/CursorsOptions';
+
+import { CursorUpdate } from './Cursors.js';
+import { CURSOR_UPDATE } from './utilities/Constants.js';
+import type { StrictCursorsOptions } from './options/CursorsOptions.js';
 
 type OutgoingBuffer = Record<string, Pick<CursorUpdate, 'position' | 'data'>[]>;
 

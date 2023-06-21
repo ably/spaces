@@ -4,7 +4,7 @@ import { Realtime, Types } from 'ably/promises';
 import Space, { SpaceMember } from './Space.js';
 import { createPresenceEvent, createPresenceMessage } from './utilities/test/fakes.js';
 import Locations from './Locations.js';
-import Cursors from './Cursors';
+import Cursors from './Cursors.js';
 import { MEMBERS_UPDATE } from './utilities/Constants.js';
 
 interface SpaceTestContext {

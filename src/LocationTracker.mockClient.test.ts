@@ -1,10 +1,11 @@
 import { it, describe, expect, vi, beforeEach, Mock } from 'vitest';
-import Space, { SpaceMember } from './Space';
-import Locations, { LocationChange } from './Locations';
-import LocationTracker, { LocationTrackerPredicate } from './LocationTracker';
 import { Realtime } from 'ably/promises';
-import { createPresenceMessage } from './utilities/test/fakes';
-import { LOCATION_UPDATE } from './utilities/Constants';
+
+import Space, { SpaceMember } from './Space.js';
+import Locations, { LocationChange } from './Locations.js';
+import LocationTracker, { LocationTrackerPredicate } from './LocationTracker.js';
+import { createPresenceMessage } from './utilities/test/fakes.js';
+import { LOCATION_UPDATE } from './utilities/Constants.js';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 

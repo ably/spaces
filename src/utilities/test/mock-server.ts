@@ -1,7 +1,7 @@
 import { Server as MockSocketServer, WebSocket } from 'mock-socket';
 import Ably from 'ably/promises';
 
-import { authAction } from './mock-server-action-responses';
+import { authAction } from './mock-server-action-responses.js';
 
 class Server extends MockSocketServer {
   public onActionCallbacks: Function[];
