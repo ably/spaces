@@ -36,13 +36,15 @@
         id="main-header"
         class="bg-white"
       >
-        <div class="max-w-screen-2xl px-16 py-4 flex items-center mx-auto">
+        <div
+          class="md:max-w-screen-2xl md:px-16 py-4 md:flex md:items-center xs:justify-between mx-auto xs:grid xs:grid-rows-2 xs:grid-cols-2"
+        >
           <section>
-            <p class="md:text-2xl font-semibold">Team Argo</p>
-            <p class="leading-5">Pitch deck</p>
+            <p class="md:text-2xl xs:pl-8 font-semibold">Team Argo</p>
+            <p class="leading-5 xs:pl-8">Pitch deck</p>
           </section>
 
-          <section class="ml-auto flex group relative">
+          <section class="ml-auto xs:pr-8 flex group relative xs:mt-2 md:mt-0">
             <svg
               width="24"
               height="24"
@@ -78,7 +80,7 @@
               </defs>
             </svg>
 
-            <p class="ml-2 font-medium text-base">How to try this demo</p>
+            <p class="ml-2 md:font-medium md:text-base xs:text-sm">How to try this demo</p>
 
             <div
               class="group-hover text-sm p-4 bg-[#FAFAFB] rounded-lg hidden group-hover:block absolute top-full mt-2 w-[300px] -left-[70%] border border-[#D9D9DA]"
@@ -86,17 +88,16 @@
               Open this page in multiple windows or share the URL with your team to try out the live avatar stack.
             </div>
           </section>
-
           <section
             id="avatar-stack-container"
-            class="ml-8 flex"
+            class="md:ml-8 flex xs:justify-end xs:col-span-2 xs:border-t xs:border-[#D9D9DA] md:border-t-0 xs:ml-0 xs:mt-2 xs:pt-2 xs:pr-8"
           >
             <div id="avatar-self"></div>
             <div id="avatar-stack"></div>
             <div id="avatar-overflow"></div>
           </section>
 
-          <section class="ml-[24px] flex items-center">
+          <section class="md:ml-[24px] md:flex md:items-center xs:hidden">
             <a
               href="https://github.com/ably-labs/spaces"
               target="_blank"
@@ -147,7 +148,7 @@
 
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSer2ujLNw0rlrf2FvfIhLxyiWuuvTwYkDDqHmv30F8Cs00YWg/viewform"
-              class="text-white bg-ably-black rounded-md py-[11px] px-5 text-base inline-block ml-[24px] leading-[1.125]"
+              class="text-white bg-ably-black rounded-md py-[11px] px-5 md:text-xs lg:text-base inline-block lg:ml-[24px] leading-[1.125]"
               >Sign Up</a
             >
           </section>
