@@ -40,7 +40,7 @@ To make an application collaborative using the Collaborative Spaces SDK, you fir
 
 ![Avatar stack image](/docs/images/avatar-stack.png)
 
- Once a space has been defined, users can enter that space and register their details. Subscribing to updates from a space will notify you of when anyone joins or leaves the space.
+Once a space has been defined, users can enter that space and register their details. Subscribing to updates from a space will notify you of when anyone joins or leaves the space.
 
 ### User Location
 
@@ -54,7 +54,6 @@ To display the live location of users within an application using the Collaborat
 
 The Collaborative Spaces SDK is built as an extension to the existing [Ably JavaScript SDK](https://github.com/ably/ably-js). This means that it is possible to utilize the existing pub/sub functionality available with Ably in a collaborative application to track what users are doing. In the previous example, when a user is updating the contents of a cell or field you can use a [channel](https://ably.com/docs/realtime/channels) to show the new contents to other users as it's being typed.
 
-
 ## Getting started
 
 Use the following snippets to quickly get up and running. More detailed [usage instructions](/docs/usage.md) are available, as are [class definitions](/docs/class-definitions.md) and information on [channel behavior](/docs/channel-behaviors.md).
@@ -65,9 +64,9 @@ You can also view a [live demo](https://space.ably.dev) which uses an example sl
 
 To begin, you will need the following:
 
-* An Ably account. You can [sign up](https://ably.com/signup) for free.
-* An Ably API key. You can create API keys in an app within your [Ably account](https://ably.com/dashboard).
-  * The API key needs the following [capabilities](https://ably.com/docs/realtime/authentication#capabilities-explained): `publish`, `subscribe`, `presence` and `history`.
+- An Ably account. You can [sign up](https://ably.com/signup) for free.
+- An Ably API key. You can create API keys in an app within your [Ably account](https://ably.com/dashboard).
+  - The API key needs the following [capabilities](https://ably.com/docs/realtime/authentication#capabilities-explained): `publish`, `subscribe`, `presence` and `history`.
 
 You can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication) for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/realtime/authentication#token-authentication) in any production environments.
 
@@ -84,7 +83,7 @@ Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably
 ```ts
 import Spaces from '@ably-labs/spaces';
 
-const spaces = new Spaces({ key: ABLY_API_KEY, clientId: "id" });
+const spaces = new Spaces({ key: ABLY_API_KEY, clientId: 'id' });
 ```
 
 In the above example, the client can be accessed using `spaces.ably` to use functionality in the Ably JavaScript SDK.
@@ -95,11 +94,11 @@ Alternatively, if you already have an Ably client, you can instantiate by passin
 import Spaces from '@ably-labs/spaces';
 import { Realtime } from 'ably';
 
-const client = new Realtime.Promise(options)
+const client = new Realtime.Promise(options);
 const spaces = new Spaces(client);
 ```
 
-### Space membership
+### Space membership API
 
 A space is the virtual collaborative area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself. Create a space and subscribe to events for when clients enter and leave it. Space membership is used to build avatar stacks and display which members are online within a space.
 
@@ -112,10 +111,10 @@ space.on('membersUpdate', (members) => {
   console.log(members);
 });
 
-// Enter a space, publishing a memberUpdate event, including optional user data
+// Enter a space, publishing a memberUpdate event, including optional profile data
 space.enter({
-  username: "Claire Lemons",
-  avatar: "https://slides-internal.com/users/clemons.png",
+  username: 'Claire Lemons',
+  avatar: 'https://slides-internal.com/users/clemons.png',
 });
 ```
 
@@ -139,7 +138,7 @@ The following is an example `membersUpdate` event received by subscribers when a
 ]
 ```
 
-### Location updates
+### Location API
 
 User locations enable you to track where clients are within an application. Subscribe to all location updates, those for a specific location, such as a single UI element, or a specific client.
 
@@ -150,25 +149,23 @@ space.locations.on('locationUpdate', (update) => {
 });
 
 // Publish locationUpdate event with a client's location when they select a UI element or change web pages
-space.locations.set({slide: '3', component: 'slide-title'});
+space.locations.set({ slide: '3', component: 'slide-title' });
 
 // Create a tracker to only publish locationUpdate events for a specific user using their clientId
-const memberTracker = space.locations.createTracker(
-  (change) => change.member.clientId === 'clemons#142'
-);
+const memberTracker = space.locations.createTracker((change) => change.member.clientId === 'clemons#142');
 
 // Register a listener to subscribe to events for a tracker
 memberTracker.on((change) => {
+  // will only trigger if change.member.clientId === 'clemons#142'
   console.log(change);
 });
 
 // Create a tracker to only publish locationUpdate events for a specific location, such as a UI element or spreadsheet cell
-const locationTracker = space.locations.createTracker(
-  (change) => change.previousLocation === 'slide-title'
-);
+const locationTracker = space.locations.createTracker((change) => change.previousLocation === 'slide-title');
 
 // Register a listener to subscribe to events for a tracker
 locationTracker.on((change) => {
+  // will only trigger for change.previousLocation === 'slide-title'
   console.log(change);
 });
 ```
@@ -188,58 +185,50 @@ The following is an example `locationUpdate` event received by subscribers when 
     "location": {
       "slide": "3",
       "component": "slide-title"
-      },
+    },
     "lastEvent": {
       "name": "update",
       "timestamp": 1
-      }
+    }
   },
   "previousLocation": {
     "slide": "2",
     "component": null
-    },
+  },
   "currentLocation": {
     "slide": "3",
     "component": "slide-title"
-    }
+  }
 }
 ```
 
-### Cursor locations
+### Cursors API
 
-Use cursors to track client cursors across an application. Subscribe to updates for all cursors, or only a specific client's cursor.
+Use the Cursors API to track client pointer events (like a `mousemove`) across an application:
 
 ```ts
-// Create a new cursor instance
-const pointer = space.cursors.get('space-pointers');
+// Register a cursor instance
+const pointer = space.cursors.get('pointer');
 
-// Retrieve the initial position of all cursors, returning a positionsUpdate for each client
-const allCursors = space.cursors.getAll();
-
-// Publish a positionUpdate with the location of a pointer, including optional data
-pointer.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
-
-// Register a listener to subscribe to all cursor events
-space.cursors.on((event) => {
-  console.log(event);
+// Publish a CursorUpdate with the location of a pointer, including optional data for the current member
+window.addEventListner('mousemove', ({ clientX, clientY }) => {
+  pointer.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
 });
 
-space.cursors.on('cursorsUpdate', (event) => {
+// Listen to events published on "pointer" by all members
+pointer.on('cursorUpdate', (event: CursorUpdate) => {
   console.log(event);
 });
-
-// Register a listener to subscribe to a specific cursor
-space.cursors.get('space-pointers').on(() => {});
 ```
 
-The following is an example `positionUpdate` received by subscribers when a cursor moves:
+The above listener will receive a `CursorUpdate` event:
 
-```json
+```js
 {
-  "name": "clemons-pointer",
+  "name": "pointer",
   "connectionId": "hd9743gjDc",
   "clientId": "clemons#142",
   "position": { "x": 864, "y": 32 },
-  "cursorData": { "color": "red" }
+  "data": { "color": "red" }
 }
 ```
