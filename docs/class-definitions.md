@@ -205,13 +205,11 @@ Get the last position of all cursors in this space, for each connection. Pass a 
 
 Used for subscribing to all cursor updates. Currently, only one event is supported:
 
-##### positionsUpdate
+##### cursorsUpdate
 
 Fires when a cursors position is updated. The argument supplied is an object of one or more cursors by name and their respective cursor movements since the last update.
 
-| Property  | Type                                                |
-| --------- | --------------------------------------------------- |
-| positions | Record<string, [CursorPosition](#cursorposition)[]> |
+Record<CursorName, [CursorUpdate](#cursorupdate)[]>
 
 ### Cursor
 
@@ -219,29 +217,53 @@ An individual cursor.
 
 #### setPosition(position)
 
-Set the position of this cursor. The position will be updated for each other member of the space via a Cursors [positionsUpdate](#positionsupdate) or Cursor [positionUpdate](#positionupdate).
+Set the position of this cursor. The new position will be emitted for each member of the space via a subscription on Cursors or Cursor.
 
-| Property | Type                              |
-| -------- | --------------------------------- |
-| position | [CursorPosition](#cursorposition) |
+| Property | Type                          |
+| -------- | ----------------------------- |
+| position | [CursorUpdate](#cursorupdate) |
 
 #### on(event, callback)
 
 Used for subscribing to a specific cursors updates. Currently, only one event is supported:
 
-##### positionUpdate
+##### cursorUpdate
 
 Fires when this cursors location is updated. Contains an array of cursor positions since the last update.
 
-| Property  | Type                                |
-| --------- | ----------------------------------- |
-| positions | [CursorPosition](#cursorposition)[] |
+| Property  | Type                            |
+| --------- | ------------------------------- |
+| positions | [CursorUpdate](#cursorupdate)[] |
+
+### CursorName
+
+The identifier of a cursor.
+
+`string`
+
+### CursorUpdate
+
+Represents an update to a cursor.
+
+| Property     | Type           |
+| ------------ | -------------- |
+| name         | string         |
+| clientId     | string         |
+| connectionId | string         |
+| position     | CursorPosition |
+| data?        | CursorData     |
 
 ### CursorPosition
 
-Represents the position of a cursor.
+Represents a cursors position.
 
 | Property | Type   |
 | -------- | ------ |
 | x        | number |
 | y        | number |
+
+### CursorData
+
+Represents a cursors position.
+
+Record<[CursorName](#cursorname), [CursorUpdate](#cursorupdate)[]>
