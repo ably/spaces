@@ -30,19 +30,21 @@
     ></script>
   </head>
 
-  <body class="text-ably-charcoal-grey bg-slate-500">
+  <body class="text-ably-charcoal-grey sm:bg-slate-500">
     <main>
       <header
         id="main-header"
         class="bg-white"
       >
-        <div class="max-w-screen-2xl px-16 py-4 flex items-center mx-auto">
+        <div
+          class="sm:max-w-screen-2xl sm:px-16 py-4 sm:flex sm:items-center xs:justify-between mx-auto xs:grid xs:grid-rows-2 xs:grid-cols-2"
+        >
           <section>
-            <p class="md:text-2xl font-semibold">Team Argo</p>
-            <p class="leading-5">Pitch deck</p>
+            <p class="xs:text-xs sm:text-2xl xs:pl-8 font-semibold">Team Argo</p>
+            <p class="xs:text-xs sm:text-base leading-5 xs:pl-8">Pitch deck</p>
           </section>
 
-          <section class="ml-auto flex group relative">
+          <section class="ml-auto xs:pr-8 flex group relative mt-0">
             <svg
               width="24"
               height="24"
@@ -78,25 +80,24 @@
               </defs>
             </svg>
 
-            <p class="ml-2 font-medium text-base">How to try this demo</p>
+            <p class="xs:text-xs sm:text-base ml-2 font-medium text-base xs:mt-1 sm:mt-0">How to try this demo</p>
 
             <div
-              class="group-hover text-sm p-4 bg-[#FAFAFB] rounded-lg hidden group-hover:block absolute top-full mt-2 w-[300px] -left-[70%] border border-[#D9D9DA]"
+              class="group-hover xs:text-xs sm:text-sm p-4 bg-[#FAFAFB] rounded-lg hidden group-hover:block absolute top-full mt-2 w-[300px] xs:-left-[90%] sm:-left-[70%] border border-[#D9D9DA]"
             >
               Open this page in multiple windows or share the URL with your team to try out the live avatar stack.
             </div>
           </section>
-
           <section
             id="avatar-stack-container"
-            class="ml-8 flex"
+            class="sm:ml-8 flex xs:justify-end xs:col-span-2 xs:border-t xs:border-[#D9D9DA] sm:border-t-0 xs:ml-0 xs:mt-2 xs:pt-2 xs:pr-8"
           >
             <div id="avatar-self"></div>
             <div id="avatar-stack"></div>
             <div id="avatar-overflow"></div>
           </section>
 
-          <section class="ml-[24px] flex items-center">
+          <section class="sm:ml-[24px] sm:flex sm:items-center xs:hidden">
             <a
               href="https://github.com/ably-labs/spaces"
               target="_blank"
@@ -285,25 +286,26 @@
 
       <section
         id="feature-display"
-        class="absolute flex flex-row gap-12 bg-[#F7F6F9] w-full h-[calc(100%-80px)] -z-10 overflow-y-hidden overflow-x-hidden justify-between"
+        class="sm:absolute flex sm:flex-row xs:flex-col sm:gap-12 bg-[#F7F6F9] sm:w-full sm:h-[calc(100%-80px)] sm:-z-10 sm:overflow-y-hidden sm:overflow-x-hidden sm:justify-between"
       >
-        <menu class="w-[300px] h-0">
+        <!-- Slide list -->
+        <menu class="sm:w-[300px] sm:h-0">
           <ol
             id="slide-left-preview-list"
-            class="relative top-[68px] -left-[26px] flex flex-col scale-[0.2] w-[20%] h-[20%] max-h-[80vh]"
+            class="relative top-[68px] -left-[26px] flex sm:flex-col xs:flex-row scale-[0.2] w-[20%] h-[20%] max-h-[80vh]"
           ></ol>
         </menu>
         <section
           id="slide-selected"
-          class="relative shadow-ably-paper lg:mr-[380px] w-[1020px] h-[687px] min-w-[1020px] min-h-[687px] top-[79px]"
+          class="relative sm:shadow-ably-paper sm:lg:mr-[380px] sm:w-[1020px] sm:h-[687px] sm:min-w-[1020px] sm:min-h-[687px] sm:top-[79px] bg-lime-400"
         >
           <div
             data-id="slide-wrapper"
-            class="h-full w-full"
+            class="sm:h-full sm:w-full"
           ></div>
           <div
             data-id="slide-cursor-container"
-            class="absolute h-full w-full z-10 pointer-events-none top-0 left-0"
+            class="sm:absolute sm:h-full sm:w-full sm:z-10 pointer-events-none sm:top-0 sm:left-0"
           ></div>
         </section>
         <section id="comments-container"></section>
@@ -484,7 +486,7 @@
         ></div>
         <p
           data-id="slide-preview-number"
-          class="text-7xl p-11 pl-[135px] text-ably-avatar-stack-demo-number-text self-center bg-transparent"
+          class="text-7xl sm:p-11 sm:pl-[135px] xs:p-5 xs:pl-[55px] text-ably-avatar-stack-demo-number-text self-center bg-transparent"
         ></p>
         <div
           data-id="slide-preview-container"

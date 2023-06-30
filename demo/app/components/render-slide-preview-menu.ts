@@ -114,6 +114,7 @@ const renderSlidePreviewMenu = (space: Space) => {
 
     if (selectedSlide.id === slide.id) {
       slidePreviewListItem.classList.add('bg-[#EEE9FF]');
+      slidePreviewListItem.classList.add('xs:ml-12');
 
       const slidePreviewSelectedIndicator = queryDataId(slidePreviewFragment, 'slide-preview-selected-indicator');
       const selectedIndicatorSVG = createFragment('#selected-slide-preview');
