@@ -1,65 +1,128 @@
-# In-depth usage
+# Usage
 
-- [Authenticate and instantiate](#authenticate-and-instantiate)
-- [Create a space](#create-a-space)
-- [Subscribe to member updates](#subscribe-to-member-updates)
-  - [Request member updates](#request-member-updates)
-- [Enter a space](#enter-a-space)
-  - [Leave a space](#leave-a-space)
-- [Subscribe to location updates](#subscribe-to-location-updates)
-  - [Track an individual location or user](#track-an-individual-location-or-user)
-- [Set a location](#set-a-location)
-- [Subscribe to cursor updates](#subscribe-to-cursor-updates)
-  - [Request cursor locations](#request-cursor-locations)
-- [Set a cursor location](#set-a-cursor-location)
+## Prerequisites
 
-## Authenticate and instantiate
+### Ably API key
 
-Install the Ably JavaScript SDK and the Collaborative Spaces SDK:
+To use Spaces, you will need the following:
+
+- An Ably account. You can [sign up](https://ably.com/signup) for free.
+- An Ably API key. You can create API keys in an app within your [Ably account](https://ably.com/dashboard).
+  - The API key needs the following [capabilities](https://ably.com/docs/realtime/authentication#capabilities-explained): `publish`, `subscribe`, `presence` and `history`.
+
+### Environment
+
+Spaces is built on top of the [Ably JavaScript SDK](https://github.com/ably/ably-js). Although the SDK supports Node.js and other JavaScript environments, at the time of writing our main target is an ES6 compatible browser environment.
+
+## Installation
+
+### NPM
+
+```sh
+npm install @ably-labs/spaces
+```
+
+If you need the Ably client (see [Authentication & instantiation](#authentication-and-instantiation))
 
 ```sh
 npm install ably
-npm install ably-labs/spaces
 ```
 
-Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably API key:
+### CDN
+
+You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
+
+```html
+<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+<script src="https://unpkg.com/@ably-labs/spaces@0.0.10/dist/iife/index.bundle.js"></script>
+```
+
+Note that when you use a CDN, you need to include Ably Client as well, the Spaces bundle does not include it.
+
+## Authentication and instantiation
+
+Spaces use an [Ably promise-based realtime client](https://github.com/ably/ably-js#using-the-async-api-style). You can either pass an existing client to Spaces or pass the [client options](https://ably.com/docs/api/realtime-sdk?lang=javascript#client-options) directly to the spaces constructor.
+
+To instantiate with options, you will need at minimum an [Ably API key](#ably-api-key) and a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascripts). A clientId represents an identity of an connection. In most cases this will something like the id of a user:
+
+_**Depracated: the ClientOptions option will be removed in the next release. Use the Ably client instance method described underneath.**_
+
+```ts
+import Spaces from '@ably-labs/spaces';
+
+const spaces = new Spaces({ key: "<API-key>", clientId: "<client-ID>" });
+```
+
+If you already have an ably client in your application, you can just pass it directly to Spaces (the client will still need to instatiated with a clientId):
 
 ```ts
 import { Realtime } from 'ably/promise';
 import Spaces from '@ably-labs/spaces';
 
-const spaces = new Spaces(ABLY_API_KEY);
+const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
+const spaces = new Spaces(client);
 ```
 
-In the above example, the client can be accessed using `spaces.ably` to use functionality in the Ably JavaScript SDK.
+In both scenarios, you can access the client via `spaces.ably`.
+
+To learn more about authenticating with ably, see our [authentication documentation](https://ably.com/docs/auth).
 
 ## Create a space
 
 A space is the virtual area of an application you want to collaborate in, such as a web page, or slideshow. A `space` is uniquely identified by its name. A space is created, or an existing space retrieved from the `spaces` collection by calling the `get()` method. You can only connect to one space in a single operation. The following is an example of creating a space called "demonSlideshow":
 
 ```ts
-const space = spaces.get('demoSlideshow');
+const space = await spaces.get('demoSlideshow');
 ```
 
-A set of `spaceOptions` can be passed to space when creating or retrieving it. `spaceOptions` enable additional properties to be set for the space. The following properties can be set:
+### Options
 
-| Property              | Description                                                                                                                                                                  | Type   |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| offlineTimeout        | The time in milliseconds before a member is removed from a space after they have disconnected. The default is 120,000 (2 minutes).                                           | number |
-| outboundBatchInterval | The interval in milliseconds at which a batch of cursor positions are published. This is multiplied by the number of members in the space minus 1. The default value is 100. | number |
-| paginationLimit       | The number of pages searched from [history](https://ably.com/docs/realtime/history) for the last published cursor position. The default is 5.                                | number |
+A set of `spaceOptions` can be passed to space when creating or retrieving it. See the [class definitions](/docs/class-definitions.md#spaceoptions) for details on what options are available.
 
-The following is an example of setting `offlineTimeout` to 3 minutes when creating a space:
+The following is an example of setting `offlineTimeout` to 3 minutes and a `paginationLimit` of 10:
 
 ```ts
-const space = spaces.get('demoSlideshow', { offlineTimeout: 180_000 });
+const space = await spaces.get('demoSlideshow', { offlineTimeout: 180_000, cursors: { paginationLimit: 10 } });
 ```
 
-## Subscribe to member updates
+## Members
 
-Subscribe to `membersUpdate` events in order to display which users are present in a space, such as in an avatar stack. The `membersUpdate` events for a space notify subscribers when clients join and leave it, or when a user's location changes. Use the `space.on()` method to register a listener for `membersUpdate` events.
+Members is a core concept of the library. When you enter a space, you become a `member`. On the client, your own membership is to referred to as `self`. You can get your `self` by calling `space.getSelf`. To get all the members (including self), call `space.getMembers`. These method will return (respectively an object and array of):
 
-The following is an example of subscribing to updates for a space:
+```js
+{
+  "clientId": "clemons#142",
+  "connectionId": "hd9743gjDc",
+  "isConnected": true,
+  "lastEvent": {
+    "name": "enter",
+    "timestamp": 1677595689759
+  },
+  "location": null,
+  "profileData": {
+    "username": "Claire Lemons",
+    "avatar": "https://slides-internal.com/users/clemons.png"
+  }
+}
+```
+
+See [SpaceMember](/docs/class-definitions.md#spacemember) for details on properties.
+
+### Listen to members updates
+
+The `space` instance is an `EventEmitter`. Events will be emitted for updates to members (includeing self). You can listen to the following events:
+
+#### enter
+
+Emitted when a member enters a space. Called with the member entering the space.
+
+#### leave
+
+Emitted when a member leaves a space. Called with the member leaving the space.
+
+#### membersUpdate
+
+Emitted when members enter, leave and their location is updated. Called with an array of all the members in the space.
 
 ```ts
 space.on('membersUpdate', (members) => {
@@ -67,51 +130,17 @@ space.on('membersUpdate', (members) => {
 });
 ```
 
-The following is an example `membersUpdate` event received by subscribers when a user enters a space:
+To stop listening to member events, users can call the `space.off()` method. See [Event emitters](#event-emitters) for options and usage.
 
-```json
-[
-  {
-    "clientId": "clemons#142",
-    "isConnected": true,
-    "lastEvent": {
-      "name": "enter",
-      "timestamp": 1677595689759
-    },
-    "location": null,
-    "profileData": {
-      "username": "Claire Lemons",
-      "avatar": "https://slides-internal.com/users/clemons.png"
-    }
-  }
-]
+### Enter a space
+
+To become a member of a space (and use the other APIs, like location or cursors) a client needs to enter a space.
+
+```ts
+space.enter();
 ```
 
-The following are the properties of a `spaceMember` event:
-
-| Property    | Description                                                                                                   | Type                              |
-| ----------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| clientId    | The client identifier for the user.                                                                           | string                            |
-| isConnected | Whether the user is connected to Ably or not.                                                                 | boolean                           |
-| lastEvent   | The most recent event emitted by the user and its timestamp. Events will be either `enter` or `leave`.        | {name: string, timestamp: number} |
-| location    | The current location of the user within the space.                                                            | any                               |
-| profileData | Optional user data that can be attached to a user, such as a username or image to display in an avatar stack. | object                            |
-
-To stop subscribing to member events, users can call the `space.off()` method.
-
-### Request member updates
-
-In addition to subscribing to events to see who joins and leaves a space, it is also possible to query the membership of a space in a one-off request using `getMembers()`. This returns an array of `spaceMember` objects.
-
-The `getSelf()` method can be used to return the `spaceMember` object for the local client.
-
-## Enter a space
-
-When a user enters a space they should call `enter()`. This publishes an event to all subscribers of that space.
-
-`space.enter()` can take an optional object called `profileData` so that users can include convenient metadata to update an avatar stack, such as a username and profile picture.
-
-The following is an example of entering a space with `profileData`:
+This method can take an optional object called `profileData` so that users can include convenient metadata to update an avatar stack, such as a username and profile picture.
 
 ```ts
 space.enter({
@@ -126,26 +155,48 @@ A leave event is sent when a user leaves a space. This can occur for one of the 
 
 - `space.leave()` is called explicitly.
 - The user closes the tab.
-- The user is abruptly disconnected from the internet for longer than 2 minutes.
-  - Note that the time before they are seen has having left the space is configurable using [`offlineTimeout`](#create-a-space).
+- The user is abruptly disconnected from the internet for longer than 2 minutes
 
-## Subscribe to location updates
+A leave event does not remove the member immediately from members. Instead, they are removed after a timeout which is configurable by the [`offlineTimeout` option](#options). This allows the UI to display an intermediate state before disconnection/reconnection.
 
-Subscribe to `locationUpdate` events in order to display where users are within a space, such as which slide number they are currently viewing, or which cell or component they have selected. `locationUpdate` events are sent when a user calls [`locations.set()`](#set-a-location) to update their location when they change position, or select a new UI element. Use the `locations.on()` method to register a listener for `locationUpdates` events.
-
-Locations are defined by you, so that they are most relevant to the application. For example, it could be only the ID of an HTML element, or a map describing a slide number and slide element.
-
-Note that updates to user locations are also received in [`memberUpdates`](#subscribe-to-member-updates) events. This can be useful for managing and reacting to local app state changes, whereas it is often simpler to listen to individual events to update UI elements.
-
-The following is an example of subscribing to location updates for a space:
+As with `enter`, you can update the `profileData` on leave:
 
 ```ts
-space.locations.on('locationUpdate', (update) => {
-  console.log(update);
+space.leave({
+  username: 'Claire Lemons',
+  avatar: 'https://slides-internal.com/users/inactive.png',
 });
 ```
 
-The following is an example `locationUpdate` event received by subscribers when a user changes location:
+## Location
+
+Each member can set a location for themselves:
+
+```ts
+space.locations.set({ slide: '3', component: 'slide-title' });
+```
+
+A location does not have a prescribed shape. In your UI it can represent a single location (an id of a field in form), multiple locations (id's of multiple cells in a spredsheet) or a hierarchy (a field in one of the multiple forms visible on screen).
+
+The location property will be set on the [member](#members).
+
+Because locations are part of members, a `memberUpdate` event will be emitted when a member updates their location. When a member leaves, their location is set to `null`.
+
+```ts
+space.on('membersUpdate', (members) => {
+  console.log(members);
+});
+```
+
+However, it's possible to listen to just location updates. `locations` is an [event emitter](#event-emitters) and will emit the `locationUpdate` event:
+
+```ts
+space.locations.on('locationUpdate', (locationUpdate) => {
+  console.log(locationUpdate);
+});
+```
+
+This event will include the member affected by the change, as well as their previous and current locations:
 
 ```json
 {
@@ -177,152 +228,193 @@ The following is an example `locationUpdate` event received by subscribers when 
 }
 ```
 
-The following are the properties of a `locationUpdate` event:
+### Track an individual location or member
 
-| Property         | Description                                         | Type                                          |
-| ---------------- | --------------------------------------------------- | --------------------------------------------- |
-| member           | The details of the user that has changed location.  | [`spaceMember`](#subscribe-to-member-updates) |
-| previousLocation | The previous location of the user within the space. | any                                           |
-| currentLocation  | The current location of the user within the space.  | any                                           |
+To listen only to events for a specific member or location, you can use `createTracker`. This method filters messages based on a user provided predicate.
 
-To stop subscribing to location updates, users can call the `locations.off()` method.
+_Note that this is client-side filtering only, messages are still sent/received for updates._
 
-### Track an individual location or user
-
-It is also possible to track a specific location or user, rather than subscribing to all events using `createTracker()`. All events will still be streamed to the client, however they will be filtered client-side.
-
-The following is an example of creating a tracker for a specific user based on their `clientId`, and then subscribing to updates for only that user:
+Create a tracker for a specific member based on their `clientId`, and then listen to updates for only that user:
 
 ```ts
-const memberTracker = space.locations.createTracker((change) => change.member.clientId === 'clemons#142');
+const memberTracker = space.locations.createTracker(
+  (locationUpdate) => locationUpdate.member.clientId === 'clemons#142',
+);
 
-memberTracker.on((change) => {
-  console.log(change);
+memberTracker.on((locationUpdate) => {
+  console.log(locationUpdate);
 });
 ```
 
-The following is an example of creating a tracker for a specific location, such as a single UI element, and then subscribing to updates for only that location:
+Create a tracker for a specific location, such as a single UI element, and listen to updates:
 
 ```ts
-const locationTracker = space.locations.createTracker((change) => change.previousLocation === 'slide-title');
+const locationTracker = space.locations.createTracker(
+  (locationUpdate) =>
+    locationUpdate.previousLocation === 'slide-title' || locationUpdate.currentLocation === 'slide-title',
+);
 
-locationTracker.on((change) => {
-  console.log(change);
+locationTracker.on((locationUpdate) => {
+  console.log(locationUpdate);
 });
 ```
 
-## Set a location
+## Live Cursors
 
-Users call `locations.set()` to publish a `locationUpdate` that will be received by all users subscribed to location updates. This should be called to update their location when they change position, or select a new UI element.
+A common feature of collaborative apps is to show where a users cursors is positioned in realtime. It's easy to accomplish this with `cursors` API.
 
-The following is an example of setting a location update:
+Unlike a location, you can have multiple cursors. This can be used to represent multiple devices interacting with the UI or different ways of interacting with the browser (like scrolling).
+
+The most common use case is however to show the current mouse/touchpad position.
+
+To get started, you'll need to get a named cursor instance:
 
 ```ts
-space.locations.set({ slide: '3', component: 'slide-title' });
+const cursor = space.cursors.get('slidedeck-cursors');
 ```
 
-## Subscribe to cursor updates
-
-Subscribe to `cursorUpdate` events in order to display the location of user cursors within a space as they move. Use the `space.cursors.on()` method to register a listener for `cursorUpdate` events.
-
-The following is an example of subscribing to all cursor updates in a space:
+This instance can emit events for [`self`](#members) and listen to all positions emitted for the given named cursor (`mouse`), for all members (including self).
 
 ```ts
-space.cursors.on((event) => {
-  console.log(event);
+window.addEventListner('mousemove', ({ clientX, clientY }) => {
+  cursor.set({ position: { x: clientX, y: clientY } });
 });
 ```
 
-The following is an example of subscribing to events for only a specific cursor in a space:
+`set` takes an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second property, `data` can passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
 
 ```ts
-space.cursors.get('user-a-cursor').on((event) => {
-  console.log(event);
+window.addEventListner('mousemove', ({ clientX, clientY }) => {
+  cursor.set({ position: { x: clientX, y: clientY }, data: '' });
 });
 ```
 
-The following is an example `cursorUpdate` event received by subscribers when a cursor changes position:
+The cursor instance is an [event emitter](#event-emitters):
+
+```ts
+cursor.on('cursorUpdate', (cursorUpdate) => {
+  console.log(cursorUpdate);
+});
+```
+
+As is the `cursors` namespace itself, emitting events for all named cursors:
+
+```ts
+space.cursors.on('cursorsUpdate', (cursorUpdate) => {
+  console.log(cursorUpdate);
+});
+```
+
+The following is an `cursorUpdate` event received by listeners when a cursor sets their position or data:
 
 ```json
 {
-  "name": "user-a-cursor",
+  "name": "slidedeck-cursors",
   "connectionId": "hd9743gjDc",
-  "clientId": "clemons@slides.com",
+  "clientId": "clemons#142",
   "position": { "x": 864, "y": 32 },
-  "cursorData": { "color": "red" }
+  "data": { "color": "red" }
 }
 ```
 
-The following are the properties of a `cursorUpdate` event:
+### Inital cursor position and data
 
-| Property     | Description                                                        | Type           |
-| ------------ | ------------------------------------------------------------------ | -------------- |
-| name         | The name of the cursor.                                            | string         |
-| connectionId | The unique connection identifier for the user.                     | string         |
-| clientId     | The client identifier for the user.                                | string         |
-| position     | The x and y coordinates of the cursor.                             | cursorPosition |
-| data         | Optional additional information about a cursor, such as its color. | cursorData     |
+To retrieve the initial position and data of all cursors within a space, you can use the `cursors.getAll()` method. This returns an object keyed by `connectionId` and cursor name. The value is the last `cursorUpdate` set by the given `connectionId`.
 
-### Request cursor locations
-
-To retrieve the initial location of all cursors within a space, you can use the `cursors.getAll()` method. This returns a `cursorsUpdate` which contains a list of cursors by `connectionId`.
-
-The following is an example of calling `getAll()` to return all cursor positions:
+Example of calling `getAll` to return all cursor positions:
 
 ```ts
-const allCursors = space.cursors.getAll();
+const lastPositions = await space.cursors.getAll();
 ```
 
-The following is an example `cursorsUpdate` received when calling `getAll()`:
-
-```json
+```ts
 {
-  "<connection-id-1>": {
-    "pointer": {
-      "name": "pointer",
-      "connectionId": "someConnectionId",
-      "clientId": "someClientId",
+  "hd9743gjDc": {
+    "slidedeck-cursors": {
+      "name": "slidedeck-cursors",
+      "connectionId": "hd9743gjDc",
+      "clientId": "clemons#142",
       "position": {
         "x": 864,
         "y": 32
       },
-      "cursorData": {
+      "data": {
         "color": "red"
       }
     }
-  },
-  "<connection-id-2>": {
-    "pointer": null
   }
 }
 ```
 
-The following optional properties can be passed to `getAll()`:
-
-| Property | Description                                                                                                                                 | Type   |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| name     | The name of a cursor to retrieve the position for. This name is set by a user when they [create a cursor instance](#set-a-cursor-position). | string |
-
-## Set a cursor location
-
-Users create a cursor instance using the `space.cursors.get()` method and then use the `set()` method to publish a `cursorUpdate` event when their cursor moves.
-
-The following is an example of creating a cursor instance and updating its location:
+Example of calling `getAll` to get the last positions for the named cursor `slidedeck-cursors`:
 
 ```ts
-const pointer = space.cursors.get('user-a-cursor');
-
-pointer.set({ position: { x: clientX, y: clientY } });
+const lastPositions = await space.cursors.getAll('slidedeck-cursors');
 ```
-
-The following optional properties can be passed to `set()`:
-
-| Property | Description                  | Type |
-| -------- | ---------------------------- | ---- |
-| data     | Optional cursor information. |      |
-
-The following is an example of passing `data` to the `set()` property to set the cursor color for a user:
 
 ```ts
-pointer.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
+{
+  "hd9743gjDc": {
+    "name": "slidedeck-cursors",
+    "connectionId": "hd9743gjDc",
+    "clientId": "clemons#142",
+    "position": {
+      "x": 864,
+      "y": 32
+    },
+    "data": {
+      "color": "red"
+    }
+  }
+}
 ```
+
+## Event Emitters
+
+All Spaces APIs inherit from an [EventEmitter class](/src/utilities/EventEmitter.ts) and support the same event API.
+
+Calling `on` with a single function argument will subscribe to all events on that emitter.
+
+```ts
+space.on(() => {});
+```
+
+Calling `on` with a named event and a function argument will subscribe to that event only.
+
+```ts
+space.on(`membersUpdate`, () => {});
+```
+
+Calling `on` with an array of named events and a function argument will subscribe to those events.
+
+```ts
+space.on([`membersUpdate`], () => {});
+```
+
+Calling `off` with no argumnets will remove all registered listeners.
+
+```ts
+space.off();
+```
+
+Calling `off` with a single named event will remove all listeners registered for that event.
+
+```ts
+space.off(`membersUpdate`);
+```
+
+Calling `off` with an array of named events will remove all listeners registered for those events.
+
+```ts
+space.off([`membersUpdate`]);
+```
+
+Calling `off` and adding a listener function as the second argument to both of the above will remove only that listener.
+
+```ts
+const listener = () => {};
+space.off(`membersUpdate`, listener);
+space.off([`membersUpdate`], listener);
+```
+
+As with the native DOM API, this only works if the listener is the same reference as the one passed to `on`.
