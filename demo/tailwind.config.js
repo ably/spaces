@@ -3,6 +3,14 @@ module.exports = {
   mode: 'jit',
   content: ['./app/index.html', './app/**/*.{html,js,ts,jsx,tsx}'],
   theme: {
+    screens: {
+      // CSS custom properties can't be used in media queries
+      xs: '428px',
+      sm: '768px',
+      md: '1040px',
+      lg: '1280px',
+      xl: '1440px',
+    },
     extend: {
       colors: {
         'ably-black': '#03020D',
