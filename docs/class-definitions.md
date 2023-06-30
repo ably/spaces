@@ -1,247 +1,502 @@
-## Class Definitions
+# Spaces
 
-**Contents**
-
-- [Spaces](#spaces)
-- [SpaceOptions](#spaceoptions)
-- [Space](#space)
-- [SpaceMember](#spacemember)
-- [Locations](#locations-1)
-- [Cursors](#cursors-1)
-- [Cursor](#cursor)
-- [CursorPosition](#cursorposition)
-
-### Spaces
-
-#### constructor(ably)
+## Constructor
 
 Create a new instance of the Spaces library.
-This requires a promise instance of the Ably library to be passed in.
-Refer to the [Ably-JS Documentation](https://github.com/ably/ably-js#introduction) for information on setting up a realtime promise client.
 
-| Property | Type                 |
-| -------- | -------------------- |
-| ably     | Ably.RealtimePromise |
+The Spaces library constructor is overloaded allowing it to be instantiated using a [ClientOptions](https://ably.com/docs/api/realtime-sdk?lang=javascript#client-options) object:
 
-#### get(name, options?)
+_**Depracated: the ClientOptions option will be removed in the next release. Use the Ably client instance method described underneath.**_
 
-Get or create a Space instance. Options may only be provided if a Space instance with the supplied name does not yet exist.
+```ts
+import Spaces from '@ably-labs/spaces';
 
-| Property | Type                                           |
-| -------- | ---------------------------------------------- |
-| name     | string                                         |
-| options  | [SpaceOptions](#spaceoptions) &#124; undefined |
+const spaces = new Spaces({ key: "<API-key>", clientId: "<client-ID>" });
+```
+
+Or an instance of the realtime, promise-based [Ably client](https://github.com/ably/ably-js):
+
+```ts
+import { Realtime } from 'ably/promise';
+import Spaces from '@ably-labs/spaces';
+
+const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
+const spaces = new Spaces(client);
+```
+
+In both cases, a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascript) is required.
+
+An API key will required for [basic authentication](https://ably.com/docs/auth/basic?lang=javascript). We strongly recommended that you use [token authentication](https://ably.com/docs/realtime/authentication#token-authentication) in any production environments.
+
+Refer to the [Ably docs for the JS SDK](https://ably.com/docs/getting-started/setup?lang=javascript) for information on setting up a realtime promise client.
+
+## Properties
+
+### ably
+
+Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) client that was passed to the [constructor](#constructor).
+
+```ts
+type ably = Ably.RealtimePromise;
+```
+
+### version
+
+Version of the Spaces library.
+
+```ts
+type version = string;
+```
+
+## Methods
+
+### get
+
+Get or create a Space instance. Returns a [Space](#space) instance. Configure the space by passing [SpaceOptions](#spaceoptions) as the second argument.
+
+```ts
+type get = (name: string, options?: SpaceOptions) => Promise<Space>;
+```
+
+## Related Types
 
 ### SpaceOptions
 
 Used to configure a Space instance on creation.
 
+```ts
+type SpaceOptions = {
+  offlineTimeout?: number;
+  cursors?: CursorsOptions;
+};
+```
+
 #### offlineTimeout
 
-Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list.
-
-Default is 120,000ms (2 minutes).
+Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list. The default is 120000ms (2 minutes).
 
 #### cursors
 
-Configure the cursors API.
+Options relating to configuring the cursors API (see below).
+
+#### CursorsOptions
+
+```ts
+type CursorsOptions = {
+  outboundBatchInterval?: number;
+  paginationLimit?: number;
+};
+```
 
 ##### outboundBatchInterval
 
-The interval at which a batch of cursors position is published. This is multiplied by the number of members in the space reduced by 1. (i.e. outboundBatchInterval \* (membersCount - 1)).
-
-Default 100ms.
+The interval in milliseconds at which a batch of cursor positions are published. This is multiplied by the number of members in the space minus 1. The default value is 100ms.
 
 ##### paginationLimit
 
-The number of [history API](https://ably.com/docs/realtime/history) pages searched for the last published cursor position.
+The number of pages searched from [history](https://ably.com/docs/storage-history/history) for the last published cursor position. The default is 5.
 
-Default is 5.
+# Space
 
-### Space
+An instance of a Space created using [spaces.get](#get). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
 
-An instance of a Space created using [spaces.get](#getname-options).
+## Properties
 
-#### enter(profileData?)
+### cursors
 
-Enter this space with optional profile data and notify other clients in the space via the [membersUpdate](#membersupdate) event.
-This data can be an arbitrary JSON-serializable object which will be attached to the member object and delivered to other members of the space.
+An instance of [Cursors](#cursors).
 
-| Property    | Type   |
-| ----------- | ------ |
-| profileData | Object |
+```ts
+type cursors = instanceof Cursors;
+```
 
-#### leave()
+### locations
 
-Leave the space. This removes the member from the space and notifies other space members.
+An instance of [Locations](#locations).
 
-#### on(event, callback)
+```ts
+type locations = instanceof Locations;
+```
 
-Used for subscribing to realtime events within the space.
+## Methods
 
-##### membersUpdate
+### enter
 
-Fires when a member enters or leaves the space. The argument supplied to the event listener callback is the current array of all [SpaceMember](#spacemember) objects within the space.
+Enter the space. Can optionally take `profileData`. This data can be an arbitrary JSON-serializable object which will be attached to the [member object](#spacemember). Returns all current space members.
 
-##### enter
+```ts
+type enter = (profileData?: Record<string, unknown>) => Promise<SpaceMember[]>;
+```
 
-Fires when a member enters the space. The argument supplied to the event listener callback is the [SpaceMember](#spacemember) which entered the space.
+### leave
 
-##### leave
+Leave the space. Can optionally take `profileData`. This triggers the `leave` event, but does not immediately remove the member from the space. See [offlineTimeout](#spaceoptions).
 
-Fires when a member leaves the space. The argument supplied to the event listener callback is the [SpaceMember](#spacemember) which left the space.
-Note that the leave event will only fire once the [offlineTimeout](#offlinetimeout) has passed.
+```ts
+type leave = (profileData?: Record<string, unknown>) => Promise<void>;
+```
 
-#### getMembers()
+### on
 
-Returns an array of all [SpaceMember](#spacemember) objects currently in the space, including any members who have left and not yet timed out. (_see: [SpaceOptions.offlineTimeout](#offlinetimeout)_)
+Listen to events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
-#### getSelf()
+Available events:
 
-Gets the [SpaceMember](#spacemember) object which relates to the local client.
+- #### **membersUpdate**
 
-#### locations
+  Listen to updates to members.
 
-Get the [Locations](#locations-1) object for this space.
+  ```ts
+  space.on('membersUpdate', (members: SpaceMember[]) => {});
+  ```
 
-#### cursors
+  Triggers on:
+  - presence updates ([`enter`, `leave`, `update` and `present` events](https://ably.com/docs/presence-occupancy/presence?lang=javascript))
+  - [location updates](#locationupdate)
 
-Get the [Cursors](#cursors-1) object for this space.
+  The argument supplied to the callback is an array of [SpaceMember](#spacemember) (members) objects within the space.
+
+- #### **enter**
+  Listen to enter events of members.
+
+  ```ts
+  space.on('enter', (member: SpaceMember) => {})
+  ```
+  The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
+
+- #### **leave**
+  
+  Listen to leave events of members. Note that the leave event will only fire once the [offlineTimeout](#spaceoptions) has passed.
+
+  ```ts
+  space.on('leave', (member: SpaceMember) => {})
+  ```
+
+  The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member leaving the space.
+
+### off
+
+Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+
+```ts
+space.off('enter');
+```
+
+### getMembers
+
+Returns an array of all [SpaceMember](#spacemember) objects (members) currently in the space, including any who have left and not yet timed out. (_see: [offlineTimeout](#spaceoptions)_)
+
+```ts
+type getMembers = () => SpaceMember[];
+```
+
+### getSelf
+
+Gets the [SpaceMember](#spacemember) object which relates to the local connection. Will return `undefined` if the client hasn't entered the space yet.
+
+```ts
+type getSelf = () => SpaceMember | undefined;
+```
+
+## Related Types
 
 ### SpaceMember
 
-A SpaceMember represents a member within a Space instance.
-This could be the local client or other remote clients which are connected to the same space.
+A SpaceMember represents a member within a Space instance. Each new connection that enters will create a new member, even if they have the same [`clientId`](https://ably.com/docs/auth/identified-clients?lang=javascript).
 
-| Property    | Type                              |
-| ----------- | --------------------------------- |
-| clientId    | string                            |
-| isConnected | bool                              |
-| profileData | Object                            |
-| location    | Any                               |
-| lastEvent   | {name: string, timestamp: number} |
+```ts
+type SpaceMember = {
+  clientId: string;
+  connectionId: string;
+  isConnected: boolean;
+  profileData: Record<string, unknown>;
+  location: Location;
+  lastEvent: PresenceEvent;
+};
+```
 
-### Locations
+#### clientId
 
-Handles the tracking of member locations within a space.
+The client identifier for the user, provided to the ably client instance.
 
-#### set(location)
+#### connectionId
 
-Set your current location. Location can be any JSON-serializable object. Fires a [locationUpdate](#locationupdate) event for all connected clients in this space.
+Identifier for the connection used by the user. This is a unique identifier.
 
-| Property | Type |
-| -------- | ---- |
-| location | Any  |
+#### isConnected
 
-#### on(event, callback)
+Whether the user is connected to Ably.
 
-Used for subscribing to location specific updates. Currently, only one event is supported:
+#### profileData
 
-##### locationUpdate
+Optional user data that can be attached to a user, such as a username or image to display in an avatar stack.
 
-Fires when a member updates their location. The argument supplied to the event listener is an object with the following fields:
+#### location
 
-| Property         | Type                        |
-| ---------------- | --------------------------- |
-| member           | [SpaceMember](#spacemember) |
-| currentLocation  | Any                         |
-| previousLocation | Any                         |
+The current location of the user within the space.
 
-#### off(event, callback)
+#### lastEvent
 
-Used for unsubscribing from location-specific updates.
+The most recent event emitted by [presence](https://ably.com/docs/presence-occupancy/presence?lang=javascript) and its timestamp. Events will be either `enter`, `leave`, `update` or `present`.
 
-With no arguments, unsubscribes from all location updates.
+### PresenceEvent
 
-With a callback as the first argument, unsubscribes from all location updates which use the same callback as a listener.
+```ts
+type PresenceEvent = {
+  name: 'enter' | 'leave' | 'update' | 'present';
+  timestamp: number;
+};
+```
 
-With an event or list of events as the first argument, unsubscribes from all location updates matching that(those) event(s).
+# Locations
 
-With an event or list of events as the first argument AND a callback as the second argument, unsubscribes from all location updates matching that(those) event(s) which also use the same callback as a listener.
+Handles the tracking of member locations within a space. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
 
-#### createTracker(locationTrackerPredicate)
+## Methods
 
-Used to create a tracker for a specific location using a predicate for the [locationUpdate](#locationUpdate) change event. Returns a [LocationTracker][#LocationTracker].
+### set
 
-##### locationUpdatePredicate(locationUpdate)
+Set your current location. [Location](#location-1) can be any JSON-serializable object. Emits a [locationUpdate](#locationupdate) event to all connected clients in this space.
 
-A predicate function called with an locationUpdate event. Return a boolean for events that should be emitted via the tracker.
+```ts
+type set = (update: Location) => void;
+```
 
-### LocationTracker
+### on
 
-Handles the tracking of a specific location within a space.
+Listen to events for locations. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
-#### on(callback)
+Available events:
 
-Used for subscribing to a listener once the locations class has emitted a `locationUpdate` event, filtered by the [locationUpdatePredicate](#locationupdatepredicatelocationupdate).
+- #### **locationUpdate**
 
-#### off(callback)
+  Fires when a member updates their location. The argument supplied to the event listener is an [LocationUpdate](#locationupdate-1).
 
-Used for unsubscribing from a listener.
+  ```ts
+  space.locations.on('locationUpdate', (locationUpdate: LocationUpdate) => {});
+  ```
 
-#### members()
+### off
 
-Used to retrieve a list of members in the Space for whom the [locationUpdatePredicate](#locationupdatepredicatelocationupdate) would return `true` based on their current location.
+Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
 
-### Cursors
+```ts
+space.locations.off('locationUpdate');
+```
 
-#### get(name)
+### createTracker
 
-Get a [Cursor](#cursor) with a specific name. Names are unique per space.
+Returns a [LocationTracker](#locationtracker). Takes a [location predicate function](#locationpredicate) that needs to return a boolean. The predicate is called with a [LocationUpdate](#locationupdate).
 
-| Property | Type   |
-| -------- | ------ |
-| name     | string |
+```ts
+type createTracker = (predicate: Predicate) => LocationTracker;
+```
 
-#### getAll(name)
+```ts
+// Create a tracker to only listen to locationUpdate events 
+// for a specific location, such as a UI element or spreadsheet cell
+const locationTracker = space.locations.createTracker(
+  (locationUpdate) => locationUpdate.previousLocation === 'slide-title',
+);
 
-Get the last position of all cursors in this space, for each connection. Pass a cursor name to only get the last position of that cursor for each connection.
+// Register a listener to subscribe to events for a tracker
+locationTracker.on((locationUpdate: LocationUpdate) => {
+  // will only trigger for change.previousLocation === 'slide-title'
+  console.log(locationUpdate);
+});
+```
 
-| Property | Type   |
-| -------- | ------ |
-| name     | string |
+## Related types
 
-#### on(event, callback)
+### Location
 
-Used for subscribing to all cursor updates. Currently, only one event is supported:
+Represents a location in an application.
 
-##### positionsUpdate
+```ts
+type Location = string | Record<string, unknown> | null;
+```
 
-Fires when a cursors position is updated. The argument supplied is an object of one or more cursors by name and their respective cursor movements since the last update.
+### LocationUpdate
 
-| Property  | Type                                                |
-| --------- | --------------------------------------------------- |
-| positions | Record<string, [CursorPosition](#cursorposition)[]> |
+Represents a change between locations for a given [`SpaceMember`](#spacemember).
 
-### Cursor
+```ts
+type LocationUpdate = {
+  member: SpaceMember;
+  currentLocation: Location;
+  previousLocation: Location;
+};
+```
 
-An individual cursor.
+### LocationPredicate
 
-#### setPosition(position)
+A predicate that is an argument for an [`LocationTracker`](#locationtracker).
 
-Set the position of this cursor. The position will be updated for each other member of the space via a Cursors [positionsUpdate](#positionsupdate) or Cursor [positionUpdate](#positionupdate).
+```ts
+type Predicate = (locationUpdate: LocationUpdate) => boolean;
+```
 
-| Property | Type                              |
-| -------- | --------------------------------- |
-| position | [CursorPosition](#cursorposition) |
+# LocationTracker
 
-#### on(event, callback)
+Handles tracking of locations [filtered by a predicate function](#createtracker). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
 
-Used for subscribing to a specific cursors updates. Currently, only one event is supported:
+## Methods
 
-##### positionUpdate
+### on
 
-Fires when this cursors location is updated. Contains an array of cursor positions since the last update.
+Emits the same events as [Locations](#locations), but [filtered by a predicate function](#createtracker). See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
-| Property  | Type                                |
-| --------- | ----------------------------------- |
-| positions | [CursorPosition](#cursorposition)[] |
+### off
+
+Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+
+```ts
+locationTracker.off('locationUpdate');
+```
+
+### members
+
+Retrieve a list of members in the Space for whom the [tracker predicate function](#createtracker) returns `true`.
+
+```ts
+type members = () => SpaceMember[];
+```
+
+# Cursors
+
+Handles tracking of member cursors within a space. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+
+## Methods
+
+### get
+
+Get or create a named [Cursor](#cursor) instance.
+
+```ts
+type get = (cursorName: string) => Cursor;
+```
+
+Example:
+
+```ts
+const cursor = space.cursors.get('slidedeck-cursors');
+```
+
+### getAll
+
+Get the last position of all cursors in this space, for each connection. Pass a cursor name to only get the last position of cursors that match that name.
+
+```ts
+type getAll = () => Record<ConnectionId, Record<CursorName, Cursor>>;
+type getAll = (cursorName: CursorName) => Record<ConnectionId, Cursor>;
+```
+
+Example:
+
+```ts
+const lastPositions = space.cursors.getAll('slidedeck-cursors');
+```
+
+### on
+
+Listen to events for all named cursors. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
+
+Available events:
+
+- #### **cursorsUpdate**
+
+  Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate).
+
+  ```ts
+  space.cursors.on('cursorsUpdate', (cursorUpdate: CursorUpdate) => {});
+  ```
+
+### off
+
+Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+
+```ts
+space.cursors.off('cursorsUpdate');
+```
+
+## Related types
+
+### CursorUpdate
+
+Represents an update to a cursor.
+
+```ts
+type CursorUpdate = {
+  name: string;
+  clientId: string;
+  connectionId: string;
+  position: CursorPosition;
+  data?: CursorData;
+};
+```
 
 ### CursorPosition
 
-Represents the position of a cursor.
+Represents a cursors position.
 
-| Property | Type   |
-| -------- | ------ |
-| x        | number |
-| y        | number |
+```ts
+type CursorPosition = {
+  x: number;
+  y: number;
+};
+```
+
+### CursorData
+
+Represent data that can be associated with a cursor update.
+
+```ts
+type CursorData = Record<string, unknown>;
+```
+
+# Cursor
+
+An instance of a Cursor created using [spaces.cursors.get](#get-1). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+
+## Properties
+
+### name
+
+Name of the cursor.
+
+```ts
+type name = string;
+```
+
+## Methods
+
+### set
+
+Set the position of this named cursor.
+
+```ts
+type set = (update: { position: CursorPosition, data?: CursorData })
+```
+
+### on
+
+Listen to events for the named cursors. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
+
+Available events:
+
+- #### **cursorUpdate**
+
+  Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate-1).
+
+  ```ts
+  const cursor = space.cursors.get('slidedeck-cursors');
+  cursor.on('cursorUpdate', (cursorUpdate: CursorUpdate) => {});
+  ```
+
+### off
+
+Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+
+```ts
+cursor.off('cursorUpdate');
+```
