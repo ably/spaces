@@ -91,6 +91,66 @@ describe('Space (mockClient)', () => {
     });
   });
 
+  describe('updateProfileData', () => {
+    describe('did not enter', () => {
+      it<SpaceTestContext>('enter & update profileData successfully', async ({ presence, space }) => {
+        const enterSpy = vi.spyOn(presence, 'enter');
+        const updateSpy = vi.spyOn(presence, 'update');
+        await space.updateProfileData({ a: 1 });
+        expect(enterSpy).toHaveBeenNthCalledWith(1, { profileData: { a: 1 } });
+        expect(updateSpy).not.toHaveBeenCalled();
+      });
+
+      it<SpaceTestContext>('enter & update profileData with function successfully', async ({ presence, space }) => {
+        const enterSpy = vi.spyOn(presence, 'enter');
+        const updateSpy = vi.spyOn(presence, 'update');
+        await space.updateProfileData((profileData) => ({ ...profileData, a: 1 }));
+        expect(enterSpy).toHaveBeenNthCalledWith(1, { profileData: { a: 1 } });
+        expect(updateSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('did enter', () => {
+      it<SpaceTestContext>('update profileData successfully', async ({ presence, space }) => {
+        vi.spyOn(space, 'getSelf').mockResolvedValueOnce({
+          clientId: '1',
+          connectionId: 'testConnectionId',
+          isConnected: true,
+          location: null,
+          lastEvent: {
+            name: 'enter',
+            timestamp: 1,
+          },
+          profileData: {
+            a: 1,
+          },
+        });
+        const updateSpy = vi.spyOn(presence, 'update');
+        await space.updateProfileData({ a: 2 });
+        expect(updateSpy).toHaveBeenNthCalledWith(1, { profileData: { a: 2 } });
+      });
+
+      it<SpaceTestContext>('enter & update profileData with function successfully', async ({ presence, space }) => {
+        vi.spyOn(space, 'getSelf').mockResolvedValueOnce({
+          clientId: '1',
+          connectionId: 'testConnectionId',
+          isConnected: true,
+          location: null,
+          lastEvent: {
+            name: 'enter',
+            timestamp: 1,
+          },
+          profileData: {
+            a: 1,
+          },
+        });
+        const updateSpy = vi.spyOn(presence, 'update');
+        await space.updateProfileData((profileData) => ({ ...profileData, a: 2 }));
+        expect(updateSpy).toHaveBeenNthCalledWith(1, { profileData: { a: 2 } });
+      });
+    });
+  });
+
   describe('leave', () => {
     it<SpaceTestContext>('leaves a space successfully', async ({ presence, space }) => {
       const spy = vi.spyOn(presence, 'leave');

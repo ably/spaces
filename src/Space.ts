@@ -7,6 +7,7 @@ import Cursors from './Cursors.js';
 
 // Unique prefix to avoid conflicts with channels
 import { LOCATION_UPDATE, MEMBERS_UPDATE, SPACE_CHANNEL_PREFIX } from './utilities/Constants.js';
+import { isFunction } from './utilities/TypeOf.js';
 
 export type SpaceMember = {
   clientId: string;
@@ -30,7 +31,7 @@ const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
 };
 
-type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter: SpaceMember };
+type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter: SpaceMember; update: SpaceMember };
 
 class Space extends EventEmitter<SpaceEventsMap> {
   private channelName: string;
@@ -153,6 +154,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     const spaceMember = this.updateOrCreateMember(message);
 
     if (index >= 0) {
+      this.emit('update', spaceMember);
       this.members[index] = spaceMember;
     } else {
       this.emit('enter', spaceMember);
@@ -189,6 +191,26 @@ class Space extends EventEmitter<SpaceEventsMap> {
         resolve(this.members);
       });
     });
+  }
+
+  async updateProfileData(profileDataOrUpdateFn: unknown | ((unknown) => unknown)): Promise<void> {
+    const self = this.getSelf();
+
+    if (isFunction(profileDataOrUpdateFn) && !self) {
+      const update = profileDataOrUpdateFn();
+      await this.enter(update);
+      return;
+    } else if (!self) {
+      await this.enter(profileDataOrUpdateFn);
+      return;
+    } else if (isFunction(profileDataOrUpdateFn) && self) {
+      const update = profileDataOrUpdateFn(self.profileData);
+      await this.channel.presence.update({ profileData: update });
+      return;
+    }
+
+    await this.channel.presence.update({ profileData: profileDataOrUpdateFn });
+    return;
   }
 
   leave(profileData?: unknown) {
