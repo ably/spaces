@@ -1,16 +1,5 @@
 ## Class Definitions
 
-**Contents**
-
-- [Spaces](#spaces)
-- [SpaceOptions](#spaceoptions)
-- [Space](#space)
-- [SpaceMember](#spacemember)
-- [Locations](#locations-1)
-- [Cursors](#cursors-1)
-- [Cursor](#cursor)
-- [CursorPosition](#cursorposition)
-
 ### Spaces
 
 #### constructor(ably)
