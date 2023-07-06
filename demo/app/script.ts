@@ -1,5 +1,6 @@
 import * as Ably from 'ably/promises';
 import { nanoid } from 'nanoid';
+import debounce from 'lodash.debounce';
 
 import { getRandomName } from './utils/fake-names';
 import { getSpaceNameFromUrl } from './utils/url';
@@ -67,5 +68,12 @@ space.locations.on('locationUpdate', ({ previousLocation, currentLocation }) => 
 space.on('membersUpdate', (members) => {
   renderAvatars(members.filter(memberIsNotSelf));
 });
+
+window.addEventListener(
+  'resize',
+  debounce(() => {
+    renderSelectedSlide(space);
+  }, 50),
+);
 
 window.Simulate = new Simulate();

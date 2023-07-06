@@ -22,6 +22,7 @@
     "ably": "^1.2.37",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
+    "lodash.debounce": "^4.0.8",
     "nanoid": "^3.3.4",
     "random-words": "^1.3.0",
     "vite-plugin-commonjs": "^0.7.1"

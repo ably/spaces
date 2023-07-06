@@ -137,7 +137,7 @@ const defaultSlideTwo = slideData(
       'Lauren',
     ),
     slideImgElement('4', collaborativeDocumentUrl, [543, 166]),
-    slideTextElement('text')('5', '2022', [952, 626]),
+    slideTextElement('text')('5', '2023', [952, 626]),
   ],
   IS_SELECTED,
 );
