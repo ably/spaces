@@ -12,10 +12,13 @@ const elementSelectedClasses = [
   'outline',
   `before:content-[attr(data-before)]`,
   'before:absolute',
-  'before:-top-[22px]',
+  'before:md:-top-[22px]',
+  'before:xs:-top-[16px]',
   'before:-left-[2px]',
-  'before:px-[10px]',
-  'before:text-sm',
+  'before:md:px-[10px]',
+  'before:xs:px-[0px]',
+  'before:md:text-sm',
+  'before:xs:text-xs',
   'before:text-white',
   'before:rounded-t-lg',
   'before:normal-case',
@@ -40,20 +43,25 @@ const amendPresentOutline = (members, htmlElement) => {
 };
 
 const renderSlideTextElement = (slideData: SlideTextElement, htmlElement: HTMLElement, members: SpaceMember[]) => {
-  htmlElement.style.left = `${slideData.position[0]}px`;
-  htmlElement.style.top = `${slideData.position[1]}px`;
+  if (window.innerWidth >= 768) {
+    htmlElement.style.left = `${slideData.position[0]}px`;
+    htmlElement.style.top = `${slideData.position[1]}px`;
+  }
+
   htmlElement.innerHTML = slideData.text;
 
   if (slideData.width) {
-    htmlElement.style.width = `${slideData.width}px`;
+    htmlElement.style.width = `md:${slideData.width}px`;
   }
 
   amendPresentOutline(members, htmlElement);
 };
 
 const renderSlideImgElement = (slideData: SlideImgElement, htmlElement: HTMLElement, members: SpaceMember[]) => {
-  htmlElement.style.left = `${slideData.position[0]}px`;
-  htmlElement.style.top = `${slideData.position[1]}px`;
+  if (window.innerWidth >= 768) {
+    htmlElement.style.left = `${slideData.position[0]}px`;
+    htmlElement.style.top = `${slideData.position[1]}px`;
+  }
   const imgElement = queryDataId(htmlElement, 'slide-image-placeholder') as HTMLImageElement;
   imgElement.src = slideData.src;
 
