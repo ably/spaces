@@ -22,6 +22,7 @@ export type SpaceMember = {
 
 type SpaceLeaver = {
   clientId: string;
+  connectionId: string;
   timeoutId: ReturnType<typeof setTimeout>;
 };
 
@@ -68,8 +69,12 @@ class Space extends EventEmitter<SpaceEventsMap> {
     return this.channelName;
   }
 
-  getMemberFromConnection(connectionId?: string) {
+  getMemberFromConnection(connectionId: string): SpaceMember | undefined {
     return this.members.find((m) => m.connectionId === connectionId);
+  }
+
+  getMemberIndexFromConnection(connectionId: string): number {
+    return this.members.findIndex((m) => m.connectionId === connectionId);
   }
 
   private updateOrCreateMember(message: Types.PresenceMessage): SpaceMember {
@@ -81,7 +86,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
 
     if (!member) {
       return {
-        clientId: message.clientId as string,
+        clientId: message.clientId,
         connectionId: message.connectionId,
         isConnected: message.action !== 'leave',
         profileData: message.data.profileData,
@@ -106,7 +111,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
       const member = this.getMemberFromConnection(message.connectionId);
 
       this.emit('leave', member);
-      this.removeMember(message.clientId);
+      this.removeMember(message.connectionId);
       this.emit(MEMBERS_UPDATE, this.members);
 
       if (member?.location) {
@@ -120,16 +125,18 @@ class Space extends EventEmitter<SpaceEventsMap> {
 
     this.leavers.push({
       clientId: message.clientId,
+      connectionId: message.connectionId,
       timeoutId: setTimeout(timeoutCallback, this.options.offlineTimeout),
     });
   }
-  private removeLeaver(leaverIndex) {
+
+  private removeLeaver(leaverIndex: number): void {
     clearTimeout(this.leavers[leaverIndex].timeoutId);
     this.leavers.splice(leaverIndex, 1);
   }
 
-  private updateLeavers(message: Types.PresenceMessage) {
-    const index = this.leavers.findIndex(({ clientId }) => clientId === message.clientId);
+  private updateLeavers(message: Types.PresenceMessage): void {
+    const index = this.leavers.findIndex(({ connectionId }) => message.connectionId === connectionId);
 
     if (message.action === 'leave' && index < 0) {
       this.addLeaver(message);
@@ -141,8 +148,8 @@ class Space extends EventEmitter<SpaceEventsMap> {
     }
   }
 
-  private updateMembers(message: Types.PresenceMessage) {
-    const index = this.members.findIndex(({ clientId }) => clientId === message.clientId);
+  private updateMembers(message: Types.PresenceMessage): void {
+    const index = this.getMemberIndexFromConnection(message.connectionId);
     const spaceMember = this.updateOrCreateMember(message);
 
     if (index >= 0) {
@@ -153,8 +160,8 @@ class Space extends EventEmitter<SpaceEventsMap> {
     }
   }
 
-  private removeMember(clientId) {
-    const index = this.members.findIndex((member) => member.clientId === clientId);
+  private removeMember(connectionId: string): void {
+    const index = this.getMemberIndexFromConnection(connectionId);
 
     if (index >= 0) {
       this.members.splice(index, 1);
@@ -193,7 +200,11 @@ class Space extends EventEmitter<SpaceEventsMap> {
   }
 
   getSelf(): SpaceMember | undefined {
-    return this.getMemberFromConnection(this.connectionId);
+    if (this.connectionId) {
+      return this.getMemberFromConnection(this.connectionId);
+    }
+
+    return;
   }
 }
 
