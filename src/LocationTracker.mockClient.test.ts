@@ -2,8 +2,8 @@ import { it, describe, expect, vi, beforeEach, Mock } from 'vitest';
 import { Realtime } from 'ably/promises';
 
 import Space, { SpaceMember } from './Space.js';
-import Locations, { LocationChange } from './Locations.js';
-import LocationTracker, { LocationTrackerPredicate } from './LocationTracker.js';
+import Locations from './Locations.js';
+import LocationTracker, { LocationTrackerPredicate, LocationChange } from './LocationTracker.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import { LOCATION_UPDATE } from './utilities/Constants.js';
 
@@ -13,7 +13,7 @@ interface LocationsTrackerTestContext {
   locations: Locations;
   spaceMember: SpaceMember;
   locationTracker: LocationTracker<{ form: string }>;
-  validEvent: LocationChange;
+  validEvent: LocationChange<{ form: string }>;
   space: Space;
   spy: Mock;
 }
