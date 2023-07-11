@@ -85,15 +85,14 @@ class Space extends EventEmitter<SpaceEventsMap> {
         connectionId: message.connectionId,
         isConnected: message.action !== 'leave',
         profileData: message.data.profileData,
-        location: null,
+        location: message?.data?.currentLocation || null,
         lastEvent,
       };
     }
 
     member.isConnected = message.action !== 'leave';
-    member.profileData = message.data?.profileData ?? member.profileData;
-    member.location = member.location ? member.location : message.data?.location ?? null;
     member.lastEvent = lastEvent;
+    member.profileData = message.data?.profileData ?? member.profileData;
 
     return member;
   }

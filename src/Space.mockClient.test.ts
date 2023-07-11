@@ -170,7 +170,7 @@ describe('Space (mockClient)', () => {
         },
       ]);
 
-      createPresenceEvent(space, 'update', { data: { profileData: { a: 1 } } });
+      createPresenceEvent(space, 'enter', { data: { profileData: { a: 1 } } });
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
         {
           clientId: '1',
@@ -178,7 +178,7 @@ describe('Space (mockClient)', () => {
           profileData: { a: 1 },
           isConnected: true,
           location: null,
-          lastEvent: { name: 'update', timestamp: 1 },
+          lastEvent: { name: 'enter', timestamp: 1 },
         },
       ]);
     });
@@ -408,12 +408,16 @@ describe('Space (mockClient)', () => {
         createPresenceEvent(space, 'enter');
 
         // Simulate a "set" location for a user
-        space.locations['onPresenceUpdate'](createPresenceMessage('update', { data: { location: '1' } }));
+        space.locations['onPresenceUpdate'](
+          createPresenceMessage('update', { data: { previousLocation: null, currentLocation: { location: '1' } } }),
+        );
 
         expect(spy).toHaveBeenCalledTimes(1);
 
         // We need to mock the message for both space & locations
-        const msg = createPresenceMessage('leave', { data: { location: '1' } });
+        const msg = createPresenceMessage('leave', {
+          data: { previousLocation: { location: '1' }, currentLocation: { location: '2' } },
+        });
         space['onPresenceUpdate'](msg);
         space.locations['onPresenceUpdate'](msg);
 

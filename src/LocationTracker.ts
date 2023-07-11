@@ -1,7 +1,13 @@
-import Locations, { LocationChange } from './Locations.js';
+import Locations from './Locations.js';
 import { SpaceMember } from './Space.js';
 import { LOCATION_UPDATE } from './utilities/Constants.js';
 import { EventListener } from './utilities/EventEmitter.js';
+
+type LocationChange<T> = {
+  member: SpaceMember;
+  previousLocation: unknown;
+  currentLocation: T;
+};
 
 /**
  * Responds to a locationChange with:

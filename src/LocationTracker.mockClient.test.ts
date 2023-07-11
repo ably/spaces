@@ -13,7 +13,8 @@ interface LocationsTrackerTestContext {
   locations: Locations;
   spaceMember: SpaceMember;
   locationTracker: LocationTracker<{ form: string }>;
-  validEvent: LocationChange<{ form: string }>;
+  validEvent: LocationChange;
+  space: Space;
   spy: Mock;
 }
 
@@ -75,6 +76,8 @@ describe('LocationTracker', () => {
         form: 'settings',
       },
     };
+
+    context.space = space;
   });
 
   it<LocationsTrackerTestContext>('fires when a valid location event is fired', ({
@@ -139,29 +142,34 @@ describe('LocationTracker', () => {
     expect(secondSpy).toHaveBeenCalledOnce();
   });
 
-  it<LocationsTrackerTestContext>('returns a list of only the members that are in the correct location', async ({
+  it<LocationsTrackerTestContext>('returns a list of members that are in the predicated location', async ({
     locationTracker,
     locations,
+    space,
   }) => {
     expect(locationTracker.members()).toEqual([]);
     await locations.space.enter({});
+
     locations.set({
       form: 'settings',
     });
-    expect(locationTracker.members()).toEqual([
-      {
-        clientId: 'MOCK_CLIENT_ID',
-        connectionId: '1',
-        isConnected: true,
-        lastEvent: {
-          name: 'enter',
-          timestamp: 1,
-        },
-        location: {
-          form: 'settings',
-        },
-        profileData: {},
+
+    const member = {
+      clientId: 'MOCK_CLIENT_ID',
+      connectionId: '1',
+      isConnected: true,
+      lastEvent: {
+        name: 'enter' as 'enter',
+        timestamp: 1,
       },
-    ]);
+      location: {
+        form: 'settings',
+      },
+      profileData: {},
+    };
+
+    vi.spyOn(space, 'getMembers').mockImplementationOnce(() => [member]);
+
+    expect(locationTracker.members()).toEqual([member]);
   });
 });
