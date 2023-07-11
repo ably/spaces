@@ -1,6 +1,6 @@
 import { Types } from 'ably';
 
-import Space, { SpaceMember } from './Space.js';
+import Space from './Space.js';
 import EventEmitter from './utilities/EventEmitter.js';
 import LocationTracker, { LocationTrackerPredicate } from './LocationTracker.js';
 import { LOCATION_UPDATE } from './utilities/Constants.js';
@@ -8,12 +8,6 @@ import { LOCATION_UPDATE } from './utilities/Constants.js';
 type LocationUpdate = typeof LOCATION_UPDATE;
 
 type LocationEventMap = Record<LocationUpdate, any>;
-
-export type LocationChange<T> = {
-  member: SpaceMember;
-  previousLocation: any;
-  currentLocation: T;
-};
 
 export default class Locations extends EventEmitter<LocationEventMap> {
   constructor(public space: Space, private channel: Types.RealtimeChannelPromise) {
@@ -24,24 +18,25 @@ export default class Locations extends EventEmitter<LocationEventMap> {
   private onPresenceUpdate(message: Types.PresenceMessage) {
     if (!['update', 'leave'].includes(message.action)) return;
 
-    const { location } = message.data;
     const member = this.space.getMemberFromConnection(message.connectionId);
 
     if (member) {
-      const previousLocation = member.location;
-      member.location = location;
-      this.emit(LOCATION_UPDATE, { member, currentLocation: location, previousLocation });
+      const { previousLocation, currentLocation } = message.data;
+      member.location = currentLocation;
+      this.emit(LOCATION_UPDATE, { member: { ...member }, currentLocation, previousLocation });
     }
   }
 
-  set(location) {
+  set(location: unknown) {
     const self = this.space.getSelf();
     if (!self) {
       throw new Error('Must enter a space before setting a location');
     }
+
     return this.channel.presence.update({
       profileData: self.profileData,
-      location,
+      previousLocation: self.location,
+      currentLocation: location,
     });
   }
 

@@ -55,10 +55,18 @@ describe('Locations (mockClient)', () => {
       await space.enter();
       space.locations.on(LOCATION_UPDATE, spy);
       space.locations['onPresenceUpdate'](
-        createPresenceMessage('update', { clientId: '2', connectionId: '2', data: { location: 'location1' } }),
+        createPresenceMessage('update', {
+          clientId: '2',
+          connectionId: '2',
+          data: { currentLocation: 'location1', previousLocation: null },
+        }),
       );
       space.locations['onPresenceUpdate'](
-        createPresenceMessage('update', { clientId: '2', connectionId: '2', data: { location: 'location2' } }),
+        createPresenceMessage('update', {
+          clientId: '2',
+          connectionId: '2',
+          data: { currentLocation: 'location2', previousLocation: 'location1' },
+        }),
       );
       expect(spy).toHaveBeenLastCalledWith<{ member: SpaceMember; currentLocation: any; previousLocation: any }[]>({
         member: {
