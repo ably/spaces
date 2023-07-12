@@ -51,7 +51,7 @@ const renderSlideTextElement = (slideData: SlideTextElement, htmlElement: HTMLEl
   htmlElement.innerHTML = slideData.text;
 
   if (slideData.width) {
-    htmlElement.style.width = `md:${slideData.width}px`;
+    htmlElement.style.width = `${slideData.width}px`;
   }
 
   amendPresentOutline(members, htmlElement);
