@@ -1,65 +1,48 @@
-![development-status](https://badgen.net/badge/development-status/alpha/yellow?icon=github)
+# Ably Collaborative Spaces SDK
 
-# Ably
+<p align="left">
+  <a href="">
+    <img src="https://badgen.net/badge/development-status/alpha/yellow?icon=github" alt="Development status"   />
+  </a>
+  <a href="">
+    <img src="https://github.com/ably-labs/spaces/actions/workflows/dev-ci.yml/badge.svg?branch=main" alt="CI status"   />
+  </a>
+    <a href="">
+    <img src="https://badgen.net/github/license/3scale/saas-operator" alt="License" />
+  </a>
+</p>
 
-_[Ably](https://ably.com/) is the platform that powers realtime experiences at scale, including live chat, data broadcast, notifications, audience engagement and collaboration._
+The [Ably](https://ably.com) Collaborative Spaces SDK enables you to implement realtime collaborative features in your applications. 
 
-## Collaborative Spaces SDK
+![Example collaboration GIF](/docs/images/collab.gif)
 
-The Collaborative Spaces SDK enables you to implement realtime collaborative features in your applications. Rather than having to coordinate resources on calls, or send documents and spreadsheets back and forth using a combination of tools, having in-app realtime collaboration features has proven to boost productivity in remote workplaces.
-
-![ably-multiplayer-collaboration-solutions](https://github.com/ably-labs/spaces/assets/5900152/533d23cb-d943-4230-8d86-1981ccc31a8a)
+Rather than having to coordinate resources on calls, or send documents and spreadsheets back and forth using a combination of tools, having in-app realtime collaboration features has proven to boost productivity in remote workplaces. Try out a [live demo](https://space.ably.dev) of a slideshow application for an example of realtime collaboration in action.
 
 Realtime collaboration enables users to have contextual awareness of other users within an application. This means knowing:
 
-### Who is in the application?
+**Who is in the application?**
 
 One of the most important aspects of collaboration is knowing who else you're working with. The most common way to display this is using an "Avatar Stack" to show who else is currently online, and those that have recently gone offline.
 
-### Where is each user within the application?
+**Where is each user within the application?**
 
-Knowing where each user is within an application helps you understand their attentions without always needing to explicitly ask them. For example, seeing that a colleague is currently viewing slide 2 of a slideshow means that you can carry out your own edits to slide 3 without interfering with their work. Displaying the locations of your users can be achieved by highlighting the UI element they have selected, displaying a miniature avatar stack on the slide they are viewing, or showing the live location of their cursors.
+Knowing where each user is within an application helps you understand their intentions without having to explicitly ask them. For example, seeing that a colleague is currently viewing slide 2 of a slideshow means that you can carry out your own edits to slide 3 without interfering with their work. Displaying the locations of your users can be achieved by highlighting the UI element they have selected, displaying a miniature avatar stack on the slide they are viewing, or showing the live location of their cursors.
 
-### What is everyone doing in the application?
+**What is everyone doing in the application?**
 
-Seeing where users are within an application aids in understanding what they may be working on. It's possible to go one step further though and see what changes they're making to an application. For example, you can display a typing indicator when a colleague is editing a cell in a spreadsheet, or even update the contents of the cell as they type it.
+Changes to the app state made by users not only need to be synced with your backend for validation and long term storage, but also be immediately reflected in the UI so that users are always viewing the latest information. For example, in a spreadsheet application, if one user has entered a value in a cell, all other users need to see that change instantly. Live updates help accomplish this in a collaborative space.
 
-## Development status
+## Status
 
-The Collaborative Spaces SDK is currently under development.
+The Collaborative Spaces SDK is currently under development. If you are interested in being an early adopter and providing feedback then you can [sign up](https://go.ably.com/spaces-early-access) for early access and are welcome to [provide us with feedback](https://go.ably.com/spaces-feedback).
 
-If you are interested in being an early adopter and providing feedback then you can [sign up](https://go.ably.com/spaces-early-access) for early access and are welcome to [provide us any feedback](https://go.ably.com/spaces-feedback).
+## Quickstart
 
-## Concepts
+Get started quickly using this section, or take a look at:
 
-### Collaborative Spaces
-
-To make an application collaborative using the Collaborative Spaces SDK, you first create a `space`. A space is the virtual collaborative area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself.
-
-### Avatar Stack
-
-![Avatar stack image](/docs/images/avatar-stack.png)
-
- Once a space has been defined, users can enter that space and register their details. Subscribing to updates from a space will notify you of when anyone joins or leaves the space.
-
-### User Location
-
-![User Location](/docs/images/user-location.png)
-
-To display the live location of users within an application using the Collaborative Spaces SDK, you utilize a `space`. You can set and track locations of users using the locations API and subscribe to events for when they move. You can track cursors within a space using the cursors API, and similarly subscribe to events for when they move.
-
-### Live Updates
-
-![Live Updates](/docs/images/live-updates.png)
-
-The Collaborative Spaces SDK is built as an extension to the existing [Ably JavaScript SDK](https://github.com/ably/ably-js). This means that it is possible to utilize the existing pub/sub functionality available with Ably in a collaborative application to track what users are doing. In the previous example, when a user is updating the contents of a cell or field you can use a [channel](https://ably.com/docs/realtime/channels) to show the new contents to other users as it's being typed.
-
-
-## Getting started
-
-Use the following snippets to quickly get up and running. More detailed [usage instructions](/docs/usage.md) are available, as are [class definitions](/docs/class-definitions.md) and information on [channel behavior](/docs/channel-behaviors.md).
-
-You can also view a [live demo](https://space.ably.dev) which uses an example slideshow to demonstrate updating an avatar stack, displaying user locations and live cursors.
+* more detailed [usage instructions](/docs/usage.md)
+* [class definitions](/docs/class-definitions.md)  
+* how the Spaces SDK uses [Ably internally](/docs/channel-behaviors.md)
 
 ### Prerequisites
 
@@ -67,41 +50,45 @@ To begin, you will need the following:
 
 * An Ably account. You can [sign up](https://ably.com/signup) for free.
 * An Ably API key. You can create API keys in an app within your [Ably account](https://ably.com/dashboard).
-  * The API key needs the following [capabilities](https://ably.com/docs/realtime/authentication#capabilities-explained): `publish`, `subscribe`, `presence` and `history`.
+  * The API key needs the following [capabilities](https://ably.com/docs/auth/capabilities): `publish`, `subscribe`, `presence` and `history`.
 
-You can use [basic authentication](https://ably.com/docs/realtime/authentication#basic-authentication) for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/realtime/authentication#token-authentication) in any production environments.
+You can use [basic authentication](https://ably.com/docs/auth/basic) for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/auth/token) in production environments.
 
 ### Authenticate and instantiate
 
-Install the Ably JavaScript SDK and the Collaborative Spaces SDK:
+Install the Collaborative Spaces SDK and the Ably JavaScript SDK:
 
 ```sh
 npm install ably @ably-labs/spaces
+npm install ably
 ```
 
-Import the SDKs and then instantiate the Collaborative Spaces SDK with your Ably API key and pass a [clientId](https://ably.com/docs/realtime/authentication?lang=javascript#identified-clients) (if prototyping, you can use a package like [nanoid](https://www.npmjs.com/package/nanoid) to generate an id):
-
-```ts
-import Spaces from '@ably-labs/spaces';
-
-const spaces = new Spaces({ key: ABLY_API_KEY, clientId: "id" });
-```
-
-In the above example, the client can be accessed using `spaces.ably` to use functionality in the Ably JavaScript SDK.
-
-Alternatively, if you already have an Ably client, you can instantiate by passing it to the `Spaces` constructor:
+To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/getting-started/setup) and pass it into the Spaces constructor:
 
 ```ts
 import Spaces from '@ably-labs/spaces';
 import { Realtime } from 'ably';
 
-const client = new Realtime.Promise(options)
+const client = new Realtime.Promise({key: "<API-key>", clientId: "<client-ID>"});
 const spaces = new Spaces(client);
+```
+
+You can create an Ably client with just an API key, however to use Spaces you must also set a [`clientId`](https://ably.com/docs/auth/identified-clients) so that clients are identifiable. If you are prototyping, you can use a package like [nanoid](https://www.npmjs.com/package/nanoid) to generate an ID.
+
+#### CDN
+
+You can also use Spaces with a CDN, such as [unpkg](https://www.unpkg.com/):
+
+```html
+<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+<script src="https://unpkg.com/@ably-labs/spaces@0.0.10/dist/iife/index.bundle.js"></script>
 ```
 
 ### Space membership
 
-A space is the virtual collaborative area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself. Create a space and subscribe to events for when clients enter and leave it. Space membership is used to build avatar stacks and display which members are online within a space.
+A space is the virtual, collaborative area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself. Create a space and listen for events to see when clients enter and leave.
+
+Space membership is used to build avatar stacks and find out which members are online within a space.
 
 ```ts
 // Create a new space
@@ -112,19 +99,20 @@ space.on('membersUpdate', (members) => {
   console.log(members);
 });
 
-// Enter a space, publishing a memberUpdate event, including optional user data
+// Enter a space, publishing a memberUpdate event, including optional profile data
 space.enter({
-  username: "Claire Lemons",
-  avatar: "https://slides-internal.com/users/clemons.png",
+  username: 'Claire Lemons',
+  avatar: 'https://slides-internal.com/users/clemons.png',
 });
 ```
 
-The following is an example `membersUpdate` event received by subscribers when a user enters a space:
+The following is an example `membersUpdate` event received by listeners when a user enters a space:
 
 ```json
 [
   {
     "clientId": "clemons#142",
+    "connectionId": "hd9743gjDc",
     "isConnected": true,
     "lastEvent": {
       "name": "enter",
@@ -139,37 +127,39 @@ The following is an example `membersUpdate` event received by subscribers when a
 ]
 ```
 
-### Location updates
+### Location
 
-User locations enable you to track where clients are within an application. Subscribe to all location updates, those for a specific location, such as a single UI element, or a specific client.
+Member locations enable you to track where users are within an application. A location could a form field, multiple cells in a spreadsheet or a slide in a slide deck editor. Subscribe to all location updates, specific location, or locations changes for a given member.
 
 ```ts
 // Register a listener to subscribe to events of when users change location
-space.locations.on('locationUpdate', (update) => {
-  console.log(update);
+space.locations.on('locationUpdate', (locationUpdate) => {
+  console.log(locationUpdate);
 });
 
-// Publish locationUpdate event with a client's location when they select a UI element or change web pages
-space.locations.set({slide: '3', component: 'slide-title'});
+// Publish locationUpdate event with a client's location when they select a UI element
+space.locations.set({ slide: '3', component: 'slide-title' });
 
 // Create a tracker to only publish locationUpdate events for a specific user using their clientId
 const memberTracker = space.locations.createTracker(
-  (change) => change.member.clientId === 'clemons#142'
+  (locationUpdate) => locationUpdate.member.clientId === 'clemons#142',
 );
 
 // Register a listener to subscribe to events for a tracker
-memberTracker.on((change) => {
-  console.log(change);
+memberTracker.on((locationUpdate) => {
+  // will only trigger if change.member.clientId === 'clemons#142'
+  console.log(locationUpdate);
 });
 
 // Create a tracker to only publish locationUpdate events for a specific location, such as a UI element or spreadsheet cell
 const locationTracker = space.locations.createTracker(
-  (change) => change.previousLocation === 'slide-title'
+  (locationUpdate) => locationUpdate.previousLocation === 'slide-title',
 );
 
 // Register a listener to subscribe to events for a tracker
-locationTracker.on((change) => {
-  console.log(change);
+locationTracker.on((locationUpdate) => {
+  // will only trigger for change.previousLocation === 'slide-title'
+  console.log(locationUpdate);
 });
 ```
 
@@ -188,58 +178,50 @@ The following is an example `locationUpdate` event received by subscribers when 
     "location": {
       "slide": "3",
       "component": "slide-title"
-      },
+    },
     "lastEvent": {
       "name": "update",
       "timestamp": 1
-      }
+    }
   },
   "previousLocation": {
     "slide": "2",
     "component": null
-    },
+  },
   "currentLocation": {
     "slide": "3",
     "component": "slide-title"
-    }
+  }
 }
 ```
 
-### Cursor locations
+### Cursors
 
-Use cursors to track client cursors across an application. Subscribe to updates for all cursors, or only a specific client's cursor.
+Use the Cursors API to track client pointer events across an application. Events can also include associated data, such as pointer attributes and the IDs of associated UI elements:
 
 ```ts
-// Create a new cursor instance
-const pointer = space.cursors.get('space-pointers');
+// Register a cursor instance
+const demoCursors = space.cursors.get('demoSlideshow-cursors');
 
-// Retrieve the initial position of all cursors, returning a positionsUpdate for each client
-const allCursors = space.cursors.getAll();
-
-// Publish a positionUpdate with the location of a pointer, including optional data
-pointer.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
-
-// Register a listener to subscribe to all cursor events
-space.cursors.on((event) => {
-  console.log(event);
+// Publish a CursorUpdate with the location of a mouse, including optional data for the current member
+window.addEventListener('mousemove', ({ clientX, clientY }) => {
+  demoCursors.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
 });
 
-space.cursors.on('cursorsUpdate', (event) => {
-  console.log(event);
+// Listen to events published on "mousemove" by all members
+demoCursors.on('cursorUpdate', (cursorUpdate) => {
+  console.log(cursorUpdate);
 });
-
-// Register a listener to subscribe to a specific cursor
-space.cursors.get('space-pointers').on(() => {});
 ```
 
-The following is an example `positionUpdate` received by subscribers when a cursor moves:
+The above listener will receive a `CursorUpdate` event:
 
-```json
+```js
 {
-  "name": "clemons-pointer",
+  "name": "demoSlideshow-cursors",
   "connectionId": "hd9743gjDc",
   "clientId": "clemons#142",
   "position": { "x": 864, "y": 32 },
-  "cursorData": { "color": "red" }
+  "data": { "color": "red" }
 }
 ```
