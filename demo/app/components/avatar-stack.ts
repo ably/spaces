@@ -9,8 +9,10 @@ import type { SpaceMember } from '../../../src/Space';
 
 dayjs.extend(relativeTime);
 
-const updateStatusTime = (statusEl: Element, timestamp: number) =>
-  (statusEl.innerHTML = `Left ${dayjs().to(timestamp)}`);
+const updateStatusTime = (statusEl, timestamp) => {
+  const diffInSeconds = dayjs().diff(timestamp, 'second');
+  statusEl.innerHTML = `Last seen ${diffInSeconds} second${diffInSeconds === 1 ? '' : 's'} ago`;
+};
 
 const changeStatusIndicator = (fragment, isConnected, lastEvent) => {
   const statusIndicatorEl = queryDataId(fragment, 'avatar-status-indicator');
