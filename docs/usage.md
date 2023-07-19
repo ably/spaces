@@ -168,6 +168,19 @@ space.leave({
 });
 ```
 
+### Update profileData
+
+To update `profileData` provided when entering the space, use the `updateProfileData` method. Pass new `profileData` or a function to base the new `profileData` of the existing value:
+
+```ts
+await space.updateProfileData((oldProfileData) => {
+  return {
+    ...oldProfileData,
+    username: 'Clara Lemons'
+  }
+});
+```
+
 ## Location
 
 Each member can set a location for themselves:
