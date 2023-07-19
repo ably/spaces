@@ -12,15 +12,18 @@
 ## Release Process
 
 1. Make sure the tests are passing in CI for main
-2. Update the CHANGELOG.md with any customer-affecting changes since the last release and add this to the git index
-3. Create a new tag using Semantic Versioning rules.
+1. Add a new commit using Semantic Versioning rules.
    1. [Semantic Versioning guidelines](https://semver.org/) entail a format of M.m.p, for example 1.2.3, where:
-      1. The first number represents a major release, which lets users know a breaking change has occurred that will require action from them.
-         1. A major update in the AblyJS SDK will also require a major update in the Spaces API.
-      2. The second number represents a minor release, which lets users know new functionality or features have been added.
-      3. The third number represents a patch release, which represents bug-fixes and may be used when no action should be required from users.
-4. Update the version number in `Spaces.ts` to match the new version.
-5. Ensure that the GitHub release action (.github/workflows/release.yml) has run successfully.
+      - The first number represents a major release, which lets users know a breaking change has occurred that will require action from them.
+      - A major update in the AblyJS SDK will also require a major update in the Spaces API.
+      - The second number represents a minor release, which lets users know new functionality or features have been added.
+      - The third number represents a patch release, which represents bug-fixes and may be used when no action should be required from users.
+   1. The commit should update `package.json`, the `Spaces.ts` class containing a `version` property and `package-lock.json`. 
+      Running `npm install` after changing `package.json` will update `package-lock.json`.
+1. Merge the commit into main.
+1. Tag a release using [Github releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release). The version needs to match the one from the commit. Use the "Generate release notes" button to
+   add changelog notes and update as required.
+1. Ensure that the GitHub release action (.github/workflows/release.yml) has run successfully and package was published.
 
 ## Test suite
 
