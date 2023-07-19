@@ -136,6 +136,24 @@ Leave the space. Can optionally take `profileData`. This triggers the `leave` ev
 type leave = (profileData?: Record<string, unknown>) => Promise<void>;
 ```
 
+### updateProfileData
+
+Update `profileData`. This data can be an arbitrary JSON-serializable object which is attached to the [member object](#spacemember). If the connection
+has not entered the space, calling `updateProfileData` will call `enter` instead.
+
+```ts
+type updateProfileData = (profileDataOrUpdateFn?: unknown| (unknown) => unknown) => Promise<void>;
+```
+
+A function can also be passed in. This function will receive the existing `profileData` and lets you update based on the existing value of `profileData`:
+
+```ts
+await space.updateProfileData((oldProfileData) => {
+  const newProfileData = getNewProfileData();
+  return { ...oldProfileData, ...newProfileData };
+})
+```
+
 ### on
 
 Listen to events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
