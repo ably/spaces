@@ -6,7 +6,7 @@ Create a new instance of the Spaces library.
 
 The Spaces library constructor is overloaded allowing it to be instantiated using a [ClientOptions](https://ably.com/docs/api/realtime-sdk?lang=javascript#client-options) object:
 
-_**Depracated: the ClientOptions option will be removed in the next release. Use the Ably client instance method described underneath.**_
+_**Deprecated: the ClientOptions option will be removed in the next release. Use the Ably client instance method described underneath.**_
 
 ```ts
 import Spaces from '@ably-labs/spaces';
@@ -343,7 +343,7 @@ type set = (update: { position: CursorPosition, data?: CursorData })
 Example usage:
 
 ```ts
-window.addEventListner('mousemove', ({ clientX, clientY }) => {
+window.addEventListener('mousemove', ({ clientX, clientY }) => {
   space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: "red" } });
 });
 ```

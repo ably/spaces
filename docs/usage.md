@@ -45,7 +45,7 @@ Spaces use an [Ably promise-based realtime client](https://github.com/ably/ably-
 
 To instantiate with options, you will need at minimum an [Ably API key](#ably-api-key) and a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascripts). A clientId represents an identity of an connection. In most cases this will something like the id of a user:
 
-_**Depracated: the ClientOptions option will be removed in the next release. Use the Ably client instance method described underneath.**_
+_**Deprecated: the ClientOptions option will be removed in the next release. Use the Ably client instance method described underneath.**_
 
 ```ts
 import Spaces from '@ably-labs/spaces';
@@ -53,7 +53,7 @@ import Spaces from '@ably-labs/spaces';
 const spaces = new Spaces({ key: "<API-key>", clientId: "<client-ID>" });
 ```
 
-If you already have an ably client in your application, you can just pass it directly to Spaces (the client will still need to instatiated with a clientId):
+If you already have an ably client in your application, you can just pass it directly to Spaces (the client will still need to instantiated with a clientId):
 
 ```ts
 import { Realtime } from 'ably/promise';
@@ -110,7 +110,7 @@ See [SpaceMember](/docs/class-definitions.md#spacemember) for details on propert
 
 ### Listen to members updates
 
-The `space` instance is an `EventEmitter`. Events will be emitted for updates to members (includeing self). You can listen to the following events:
+The `space` instance is an `EventEmitter`. Events will be emitted for updates to members (including self). You can listen to the following events:
 
 #### enter
 
@@ -189,7 +189,7 @@ Each member can set a location for themselves:
 space.locations.set({ slide: '3', component: 'slide-title' });
 ```
 
-A location does not have a prescribed shape. In your UI it can represent a single location (an id of a field in form), multiple locations (id's of multiple cells in a spredsheet) or a hierarchy (a field in one of the multiple forms visible on screen).
+A location does not have a prescribed shape. In your UI it can represent a single location (an id of a field in form), multiple locations (id's of multiple cells in a spreadsheet) or a hierarchy (a field in one of the multiple forms visible on screen).
 
 The location property will be set on the [member](#members).
 
@@ -268,14 +268,17 @@ The listener will be called with a `CursorUpdate`:
 
 To set the position of a cursor and emit a `CursorUpdate`, first enter the space:
 
+To retrieve the initial position and data of all cursors within a space, you can use the `cursors.getAll()` method. This returns an object keyed by `connectionId` and cursor name. The value is the last `cursorUpdate` set by the given `connectionId`.
 ```ts
 space.enter();
 ```
 
+Example of calling `getAll` to return all cursor positions:
 Then call `.set`:
 
 ```ts
-window.addEventListner('mousemove', ({ clientX, clientY }) => {
+const lastPositions = await space.cursors.getAll();
+window.addEventListener('mousemove', ({ clientX, clientY }) => {
   space.cursors.set({ position: { x: clientX, y: clientY } });
 });
 ```
@@ -283,12 +286,29 @@ window.addEventListner('mousemove', ({ clientX, clientY }) => {
 A `CursorUpdate` is an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
 
 ```ts
-window.addEventListner('mousemove', ({ clientX, clientY }) => {
+{
+  "hd9743gjDc": {
+    "slidedeck-cursors": {
+      "name": "slidedeck-cursors",
+      "connectionId": "hd9743gjDc",
+      "clientId": "clemons#142",
+      "position": {
+        "x": 864,
+        "y": 32
+      },
+      "data": {
+        "color": "red"
+      }
+    }
+  }
+}
+window.addEventListener('mousemove', ({ clientX, clientY }) => {
   space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
 });
 ```
 
-### Inital cursor position and data
+Example of calling `getAll` to get the last positions for the named cursor `slidedeck-cursors`:
+### Initial cursor position and data
 
 To retrieve the initial position and data of all cursors within a space, you can use the `space.cursors.getAll()` method. This returns an object keyed by `connectionId`. The value is the last `cursorUpdate` set by the given `connectionId`.
 
@@ -336,7 +356,7 @@ Calling `on` with an array of named events and a function argument will subscrib
 space.on([`membersUpdate`], () => {});
 ```
 
-Calling `off` with no argumnets will remove all registered listeners.
+Calling `off` with no arguments will remove all registered listeners.
 
 ```ts
 space.off();
