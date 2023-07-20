@@ -50,10 +50,9 @@ const attachCursors = (space, slideId) => {
   const cursorContainer = queryDataId(slideContainer, 'slide-cursor-container');
   cursorContainer.innerHTML = '';
 
-  const cursor = space.cursors.get(slideId);
   const self = space.getSelf();
 
-  cursor.on('cursorUpdate', (update) => {
+  space.cursors.on('cursorsUpdate', (update) => {
     let cursorNode: HTMLElement = slideContainer.querySelector(`#cursor-${update.connectionId}`);
 
     const membersOnSlide = space.getMembers().filter((member) => member.location?.slide === slideId);
@@ -77,15 +76,15 @@ const attachCursors = (space, slideId) => {
   const cursorHandlers = {
     enter: (event) => {
       const { top, left } = cursorContainer.getBoundingClientRect();
-      cursor.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'enter' } });
+      space.cursors.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'enter' } });
     },
     move: (event) => {
       const { top, left } = cursorContainer.getBoundingClientRect();
-      cursor.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'move' } });
+      space.cursors.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'move' } });
     },
     leave: (event) => {
       const { top, left } = cursorContainer.getBoundingClientRect();
-      cursor.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'leave' } });
+      space.cursors.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'leave' } });
     },
     tabLeft: (event) => {
       if (document.visibilityState === 'hidden') {
@@ -100,7 +99,7 @@ const attachCursors = (space, slideId) => {
   document.addEventListener('visibilitychange', cursorHandlers.tabLeft);
 
   return () => {
-    cursor.off();
+    space.cursors.off();
     slideContainer.removeEventListener('mouseenter', cursorHandlers.enter);
     slideContainer.removeEventListener('mousemove', cursorHandlers.move);
     slideContainer.removeEventListener('mouseleave', cursorHandlers.leave);

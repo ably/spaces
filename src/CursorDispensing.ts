@@ -27,10 +27,6 @@ export default class CursorDispensing {
 
         if (!update) continue;
         this.cursors.emit('cursorsUpdate', update);
-
-        const cursor = this.cursors.cursors[update.name];
-        if (!cursor) continue;
-        cursor.emit('cursorUpdate', update);
       }
 
       if (this.bufferHaveData()) {
@@ -67,24 +63,21 @@ export default class CursorDispensing {
   }
 
   processBatch(message: Types.Message) {
-    Object.keys(message.data).forEach((name) => {
-      const updates = message.data[name] || [];
+    const updates = message.data || [];
 
-      updates.forEach((update) => {
-        const enhancedMsg = {
-          name,
-          clientId: message.clientId,
-          connectionId: message.connectionId,
-          position: update.position,
-          data: update.data,
-        };
+    updates.forEach((update) => {
+      const enhancedMsg = {
+        clientId: message.clientId,
+        connectionId: message.connectionId,
+        position: update.position,
+        data: update.data,
+      };
 
-        if (this.buffer[enhancedMsg.connectionId]) {
-          this.buffer[enhancedMsg.connectionId].push(enhancedMsg);
-        } else {
-          this.buffer[enhancedMsg.connectionId] = [enhancedMsg];
-        }
-      });
+      if (this.buffer[enhancedMsg.connectionId]) {
+        this.buffer[enhancedMsg.connectionId].push(enhancedMsg);
+      } else {
+        this.buffer[enhancedMsg.connectionId] = [enhancedMsg];
+      }
     });
 
     if (!this.handlerRunning && this.bufferHaveData()) {

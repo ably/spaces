@@ -1,9 +1,8 @@
-import { it, describe, expect, vi, expectTypeOf, beforeEach, vitest, afterEach } from 'vitest';
+import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 
 import Space from './Space.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
-import Cursor from './Cursor.js';
 import CursorBatching from './CursorBatching.js';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
 import CursorDispensing from './CursorDispensing.js';
@@ -49,24 +48,10 @@ describe('Cursors (mockClient)', () => {
       vi.useRealTimers();
     });
 
-    it<CursorsTestContext>('creates a cursor and returns it', ({ space }) => {
-      expectTypeOf(space.cursors.get('cursor1')).toMatchTypeOf<Cursor>();
-    });
-
-    it<CursorsTestContext>('returns an existing cursor', ({ space }) => {
-      const cursor1 = space.cursors.get('cursor1');
-      const cursor2 = space.cursors.get('cursor2');
-      expect(cursor1).not.toEqual(cursor2);
-      expect(space.cursors.get('cursor1')).toEqual(cursor1);
-    });
-
     it<CursorsTestContext>('emits a cursorsUpdate event', ({ space, dispensing, batching, fakeMessageStub }) => {
       const fakeMessage = {
         ...fakeMessageStub,
-        data: {
-          cursor1: [{ position: { x: 1, y: 1 } }],
-          cursor2: [{ position: { x: 1, y: 2 }, data: { color: 'red' } }],
-        },
+        data: [{ position: { x: 1, y: 1 } }, { position: { x: 1, y: 2 }, data: { color: 'red' } }],
       };
 
       const spy = vitest.fn();
@@ -80,7 +65,6 @@ describe('Cursors (mockClient)', () => {
         data: undefined,
         clientId: 'clientId',
         connectionId: 'connectionId',
-        name: 'cursor1',
       });
 
       vi.advanceTimersByTime(batching.batchTime * 2);
@@ -90,42 +74,7 @@ describe('Cursors (mockClient)', () => {
         data: { color: 'red' },
         clientId: 'clientId',
         connectionId: 'connectionId',
-        name: 'cursor2',
       });
-    });
-
-    it<CursorsTestContext>('emits cursorUpdate for a specific cursor event', ({
-      space,
-      dispensing,
-      batching,
-      fakeMessageStub,
-    }) => {
-      const fakeMessage = {
-        ...fakeMessageStub,
-        data: {
-          cursor1: [{ position: { x: 1, y: 1 } }],
-          cursor2: [{ position: { x: 1, y: 2 }, data: { color: 'red' } }],
-        },
-      };
-
-      const spy = vitest.fn();
-      const catchAllSpy = vitest.fn();
-      space.cursors.on(catchAllSpy);
-      space.cursors.get('cursor1').on(spy);
-      dispensing.processBatch(fakeMessage);
-
-      vi.advanceTimersByTime(batching.batchTime * 2);
-
-      const result = {
-        position: { x: 1, y: 1 },
-        data: undefined,
-        clientId: 'clientId',
-        connectionId: 'connectionId',
-        name: 'cursor1',
-      };
-
-      expect(spy).toHaveBeenCalledWith(result);
-      expect(catchAllSpy).toHaveBeenCalledWith(result);
     });
   });
 
@@ -176,18 +125,16 @@ describe('Cursors (mockClient)', () => {
         expect(batching.hasMovement).toBeTruthy();
       });
 
-      it<CursorsTestContext>('creates an outgoingBuffer for a new cursor movement', (context) => {
-        const batching = context.batching as any;
-        batching.pushCursorPosition('cursor1', { position: { x: 1, y: 1 }, data: {} });
-        expect(batching.outgoingBuffers.cursor1).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
+      it<CursorsTestContext>('creates an outgoingBuffer for a new cursor movement', ({ batching }) => {
+        batching.pushCursorPosition({ position: { x: 1, y: 1 }, data: {} });
+        expect(batching.outgoingBuffers).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
       });
 
-      it<CursorsTestContext>('adds cursor data to an existing buffer', (context) => {
-        const batching = context.batching as any;
-        batching.pushCursorPosition('cursor1', { position: { x: 1, y: 1 }, data: {} });
-        expect(batching.outgoingBuffers.cursor1).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
-        batching.pushCursorPosition('cursor1', { position: { x: 2, y: 2 }, data: {} });
-        expect(batching.outgoingBuffers.cursor1).toEqual([
+      it<CursorsTestContext>('adds cursor data to an existing buffer', ({ batching }) => {
+        batching.pushCursorPosition({ position: { x: 1, y: 1 }, data: {} });
+        expect(batching.outgoingBuffers).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
+        batching.pushCursorPosition({ position: { x: 2, y: 2 }, data: {} });
+        expect(batching.outgoingBuffers).toEqual([
           { position: { x: 1, y: 1 }, data: {} },
           { position: { x: 2, y: 2 }, data: {} },
         ]);
@@ -224,22 +171,19 @@ describe('Cursors (mockClient)', () => {
         expect(spy).not.toHaveBeenCalled();
       });
 
-      it<CursorsTestContext>('should publish the cursor buffer', async (context) => {
-        const space = context.space;
-        const batching = context.batching as any;
+      it<CursorsTestContext>('should publish the cursor buffer', async ({ space, batching }) => {
         batching.hasMovement = true;
-        batching.outgoingBuffers = { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] };
+        batching.outgoingBuffers = [{ position: { x: 1, y: 1 }, data: {} }];
         const spy = vi.spyOn(space.cursors['channel'], 'publish');
-        await batching.batchToChannel(CURSOR_UPDATE);
-        expect(spy).toHaveBeenCalledWith(CURSOR_UPDATE, { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] });
+        await batching['batchToChannel'](CURSOR_UPDATE);
+        expect(spy).toHaveBeenCalledWith(CURSOR_UPDATE, [{ position: { x: 1, y: 1 }, data: {} }]);
       });
 
-      it<CursorsTestContext>('should clear the buffer', async (context) => {
-        const batching = context.batching as any;
+      it<CursorsTestContext>('should clear the buffer', async ({ batching }) => {
         batching.hasMovement = true;
-        batching.outgoingBuffers = { cursor1: [{ position: { x: 1, y: 1 }, data: {} }] };
-        await batching.batchToChannel(CURSOR_UPDATE);
-        expect(batching.outgoingBuffers).toEqual({});
+        batching.outgoingBuffers = [{ position: { x: 1, y: 1 }, data: {} }];
+        await batching['batchToChannel'](CURSOR_UPDATE);
+        expect(batching.outgoingBuffers).toEqual([]);
       });
 
       it<CursorsTestContext>('should set hasMovements to false', async (context) => {
@@ -261,9 +205,7 @@ describe('Cursors (mockClient)', () => {
 
         const fakeMessage = {
           ...fakeMessageStub,
-          data: {
-            cursor1: [],
-          },
+          data: [],
         };
 
         dispensing.processBatch(fakeMessage);
@@ -278,9 +220,7 @@ describe('Cursors (mockClient)', () => {
 
         const fakeMessage = {
           ...fakeMessageStub,
-          data: {
-            cursor1: [{ position: { x: 1, y: 1 } }],
-          },
+          data: [{ position: { x: 1, y: 1 } }],
         };
 
         dispensing['handlerRunning'] = true;
@@ -293,9 +233,7 @@ describe('Cursors (mockClient)', () => {
 
         const fakeMessage = {
           ...fakeMessageStub,
-          data: {
-            cursor1: [{ position: { x: 1, y: 1 } }],
-          },
+          data: [{ position: { x: 1, y: 1 } }],
         };
 
         dispensing.processBatch(fakeMessage);
@@ -308,10 +246,11 @@ describe('Cursors (mockClient)', () => {
       }) => {
         const fakeMessage = {
           ...fakeMessageStub,
-          data: {
-            cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
-            cursor2: [{ position: { x: 5, y: 4 } }],
-          },
+          data: [
+            { position: { x: 1, y: 1 } },
+            { position: { x: 2, y: 3 }, data: { color: 'blue' } },
+            { position: { x: 5, y: 4 } },
+          ],
         };
 
         dispensing.processBatch(fakeMessage);
@@ -322,21 +261,18 @@ describe('Cursors (mockClient)', () => {
               data: undefined,
               clientId: 'clientId',
               connectionId: 'connectionId',
-              name: 'cursor1',
             },
             {
               position: { x: 2, y: 3 },
               data: { color: 'blue' },
               clientId: 'clientId',
               connectionId: 'connectionId',
-              name: 'cursor1',
             },
             {
               position: { x: 5, y: 4 },
               data: undefined,
               clientId: 'clientId',
               connectionId: 'connectionId',
-              name: 'cursor2',
             },
           ],
         });
@@ -347,10 +283,11 @@ describe('Cursors (mockClient)', () => {
 
         const fakeMessage = {
           ...fakeMessageStub,
-          data: {
-            cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
-            cursor2: [{ position: { x: 5, y: 4 } }],
-          },
+          data: [
+            { position: { x: 1, y: 1 } },
+            { position: { x: 2, y: 3 }, data: { color: 'blue' } },
+            { position: { x: 5, y: 4 } },
+          ],
         };
 
         expect(dispensing['handlerRunning']).toBe(false);
@@ -390,25 +327,17 @@ describe('Cursors (mockClient)', () => {
       expect(await space.cursors.getAll()).toEqual({});
     });
 
-    it<CursorsTestContext>('gets the last position of all cursors from all connected clients', async ({
-      space,
-      history,
-    }) => {
+    it<CursorsTestContext>('gets the last position from all connected clients', async ({ space, history }) => {
       const client1Message = {
         connectionId: 'connectionId1',
         clientId: 'clientId1',
-        data: {
-          cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
-          cursor2: [{ position: { x: 5, y: 4 } }],
-        },
+        data: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
       };
 
       const client2Message = {
         connectionId: 'connectionId2',
         clientId: 'clientId2',
-        data: {
-          cursor2: [{ position: { x: 25, y: 44 } }],
-        },
+        data: [{ position: { x: 25, y: 44 } }],
       };
 
       vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
@@ -426,113 +355,24 @@ describe('Cursors (mockClient)', () => {
 
       expect(await space.cursors.getAll()).toEqual({
         connectionId1: {
-          cursor1: {
-            connectionId: 'connectionId1',
-            clientId: 'clientId1',
-            data: {
-              color: 'blue',
-            },
-            name: 'cursor1',
-            position: {
-              x: 2,
-              y: 3,
-            },
+          connectionId: 'connectionId1',
+          clientId: 'clientId1',
+          data: {
+            color: 'blue',
           },
-          cursor2: {
-            connectionId: 'connectionId1',
-            clientId: 'clientId1',
-            data: undefined,
-            name: 'cursor2',
-            position: {
-              x: 5,
-              y: 4,
-            },
+          position: {
+            x: 2,
+            y: 3,
           },
         },
+
         connectionId2: {
-          cursor2: {
-            connectionId: 'connectionId2',
-            clientId: 'clientId2',
-            data: undefined,
-            name: 'cursor2',
-            position: {
-              x: 25,
-              y: 44,
-            },
-          },
-        },
-      });
-    });
-
-    it<CursorsTestContext>('gets the last position of a given cursor from all connected clients', async ({
-      space,
-      history,
-    }) => {
-      const client1Message = {
-        connectionId: 'connectionId1',
-        clientId: 'clientId1',
-        data: {
-          cursor1: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
-          cursor2: [{ position: { x: 5, y: 4 } }],
-        },
-      };
-
-      const client2Message = {
-        connectionId: 'connectionId2',
-        clientId: 'clientId2',
-        data: {
-          cursor2: [{ position: { x: 25, y: 44 } }],
-        },
-      };
-
-      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
-        createPresenceMessage('enter', { connectionId: 'connectionId1' }),
-        createPresenceMessage('enter', { connectionId: 'connectionId2' }),
-      ]);
-
-      const page = await history['channel'].history();
-      vi.spyOn(page, 'current').mockImplementationOnce(async () => {
-        return {
-          ...history['channel']['history'](),
-          items: [client1Message, client2Message],
-        };
-      });
-
-      expect(await space.cursors.getAll()).toEqual({
-        connectionId1: {
-          cursor1: {
-            connectionId: 'connectionId1',
-            clientId: 'clientId1',
-            data: {
-              color: 'blue',
-            },
-            name: 'cursor1',
-            position: {
-              x: 2,
-              y: 3,
-            },
-          },
-          cursor2: {
-            connectionId: 'connectionId1',
-            clientId: 'clientId1',
-            data: undefined,
-            name: 'cursor2',
-            position: {
-              x: 5,
-              y: 4,
-            },
-          },
-        },
-        connectionId2: {
-          cursor2: {
-            connectionId: 'connectionId2',
-            clientId: 'clientId2',
-            data: undefined,
-            name: 'cursor2',
-            position: {
-              x: 25,
-              y: 44,
-            },
+          connectionId: 'connectionId2',
+          clientId: 'clientId2',
+          data: undefined,
+          position: {
+            x: 25,
+            y: 44,
           },
         },
       });
