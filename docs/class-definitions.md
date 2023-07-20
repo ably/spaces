@@ -302,28 +302,6 @@ Remove all event listeners, all event listeners for an event, or specific listen
 space.locations.off('locationUpdate');
 ```
 
-### createTracker
-
-Returns a [LocationTracker](#locationtracker). Takes a [location predicate function](#locationpredicate) that needs to return a boolean. The predicate is called with a [LocationUpdate](#locationupdate).
-
-```ts
-type createTracker = (predicate: Predicate) => LocationTracker;
-```
-
-```ts
-// Create a tracker to only listen to locationUpdate events 
-// for a specific location, such as a UI element or spreadsheet cell
-const locationTracker = space.locations.createTracker(
-  (locationUpdate) => locationUpdate.previousLocation === 'slide-title',
-);
-
-// Register a listener to subscribe to events for a tracker
-locationTracker.on((locationUpdate: LocationUpdate) => {
-  // will only trigger for change.previousLocation === 'slide-title'
-  console.log(locationUpdate);
-});
-```
-
 ## Related types
 
 ### Location
@@ -344,40 +322,6 @@ type LocationUpdate = {
   currentLocation: Location;
   previousLocation: Location;
 };
-```
-
-### LocationPredicate
-
-A predicate that is an argument for an [`LocationTracker`](#locationtracker).
-
-```ts
-type Predicate = (locationUpdate: LocationUpdate) => boolean;
-```
-
-# LocationTracker
-
-Handles tracking of locations [filtered by a predicate function](#createtracker). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
-
-## Methods
-
-### on
-
-Emits the same events as [Locations](#locations), but [filtered by a predicate function](#createtracker). See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
-
-### off
-
-Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
-
-```ts
-locationTracker.off('locationUpdate');
-```
-
-### members
-
-Retrieve a list of members in the Space for whom the [tracker predicate function](#createtracker) returns `true`.
-
-```ts
-type members = () => SpaceMember[];
 ```
 
 # Cursors

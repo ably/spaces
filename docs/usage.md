@@ -259,19 +259,6 @@ memberTracker.on((locationUpdate) => {
 });
 ```
 
-Create a tracker for a specific location, such as a single UI element, and listen to updates:
-
-```ts
-const locationTracker = space.locations.createTracker(
-  (locationUpdate) =>
-    locationUpdate.previousLocation === 'slide-title' || locationUpdate.currentLocation === 'slide-title',
-);
-
-locationTracker.on((locationUpdate) => {
-  console.log(locationUpdate);
-});
-```
-
 ## Live Cursors
 
 A common feature of collaborative apps is to show where a users cursors is positioned in realtime. It's easy to accomplish this with `cursors` API.
