@@ -60,7 +60,6 @@ Install the Collaborative Spaces SDK and the Ably JavaScript SDK:
 
 ```sh
 npm install ably @ably-labs/spaces
-npm install ably
 ```
 
 To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/getting-started/setup) and pass it into the Spaces constructor:
