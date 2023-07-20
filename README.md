@@ -136,6 +136,12 @@ space.locations.on('locationUpdate', (locationUpdate) => {
   console.log(locationUpdate);
 });
 
+// You need to enter a space before setting your location
+space.enter({
+  username: 'Claire Lemons',
+  avatar: 'https://slides-internal.com/users/clemons.png',
+});
+
 // Publish locationUpdate event with a client's location when they select a UI element
 space.locations.set({ slide: '3', component: 'slide-title' });
 
@@ -187,16 +193,20 @@ The following is an example `locationUpdate` event received by subscribers when 
 Use the Cursors API to track client pointer events across an application. Events can also include associated data, such as pointer attributes and the IDs of associated UI elements:
 
 ```ts
-// Register a cursor instance
-const demoCursors = space.cursors.get('demoSlideshow-cursors');
+// You need to enter a space before setting your cursor updates
+space.enter({
+  username: 'Claire Lemons',
+  avatar: 'https://slides-internal.com/users/clemons.png',
+});
 
 // Publish a CursorUpdate with the location of a mouse, including optional data for the current member
 window.addEventListener('mousemove', ({ clientX, clientY }) => {
-  demoCursors.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
+  space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
 });
 
+
 // Listen to events published on "mousemove" by all members
-demoCursors.on('cursorUpdate', (cursorUpdate) => {
+space.cursors.on('cursorsUpdate', (cursorUpdate) => {
   console.log(cursorUpdate);
 });
 ```
@@ -205,7 +215,6 @@ The above listener will receive a `CursorUpdate` event:
 
 ```js
 {
-  "name": "demoSlideshow-cursors",
   "connectionId": "hd9743gjDc",
   "clientId": "clemons#142",
   "position": { "x": 864, "y": 32 },

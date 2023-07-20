@@ -261,43 +261,11 @@ memberTracker.on((locationUpdate) => {
 
 ## Live Cursors
 
-A common feature of collaborative apps is to show where a users cursors is positioned in realtime. It's easy to accomplish this with `cursors` API.
+A common feature of collaborative apps is to show where a users cursors is positioned in realtime. It's easy to accomplish this with the `cursors` API.
 
-Unlike a location, you can have multiple cursors. This can be used to represent multiple devices interacting with the UI or different ways of interacting with the browser (like scrolling).
+The most common use case is to show the current mouse pointer position.
 
-The most common use case is however to show the current mouse/touchpad position.
-
-To get started, you'll need to get a named cursor instance:
-
-```ts
-const cursor = space.cursors.get('slidedeck-cursors');
-```
-
-This instance can emit events for [`self`](#members) and listen to all positions emitted for the given named cursor (`mouse`), for all members (including self).
-
-```ts
-window.addEventListner('mousemove', ({ clientX, clientY }) => {
-  cursor.set({ position: { x: clientX, y: clientY } });
-});
-```
-
-`set` takes an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second property, `data` can passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
-
-```ts
-window.addEventListner('mousemove', ({ clientX, clientY }) => {
-  cursor.set({ position: { x: clientX, y: clientY }, data: '' });
-});
-```
-
-The cursor instance is an [event emitter](#event-emitters):
-
-```ts
-cursor.on('cursorUpdate', (cursorUpdate) => {
-  console.log(cursorUpdate);
-});
-```
-
-As is the `cursors` namespace itself, emitting events for all named cursors:
+To start listing to cursor events, use the `.on` method:
 
 ```ts
 space.cursors.on('cursorsUpdate', (cursorUpdate) => {
@@ -305,11 +273,10 @@ space.cursors.on('cursorsUpdate', (cursorUpdate) => {
 });
 ```
 
-The following is an `cursorUpdate` event received by listeners when a cursor sets their position or data:
+The listener will be called with a `CursorUpdate`:
 
 ```json
 {
-  "name": "slidedeck-cursors",
   "connectionId": "hd9743gjDc",
   "clientId": "clemons#142",
   "position": { "x": 864, "y": 32 },
@@ -317,11 +284,33 @@ The following is an `cursorUpdate` event received by listeners when a cursor set
 }
 ```
 
+To set the position of a cursor and emit a `CursorUpdate`, first enter the space:
+
+```ts
+space.enter();
+```
+
+Then call `.set`:
+
+```ts
+window.addEventListner('mousemove', ({ clientX, clientY }) => {
+  space.cursors.set({ position: { x: clientX, y: clientY } });
+});
+```
+
+A `CursorUpdate` is an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
+
+```ts
+window.addEventListner('mousemove', ({ clientX, clientY }) => {
+  space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
+});
+```
+
 ### Inital cursor position and data
 
-To retrieve the initial position and data of all cursors within a space, you can use the `cursors.getAll()` method. This returns an object keyed by `connectionId` and cursor name. The value is the last `cursorUpdate` set by the given `connectionId`.
+To retrieve the initial position and data of all cursors within a space, you can use the `space.cursors.getAll()` method. This returns an object keyed by `connectionId`. The value is the last `cursorUpdate` set by the given `connectionId`.
 
-Example of calling `getAll` to return all cursor positions:
+Example of calling `getAll()` to return all cursor positions:
 
 ```ts
 const lastPositions = await space.cursors.getAll();
@@ -330,32 +319,6 @@ const lastPositions = await space.cursors.getAll();
 ```ts
 {
   "hd9743gjDc": {
-    "slidedeck-cursors": {
-      "name": "slidedeck-cursors",
-      "connectionId": "hd9743gjDc",
-      "clientId": "clemons#142",
-      "position": {
-        "x": 864,
-        "y": 32
-      },
-      "data": {
-        "color": "red"
-      }
-    }
-  }
-}
-```
-
-Example of calling `getAll` to get the last positions for the named cursor `slidedeck-cursors`:
-
-```ts
-const lastPositions = await space.cursors.getAll('slidedeck-cursors');
-```
-
-```ts
-{
-  "hd9743gjDc": {
-    "name": "slidedeck-cursors",
     "connectionId": "hd9743gjDc",
     "clientId": "clemons#142",
     "position": {

@@ -330,38 +330,41 @@ Handles tracking of member cursors within a space. Inherits from [EventEmitter](
 
 ## Methods
 
-### get
+### set
 
-Get or create a named [Cursor](#cursor) instance.
+Set the position of a cursor. This will emit a `CursorUpdate` event. If a member has not yet entered the space, this method will error.
+
+A `CursorUpdate` is an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
 
 ```ts
-type get = (cursorName: string) => Cursor;
+type set = (update: { position: CursorPosition, data?: CursorData })
 ```
 
-Example:
+Example usage:
 
 ```ts
-const cursor = space.cursors.get('slidedeck-cursors');
+window.addEventListner('mousemove', ({ clientX, clientY }) => {
+  space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: "red" } });
+});
 ```
 
 ### getAll
 
-Get the last position of all cursors in this space, for each connection. Pass a cursor name to only get the last position of cursors that match that name.
+Get the last CursorUpdate for each connection.
 
 ```ts
-type getAll = () => Record<ConnectionId, Record<CursorName, Cursor>>;
-type getAll = (cursorName: CursorName) => Record<ConnectionId, Cursor>;
+type getAll = () => Record<ConnectionId, CursorUpdate>;
 ```
 
 Example:
 
 ```ts
-const lastPositions = space.cursors.getAll('slidedeck-cursors');
+const lastPositions = space.cursors.getAll();
 ```
 
 ### on
 
-Listen to events for all named cursors. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
+Listen to `CursorUpdate` events. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
 Available events:
 
@@ -414,51 +417,4 @@ Represent data that can be associated with a cursor update.
 
 ```ts
 type CursorData = Record<string, unknown>;
-```
-
-# Cursor
-
-An instance of a Cursor created using [spaces.cursors.get](#get-1). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
-
-## Properties
-
-### name
-
-Name of the cursor.
-
-```ts
-type name = string;
-```
-
-## Methods
-
-### set
-
-Set the position of this named cursor.
-
-```ts
-type set = (update: { position: CursorPosition, data?: CursorData })
-```
-
-### on
-
-Listen to events for the named cursors. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
-
-Available events:
-
-- #### **cursorUpdate**
-
-  Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate-1).
-
-  ```ts
-  const cursor = space.cursors.get('slidedeck-cursors');
-  cursor.on('cursorUpdate', (cursorUpdate: CursorUpdate) => {});
-  ```
-
-### off
-
-Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
-
-```ts
-cursor.off('cursorUpdate');
 ```
