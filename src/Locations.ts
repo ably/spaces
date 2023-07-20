@@ -2,7 +2,6 @@ import { Types } from 'ably';
 
 import Space from './Space.js';
 import EventEmitter from './utilities/EventEmitter.js';
-import LocationTracker, { LocationTrackerPredicate } from './LocationTracker.js';
 import { LOCATION_UPDATE } from './utilities/Constants.js';
 
 type LocationUpdate = typeof LOCATION_UPDATE;
@@ -38,9 +37,5 @@ export default class Locations extends EventEmitter<LocationEventMap> {
       previousLocation: self.location,
       currentLocation: location,
     });
-  }
-
-  createTracker<T>(locationTrackerPredicate: LocationTrackerPredicate<T>) {
-    return new LocationTracker<T>(this, locationTrackerPredicate);
   }
 }
