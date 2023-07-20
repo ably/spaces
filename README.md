@@ -150,18 +150,6 @@ memberTracker.on((locationUpdate) => {
   console.log(locationUpdate);
 });
 
-// Create a tracker to only publish locationUpdate events for a specific location, such as a UI element or spreadsheet cell
-const locationTracker = space.locations.createTracker(
-  (locationUpdate) => locationUpdate.previousLocation === 'slide-title',
-);
-
-// Register a listener to subscribe to events for a tracker
-locationTracker.on((locationUpdate) => {
-  // will only trigger for change.previousLocation === 'slide-title'
-  console.log(locationUpdate);
-});
-```
-
 The following is an example `locationUpdate` event received by subscribers when a user changes location:
 
 ```json
