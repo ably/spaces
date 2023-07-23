@@ -1,7 +1,14 @@
-import { Avatar } from './Avatar';
+import { useSpace } from '../hooks';
+import { Avatar, AvatarProps } from './Avatar';
 import { AvatarStack } from './AvatarStack';
 
 export const Header = () => {
+  const space = useSpace();
+  const members = space?.getMembers().map(({ profileData }) => {
+    return { name: profileData.name };
+  });
+  const self: AvatarProps = { name: space?.getSelf()?.profileData.name };
+
   return (
     <header
       id="main-header"
@@ -59,21 +66,15 @@ export const Header = () => {
           id="avatar-stack-container"
           className="flex justify-end col-span-2 mt-2 pt-2 xs:border-t xs:border-[#D9D9DA] xs:ml-0 xs:pr-8 md:ml-8 md:border-t-0"
         >
-          <Avatar
-            isCurrent
-            name="Nikita Kakuev"
-          />
-          <AvatarStack
-            avatars={[
-              { isActive: true, name: 'Nikita Kakuev' },
-              { isActive: true, name: 'Nikita Kakuev' },
-              { isActive: true, name: 'Nikita Kakuev' },
-              { isActive: true, name: 'Nikita Kakuev' },
-              { isActive: true, name: 'Nikita Kakuev' },
-              { isActive: true, name: 'Nikita Kakuev' },
-            ]}
-          />
-          <div id="avatar-overflow"></div>
+          {members && members.length > 0 && (
+            <>
+              <Avatar
+                isCurrent
+                {...self}
+              />
+              <AvatarStack avatars={members} />
+            </>
+          )}
         </section>
 
         <section className="xs:hidden md:ml-[24px] md:flex md:items-center">
