@@ -31,26 +31,26 @@ export const AblySvg = (props: SVGProps<SVGSVGElement>) => {
           y2="5.18853"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FF5416" />
+          <stop stopColor="#FF5416" />
           <stop
             offset="0.2535"
-            stop-color="#FF5115"
+            stopColor="#FF5115"
           />
           <stop
             offset="0.461"
-            stop-color="#FF4712"
+            stopColor="#FF4712"
           />
           <stop
             offset="0.6523"
-            stop-color="#FF350E"
+            stopColor="#FF350E"
           />
           <stop
             offset="0.8327"
-            stop-color="#FF1E08"
+            stopColor="#FF1E08"
           />
           <stop
             offset="1"
-            stop-color="#FF0000"
+            stopColor="#FF0000"
           />
         </linearGradient>
         <linearGradient
@@ -61,26 +61,26 @@ export const AblySvg = (props: SVGProps<SVGSVGElement>) => {
           y2="15.9981"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FF5416" />
+          <stop stopColor="#FF5416" />
           <stop
             offset="0.2535"
-            stop-color="#FF5115"
+            stopColor="#FF5115"
           />
           <stop
             offset="0.461"
-            stop-color="#FF4712"
+            stopColor="#FF4712"
           />
           <stop
             offset="0.6523"
-            stop-color="#FF350E"
+            stopColor="#FF350E"
           />
           <stop
             offset="0.8327"
-            stop-color="#FF1E08"
+            stopColor="#FF1E08"
           />
           <stop
             offset="1"
-            stop-color="#FF0000"
+            stopColor="#FF0000"
           />
         </linearGradient>
       </defs>
