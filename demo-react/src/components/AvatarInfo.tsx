@@ -5,8 +5,8 @@ interface Props extends AvatarProps {
   isList?: boolean;
 }
 
-export const AvatarInfo = ({ isCurrent, isActive, name, isList = false }: Props) => {
-  return isCurrent ? (
+export const AvatarInfo = ({ isSelf, isActive, name, isList = false }: Props) => {
+  return isSelf ? (
     <div
       data-id="avatar-hover"
       className="bg-slate-800 rounded-lg p-2 hidden group-hover:block absolute top-full mt-2"
