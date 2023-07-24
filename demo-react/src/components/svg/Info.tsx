@@ -10,7 +10,7 @@ export const InfoSvg = (props: SVGProps<SVGSVGElement>) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_43_816)">
+      <g clipPath="url(#clip0_43_816)">
         <path
           d="M12 9.99976C12.5523 9.99976 13 10.4475 13 10.9998V16.9998C13 17.552 12.5523 17.9998 12 17.9998C11.4477 17.9998 11 17.552 11 16.9998V10.9998C11 10.4475 11.4477 9.99976 12 9.99976Z"
           fill="#03020D"

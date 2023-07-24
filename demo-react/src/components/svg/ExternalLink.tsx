@@ -10,7 +10,7 @@ export const ExternalLinkSvg = (props: SVGProps<SVGSVGElement>) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_41_4306)">
+      <g clipPath="url(#clip0_41_4306)">
         <path
           d="M10 1.75H13.75V6.125"
           stroke="#2E2E2E"

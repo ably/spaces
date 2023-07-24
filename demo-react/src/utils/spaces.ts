@@ -3,5 +3,8 @@ import { Realtime } from 'ably';
 import { nanoid } from 'nanoid';
 
 const clientId = nanoid();
-const client = new Realtime.Promise({ key: process.env.REACT_APP_ABLY_API_KEY, clientId });
-export const spaces = new Spaces(client);
+const ably = new Realtime.Promise({
+  authUrl: `/api/ably-token-request?clientId=${clientId}`,
+  clientId,
+});
+export const spaces = new Spaces(ably);

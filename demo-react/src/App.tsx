@@ -1,9 +1,8 @@
-import { ComingSoon, CommentDrawer, Head, Header, SlideMenu } from './components';
+import { ComingSoon, CommentDrawer, Header, SlideMenu } from './components';
 
 function App() {
   return (
     <>
-      <Head />
       <Header />
       <div className="text-ably-charcoal-grey bg-slate-500">
         <main>

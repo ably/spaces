@@ -1,4 +1,3 @@
-export * from './Head';
 export * from './Header';
 export * from './ComingSoon';
 export * from './CommentDrawer';
