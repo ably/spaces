@@ -2,6 +2,7 @@ import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest'
 import { Realtime, Types } from 'ably/promises';
 
 import Space from './Space.js';
+import Cursors from './Cursors.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import CursorBatching from './CursorBatching.js';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
@@ -11,6 +12,8 @@ import CursorHistory from './CursorHistory.js';
 interface CursorsTestContext {
   client: Types.RealtimePromise;
   space: Space;
+  cursors: Cursors;
+  channel: Types.RealtimeChannelPromise;
   batching: CursorBatching;
   dispensing: CursorDispensing;
   history: CursorHistory;
@@ -19,11 +22,19 @@ interface CursorsTestContext {
 
 vi.mock('ably/promises');
 
+function createPresenceCount(length: number) {
+  return async () => Array.from({ length }, (_, i) => createPresenceMessage('enter', { clientId: '' + i }));
+}
+
 describe('Cursors (mockClient)', () => {
   beforeEach<CursorsTestContext>((context) => {
     const client = new Realtime({});
     context.client = client;
     context.space = new Space('test', client);
+    context.cursors = context.space.cursors;
+    // This will set the channel
+    context.cursors.on('cursorsUpdate', () => {});
+    context.channel = context.cursors['channel'] as Types.RealtimeChannelPromise;
     context.batching = context.space.cursors['cursorBatching'];
     context.dispensing = context.space.cursors['cursorDispensing'];
     context.history = context.space.cursors['cursorHistory'];
@@ -79,26 +90,34 @@ describe('Cursors (mockClient)', () => {
   });
 
   describe('CursorBatching', () => {
-    it<CursorsTestContext>('shouldSend is set to false when there is one client present', async (context) => {
-      const batching = context.batching as any;
-      const presence = batching.channel.presence;
-      vi.spyOn(presence, 'get').mockImplementation(createPresenceCount(1));
-      await batching.onPresenceUpdate();
+    it<CursorsTestContext>('shouldSend is set to false when there is one client present', async ({
+      channel,
+      cursors,
+      batching,
+    }) => {
+      vi.spyOn(channel.presence, 'get').mockImplementation(createPresenceCount(1));
+      await cursors['onPresenceUpdate']();
       expect(batching.shouldSend).toBeFalsy();
     });
 
-    it<CursorsTestContext>('shouldSend is set to true when there is more than one client present', async (context) => {
-      const batching = context.batching as any;
-      vi.spyOn(batching.channel.presence, 'get').mockImplementation(createPresenceCount(2));
-      await batching.onPresenceUpdate();
+    it<CursorsTestContext>('shouldSend is set to true when there is more than one client present', async ({
+      channel,
+      cursors,
+      batching,
+    }) => {
+      vi.spyOn(channel.presence, 'get').mockImplementation(createPresenceCount(2));
+      await cursors['onPresenceUpdate']();
       expect(batching.shouldSend).toBeTruthy();
       expect(batching.batchTime).toEqual(100);
     });
 
-    it<CursorsTestContext>('batchTime is updated when multiple people are present', async (context) => {
-      const batching = context.batching as any;
-      vi.spyOn(batching.channel.presence, 'get').mockImplementation(createPresenceCount(2));
-      await batching.onPresenceUpdate();
+    it<CursorsTestContext>('batchTime is updated when multiple people are present', async ({
+      channel,
+      cursors,
+      batching,
+    }) => {
+      vi.spyOn(channel.presence, 'get').mockImplementation(createPresenceCount(2));
+      await cursors['onPresenceUpdate']();
       expect(batching.batchTime).toEqual(100);
     });
 
@@ -125,15 +144,15 @@ describe('Cursors (mockClient)', () => {
         expect(batching.hasMovement).toBeTruthy();
       });
 
-      it<CursorsTestContext>('creates an outgoingBuffer for a new cursor movement', ({ batching }) => {
-        batching.pushCursorPosition({ position: { x: 1, y: 1 }, data: {} });
+      it<CursorsTestContext>('creates an outgoingBuffer for a new cursor movement', ({ batching, channel }) => {
+        batching.pushCursorPosition(channel, { position: { x: 1, y: 1 }, data: {} });
         expect(batching.outgoingBuffers).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
       });
 
-      it<CursorsTestContext>('adds cursor data to an existing buffer', ({ batching }) => {
-        batching.pushCursorPosition({ position: { x: 1, y: 1 }, data: {} });
+      it<CursorsTestContext>('adds cursor data to an existing buffer', ({ batching, channel }) => {
+        batching.pushCursorPosition(channel, { position: { x: 1, y: 1 }, data: {} });
         expect(batching.outgoingBuffers).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
-        batching.pushCursorPosition({ position: { x: 2, y: 2 }, data: {} });
+        batching.pushCursorPosition(channel, { position: { x: 2, y: 2 }, data: {} });
         expect(batching.outgoingBuffers).toEqual([
           { position: { x: 1, y: 1 }, data: {} },
           { position: { x: 2, y: 2 }, data: {} },
@@ -160,36 +179,33 @@ describe('Cursors (mockClient)', () => {
         vi.useRealTimers();
       });
 
-      it<CursorsTestContext>('should stop when hasMovement is false', async (context) => {
-        const space = context.space;
-        const batching = context.batching as any;
+      it<CursorsTestContext>('should stop when hasMovement is false', async ({ channel, batching }) => {
         batching.hasMovement = false;
         batching.isRunning = true;
-        const spy = vi.spyOn(space.cursors['channel'], 'publish');
-        await batching.batchToChannel('movement', CURSOR_UPDATE);
+        const spy = vi.spyOn(channel, 'publish');
+        await batching['batchToChannel'](channel, CURSOR_UPDATE);
         expect(batching.isRunning).toBeFalsy();
         expect(spy).not.toHaveBeenCalled();
       });
 
-      it<CursorsTestContext>('should publish the cursor buffer', async ({ space, batching }) => {
+      it<CursorsTestContext>('should publish the cursor buffer', async ({ batching, channel }) => {
         batching.hasMovement = true;
         batching.outgoingBuffers = [{ position: { x: 1, y: 1 }, data: {} }];
-        const spy = vi.spyOn(space.cursors['channel'], 'publish');
-        await batching['batchToChannel'](CURSOR_UPDATE);
+        const spy = vi.spyOn(channel, 'publish');
+        await batching['batchToChannel'](channel, CURSOR_UPDATE);
         expect(spy).toHaveBeenCalledWith(CURSOR_UPDATE, [{ position: { x: 1, y: 1 }, data: {} }]);
       });
 
-      it<CursorsTestContext>('should clear the buffer', async ({ batching }) => {
+      it<CursorsTestContext>('should clear the buffer', async ({ batching, channel }) => {
         batching.hasMovement = true;
         batching.outgoingBuffers = [{ position: { x: 1, y: 1 }, data: {} }];
-        await batching['batchToChannel'](CURSOR_UPDATE);
+        await batching['batchToChannel'](channel, CURSOR_UPDATE);
         expect(batching.outgoingBuffers).toEqual([]);
       });
 
-      it<CursorsTestContext>('should set hasMovements to false', async (context) => {
-        const batching = context.batching as any;
+      it<CursorsTestContext>('should set hasMovements to false', async ({ batching, channel }) => {
         batching.hasMovement = true;
-        await batching.batchToChannel(CURSOR_UPDATE);
+        await batching['batchToChannel'](channel, CURSOR_UPDATE);
         expect(batching.hasMovement).toBeFalsy();
       });
     });
@@ -321,13 +337,13 @@ describe('Cursors (mockClient)', () => {
   describe('CursorHistory', () => {
     it<CursorsTestContext>('returns an empty object if there is no members in the space', async ({
       space,
-      history,
+      channel,
     }) => {
-      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(createPresenceCount(0));
+      vi.spyOn(channel.presence, 'get').mockImplementation(createPresenceCount(0));
       expect(await space.cursors.getAll()).toEqual({});
     });
 
-    it<CursorsTestContext>('gets the last position from all connected clients', async ({ space, history }) => {
+    it<CursorsTestContext>('gets the last position from all connected clients', async ({ space, channel }) => {
       const client1Message = {
         connectionId: 'connectionId1',
         clientId: 'clientId1',
@@ -340,15 +356,15 @@ describe('Cursors (mockClient)', () => {
         data: [{ position: { x: 25, y: 44 } }],
       };
 
-      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
+      vi.spyOn(channel.presence, 'get').mockImplementation(async () => [
         createPresenceMessage('enter', { connectionId: 'connectionId1' }),
         createPresenceMessage('enter', { connectionId: 'connectionId2' }),
       ]);
 
-      const page = await history['channel'].history();
+      const page = await channel.history();
       vi.spyOn(page, 'current').mockImplementationOnce(async () => {
         return {
-          ...history['channel']['history'](),
+          ...channel.history(),
           items: [client1Message, client2Message],
         };
       });
@@ -378,13 +394,13 @@ describe('Cursors (mockClient)', () => {
       });
     });
 
-    it<CursorsTestContext>('calls the history API up to the paginationLimit', async ({ space, history }) => {
-      vi.spyOn(history['channel']['presence'], 'get').mockImplementation(async () => [
+    it<CursorsTestContext>('calls the history API up to the paginationLimit', async ({ space, channel, cursors }) => {
+      vi.spyOn(channel.presence, 'get').mockImplementation(async () => [
         createPresenceMessage('enter', { connectionId: 'connectionId1' }),
         createPresenceMessage('enter', { connectionId: 'connectionId2' }),
       ]);
 
-      const page = await history['channel'].history();
+      const page = await channel.history();
       const currentSpy = vi.spyOn(page, 'current');
       const nextSpy = vi.spyOn(page, 'next');
 
@@ -392,11 +408,7 @@ describe('Cursors (mockClient)', () => {
 
       await space.cursors.getAll();
       expect(currentSpy).toHaveBeenCalledOnce();
-      expect(nextSpy).toHaveBeenCalledTimes(history.paginationLimit - 1);
+      expect(nextSpy).toHaveBeenCalledTimes(cursors.options.paginationLimit - 1);
     });
   });
 });
-
-function createPresenceCount(length: number) {
-  return async () => Array.from({ length }, (_, i) => createPresenceMessage('enter', { clientId: '' + i }));
-}

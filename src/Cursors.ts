@@ -43,26 +43,23 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
   private readonly cursorDispensing: CursorDispensing;
   private readonly cursorHistory: CursorHistory;
-  private channel: Types.RealtimeChannelPromise;
+  private channel?: Types.RealtimeChannelPromise;
   readonly options: StrictCursorsOptions;
 
   constructor(private space: Space, options: CursorsOptions = {}) {
     super();
+
     this.options = {
-      outboundBatchInterval: OUTGOING_BATCH_TIME_DEFAULT,
-      paginationLimit: PAGINATION_LIMIT_DEFAULT,
+      outboundBatchInterval: options['outboundBatchInterval'] ?? OUTGOING_BATCH_TIME_DEFAULT,
+      paginationLimit: options['paginationLimit'] ?? PAGINATION_LIMIT_DEFAULT,
     };
 
-    for (const option in options) {
-      if (options[option]) this.options[option] = options[option];
-    }
+    this.cursorHistory = new CursorHistory();
+    this.cursorBatching = new CursorBatching(this.options.outboundBatchInterval);
 
-    const spaceChannelName = space.getChannelName();
-
-    this.channel = space.client.channels.get(`${spaceChannelName}_cursors`);
-    this.cursorBatching = new CursorBatching(this.channel, this.options.outboundBatchInterval);
-    this.cursorHistory = new CursorHistory(this.channel, this.options.paginationLimit);
-    this.cursorDispensing = new CursorDispensing(this, this.cursorBatching);
+    const emitCursorUpdate = (update: CursorUpdate): void => this.emit('cursorsUpdate', update);
+    const getCurrentBatchTime: () => number = () => this.cursorBatching.batchTime;
+    this.cursorDispensing = new CursorDispensing(emitCursorUpdate, getCurrentBatchTime);
   }
 
   /**
@@ -73,28 +70,53 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    */
   set(cursor: Pick<CursorUpdate, 'position' | 'data'>): void {
     const self = this.space.getSelf();
+
     if (!self) {
       throw new Error('Must enter a space before setting a cursor update');
     }
 
-    this.cursorBatching.pushCursorPosition(cursor);
+    const channel = this.getChannel();
+    this.cursorBatching.pushCursorPosition(channel, cursor);
+  }
+
+  private getChannel(): Types.RealtimeChannelPromise {
+    return this.channel ?? (this.channel = this.initializeCursorsChannel());
+  }
+
+  private initializeCursorsChannel(): Types.RealtimeChannelPromise {
+    const spaceChannelName = this.space.getChannelName();
+    const channel = this.space.client.channels.get(`${spaceChannelName}_cursors`);
+    channel.presence.subscribe(this.onPresenceUpdate.bind(this));
+    channel.presence.enter();
+    return channel;
+  }
+
+  private async onPresenceUpdate() {
+    const channel = this.getChannel();
+    const cursorsMembers = await channel.presence.get();
+    this.cursorBatching.setShouldSend(cursorsMembers.length > 1);
+    this.cursorBatching.setBatchTime((cursorsMembers.length - 1) * this.options.outboundBatchInterval);
   }
 
   private isUnsubscribed() {
-    return !emitterHasListeners(this.channel['subscriptions']);
+    const channel = this.getChannel();
+    return !emitterHasListeners(channel['subscriptions']);
   }
 
   private subscribe() {
-    this.channel.subscribe(CURSOR_UPDATE, (message) => {
+    const channel = this.getChannel();
+
+    channel.subscribe(CURSOR_UPDATE, (message) => {
       this.cursorDispensing.processBatch(message);
     });
   }
 
   private unsubscribe() {
-    this.channel.unsubscribe();
+    const channel = this.getChannel();
+    channel.unsubscribe();
   }
 
-  on(...args) {
+  on(...args: Parameters<EventEmitter<CursorsEventMap>['on']>) {
     super.on(...args);
 
     if (this.isUnsubscribed()) {
@@ -102,7 +124,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     }
   }
 
-  off(...args) {
+  off(...args: Parameters<EventEmitter<CursorsEventMap>['off']>) {
     super.off(...args);
     const hasListeners = emitterHasListeners(this);
 
@@ -112,7 +134,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   async getAll() {
-    return await this.cursorHistory.getLastCursorUpdate();
+    const channel = this.getChannel();
+    return await this.cursorHistory.getLastCursorUpdate(channel, this.options.paginationLimit);
   }
 }
 
