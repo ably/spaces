@@ -43,7 +43,7 @@ describe('Spaces', () => {
     const spaces = new Spaces(client);
     const space = await spaces.get('test');
 
-    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith('_ably_space_test');
     expectTypeOf(space).toMatchTypeOf<Space>();
   });

@@ -10,10 +10,7 @@ type ConnectionId = string;
 type ConnectionsLastPosition = Record<ConnectionId, null | CursorUpdate | CursorsLastPostion>;
 
 export default class CursorHistory {
-  constructor(
-    private channel: Types.RealtimeChannelPromise,
-    readonly paginationLimit: StrictCursorsOptions['paginationLimit'],
-  ) {}
+  constructor() {}
 
   private positionsMissing(connections: ConnectionsLastPosition) {
     return Object.keys(connections).some((connectionId) => connections[connectionId] === null);
@@ -51,8 +48,11 @@ export default class CursorHistory {
     );
   }
 
-  async getLastCursorUpdate(): Promise<ConnectionsLastPosition> {
-    const members = await this.channel.presence.get();
+  async getLastCursorUpdate(
+    channel: Types.RealtimeChannelPromise,
+    paginationLimit: StrictCursorsOptions['paginationLimit'],
+  ): Promise<ConnectionsLastPosition> {
+    const members = await channel.presence.get();
 
     if (members.length === 0) return {};
 
@@ -63,14 +63,14 @@ export default class CursorHistory {
       }),
       {},
     );
-    const history = await this.channel.history();
+    const history = await channel.history();
 
     let pageNo = 1;
     let page = await history.current();
     connections = this.allCursorUpdates(connections, page);
     pageNo++;
 
-    while (pageNo <= this.paginationLimit && this.positionsMissing(connections) && history.hasNext()) {
+    while (pageNo <= paginationLimit && this.positionsMissing(connections) && history.hasNext()) {
       page = await history.next();
       connections = this.allCursorUpdates(connections, page);
       pageNo++;

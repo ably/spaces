@@ -1,7 +1,6 @@
 import { Types } from 'ably';
 
-import Cursors, { type CursorUpdate } from './Cursors.js';
-import CursorBatching from './CursorBatching.js';
+import { type CursorUpdate } from './Cursors.js';
 
 import { clamp } from './utilities/math.js';
 
@@ -9,8 +8,13 @@ export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};
   private handlerRunning: boolean = false;
   private timerIds: ReturnType<typeof setTimeout>[] = [];
+  private emitCursorUpdate: (update: CursorUpdate) => void;
+  private getCurrentBatchTime: () => number;
 
-  constructor(readonly cursors: Cursors, readonly cursorsBatching: CursorBatching) {}
+  constructor(emitCursorUpdate, getCurrentBatchTime) {
+    this.emitCursorUpdate = emitCursorUpdate;
+    this.getCurrentBatchTime = getCurrentBatchTime;
+  }
 
   emitFromBatch(batchDispenseInterval: number) {
     if (!this.bufferHaveData()) {
@@ -26,7 +30,7 @@ export default class CursorDispensing {
         const update = buffer.shift();
 
         if (!update) continue;
-        this.cursors.emit('cursorsUpdate', update);
+        this.emitCursorUpdate(update);
       }
 
       if (this.bufferHaveData()) {
@@ -58,7 +62,7 @@ export default class CursorDispensing {
   calculateDispenseInterval(): number {
     const bufferLengths = Object.entries(this.buffer).map(([, v]) => v.length);
     const highest = bufferLengths.sort()[bufferLengths.length - 1];
-    const finalOutboundBatchInterval = this.cursorsBatching.batchTime;
+    const finalOutboundBatchInterval = this.getCurrentBatchTime();
     return Math.floor(clamp(finalOutboundBatchInterval / highest, 1, 1000 / 15));
   }
 

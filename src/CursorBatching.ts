@@ -11,56 +11,55 @@ export default class CursorBatching {
 
   batchTime: number;
 
-  hasMovement = false;
   // Set to `true` when a cursor position is in the buffer
-  isRunning: boolean = false;
-  // Set to `true` when the buffer is actively being emptied
-  shouldSend: boolean = false;
-  // Set to `true` if there is more than one user listening to cursors
+  hasMovement = false;
 
-  constructor(
-    readonly channel: Types.RealtimeChannelPromise,
-    readonly outboundBatchInterval: StrictCursorsOptions['outboundBatchInterval'],
-  ) {
-    this.channel.presence.subscribe(this.onPresenceUpdate.bind(this));
-    this.channel.presence.enter();
+  // Set to `true` when the buffer is actively being emptied
+  isRunning: boolean = false;
+
+  // Set to `true` if there is more than one user listening to cursors
+  shouldSend: boolean = false;
+
+  constructor(readonly outboundBatchInterval: StrictCursorsOptions['outboundBatchInterval']) {
     this.batchTime = outboundBatchInterval;
   }
 
-  pushCursorPosition(cursor: Pick<CursorUpdate, 'position' | 'data'>) {
+  pushCursorPosition(channel: Types.RealtimeChannelPromise, cursor: Pick<CursorUpdate, 'position' | 'data'>) {
     // Ignore the cursor update if there is no one listening
     if (!this.shouldSend) return;
     this.hasMovement = true;
     this.pushToBuffer(cursor);
-    this.publishFromBuffer(CURSOR_UPDATE);
+    this.publishFromBuffer(channel, CURSOR_UPDATE);
   }
 
-  private async onPresenceUpdate() {
-    const members = await this.channel.presence.get();
-    this.shouldSend = members.length > 1;
-    this.batchTime = (members.length - 1) * this.outboundBatchInterval;
+  setShouldSend(shouldSend: boolean) {
+    this.shouldSend = shouldSend;
+  }
+
+  setBatchTime(batchTime: number) {
+    this.batchTime = batchTime;
   }
 
   private pushToBuffer(value: Pick<CursorUpdate, 'position' | 'data'>) {
     this.outgoingBuffers.push(value);
   }
 
-  private async publishFromBuffer(eventName: string) {
+  private async publishFromBuffer(channel, eventName: string) {
     if (!this.isRunning) {
       this.isRunning = true;
-      await this.batchToChannel(eventName);
+      await this.batchToChannel(channel, eventName);
     }
   }
 
-  private async batchToChannel(eventName: string) {
+  private async batchToChannel(channel, eventName: string) {
     if (!this.hasMovement) {
       this.isRunning = false;
       return;
     }
     // Must be copied here to avoid a race condition where the buffer is cleared before the publish happens
     const bufferCopy = [...this.outgoingBuffers];
-    this.channel.publish(eventName, bufferCopy);
-    setTimeout(() => this.batchToChannel(eventName), this.batchTime);
+    channel.publish(eventName, bufferCopy);
+    setTimeout(() => this.batchToChannel(channel, eventName), this.batchTime);
     this.outgoingBuffers = [];
     this.hasMovement = false;
     this.isRunning = true;
