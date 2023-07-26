@@ -94,7 +94,7 @@ Space membership is used to build avatar stacks and find out which members are o
 const space = await spaces.get('demoSlideshow');
 
 // Register a listener to subscribe to events of when users enter or leave the space
-space.on('membersUpdate', (members) => {
+space.subscribe('membersUpdate', (members) => {
   console.log(members);
 });
 
