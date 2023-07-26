@@ -279,6 +279,25 @@ Set your current location. [Location](#location-1) can be any JSON-serializable 
 ```ts
 type set = (update: Location) => void;
 ```
+### getSelf
+Get location for self
+```ts
+space.locations.getSelf()
+```
+### getAll
+Get location for all members
+
+```ts
+space.locations.getAll()
+```
+### getOthers
+Get location for other members
+
+```ts
+space.locations.getOthers()
+```
+
+
 
 ### on
 
