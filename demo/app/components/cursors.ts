@@ -1,3 +1,4 @@
+import { Space } from '../../../src';
 import { queryDataId } from '../utils/dom';
 import type { MemberColor } from '../utils/colors';
 
@@ -45,14 +46,14 @@ const createCursor = (connectionId: string, profileData: { name: string; color: 
   return container;
 };
 
-const attachCursors = (space, slideId) => {
+const attachCursors = (space: Space, slideId) => {
   const slideContainer = document.querySelector('#slide-selected') as HTMLElement;
   const cursorContainer = queryDataId(slideContainer, 'slide-cursor-container');
   cursorContainer.innerHTML = '';
 
   const self = space.getSelf();
 
-  space.cursors.on('cursorsUpdate', (update) => {
+  space.cursors.subscribe('cursorsUpdate', (update) => {
     let cursorNode: HTMLElement = slideContainer.querySelector(`#cursor-${update.connectionId}`);
 
     const membersOnSlide = space.getMembers().filter((member) => member.location?.slide === slideId);
@@ -99,7 +100,7 @@ const attachCursors = (space, slideId) => {
   document.addEventListener('visibilitychange', cursorHandlers.tabLeft);
 
   return () => {
-    space.cursors.off();
+    space.cursors.unsubscribe();
     slideContainer.removeEventListener('mouseenter', cursorHandlers.enter);
     slideContainer.removeEventListener('mousemove', cursorHandlers.move);
     slideContainer.removeEventListener('mouseleave', cursorHandlers.leave);
