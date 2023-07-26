@@ -154,7 +154,7 @@ await space.updateProfileData((oldProfileData) => {
 })
 ```
 
-### on
+### subscribe
 
 Listen to events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
@@ -165,7 +165,7 @@ Available events:
   Listen to updates to members.
 
   ```ts
-  space.on('membersUpdate', (members: SpaceMember[]) => {});
+  space.subscribe('membersUpdate', (members: SpaceMember[]) => {});
   ```
 
   Triggers on:
@@ -178,7 +178,7 @@ Available events:
   Listen to enter events of members.
 
   ```ts
-  space.on('enter', (member: SpaceMember) => {})
+  space.subscribe('enter', (member: SpaceMember) => {})
   ```
   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
 
@@ -187,7 +187,7 @@ Available events:
   Listen to leave events of members. Note that the leave event will only fire once the [offlineTimeout](#spaceoptions) has passed.
 
   ```ts
-  space.on('leave', (member: SpaceMember) => {})
+  space.subscribe('leave', (member: SpaceMember) => {})
   ```
 
   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member leaving the space.
@@ -299,7 +299,7 @@ space.locations.getOthers()
 
 
 
-### on
+### subscribe
 
 Listen to events for locations. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
@@ -310,7 +310,7 @@ Available events:
   Fires when a member updates their location. The argument supplied to the event listener is an [LocationUpdate](#locationupdate-1).
 
   ```ts
-  space.locations.on('locationUpdate', (locationUpdate: LocationUpdate) => {});
+  space.locations.subscribe('locationUpdate', (locationUpdate: LocationUpdate) => {});
   ```
 
 ### off
@@ -381,7 +381,7 @@ Example:
 const lastPositions = space.cursors.getAll();
 ```
 
-### on
+### subscribe
 
 Listen to `CursorUpdate` events. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
@@ -392,7 +392,7 @@ Available events:
   Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate).
 
   ```ts
-  space.cursors.on('cursorsUpdate', (cursorUpdate: CursorUpdate) => {});
+  space.cursors.subscribe('cursorsUpdate', (cursorUpdate: CursorUpdate) => {});
   ```
 
 ### off
