@@ -33,7 +33,7 @@ describe('Cursors (mockClient)', () => {
     context.space = new Space('test', client);
     context.cursors = context.space.cursors;
     // This will set the channel
-    context.cursors.on('cursorsUpdate', () => {});
+    context.cursors.subscribe('cursorsUpdate', () => {});
     context.channel = context.cursors['channel'] as Types.RealtimeChannelPromise;
     context.batching = context.space.cursors['cursorBatching'];
     context.dispensing = context.space.cursors['cursorDispensing'];
@@ -66,7 +66,7 @@ describe('Cursors (mockClient)', () => {
       };
 
       const spy = vitest.fn();
-      space.cursors.on(spy);
+      space.cursors.subscribe(spy);
       dispensing.processBatch(fakeMessage);
 
       vi.advanceTimersByTime(batching.batchTime * 2);

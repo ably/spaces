@@ -1,7 +1,12 @@
 import { Types } from 'ably';
 
 import SpaceOptions from './options/SpaceOptions.js';
-import EventEmitter from './utilities/EventEmitter.js';
+import EventEmitter, {
+  InvalidArgumentError,
+  inspect,
+  type EventKey,
+  type EventListener,
+} from './utilities/EventEmitter.js';
 import Locations from './Locations.js';
 import Cursors from './Cursors.js';
 
@@ -227,6 +232,40 @@ class Space extends EventEmitter<SpaceEventsMap> {
     }
 
     return;
+  }
+
+  subscribe<K extends EventKey<SpaceEventsMap>>(
+    listenerOrEvents?: K | K[] | EventListener<SpaceEventsMap[K]>,
+    listener?: EventListener<SpaceEventsMap[K]>,
+  ) {
+    try {
+      super.on(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Space.subscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  unsubscribe<K extends EventKey<SpaceEventsMap>>(
+    listenerOrEvents?: K | K[] | EventListener<SpaceEventsMap[K]>,
+    listener?: EventListener<SpaceEventsMap[K]>,
+  ) {
+    try {
+      super.off(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Space.unsubscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
   }
 }
 

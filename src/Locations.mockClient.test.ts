@@ -43,15 +43,17 @@ describe('Locations (mockClient)', () => {
     it<SpaceTestContext>('fires an event when a location is set', async ({ space }) => {
       const spy = vi.fn();
       await space.enter();
-      space.locations.on(LOCATION_UPDATE, spy);
-      space.locations['onPresenceUpdate'](createPresenceMessage('update', { clientId: '2', connectionId: '2' }));
+      space.locations.subscribe(LOCATION_UPDATE, spy);
+      space.locations['onPresenceUpdate'](
+        createPresenceMessage('update', { clientId: '2', connectionId: '2', data: { location: 'location2' } }),
+      );
       expect(spy).toHaveBeenCalledOnce();
     });
 
     it<SpaceTestContext>('correctly sets previousLocation', async ({ space }) => {
       const spy = vi.fn();
       await space.enter();
-      space.locations.on(LOCATION_UPDATE, spy);
+      space.locations.subscribe(LOCATION_UPDATE, spy);
       space.locations['onPresenceUpdate'](
         createPresenceMessage('update', {
           clientId: '2',
