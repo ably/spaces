@@ -4,7 +4,12 @@ import Space from './Space.js';
 import CursorBatching from './CursorBatching.js';
 import CursorDispensing from './CursorDispensing.js';
 import { OUTGOING_BATCH_TIME_DEFAULT, PAGINATION_LIMIT_DEFAULT } from './utilities/Constants.js';
-import EventEmitter from './utilities/EventEmitter.js';
+import EventEmitter, {
+  InvalidArgumentError,
+  inspect,
+  type EventKey,
+  type EventListener,
+} from './utilities/EventEmitter.js';
 import CursorHistory from './CursorHistory.js';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
 
@@ -103,33 +108,52 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     return !emitterHasListeners(channel['subscriptions']);
   }
 
-  private subscribe() {
-    const channel = this.getChannel();
-
-    channel.subscribe(CURSOR_UPDATE, (message) => {
-      this.cursorDispensing.processBatch(message);
-    });
-  }
-
-  private unsubscribe() {
-    const channel = this.getChannel();
-    channel.unsubscribe();
-  }
-
-  on(...args: Parameters<EventEmitter<CursorsEventMap>['on']>) {
-    super.on(...args);
+  subscribe<K extends EventKey<CursorsEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<CursorsEventMap[K]>,
+    listener?: EventListener<CursorsEventMap[K]>,
+  ) {
+    try {
+      super.on(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Cursors.subscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
 
     if (this.isUnsubscribed()) {
-      this.subscribe();
+      const channel = this.getChannel();
+
+      channel.subscribe(CURSOR_UPDATE, (message) => {
+        this.cursorDispensing.processBatch(message);
+      });
     }
   }
 
-  off(...args: Parameters<EventEmitter<CursorsEventMap>['off']>) {
-    super.off(...args);
+  unsubscribe<K extends EventKey<CursorsEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<CursorsEventMap[K]>,
+    listener?: EventListener<CursorsEventMap[K]>,
+  ) {
+    try {
+      super.off(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Cursors.unsubscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
+
     const hasListeners = emitterHasListeners(this);
 
-    if (args.length > 0 || !hasListeners) {
-      this.unsubscribe();
+    if (!hasListeners) {
+      const channel = this.getChannel();
+      channel.unsubscribe();
     }
   }
 
