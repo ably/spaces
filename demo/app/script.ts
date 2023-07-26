@@ -42,7 +42,7 @@ const space = await spaces.get(getSpaceNameFromUrl(), {
   offlineTimeout: 10_000,
 });
 
-space.on(MEMBERS_UPDATE, (members) => {
+space.subscribe(MEMBERS_UPDATE, (members) => {
   renderAvatars(members.filter(memberIsNotSelf));
 });
 
@@ -56,7 +56,7 @@ renderSelectedSlide(space);
 renderComments();
 let detachCursors = attachCursors(space, currentSlide().id);
 
-space.locations.on('locationUpdate', ({ previousLocation, currentLocation }) => {
+space.locations.subscribe('locationUpdate', ({ previousLocation, currentLocation }) => {
   renderSlidePreviewMenu(space);
   renderSelectedSlide(space);
 
@@ -65,7 +65,7 @@ space.locations.on('locationUpdate', ({ previousLocation, currentLocation }) => 
   detachCursors = attachCursors(space, currentSlide().id);
 });
 
-space.on('membersUpdate', (members) => {
+space.subscribe('membersUpdate', (members) => {
   renderAvatars(members.filter(memberIsNotSelf));
 });
 
