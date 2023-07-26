@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { ComingSoon, CommentDrawer, Header, SlideMenu } from './components';
 
 function App() {
+  const [activeSlide, setActiveSlide] = useState(0);
   return (
     <>
       <Header />
@@ -12,7 +14,11 @@ function App() {
             id="feature-display"
             className="absolute gap-12 bg-[#F7F6F9] w-full h-[calc(100%-80px)] -z-10 overflow-y-hidden overflow-x-hidden flex justify-between min-w-[375px] xs:flex-col md:flex-row"
           >
-            <SlideMenu />
+            <SlideMenu
+              activeSlide={activeSlide}
+              setActiveSlide={setActiveSlide}
+              slides={slides}
+            />
 
             <section
               id="slide-selected"
@@ -37,3 +43,15 @@ function App() {
 }
 
 export default App;
+
+const slides = [
+  {
+    children: <>Slide 1</>,
+  },
+  {
+    children: <>Slide 2</>,
+  },
+  {
+    children: <>Slide 3</>,
+  },
+];

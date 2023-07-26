@@ -12,36 +12,39 @@ export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
   const hiddenAvatars = avatars.slice(5);
 
   return (
-    <div id="avatar-stack">
-      <ul
-        className={cn('flex', {
-          'absolute scale-[3] top-[800px] left-[1220px] translate-x-[-100%]': isInContent,
-        })}
-      >
-        {largeAvatars.map((avatar) => (
-          <li
-            key={avatar.name}
-            className="ml-[-9px] relative"
+    <ul
+      className={cn('flex', {
+        'absolute scale-[3] top-[800px] left-[1220px] translate-x-[-100%]': isInContent,
+      })}
+    >
+      {largeAvatars.map((avatar) => (
+        <li
+          key={avatar.name}
+          className="ml-[-9px] relative"
+        >
+          <Avatar
+            {...avatar}
+            isInContent={isInContent}
+          />
+        </li>
+      ))}
+
+      {hiddenAvatars.length > 0 && (
+        <li>
+          <div
+            className="h-[46px] w-[46px] rounded-full flex items-center justify-center bg-gradient-to-b from-white to-white ml-[-9px] relative group"
+            data-id="avatar-wrapper"
           >
-            <Avatar {...avatar} />
-          </li>
-        ))}
-
-        {hiddenAvatars.length > 0 && (
-          <li>
             <div
-              className="h-[46px] w-[46px] rounded-full flex items-center justify-center bg-gradient-to-b from-white to-white ml-[-9px] relative group"
-              data-id="avatar-wrapper"
+              className="h-[40px] w-[40px] rounded-full flex items-center justify-center bg-[#75A3E3]"
+              data-id="avatar-inner-wrapper"
             >
-              <div
-                className="h-[40px] w-[40px] rounded-full flex items-center justify-center bg-[#75A3E3]"
-                data-id="avatar-inner-wrapper"
-              >
-                <p className="font-medium text-sm text-white">
-                  +<span data-id="count">{hiddenAvatars.length}</span>
-                </p>
-              </div>
+              <p className="font-medium text-sm text-white">
+                +<span data-id="count">{hiddenAvatars.length}</span>
+              </p>
+            </div>
 
+            {!isInContent && (
               <div className="hidden group-hover:block absolute top-full z-10">
                 <div
                   data-id="avatar-hover"
@@ -56,10 +59,10 @@ export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
                   ))}
                 </div>
               </div>
-            </div>
-          </li>
-        )}
-      </ul>
-    </div>
+            )}
+          </div>
+        </li>
+      )}
+    </ul>
   );
 };

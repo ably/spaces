@@ -2,18 +2,25 @@ import cn from 'classnames';
 import { AvatarInfo } from './AvatarInfo';
 import { LightningSvg } from './svg';
 
+type Location = {
+  slide: number;
+  element: null; // TODO: sometimes it isn't
+};
 export interface AvatarProps {
   isSelf?: boolean;
   name: string;
-  isActive?: boolean;
+  isConnected?: boolean;
   color?: string;
+  isInContent?: boolean;
+  location?: Location;
 }
 
 export const Avatar = ({
   isSelf = false,
   name,
-  isActive = false,
+  isConnected = false,
   color = 'bg-gradient-to-tr from-blue-400 to-blue-500',
+  isInContent = false,
 }: AvatarProps) => {
   const initials = name
     .split(' ')
@@ -48,13 +55,13 @@ export const Avatar = ({
         </p>
       </div>
 
-      {
+      {!isInContent && (
         <AvatarInfo
           isSelf={isSelf}
           name={name}
-          isActive={isActive}
+          isConnected={isConnected}
         />
-      }
+      )}
     </div>
   );
 };

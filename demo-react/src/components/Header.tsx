@@ -4,14 +4,7 @@ import { AvatarStack } from './AvatarStack';
 import { ExternalLinkSvg, InfoSvg } from './svg';
 
 export const Header = () => {
-  const space = useSpace();
-  const members = space
-    ? space.getMembers().map(({ profileData }) => {
-        return { name: profileData.name };
-      })
-    : [];
-
-  const self = { name: space?.getSelf()?.profileData.name };
+  const { self, members } = useSpace();
 
   return (
     <header
@@ -35,15 +28,15 @@ export const Header = () => {
           id="avatar-stack-container"
           className="flex justify-end col-span-2 mt-2 pt-2 xs:border-t xs:border-[#D9D9DA] xs:ml-0 xs:pr-8 md:ml-8 md:border-t-0"
         >
-          {members && members.length > 0 && (
-            <>
+          <>
+            {self.name && (
               <Avatar
                 isSelf
                 {...self}
               />
-              <AvatarStack avatars={members} />
-            </>
-          )}
+            )}
+            {members && members.length > 0 && <AvatarStack avatars={members} />}
+          </>
         </section>
 
         <section className="xs:hidden md:ml-[24px] md:flex md:items-center">
