@@ -38,4 +38,28 @@ export default class Locations extends EventEmitter<LocationEventMap> {
       currentLocation: location,
     });
   }
+
+  getSelf(): Location | undefined {
+    const self = this.space.getSelf();
+    return self ? self.location : undefined;
+  }
+
+  getOthers(): Record<string, Location> {
+    const self = this.space.getSelf();
+
+    return this.space
+      .getMembers()
+      .filter((member) => member.connectionId !== self?.connectionId)
+      .reduce((acc, member) => {
+        acc[member.connectionId] = member.location;
+        return acc;
+      }, {});
+  }
+
+  getAll(): Record<string, Location> {
+    return this.space.getMembers().reduce((acc, member) => {
+      acc[member.connectionId] = member.location;
+      return acc;
+    }, {});
+  }
 }
