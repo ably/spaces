@@ -44,9 +44,7 @@ describe('Locations (mockClient)', () => {
       const spy = vi.fn();
       await space.enter();
       space.locations.on(LOCATION_UPDATE, spy);
-      space.locations['onPresenceUpdate'](
-        createPresenceMessage('update', { clientId: '2', connectionId: '2', data: { location: 'location2' } }),
-      );
+      space.locations['onPresenceUpdate'](createPresenceMessage('update', { clientId: '2', connectionId: '2' }));
       expect(spy).toHaveBeenCalledOnce();
     });
 
@@ -80,6 +78,46 @@ describe('Locations (mockClient)', () => {
         currentLocation: 'location2',
         previousLocation: 'location1',
       });
+    });
+  });
+
+  describe('location getters', () => {
+    it<SpaceTestContext>('getSelf returns the location only for self', async ({ space }) => {
+      await space.enter();
+      space.locations['onPresenceUpdate'](
+        createPresenceMessage('update', { data: { currentLocation: 'location33', previousLocation: null } }),
+      );
+      expect(space.locations.getSelf()).toEqual('location33');
+    });
+
+    it<SpaceTestContext>('getOthers returns the locations only for others', async ({ space }) => {
+      await space.enter();
+      space.locations['onPresenceUpdate'](
+        createPresenceMessage('update', { data: { currentLocation: '23', previousLocation: null } }),
+      );
+      space.locations['onPresenceUpdate'](
+        createPresenceMessage('update', {
+          connectionId: '2',
+          data: { currentLocation: 'location22', previousLocation: null },
+        }),
+      );
+      const othersLocations = space.locations.getOthers();
+      expect(othersLocations).toEqual({ '2': 'location22' });
+    });
+
+    it<SpaceTestContext>('getAll returns the locations for self and others', async ({ space }) => {
+      await space.enter();
+      space.locations['onPresenceUpdate'](
+        createPresenceMessage('update', { data: { currentLocation: 'location11', previousLocation: null } }),
+      );
+      space.locations['onPresenceUpdate'](
+        createPresenceMessage('update', {
+          connectionId: '2',
+          data: { currentLocation: 'location22', previousLocation: null },
+        }),
+      );
+      const allLocations = space.locations.getAll();
+      expect(allLocations).toEqual({ '1': 'location11', '2': 'location22' });
     });
   });
 });
