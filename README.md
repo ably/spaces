@@ -155,6 +155,7 @@ memberTracker.on((locationUpdate) => {
   // will only trigger if change.member.clientId === 'clemons#142'
   console.log(locationUpdate);
 });
+```
 
 The following is an example `locationUpdate` event received by subscribers when a user changes location:
 
