@@ -1,7 +1,12 @@
 import { Types } from 'ably';
 
 import Space from './Space.js';
-import EventEmitter from './utilities/EventEmitter.js';
+import EventEmitter, {
+  InvalidArgumentError,
+  inspect,
+  type EventKey,
+  type EventListener,
+} from './utilities/EventEmitter.js';
 import { LOCATION_UPDATE } from './utilities/Constants.js';
 
 type LocationUpdate = typeof LOCATION_UPDATE;
@@ -37,6 +42,40 @@ export default class Locations extends EventEmitter<LocationEventMap> {
       previousLocation: self.location,
       currentLocation: location,
     });
+  }
+
+  subscribe<K extends EventKey<LocationEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LocationEventMap[K]>,
+    listener?: EventListener<LocationEventMap[K]>,
+  ) {
+    try {
+      super.on(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Locations.subscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  unsubscribe<K extends EventKey<LocationEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LocationEventMap[K]>,
+    listener?: EventListener<LocationEventMap[K]>,
+  ) {
+    try {
+      super.off(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Locations.unsubscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
   }
 
   getSelf(): Location | undefined {

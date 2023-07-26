@@ -159,7 +159,7 @@ describe('Space (mockClient)', () => {
     });
   });
 
-  describe('on', () => {
+  describe('subscribe', () => {
     it('subscribes to presence updates', async () => {
       const client = new Realtime({});
       const presence = client.channels.get('').presence;
@@ -172,13 +172,13 @@ describe('Space (mockClient)', () => {
     it<SpaceTestContext>('does not include the connected client in the members result', async ({ space, client }) => {
       const spy = vi.fn();
       space['onPresenceUpdate'](createPresenceMessage('enter', { clientId: client.auth.clientId }));
-      space.on(MEMBERS_UPDATE, spy);
+      space.subscribe(MEMBERS_UPDATE, spy);
       expect(spy).not.toHaveBeenCalled();
     });
 
     it<SpaceTestContext>('adds new members', async ({ space }) => {
       const callbackSpy = vi.fn();
-      space.on(MEMBERS_UPDATE, callbackSpy);
+      space.subscribe(MEMBERS_UPDATE, callbackSpy);
 
       createPresenceEvent(space, 'enter');
 
@@ -216,7 +216,7 @@ describe('Space (mockClient)', () => {
 
     it<SpaceTestContext>('updates the data of members', async ({ space }) => {
       const callbackSpy = vi.fn();
-      space.on(MEMBERS_UPDATE, callbackSpy);
+      space.subscribe(MEMBERS_UPDATE, callbackSpy);
 
       createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
@@ -245,7 +245,7 @@ describe('Space (mockClient)', () => {
 
     it<SpaceTestContext>('updates the connected status of clients who have left', async ({ space }) => {
       const callbackSpy = vi.fn();
-      space.on(MEMBERS_UPDATE, callbackSpy);
+      space.subscribe(MEMBERS_UPDATE, callbackSpy);
 
       createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
@@ -274,7 +274,7 @@ describe('Space (mockClient)', () => {
 
     it<SpaceTestContext>('fires an enter message on join', async ({ space }) => {
       const callbackSpy = vi.fn();
-      space.on('enter', callbackSpy);
+      space.subscribe('enter', callbackSpy);
 
       createPresenceEvent(space, 'enter');
 
@@ -299,7 +299,7 @@ describe('Space (mockClient)', () => {
 
       it<SpaceTestContext>('removes a member who has left after the offlineTimeout', async ({ space }) => {
         const callbackSpy = vi.fn();
-        space.on(MEMBERS_UPDATE, callbackSpy);
+        space.subscribe(MEMBERS_UPDATE, callbackSpy);
 
         createPresenceEvent(space, 'enter');
         expect(callbackSpy).toHaveBeenNthCalledWith<SpaceMember[][]>(1, [
@@ -333,7 +333,7 @@ describe('Space (mockClient)', () => {
 
       it<SpaceTestContext>('sends a leave event after offlineTimeout', async ({ space }) => {
         const callbackSpy = vi.fn();
-        space.on('leave', callbackSpy);
+        space.subscribe('leave', callbackSpy);
 
         createPresenceEvent(space, 'enter');
         createPresenceEvent(space, 'leave');
@@ -352,7 +352,7 @@ describe('Space (mockClient)', () => {
 
       it<SpaceTestContext>('does not remove a member that has rejoined', async ({ space }) => {
         const callbackSpy = vi.fn();
-        space.on(MEMBERS_UPDATE, callbackSpy);
+        space.subscribe(MEMBERS_UPDATE, callbackSpy);
 
         createPresenceEvent(space, 'enter');
         createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2' });
@@ -439,21 +439,21 @@ describe('Space (mockClient)', () => {
         expect(callbackSpy).toHaveBeenCalledTimes(4);
       });
 
-      it<SpaceTestContext>('unsubscribes when off is called', async ({ space }) => {
+      it<SpaceTestContext>('unsubscribes when unsubscribe is called', async ({ space }) => {
         const spy = vi.fn();
-        space.on(MEMBERS_UPDATE, spy);
+        space.subscribe(MEMBERS_UPDATE, spy);
         createPresenceEvent(space, 'enter', { clientId: '123456' });
-        space.off(MEMBERS_UPDATE, spy);
+        space.unsubscribe(MEMBERS_UPDATE, spy);
         createPresenceEvent(space, 'enter', { clientId: '123456' });
 
         expect(spy).toHaveBeenCalledOnce();
       });
 
-      it<SpaceTestContext>('unsubscribes when off is called with no arguments', async ({ space }) => {
+      it<SpaceTestContext>('unsubscribes when unsubscribe is called with no arguments', async ({ space }) => {
         const spy = vi.fn();
-        space.on(MEMBERS_UPDATE, spy);
+        space.subscribe(MEMBERS_UPDATE, spy);
         createPresenceEvent(space, 'enter', { clientId: '123456' });
-        space.off();
+        space.unsubscribe();
         createPresenceEvent(space, 'enter', { clientId: '123456' });
 
         expect(spy).toHaveBeenCalledOnce();

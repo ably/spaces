@@ -53,13 +53,19 @@ export function removeListener(
 }
 
 // Equivalent of Platform.config.inspect from ably-js for browser/RN
-function inspect(args: any): string {
+export function inspect(args: unknown): string {
   return JSON.stringify(args);
+}
+
+export class InvalidArgumentError extends Error {
+  constructor(...args) {
+    super(...args);
+  }
 }
 
 type EventMap = Record<string, any>;
 // extract all the keys of an event map and use them as a type
-type EventKey<T extends EventMap> = string & keyof T;
+export type EventKey<T extends EventMap> = string & keyof T;
 export type EventListener<T> = (params: T) => void;
 
 export default class EventEmitter<T extends EventMap> {
@@ -102,7 +108,7 @@ export default class EventEmitter<T extends EventMap> {
       return;
     }
 
-    throw new Error('EventEmitter.on(): Invalid arguments: ' + inspect([listenerOrEvents, listener]));
+    throw new InvalidArgumentError('EventEmitter.on(): Invalid arguments: ' + inspect([listenerOrEvents, listener]));
   }
 
   /**
@@ -113,7 +119,9 @@ export default class EventEmitter<T extends EventMap> {
    */
   off<K extends EventKey<T>>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
     // .off()
-    if (arguments.length === 0) {
+    // don't use arguments.length === 0 here as don't won't handle
+    // cases like .off(undefined) which is a valid call
+    if (!listenerOrEvents && !listener) {
       this.any = [];
       this.events = Object.create(null);
       this.anyOnce = [];
@@ -156,7 +164,7 @@ export default class EventEmitter<T extends EventMap> {
       return;
     }
 
-    throw new Error('EventEmitter.off(): invalid arguments:' + inspect([listenerOrEvents, listener]));
+    throw new InvalidArgumentError('EventEmitter.off(): invalid arguments:' + inspect([listenerOrEvents, listener]));
   }
 
   /**
@@ -251,7 +259,7 @@ export default class EventEmitter<T extends EventMap> {
       return;
     }
 
-    throw new Error('EventEmitter.once(): invalid arguments:' + inspect([listenerOrEvents, listener]));
+    throw new InvalidArgumentError('EventEmitter.once(): invalid arguments:' + inspect([listenerOrEvents, listener]));
   }
 
   /**
