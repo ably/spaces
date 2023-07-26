@@ -146,6 +146,9 @@ space.enter({
 space.locations.set({ slide: '3', component: 'slide-title' });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e07ac4b (Fixed an issue in README where a code block wasn't being closed)
 // Create a tracker to only publish locationUpdate events for a specific user using their clientId
 const memberTracker = space.locations.createTracker(
   (locationUpdate) => locationUpdate.member.clientId === 'clemons#142',
@@ -158,8 +161,11 @@ memberTracker.on((locationUpdate) => {
 });
 ```
 
+<<<<<<< HEAD
 =======
 >>>>>>> d4fd85e (chore: Update docs related to tracker)
+=======
+>>>>>>> e07ac4b (Fixed an issue in README where a code block wasn't being closed)
 The following is an example `locationUpdate` event received by subscribers when a user changes location:
 
 ```json
