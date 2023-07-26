@@ -8,3 +8,4 @@ export * from './Title';
 export * from './Comment';
 export * from './AvatarInfo';
 export * from './svg';
+export * from './SlidePreview';
