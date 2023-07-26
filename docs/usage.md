@@ -241,24 +241,6 @@ This event will include the member affected by the change, as well as their prev
 }
 ```
 
-### Track an individual location or member
-
-To listen only to events for a specific member or location, you can use `createTracker`. This method filters messages based on a user provided predicate.
-
-_Note that this is client-side filtering only, messages are still sent/received for updates._
-
-Create a tracker for a specific member based on their `clientId`, and then listen to updates for only that user:
-
-```ts
-const memberTracker = space.locations.createTracker(
-  (locationUpdate) => locationUpdate.member.clientId === 'clemons#142',
-);
-
-memberTracker.on((locationUpdate) => {
-  console.log(locationUpdate);
-});
-```
-
 ## Live Cursors
 
 A common feature of collaborative apps is to show where a users cursors is positioned in realtime. It's easy to accomplish this with the `cursors` API.
