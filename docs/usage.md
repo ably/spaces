@@ -125,12 +125,12 @@ Emitted when a member leaves a space. Called with the member leaving the space.
 Emitted when members enter, leave and their location is updated. Called with an array of all the members in the space.
 
 ```ts
-space.on('membersUpdate', (members) => {
+space.subscribe('membersUpdate', (members) => {
   console.log(members);
 });
 ```
 
-To stop listening to member events, users can call the `space.off()` method. See [Event emitters](#event-emitters) for options and usage.
+To stop listening to member events, users can call the `space.unsubscribe()` method. See [Event emitters](#event-emitters) for options and usage.
 
 ### Enter a space
 
@@ -196,7 +196,7 @@ The location property will be set on the [member](#members).
 Because locations are part of members, a `memberUpdate` event will be emitted when a member updates their location. When a member leaves, their location is set to `null`.
 
 ```ts
-space.on('membersUpdate', (members) => {
+space.subscribe('membersUpdate', (members) => {
   console.log(members);
 });
 ```
@@ -204,7 +204,7 @@ space.on('membersUpdate', (members) => {
 However, it's possible to listen to just location updates. `locations` is an [event emitter](#event-emitters) and will emit the `locationUpdate` event:
 
 ```ts
-space.locations.on('locationUpdate', (locationUpdate) => {
+space.locations.subscribe('locationUpdate', (locationUpdate) => {
   console.log(locationUpdate);
 });
 ```
@@ -247,10 +247,10 @@ A common feature of collaborative apps is to show where a users cursors is posit
 
 The most common use case is to show the current mouse pointer position.
 
-To start listing to cursor events, use the `.on` method:
+To start listing to cursor events, use the `.subscribe` method:
 
 ```ts
-space.cursors.on('cursorsUpdate', (cursorUpdate) => {
+space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
   console.log(cursorUpdate);
 });
 ```
@@ -316,50 +316,51 @@ const lastPositions = await space.cursors.getAll();
 
 ## Event Emitters
 
-All Spaces APIs inherit from an [EventEmitter class](/src/utilities/EventEmitter.ts) and support the same event API.
+`space`, `cursors` & `locations` are event emitters. Event emitters provide `subscribe` and `unsubscribe` methods to attach/detach event listeners. Both methods support overloaded versions, described below.
 
-Calling `on` with a single function argument will subscribe to all events on that emitter.
 
-```ts
-space.on(() => {});
-```
-
-Calling `on` with a named event and a function argument will subscribe to that event only.
+Calling `subscribe` with a single function argument will subscribe to all events on that emitter.
 
 ```ts
-space.on(`membersUpdate`, () => {});
+space.subscribe(() => {});
 ```
 
-Calling `on` with an array of named events and a function argument will subscribe to those events.
+Calling `subscribe` with a named event and a function argument will subscribe to that event only.
 
 ```ts
-space.on([`membersUpdate`], () => {});
+space.subscribe(`membersUpdate`, () => {});
 ```
 
-Calling `off` with no arguments will remove all registered listeners.
+Calling `subscribe` with an array of named events and a function argument will subscribe to those events.
 
 ```ts
-space.off();
+space.subscribe([`membersUpdate`], () => {});
 ```
 
-Calling `off` with a single named event will remove all listeners registered for that event.
+Calling `unsubscribe` with no arguments will remove all registered listeners.
 
 ```ts
-space.off(`membersUpdate`);
+space.unsubscribe();
 ```
 
-Calling `off` with an array of named events will remove all listeners registered for those events.
+Calling `unsubscribe` with a single named event will remove all listeners registered for that event.
 
 ```ts
-space.off([`membersUpdate`]);
+space.unsubscribe(`membersUpdate`);
 ```
 
-Calling `off` and adding a listener function as the second argument to both of the above will remove only that listener.
+Calling `unsubscribe` with an array of named events will remove all listeners registered for those events.
+
+```ts
+space.unsubscribe([`membersUpdate`]);
+```
+
+Calling `unsubscribe` and adding a listener function as the second argument to both of the above will remove only that listener.
 
 ```ts
 const listener = () => {};
-space.off(`membersUpdate`, listener);
-space.off([`membersUpdate`], listener);
+space.unsubscribe(`membersUpdate`, listener);
+space.unsubscribe([`membersUpdate`], listener);
 ```
 
-As with the native DOM API, this only works if the listener is the same reference as the one passed to `on`.
+As with the native DOM API, this only works if the listener is the same reference as the one passed to `subscribe`.
