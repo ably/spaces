@@ -1,10 +1,11 @@
-import { Avatar, AvatarProps } from './Avatar';
+import { Avatar } from './Avatar';
 import cn from 'classnames';
 import { AvatarInfo } from './AvatarInfo';
+import { SpaceMember } from '@ably-labs/spaces';
 
 interface Props {
   isInContent?: boolean;
-  avatars: AvatarProps[];
+  avatars: SpaceMember[];
 }
 
 export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
@@ -19,7 +20,7 @@ export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
     >
       {largeAvatars.map((avatar) => (
         <li
-          key={avatar.name}
+          key={avatar.profileData.name}
           className="ml-[-9px] relative"
         >
           <Avatar
@@ -53,8 +54,8 @@ export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
                   {hiddenAvatars.map((avatar, index) => (
                     <AvatarInfo
                       key={`avatarInfo-${index}`}
-                      {...avatar}
                       isList
+                      {...avatar}
                     />
                   ))}
                 </div>

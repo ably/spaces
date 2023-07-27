@@ -5,7 +5,7 @@ interface Props extends AvatarProps {
   isList?: boolean;
 }
 
-export const AvatarInfo = ({ isSelf, isConnected, name, isList = false }: Props) => {
+export const AvatarInfo = ({ isSelf, isConnected, profileData, isList = false }: Props) => {
   return isSelf ? (
     <div
       data-id="avatar-hover"
@@ -15,7 +15,7 @@ export const AvatarInfo = ({ isSelf, isConnected, name, isList = false }: Props)
         data-id="avatar-full-name"
         className="text-sm font-semibold text-white whitespace-nowrap"
       >
-        {name} (You)
+        {profileData.name} (You)
       </p>
     </div>
   ) : (
@@ -29,7 +29,7 @@ export const AvatarInfo = ({ isSelf, isConnected, name, isList = false }: Props)
         className="text-sm font-semibold text-white whitespace-nowrap"
         data-id="avatar-full-name"
       >
-        {name}
+        {profileData.ƒname}
       </p>
       <p className="whitespace-nowrap flex gap-1 items-center">
         <span

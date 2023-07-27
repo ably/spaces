@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Space } from '@ably-labs/spaces';
+import { Space, SpaceMember } from '@ably-labs/spaces';
 
 import { getSpaceNameFromUrl } from '../utils/url';
 import { spaces } from '../utils/spaces';
 import { getRandomName } from '../utils/fake-names';
-import { AvatarProps } from '../components';
 
 export const useSpace = () => {
-  const [space, setSpace] = useState<Space | null>(null);
-  const [members, setMembers] = useState<AvatarProps[]>([]);
-  const [self, setSelf] = useState<AvatarProps>({ name: '' });
+  const [space, setSpace] = useState<Space | undefined>(undefined);
+  const [members, setMembers] = useState<SpaceMember[]>([]);
+  const [self, setSelf] = useState<SpaceMember | undefined>(undefined);
 
   useEffect(() => {
     const initSpace = async () => {
@@ -19,22 +18,15 @@ export const useSpace = () => {
 
       if (!space) return;
 
-      const name = getRandomName();
-      await space.enter({ name });
       setSpace(space);
 
-      const { location, profileData, isConnected } = space.getSelf() || {};
-      const self = { name: profileData?.name, location, isConnected };
-      setSelf(self);
-
+      const name = getRandomName();
+      await space.enter({ name });
       await space.locations.set({ slide: 0, element: null });
 
-      const members = space
-        .getMembers()
-        .filter(({ profileData }) => profileData.name !== self.name)
-        .map(({ profileData, isConnected, location }) => {
-          return { name: profileData.name, isConnected, location };
-        });
+      const self = space.getSelf();
+      setSelf(self);
+      const members = takeOutSelf(space.getMembers(), self);
       setMembers(members);
     };
 
@@ -44,39 +36,45 @@ export const useSpace = () => {
   useEffect(() => {
     if (!space) return;
 
-    space.on('membersUpdate', (members) => {
-      const avatarReadyMembers = members
-        .filter(({ profileData }) => profileData.name !== self.name)
-        .map(({ profileData, isConnected, location }) => {
-          return { name: profileData.name, isConnected, location };
-        });
-
-      setMembers(avatarReadyMembers);
+    space.subscribe('membersUpdate', (members) => {
+      console.log('membersUpdate', members);
+      const membersWithoutSelf = takeOutSelf(members, self);
+      setMembers(membersWithoutSelf);
     });
 
     return () => {
-      space.off('membersUpdate');
+      space.unsubscribe('membersUpdate');
     };
   }, [space]);
 
   useEffect(() => {
     if (!space) return;
 
-    space.locations.on('locationUpdate', ({ member }) => {
-      console.log('locationUpdate', member);
-      setMembers((members) => {
-        const updatedMembers = members.map((m) => {
-          if (m.name !== member.profileData.name) return m;
-          return { ...m, location: member.location };
-        });
-        return updatedMembers;
+    space.locations.subscribe('locationUpdate', ({ member }) => {
+      if (member.clientId === self?.clientId) {
+        setSelf(member);
+        return;
+      }
+
+      const updatedMembers = members.map((m) => {
+        if (m.clientId === member.clientId) {
+          return member;
+        }
+        return m;
       });
+      setMembers(updatedMembers);
     });
 
     return () => {
-      space.locations.off('locationUpdate');
+      space.locations.unsubscribe('locationUpdate');
     };
   }, [space]);
 
   return { self, members, space };
+};
+
+const takeOutSelf = (members: SpaceMember[], self: SpaceMember | undefined) => {
+  if (!self) return members;
+
+  return members.filter((member) => member.profileData.name !== self.profileData.name);
 };

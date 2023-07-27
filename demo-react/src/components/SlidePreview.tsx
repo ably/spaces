@@ -14,7 +14,7 @@ export const SlidePreview = ({ children, index }: Props) => {
   const avatars = isActive ? [self, ...membersOnASlide] : membersOnASlide;
 
   const handleSlideClick = () => {
-    if (!space) return;
+    if (!space || !self) return;
     space.locations.set({ ...self.location, slide: index });
   };
 
