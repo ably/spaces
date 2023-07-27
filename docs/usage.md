@@ -316,7 +316,8 @@ const lastPositions = await space.cursors.getAll();
 
 ## Event Emitters
 
-All Spaces APIs inherit from an [EventEmitter class](/src/utilities/EventEmitter.ts) and support the same event API.
+`space`, `cursors` & `locations` are event emitters. Event emitters provide `subscribe` and `unsubscribe` methods to attach/detach event listeners. Both methods support overloaded versions, described below.
+
 
 Calling `subscribe` with a single function argument will subscribe to all events on that emitter.
 
