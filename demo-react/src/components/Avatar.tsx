@@ -1,30 +1,18 @@
 import cn from 'classnames';
+import { SpaceMember } from '@ably-labs/spaces';
+
 import { AvatarInfo } from './AvatarInfo';
 import { LightningSvg } from './svg';
 
-type Location = {
-  slide: number;
-  element: null; // TODO: sometimes it isn't
-};
-export interface AvatarProps {
-  isSelf?: boolean;
-  name: string;
-  isConnected?: boolean;
-  color?: string;
+export interface AvatarProps extends SpaceMember {
   isInContent?: boolean;
-  location?: Location;
+  isSelf?: boolean;
 }
 
-export const Avatar = ({
-  isSelf = false,
-  name,
-  isConnected = false,
-  color = 'bg-gradient-to-tr from-blue-400 to-blue-500',
-  isInContent = false,
-}: AvatarProps) => {
-  const initials = name
+export const Avatar = ({ isSelf = false, isConnected = false, isInContent = false, profileData, ...spaceProps }: AvatarProps) => {
+  const initials = profileData.name
     .split(' ')
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join('');
 
   return (
@@ -43,7 +31,7 @@ export const Avatar = ({
       <div
         className={cn(
           'rounded-full flex items-center justify-center xs:h-[32px] xs:w-[32px] md:h-[40px] md:w-[40px]',
-          color,
+          'bg-gradient-to-tr from-blue-400 to-blue-500',
         )}
         data-id="avatar-inner-wrapper"
       >
@@ -58,8 +46,9 @@ export const Avatar = ({
       {!isInContent && (
         <AvatarInfo
           isSelf={isSelf}
-          name={name}
+          profileData={profileData}
           isConnected={isConnected}
+          {...spaceProps}
         />
       )}
     </div>

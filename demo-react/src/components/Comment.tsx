@@ -1,24 +1,27 @@
+import { SpaceMember } from '@ably-labs/spaces';
 import { Avatar } from './Avatar';
 import { ReplyStackSvg } from './svg';
 
-interface Props {
-  name: string;
+interface Props extends SpaceMember {
   position: string;
   comment: string;
   replies: number;
 }
 
-export const Comment = ({ name, position, comment, replies }: Props) => {
+export const Comment = ({ position, comment, replies, profileData, ...spaceProps }: Props) => {
   return (
     <div>
       <div className="flex mb-2 gap-3">
-        <Avatar name={name} />
+        <Avatar
+          profileData={profileData}
+          {...spaceProps}
+        />
         <div>
           <p
             data-id="comment-thread-name"
             className="font-semibold"
           >
-            {name}
+            {profileData.name}
           </p>
           <p
             data-id="comment-thread-position"

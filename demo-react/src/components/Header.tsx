@@ -29,7 +29,7 @@ export const Header = () => {
           className="flex justify-end col-span-2 mt-2 pt-2 xs:border-t xs:border-[#D9D9DA] xs:ml-0 xs:pr-8 md:ml-8 md:border-t-0"
         >
           <>
-            {self.name && (
+            {self && (
               <Avatar
                 isSelf
                 {...self}

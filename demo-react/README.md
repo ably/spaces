@@ -1,6 +1,5 @@
 [] Different gradients for avatars
 [] texts on the slide
-[] watch members leaving/staying
 
 # React + TypeScript + Vite
 
