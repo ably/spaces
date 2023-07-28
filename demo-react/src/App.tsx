@@ -1,11 +1,33 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ComingSoon, CommentDrawer, Header, SlideMenu } from './components';
+import SpacesContext from './components/SpacesContext';
+import { getRandomName } from './utils/fake-names';
+import { useMembers } from './hooks';
 
-function App() {
+const App = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const space = useContext(SpacesContext);
+  const { self, members, others } = useMembers();
+
+  useEffect(() => {
+    if (!space) return;
+
+    const self = space.getSelf();
+
+    if (self?.profileData.name) return;
+
+    const enter = async () => {
+      await space.enter({ name: getRandomName() });
+      space.locations.set({ slide: 0, element: null });
+    }
+
+    enter();
+  }, [space])
+
+
   return (
     <>
-      <Header />
+      <Header self={self} others={others} />
       <div className="text-ably-charcoal-grey bg-slate-500">
         <main>
           <ComingSoon />

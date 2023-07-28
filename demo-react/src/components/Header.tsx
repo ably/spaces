@@ -1,10 +1,8 @@
-import { useSpace } from '../hooks';
 import { Avatar } from './Avatar';
 import { AvatarStack } from './AvatarStack';
 import { ExternalLinkSvg, InfoSvg } from './svg';
 
-export const Header = () => {
-  const { self, members } = useSpace();
+export const Header = ({ self, others }) => {
 
   return (
     <header
@@ -35,7 +33,7 @@ export const Header = () => {
                 {...self}
               />
             )}
-            {members && members.length > 0 && <AvatarStack avatars={members} />}
+            {others && others.length > 0 && <AvatarStack avatars={others} />}
           </>
         </section>
 

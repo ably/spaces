@@ -9,8 +9,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "format": "prettier --write --ignore-path .gitignore src demo",
-    "format:check": "prettier --check --ignore-path .gitignore src demo",
+    "format": "prettier --write --ignore-path .gitignore src demo demo-react",
+    "format:check": "prettier --check --ignore-path .gitignore src demo demo-react",
     "test": "vitest run",
     "watch": "vitest watch",
     "coverage": "vitest run --coverage",
