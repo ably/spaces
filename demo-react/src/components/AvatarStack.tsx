@@ -10,7 +10,7 @@ interface Props {
 
 export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
   const largeAvatars = avatars.slice(0, 4);
-  const hiddenAvatars = avatars.slice(5);
+  const hiddenAvatars = avatars.slice(4);
 
   return (
     <ul
@@ -18,9 +18,9 @@ export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
         'absolute scale-[3] top-[800px] left-[1220px] translate-x-[-100%]': isInContent,
       })}
     >
-      {largeAvatars.map((avatar) => (
+      {largeAvatars.map((avatar) =>  
         <li
-          key={avatar.profileData.name}
+          key={avatar.connectionId}
           className="ml-[-9px] relative"
         >
           <Avatar
@@ -28,7 +28,7 @@ export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
             isInContent={isInContent}
           />
         </li>
-      ))}
+      )}
 
       {hiddenAvatars.length > 0 && (
         <li>

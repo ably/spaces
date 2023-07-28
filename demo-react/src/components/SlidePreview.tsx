@@ -1,17 +1,17 @@
 import cn from 'classnames';
 import { AvatarStack, CurrentSelectorSvg } from '.';
-import { useSpace } from '../hooks';
+import { useContext } from 'react';
+import SpacesContext from './SpacesContext';
 
 interface Props {
   children: React.ReactNode;
   index: number;
 }
 
-export const SlidePreview = ({ children, index }: Props) => {
-  const { members, space, self } = useSpace();
-  const membersOnASlide = members.filter(({ location }) => location?.slide === index);
+export const SlidePreview = ({ children, index, self, members }: Props) => {
+  const space = useContext(SpacesContext);
+  const membersOnASlide = (members || []).filter(({ location }) => location?.slide === index);
   const isActive = self?.location?.slide === index;
-  const avatars = isActive ? [self, ...membersOnASlide] : membersOnASlide;
 
   const handleSlideClick = () => {
     if (!space || !self) return;
@@ -23,7 +23,7 @@ export const SlidePreview = ({ children, index }: Props) => {
       data-id="slide-preview-list-item"
       className={cn('relative flex flex-row py-8 w-[1320px] rounded-tr-[20px] rounded-br-[20px] cursor-pointer', {
         'bg-[#EEE9FF]': isActive,
-        'mb-[140px]': avatars.length > 0,
+        'mb-[140px]': membersOnASlide.length > 0,
       })}
       onClick={handleSlideClick}
     >
@@ -47,7 +47,7 @@ export const SlidePreview = ({ children, index }: Props) => {
       </div>
       <AvatarStack
         isInContent
-        avatars={avatars}
+        avatars={membersOnASlide}
       />
     </li>
   );
