@@ -128,7 +128,7 @@ The following is an example `membersUpdate` event received by listeners when a u
 
 ### Location
 
-Member locations enable you to track where users are within an application. A location could a form field, multiple cells in a spreadsheet or a slide in a slide deck editor. Subscribe to all location updates, specific location, or locations changes for a given member.
+Member locations enable you to track where users are within an application. A location could be a form field, multiple cells in a spreadsheet or a slide in a slide deck editor. Subscribe to all location updates, specific location, or locations changes for a given member.
 
 ```ts
 // Register a listener to subscribe to events of when users change location
