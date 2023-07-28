@@ -14,18 +14,15 @@ import CursorHistory from './CursorHistory.js';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
 
 import type { CursorsOptions, StrictCursorsOptions } from './options/CursorsOptions.js';
-
+type ConnectionId = string;
 type CursorPosition = { x: number; y: number };
-
 type CursorData = Record<string, unknown>;
-
 type CursorUpdate = {
   clientId: string;
   connectionId: string;
   position: CursorPosition;
   data?: CursorData;
 };
-
 type CursorsEventMap = {
   cursorsUpdate: Record<string, CursorUpdate>;
 };
@@ -160,6 +157,24 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   async getAll() {
     const channel = this.getChannel();
     return await this.cursorHistory.getLastCursorUpdate(channel, this.options.paginationLimit);
+  }
+
+  async getSelf(): Promise<CursorUpdate | undefined> {
+    const self = this.space.getSelf();
+    if (!self) return;
+
+    const allCursors = await this.getAll();
+    return allCursors[self.connectionId] as CursorUpdate;
+  }
+
+  async getOthers(): Promise<Record<ConnectionId, null | CursorUpdate>> {
+    const self = this.space.getSelf();
+    if (!self) return {};
+
+    const allCursors = await this.getAll();
+    const allCursorsFiltered = allCursors;
+    delete allCursorsFiltered[self.connectionId];
+    return allCursorsFiltered;
   }
 }
 

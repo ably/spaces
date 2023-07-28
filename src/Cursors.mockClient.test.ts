@@ -1,13 +1,14 @@
 import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 
-import Space from './Space.js';
+import Space, { SpaceMember } from './Space.js';
 import Cursors from './Cursors.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import CursorBatching from './CursorBatching.js';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
 import CursorDispensing from './CursorDispensing.js';
 import CursorHistory from './CursorHistory.js';
+import type { CursorUpdate } from './Cursors.js';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
@@ -18,6 +19,8 @@ interface CursorsTestContext {
   dispensing: CursorDispensing;
   history: CursorHistory;
   fakeMessageStub: Types.Message;
+  selfStub: SpaceMember;
+  lastCursorPositionsStub: Record<string, CursorUpdate>;
 }
 
 vi.mock('ably/promises');
@@ -335,6 +338,49 @@ describe('Cursors (mockClient)', () => {
   });
 
   describe('CursorHistory', () => {
+    beforeEach<CursorsTestContext>((context) => {
+      context.selfStub = {
+        connectionId: 'connectionId1',
+        clientId: 'clientId1',
+        isConnected: true,
+        profileData: {},
+        location: {},
+        lastEvent: { name: 'enter', timestamp: 0 },
+      };
+
+      context.lastCursorPositionsStub = {
+        connectionId1: {
+          connectionId: 'connectionId1',
+          clientId: 'clientId1',
+          data: {
+            color: 'blue',
+          },
+          position: {
+            x: 2,
+            y: 3,
+          },
+        },
+        connectionId2: {
+          connectionId: 'connectionId2',
+          clientId: 'clientId2',
+          data: undefined,
+          position: {
+            x: 25,
+            y: 44,
+          },
+        },
+        connectionId3: {
+          connectionId: 'connectionId3',
+          clientId: 'clientId3',
+          data: undefined,
+          position: {
+            x: 225,
+            y: 244,
+          },
+        },
+      };
+    });
+
     it<CursorsTestContext>('returns an empty object if there is no members in the space', async ({
       space,
       channel,
@@ -409,6 +455,86 @@ describe('Cursors (mockClient)', () => {
       await space.cursors.getAll();
       expect(currentSpy).toHaveBeenCalledOnce();
       expect(nextSpy).toHaveBeenCalledTimes(cursors.options.paginationLimit - 1);
+    });
+
+    it<CursorsTestContext>('returns undefined if self is not present in cursors', async ({ space }) => {
+      vi.spyOn(space.cursors, 'getAll').mockImplementation(async () => ({}));
+
+      const self = await space.cursors.getSelf();
+      expect(self).toBeUndefined();
+    });
+
+    it<CursorsTestContext>('returns the cursor update for self', async ({
+      space,
+      lastCursorPositionsStub,
+      selfStub,
+    }) => {
+      vi.spyOn(space.cursors, 'getAll').mockImplementation(async () => lastCursorPositionsStub);
+      vi.spyOn(space, 'getSelf').mockReturnValue(selfStub);
+
+      const selfCursor = await space.cursors.getSelf();
+      expect(selfCursor).toEqual(lastCursorPositionsStub['connectionId1']);
+    });
+
+    it<CursorsTestContext>('returns an empty object if self is not present in cursors', async ({ space }) => {
+      vi.spyOn(space.cursors, 'getAll').mockResolvedValue({});
+      vi.spyOn(space, 'getSelf').mockReturnValue(undefined);
+
+      const others = await space.cursors.getOthers();
+      expect(others).toEqual({});
+    });
+
+    it<CursorsTestContext>('returns an empty object if there are no other cursors', async ({ space, selfStub }) => {
+      const onlyMyCursor = {
+        connectionId1: {
+          connectionId: 'connectionId1',
+          clientId: 'clientId1',
+          data: {
+            color: 'blue',
+          },
+          position: {
+            x: 2,
+            y: 3,
+          },
+        },
+      };
+
+      vi.spyOn(space.cursors, 'getAll').mockResolvedValue(onlyMyCursor);
+      vi.spyOn(space, 'getSelf').mockReturnValue(selfStub);
+
+      const others = await space.cursors.getOthers();
+      expect(others).toEqual({});
+    });
+
+    it<CursorsTestContext>('returns an object of other cursors', async ({
+      space,
+      selfStub,
+      lastCursorPositionsStub,
+    }) => {
+      vi.spyOn(space.cursors, 'getAll').mockResolvedValue(lastCursorPositionsStub);
+      vi.spyOn(space, 'getSelf').mockReturnValue(selfStub);
+
+      const others = await space.cursors.getOthers();
+      expect(others).toEqual({
+        connectionId2: {
+          connectionId: 'connectionId2',
+          clientId: 'clientId2',
+          position: {
+            x: 25,
+            y: 44,
+          },
+          data: undefined,
+        },
+        connectionId3: {
+          connectionId: 'connectionId3',
+          clientId: 'clientId3',
+          position: {
+            x: 225,
+            y: 244,
+          },
+          data: undefined,
+        },
+      });
     });
   });
 });

@@ -381,6 +381,34 @@ Example:
 const lastPositions = space.cursors.getAll();
 ```
 
+### getSelf
+
+Get the last CursorUpdate for self.
+
+```ts
+type getSelf = () => <CursorUpdate | undefined>;
+```
+
+Example:
+
+```ts
+const selfPosition = space.cursors.getSelf();
+```
+
+### getOthers
+
+Get the last CursorUpdate for each connection.
+
+```ts
+type getOthers = () => Record<ConnectionId, CursorUpdate>;
+```
+
+Example:
+
+```ts
+const otherPositions = space.cursors.getOthers();
+```
+
 ### subscribe
 
 Listen to `CursorUpdate` events. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
