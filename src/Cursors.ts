@@ -35,8 +35,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     this.cursorBatching = new CursorBatching(this.options.outboundBatchInterval);
 
     const emitCursorUpdate = (update: CursorUpdate): void => this.emit('cursorsUpdate', update);
-    const getCurrentBatchTime: () => number = () => this.cursorBatching.batchTime;
-    this.cursorDispensing = new CursorDispensing(emitCursorUpdate, getCurrentBatchTime);
+    this.cursorDispensing = new CursorDispensing(emitCursorUpdate);
   }
 
   /**

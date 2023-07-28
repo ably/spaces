@@ -4,10 +4,10 @@ import { CURSOR_UPDATE } from './CursorConstants.js';
 import type { CursorUpdate } from './types.js';
 import type { CursorsOptions } from './types.js';
 
-type OutgoingBuffer = Pick<CursorUpdate, 'position' | 'data'>[];
+type OutgoingBuffer = { cursor: Pick<CursorUpdate, 'position' | 'data'>; offset: number };
 
 export default class CursorBatching {
-  outgoingBuffers: OutgoingBuffer = [];
+  outgoingBuffer: OutgoingBuffer[] = [];
 
   batchTime: number;
 
@@ -20,6 +20,9 @@ export default class CursorBatching {
   // Set to `true` if there is more than one user listening to cursors
   shouldSend: boolean = false;
 
+  // Used for tracking offsets in the buffer
+  bufferStartTimestamp: number = 0;
+
   constructor(readonly outboundBatchInterval: CursorsOptions['outboundBatchInterval']) {
     this.batchTime = outboundBatchInterval;
   }
@@ -27,8 +30,21 @@ export default class CursorBatching {
   pushCursorPosition(channel: Types.RealtimeChannelPromise, cursor: Pick<CursorUpdate, 'position' | 'data'>) {
     // Ignore the cursor update if there is no one listening
     if (!this.shouldSend) return;
+
+    const timestamp = new Date().getTime();
+
+    let offset: number;
+    // First update in the buffer is always 0
+    if (this.outgoingBuffer.length === 0) {
+      offset = 0;
+      this.bufferStartTimestamp = timestamp;
+    } else {
+      // Add the offset compared to the first update in the buffer
+      offset = timestamp - this.bufferStartTimestamp;
+    }
+
     this.hasMovement = true;
-    this.pushToBuffer(cursor);
+    this.pushToBuffer({ cursor, offset });
     this.publishFromBuffer(channel, CURSOR_UPDATE);
   }
 
@@ -40,8 +56,8 @@ export default class CursorBatching {
     this.batchTime = batchTime;
   }
 
-  private pushToBuffer(value: Pick<CursorUpdate, 'position' | 'data'>) {
-    this.outgoingBuffers.push(value);
+  private pushToBuffer(value: OutgoingBuffer) {
+    this.outgoingBuffer.push(value);
   }
 
   private async publishFromBuffer(channel: Types.RealtimeChannelPromise, eventName: string) {
@@ -57,10 +73,10 @@ export default class CursorBatching {
       return;
     }
     // Must be copied here to avoid a race condition where the buffer is cleared before the publish happens
-    const bufferCopy = [...this.outgoingBuffers];
+    const bufferCopy = [...this.outgoingBuffer];
     channel.publish(eventName, bufferCopy);
     setTimeout(() => this.batchToChannel(channel, eventName), this.batchTime);
-    this.outgoingBuffers = [];
+    this.outgoingBuffer = [];
     this.hasMovement = false;
     this.isRunning = true;
   }
