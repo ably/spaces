@@ -3,11 +3,8 @@ import { Types } from 'ably';
 import type { CursorUpdate } from './Cursors.js';
 import type { StrictCursorsOptions } from './options/CursorsOptions.js';
 
-type LastPosition = null | CursorUpdate;
-type CursorName = string;
-type CursorsLastPostion = Record<CursorName, LastPosition>;
 type ConnectionId = string;
-type ConnectionsLastPosition = Record<ConnectionId, null | CursorUpdate | CursorsLastPostion>;
+type ConnectionsLastPosition = Record<ConnectionId, null | CursorUpdate>;
 
 export default class CursorHistory {
   constructor() {}
