@@ -1,47 +1,26 @@
-import { clamp } from './utilities/math.js';
-
 import { type CursorUpdate } from './types.js';
 import { type RealtimeMessage } from './utilities/types.js';
 
 export default class CursorDispensing {
-  private buffer: Record<string, CursorUpdate[]> = {};
-  private handlerRunning: boolean = false;
-  private timerIds: ReturnType<typeof setTimeout>[] = [];
+  private buffer: Record<string, { cursor: CursorUpdate; offset: number }[]> = {};
 
-  constructor(private emitCursorUpdate: (update: CursorUpdate) => void, private getCurrentBatchTime: () => number) {}
+  constructor(private emitCursorUpdate: (update: CursorUpdate) => void) {}
 
-  emitFromBatch(batchDispenseInterval: number) {
-    if (!this.bufferHaveData()) {
-      this.handlerRunning = false;
-      return;
+  setEmitCursorUpdate(update: CursorUpdate) {
+    this.emitCursorUpdate(update);
+  }
+
+  emitFromBatch() {
+    for (let connectionId in this.buffer) {
+      const buffer = this.buffer[connectionId];
+      const update = buffer.shift();
+
+      if (!update) continue;
+      setTimeout(() => this.setEmitCursorUpdate(update.cursor), update.offset);
     }
 
-    this.handlerRunning = true;
-
-    const processBuffer = () => {
-      for (let connectionId in this.buffer) {
-        const buffer = this.buffer[connectionId];
-        const update = buffer.shift();
-
-        if (!update) continue;
-        this.emitCursorUpdate(update);
-      }
-
-      if (this.bufferHaveData()) {
-        this.emitFromBatch(this.calculateDispenseInterval());
-      } else {
-        this.handlerRunning = false;
-      }
-
-      this.timerIds.shift();
-    };
-
-    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
-      this.timerIds.forEach((id) => clearTimeout(id));
-      this.timerIds = [];
-      processBuffer();
-    } else {
-      this.timerIds.push(setTimeout(processBuffer, batchDispenseInterval));
+    if (this.bufferHaveData()) {
+      this.emitFromBatch();
     }
   }
 
@@ -53,33 +32,29 @@ export default class CursorDispensing {
     );
   }
 
-  calculateDispenseInterval(): number {
-    const bufferLengths = Object.entries(this.buffer).map(([, v]) => v.length);
-    const highest = bufferLengths.sort()[bufferLengths.length - 1];
-    const finalOutboundBatchInterval = this.getCurrentBatchTime();
-    return Math.floor(clamp(finalOutboundBatchInterval / highest, 1, 1000 / 15));
-  }
-
   processBatch(message: RealtimeMessage) {
-    const updates: CursorUpdate[] = message.data || [];
+    const updates: { cursor: CursorUpdate; offset: number }[] = message.data || [];
 
-    updates.forEach((update) => {
+    updates.forEach((update: { cursor: CursorUpdate; offset: number }) => {
       const enhancedMsg = {
-        clientId: message.clientId,
-        connectionId: message.connectionId,
-        position: update.position,
-        data: update.data,
+        cursor: {
+          clientId: message.clientId,
+          connectionId: message.connectionId,
+          position: update.cursor.position,
+          data: update.cursor.data,
+        },
+        offset: update.offset,
       };
 
-      if (this.buffer[enhancedMsg.connectionId]) {
-        this.buffer[enhancedMsg.connectionId].push(enhancedMsg);
+      if (this.buffer[enhancedMsg.cursor.connectionId]) {
+        this.buffer[enhancedMsg.cursor.connectionId].push(enhancedMsg);
       } else {
-        this.buffer[enhancedMsg.connectionId] = [enhancedMsg];
+        this.buffer[enhancedMsg.cursor.connectionId] = [enhancedMsg];
       }
     });
 
-    if (!this.handlerRunning && this.bufferHaveData()) {
-      this.emitFromBatch(this.calculateDispenseInterval());
+    if (this.bufferHaveData()) {
+      this.emitFromBatch();
     }
   }
 }

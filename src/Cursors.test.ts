@@ -67,7 +67,10 @@ describe('Cursors', () => {
     it<CursorsTestContext>('emits a cursorsUpdate event', ({ space, dispensing, batching, fakeMessageStub }) => {
       const fakeMessage = {
         ...fakeMessageStub,
-        data: [{ position: { x: 1, y: 1 } }, { position: { x: 1, y: 2 }, data: { color: 'red' } }],
+        data: [
+          { cursor: { position: { x: 1, y: 1 } } },
+          { cursor: { position: { x: 1, y: 2 }, data: { color: 'red' } } },
+        ],
       };
 
       const spy = vitest.fn();
@@ -151,16 +154,19 @@ describe('Cursors', () => {
 
       it<CursorsTestContext>('creates an outgoingBuffer for a new cursor movement', ({ batching, channel }) => {
         batching.pushCursorPosition(channel, { position: { x: 1, y: 1 }, data: {} });
-        expect(batching.outgoingBuffers).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
+        expect(batching.outgoingBuffer).toEqual([{ cursor: { position: { x: 1, y: 1 }, data: {} }, offset: 0 }]);
       });
 
       it<CursorsTestContext>('adds cursor data to an existing buffer', ({ batching, channel }) => {
+        vi.useFakeTimers();
         batching.pushCursorPosition(channel, { position: { x: 1, y: 1 }, data: {} });
-        expect(batching.outgoingBuffers).toEqual([{ position: { x: 1, y: 1 }, data: {} }]);
+        expect(batching.outgoingBuffer).toEqual([{ cursor: { position: { x: 1, y: 1 }, data: {} }, offset: 0 }]);
+
+        vi.advanceTimersByTime(10);
         batching.pushCursorPosition(channel, { position: { x: 2, y: 2 }, data: {} });
-        expect(batching.outgoingBuffers).toEqual([
-          { position: { x: 1, y: 1 }, data: {} },
-          { position: { x: 2, y: 2 }, data: {} },
+        expect(batching.outgoingBuffer).toEqual([
+          { cursor: { position: { x: 1, y: 1 }, data: {} }, offset: 0 },
+          { cursor: { position: { x: 2, y: 2 }, data: {} }, offset: 10 },
         ]);
       });
 
@@ -195,17 +201,19 @@ describe('Cursors', () => {
 
       it<CursorsTestContext>('should publish the cursor buffer', async ({ batching, channel }) => {
         batching.hasMovement = true;
-        batching.outgoingBuffers = [{ position: { x: 1, y: 1 }, data: {} }];
+        batching.outgoingBuffer = [{ cursor: { position: { x: 1, y: 1 }, data: {} }, offset: 0 }];
         const spy = vi.spyOn(channel, 'publish');
         await batching['batchToChannel'](channel, CURSOR_UPDATE);
-        expect(spy).toHaveBeenCalledWith(CURSOR_UPDATE, [{ position: { x: 1, y: 1 }, data: {} }]);
+        expect(spy).toHaveBeenCalledWith(CURSOR_UPDATE, [
+          { cursor: { position: { x: 1, y: 1 }, data: {} }, offset: 0 },
+        ]);
       });
 
       it<CursorsTestContext>('should clear the buffer', async ({ batching, channel }) => {
         batching.hasMovement = true;
-        batching.outgoingBuffers = [{ position: { x: 1, y: 1 }, data: {} }];
+        batching.outgoingBuffer = [{ cursor: { position: { x: 1, y: 1 }, data: {} }, offset: 0 }];
         await batching['batchToChannel'](channel, CURSOR_UPDATE);
-        expect(batching.outgoingBuffers).toEqual([]);
+        expect(batching.outgoingBuffer).toEqual([]);
       });
 
       it<CursorsTestContext>('should set hasMovements to false', async ({ batching, channel }) => {
@@ -233,28 +241,12 @@ describe('Cursors', () => {
         expect(spy).not.toHaveBeenCalled();
       });
 
-      it<CursorsTestContext>('does not call emitFromBatch if the loop is already running', async ({
-        dispensing,
-        fakeMessageStub,
-      }) => {
-        const spy = vi.spyOn(dispensing, 'emitFromBatch');
-
-        const fakeMessage = {
-          ...fakeMessageStub,
-          data: [{ position: { x: 1, y: 1 } }],
-        };
-
-        dispensing['handlerRunning'] = true;
-        dispensing.processBatch(fakeMessage);
-        expect(spy).not.toHaveBeenCalled();
-      });
-
       it<CursorsTestContext>('call emitFromBatch if there are updates', async ({ dispensing, fakeMessageStub }) => {
         const spy = vi.spyOn(dispensing, 'emitFromBatch');
 
         const fakeMessage = {
           ...fakeMessageStub,
-          data: [{ position: { x: 1, y: 1 } }],
+          data: [{ cursor: { position: { x: 1, y: 1 } } }],
         };
 
         dispensing.processBatch(fakeMessage);
@@ -268,70 +260,70 @@ describe('Cursors', () => {
         const fakeMessage = {
           ...fakeMessageStub,
           data: [
-            { position: { x: 1, y: 1 } },
-            { position: { x: 2, y: 3 }, data: { color: 'blue' } },
-            { position: { x: 5, y: 4 } },
+            { cursor: { position: { x: 1, y: 1 } }, offset: 10 },
+            { cursor: { position: { x: 2, y: 3 }, data: { color: 'blue' } }, offset: 20 },
+            { cursor: { position: { x: 5, y: 4 } }, offset: 30 },
           ],
         };
+        vi.useFakeTimers();
 
+        const spy = vi.spyOn(dispensing, 'setEmitCursorUpdate');
         dispensing.processBatch(fakeMessage);
-        expect(dispensing['buffer']).toEqual({
-          connectionId: [
-            {
-              position: { x: 1, y: 1 },
-              data: undefined,
-              clientId: 'clientId',
-              connectionId: 'connectionId',
-            },
-            {
-              position: { x: 2, y: 3 },
-              data: { color: 'blue' },
-              clientId: 'clientId',
-              connectionId: 'connectionId',
-            },
-            {
-              position: { x: 5, y: 4 },
-              data: undefined,
-              clientId: 'clientId',
-              connectionId: 'connectionId',
-            },
-          ],
+
+        vi.advanceTimersByTime(10);
+        expect(spy).toHaveBeenCalledWith({
+          position: { x: 1, y: 1 },
+          data: undefined,
+          clientId: 'clientId',
+          connectionId: 'connectionId',
         });
+
+        vi.advanceTimersByTime(10);
+        expect(spy).toHaveBeenCalledWith({
+          position: { x: 2, y: 3 },
+          data: { color: 'blue' },
+          clientId: 'clientId',
+          connectionId: 'connectionId',
+        });
+
+        vi.advanceTimersByTime(10);
+        expect(spy).toHaveBeenCalledWith({
+          position: { x: 5, y: 4 },
+          data: undefined,
+          clientId: 'clientId',
+          connectionId: 'connectionId',
+        });
+        expect(spy).toHaveBeenCalledTimes(3);
       });
 
-      it<CursorsTestContext>('runs until the batch is empty', async ({ dispensing, batching, fakeMessageStub }) => {
+      it<CursorsTestContext>('runs until the batch is empty', async ({ dispensing, fakeMessageStub }) => {
         vi.useFakeTimers();
 
         const fakeMessage = {
           ...fakeMessageStub,
           data: [
-            { position: { x: 1, y: 1 } },
-            { position: { x: 2, y: 3 }, data: { color: 'blue' } },
-            { position: { x: 5, y: 4 } },
+            { cursor: { position: { x: 1, y: 1 } }, offset: 10 },
+            { cursor: { position: { x: 2, y: 3 }, data: { color: 'blue' } }, offset: 20 },
+            { cursor: { position: { x: 5, y: 4 } }, offset: 30 },
           ],
         };
 
-        expect(dispensing['handlerRunning']).toBe(false);
+        const spy = vi.spyOn(dispensing, 'setEmitCursorUpdate');
+
         expect(dispensing.bufferHaveData()).toBe(false);
 
         dispensing.processBatch(fakeMessage);
-        expect(dispensing['buffer']['connectionId']).toHaveLength(3);
-        expect(dispensing['handlerRunning']).toBe(true);
-        expect(dispensing.bufferHaveData()).toBe(true);
-        vi.advanceTimersByTime(batching.batchTime / 2);
+        expect(spy).toHaveBeenCalledTimes(0);
 
-        expect(dispensing['buffer']['connectionId']).toHaveLength(2);
-        expect(dispensing['handlerRunning']).toBe(true);
-        expect(dispensing.bufferHaveData()).toBe(true);
+        vi.advanceTimersByTime(10);
+        expect(spy).toHaveBeenCalledTimes(1);
 
-        vi.advanceTimersByTime(batching.batchTime / 2);
-        expect(dispensing['buffer']['connectionId']).toHaveLength(1);
-        expect(dispensing['handlerRunning']).toBe(true);
-        expect(dispensing.bufferHaveData()).toBe(true);
+        vi.advanceTimersByTime(10);
+        expect(spy).toHaveBeenCalledTimes(2);
 
-        vi.advanceTimersByTime(batching.batchTime);
-        expect(dispensing['buffer']['connectionId']).toHaveLength(0);
-        expect(dispensing['handlerRunning']).toBe(false);
+        vi.advanceTimersByTime(10);
+        expect(spy).toHaveBeenCalledTimes(3);
+
         expect(dispensing.bufferHaveData()).toBe(false);
 
         vi.useRealTimers();
@@ -498,6 +490,7 @@ describe('Cursors', () => {
             x: 2,
             y: 3,
           },
+          offset: 0,
         },
       };
 
