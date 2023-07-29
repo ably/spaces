@@ -1,21 +1,23 @@
 import cn from 'classnames';
 import { AvatarStack, CurrentSelectorSvg } from '.';
 import { useContext } from 'react';
-import SpacesContext from './SpacesContext';
+import { SpacesContext } from '../components';
+import { useMembers } from '../hooks';
 
 interface Props {
   children: React.ReactNode;
   index: number;
 }
 
-export const SlidePreview = ({ children, index, self, members }: Props) => {
+export const SlidePreview = ({ children, index }: Props) => {
   const space = useContext(SpacesContext);
+  const { self, members } = useMembers();
   const membersOnASlide = (members || []).filter(({ location }) => location?.slide === index);
   const isActive = self?.location?.slide === index;
 
   const handleSlideClick = () => {
     if (!space || !self) return;
-    space.locations.set({ ...self.location, slide: index });
+    space.locations.set({ slide: index, element: null });
   };
 
   return (

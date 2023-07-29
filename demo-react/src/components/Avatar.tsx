@@ -9,7 +9,13 @@ export interface AvatarProps extends SpaceMember {
   isSelf?: boolean;
 }
 
-export const Avatar = ({ isSelf = false, isConnected = false, isInContent = false, profileData, ...spaceProps }: AvatarProps) => {
+export const Avatar = ({
+  isSelf = false,
+  isConnected = false,
+  isInContent = false,
+  profileData,
+  ...spaceProps
+}: AvatarProps) => {
   const initials = profileData.name
     .split(' ')
     .map((n: string) => n[0])
@@ -30,8 +36,9 @@ export const Avatar = ({ isSelf = false, isConnected = false, isInContent = fals
 
       <div
         className={cn(
-          'rounded-full flex items-center justify-center xs:h-[32px] xs:w-[32px] md:h-[40px] md:w-[40px]',
-          'bg-gradient-to-tr from-blue-400 to-blue-500',
+          'rounded-full flex items-center justify-center xs:h-[32px] xs:w-[32px] md:h-[40px] md:w-[40px] bg-gradient-to-tr',
+          profileData.color.gradientStart.tw,
+          profileData.color.gradientEnd.tw,
         )}
         data-id="avatar-inner-wrapper"
       >

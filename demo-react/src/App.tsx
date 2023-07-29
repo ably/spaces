@@ -1,13 +1,12 @@
-import { useContext, useEffect, useState } from 'react';
-import { ComingSoon, CommentDrawer, Header, SlideMenu } from './components';
-import SpacesContext from './components/SpacesContext';
-import { getRandomName } from './utils/fake-names';
+import { useContext, useEffect } from 'react';
+
+import { ComingSoon, CommentDrawer, Header, SlideMenu, SpacesContext } from './components';
+import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
 
 const App = () => {
-  const [activeSlide, setActiveSlide] = useState(0);
   const space = useContext(SpacesContext);
-  const { self, members, others } = useMembers();
+  const { self, others } = useMembers();
 
   useEffect(() => {
     if (!space) return;
@@ -17,17 +16,20 @@ const App = () => {
     if (self?.profileData.name) return;
 
     const enter = async () => {
-      await space.enter({ name: getRandomName() });
+      const name = getRandomName();
+      await space.enter({ name, color: getRandomColor() });
       space.locations.set({ slide: 0, element: null });
-    }
+    };
 
     enter();
-  }, [space])
-
+  }, [space]);
 
   return (
     <>
-      <Header self={self} others={others} />
+      <Header
+        self={self}
+        others={others}
+      />
       <div className="text-ably-charcoal-grey bg-slate-500">
         <main>
           <ComingSoon />
@@ -36,11 +38,7 @@ const App = () => {
             id="feature-display"
             className="absolute gap-12 bg-[#F7F6F9] w-full h-[calc(100%-80px)] -z-10 overflow-y-hidden overflow-x-hidden flex justify-between min-w-[375px] xs:flex-col md:flex-row"
           >
-            <SlideMenu
-              activeSlide={activeSlide}
-              setActiveSlide={setActiveSlide}
-              slides={slides}
-            />
+            <SlideMenu slides={slides} />
 
             <section
               id="slide-selected"
@@ -62,7 +60,7 @@ const App = () => {
       </div>
     </>
   );
-}
+};
 
 export default App;
 

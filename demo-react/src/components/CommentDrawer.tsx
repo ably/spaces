@@ -1,4 +1,5 @@
-import { Comment } from './Comment';
+import { getRandomColor } from '../utils';
+import { Comment, CommentProps } from './Comment';
 import { CrossSvg } from './svg';
 
 export const CommentDrawer = () => {
@@ -15,7 +16,7 @@ export const CommentDrawer = () => {
               key={`comment-${index}`}
               className="mb-8"
             >
-              {/* <Comment {...comment} /> */}
+              <Comment {...(comment as CommentProps)} />
             </li>
           ))}
         </ul>
@@ -31,7 +32,7 @@ const comments = [
     isConnected: true,
     lastEvent: { name: 'update', timestamp: 1690491054522 },
     location: undefined,
-    profileData: { name: 'Mark Harris' },
+    profileData: { name: 'Mark Harris', color: getRandomColor() },
     position: '#3 - Slide 2',
     comment: 'Hey - that looks amazing! Can we make this title larger?',
     replies: 2,
@@ -43,7 +44,7 @@ const comments = [
     isConnected: true,
     lastEvent: { name: 'update', timestamp: 1690491054522 },
     location: undefined,
-    profileData: { name: 'Timmy Bahama' },
+    profileData: { name: 'Timmy Bahama', color: getRandomColor() },
     position: '#3 - Slide 2',
     comment: 'Can we add some more text to this slide?',
     replies: 3,
@@ -56,6 +57,7 @@ const comments = [
     location: undefined,
     profileData: {
       name: 'Frankie B. Good',
+      color: getRandomColor(),
     },
     position: '#3 - Slide 3',
     comment: 'I like this slide, but can we change the color of the text?',

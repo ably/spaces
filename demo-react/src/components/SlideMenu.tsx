@@ -6,7 +6,7 @@ interface Props {
   }[];
 }
 
-export const SlideMenu = ({ slides, self, members }: Props) => {
+export const SlideMenu = ({ slides }: Props) => {
   return (
     <menu className="w-[300px] h-0 xs:hidden md:block">
       <ol
@@ -17,8 +17,6 @@ export const SlideMenu = ({ slides, self, members }: Props) => {
           <SlidePreview
             key={`slide-preview-${index}`}
             index={index}
-            self={self}
-            members={members}
           >
             {children}
           </SlidePreview>

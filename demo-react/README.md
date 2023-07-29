@@ -1,4 +1,3 @@
-[] Different gradients for avatars
 [] texts on the slide
 
 # React + TypeScript + Vite

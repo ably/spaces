@@ -1,9 +1,14 @@
+import { SpaceMember } from '@ably-labs/spaces';
 import { Avatar } from './Avatar';
 import { AvatarStack } from './AvatarStack';
 import { ExternalLinkSvg, InfoSvg } from './svg';
 
-export const Header = ({ self, others }) => {
+interface Props {
+  self?: SpaceMember;
+  others?: SpaceMember[];
+}
 
+export const Header = ({ self, others }: Props) => {
   return (
     <header
       id="main-header"
