@@ -2,11 +2,14 @@ import cn from 'classnames';
 import { useElementSelect, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses } from '../utils';
 
-interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
-  variant?: 'regular' | 'aside';
+interface Props {
+  src: string;
+  children?: React.ReactNode;
+  className?: string;
+  id?: string;
 }
 
-export const Paragraph = ({ variant = 'regular', id, className, ...props }: Props) => {
+export const Image = ({ src, children, className, id }: Props) => {
   const { members } = useMembers();
   const { handleSelect } = useElementSelect(id);
   const activeMember = findActiveMember(id, members);
@@ -14,21 +17,19 @@ export const Paragraph = ({ variant = 'regular', id, className, ...props }: Prop
   const outlineClasses = getOutlineClasses(activeMember);
 
   return (
-    <p
-      id={id}
-      data-before={name}
-      className={cn(
-        'text-ably-avatar-stack-demo-slide-text cursor-pointer relative',
-        {
-          'xs:w-auto xs:text-xs xs:my-4 md:my-0 md:text-lg': variant === 'regular',
-          'text-[13px] p-0': variant === 'aside',
+    <figure className={cn('relative xs:my-4 md:my-0', className)}>
+      <img
+        id={id}
+        data-before={name}
+        data-id="slide-image-placeholder"
+        className={cn('cursor-pointer', {
           [`outline-2 outline before:content-[attr(data-before)] before:absolute before:-top-[22px] before:-left-[2px] before:px-[10px] before:text-sm before:text-white before:rounded-t-lg before:normal-case ${outlineClasses}`]:
             !!activeMember,
-        },
-        className,
-      )}
-      {...props}
-      onClick={handleSelect}
-    />
+        })}
+        src={src}
+        onClick={handleSelect}
+      />
+      {children ? children : null}
+    </figure>
   );
 };

@@ -1,6 +1,17 @@
 import { useContext, useEffect } from 'react';
+import { nanoid } from 'nanoid';
 
-import { ComingSoon, CommentDrawer, Header, SlideMenu, SpacesContext } from './components';
+import {
+  ComingSoon,
+  CommentDrawer,
+  Header,
+  SlideMenu,
+  SpacesContext,
+  Title,
+  Paragraph,
+  Image,
+  CurrentSlide,
+} from './components';
 import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
 
@@ -44,16 +55,13 @@ const App = () => {
               id="slide-selected"
               className="shadow-ably-paper xs:m-4 md:m-0 md:relative md:w-[1020px] md:h-[687px] md:min-w-[1020px] md:min-h-[687px] md:top-[79px] lg:mr-[380px]"
             >
-              <div
-                data-id="slide-wrapper"
-                className="flex flex-col justify-between px-8 py-8 md:h-full md:w-full"
-              ></div>
+              <CurrentSlide slides={slides} />
+              {/* TODO: cursor container component */}
               <div
                 data-id="slide-cursor-container"
                 className="h-full w-full z-10 pointer-events-none top-0 left-0 hidden absolute md:block"
               ></div>
             </section>
-
             <CommentDrawer />
           </section>
         </main>
@@ -66,12 +74,169 @@ export default App;
 
 const slides = [
   {
-    children: <>Slide 1</>,
+    children: (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-28 h-full items-center p-8 md:p-20">
+        <div>
+          <Title
+            id={nanoid()}
+            className="w-48"
+          >
+            Key Design Principles
+          </Title>
+          <Paragraph id={nanoid()}>
+            Effective design centres on four basic principles: contrast, repetition, alignment and proximity. These
+            appear in every design.
+          </Paragraph>
+        </div>
+        <div className="grid grid-cols-2 gap-8">
+          <Image
+            src="/contrast.svg"
+            id={nanoid()}
+          >
+            <div className="absolute top-4 md:top-8 left-0 scale-[70%]">
+              <Title
+                variant="h2"
+                id={nanoid()}
+              >
+                Contrast
+              </Title>
+              <Paragraph
+                variant="aside"
+                id={nanoid()}
+              >
+                When a design uses several elements, the goal is to make each one distinct.
+              </Paragraph>
+            </div>
+          </Image>
+          <Image
+            src="/repetition.svg"
+            id={nanoid()}
+          >
+            <div className="absolute top-4 md:top-8 left-0 scale-[70%]">
+              <Title
+                variant="h2"
+                id={nanoid()}
+              >
+                Repetition
+              </Title>
+              <Paragraph
+                variant="aside"
+                id={nanoid()}
+              >
+                Repetition helps designers establish relationships, develop organization and strengthen unity.
+              </Paragraph>
+            </div>
+          </Image>
+          <Image
+            src="/alignment.svg"
+            id={nanoid()}
+          >
+            <div
+              data-id="slide-figcaption-placeholder"
+              className="absolute top-4 md:top-8 left-0 scale-[70%]"
+            >
+              <Title
+                variant="h2"
+                id={nanoid()}
+              >
+                Alignment
+              </Title>
+              <Paragraph
+                variant="aside"
+                id={nanoid()}
+              >
+                Alignment creates a clean, sophisticated look. All elements should relate to all others in some way.
+              </Paragraph>
+            </div>
+          </Image>
+          <Image
+            src="/proximity.svg"
+            id={nanoid()}
+          >
+            <div
+              data-id="slide-figcaption-placeholder"
+              className="absolute top-4 md:top-8 left-0 scale-[70%]"
+            >
+              <Title
+                variant="h2"
+                id={nanoid()}
+              >
+                Proximity
+              </Title>
+              <Paragraph
+                variant="aside"
+                id={nanoid()}
+              >
+                When items are grouped, they become a single visual unit, rather than several separate entities.
+              </Paragraph>
+            </div>
+          </Image>
+        </div>
+      </div>
+    ),
   },
   {
-    children: <>Slide 2</>,
+    children: (
+      <div className="grid grid-cols-2 gap-28 h-full items-center p-20">
+        <div>
+          <Title
+            variant="h3"
+            id={nanoid()}
+          >
+            How users read
+          </Title>
+          <Title
+            variant="h2"
+            className="mb-4"
+            id={nanoid()}
+          >
+            Add graphics
+          </Title>
+          <Paragraph
+            className="!mb-8"
+            id={nanoid()}
+          >
+            No one likes boring text blocks on a website. And{' '}
+            <span className="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span>{' '}
+            are the fastest way to get information.
+          </Paragraph>
+          <Paragraph id={nanoid()}>
+            But <span className="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>
+            . If you can't explain for what purpose you put this line or icon, it's better to abandon it.
+          </Paragraph>
+        </div>
+        <Image
+          src="/collaborative-document.svg"
+          className="absolute right-[26px] w-[477px]"
+          id={nanoid()}
+        />
+      </div>
+    ),
   },
   {
-    children: <>Slide 3</>,
+    children: (
+      <div className="grid grid-cols-2 gap-28 h-full items-center p-20">
+        <div>
+          <Title
+            variant="h2"
+            className="mb-4"
+            id={nanoid()}
+          >
+            Design Statistics
+          </Title>
+          <Paragraph
+            className="!mb-[250px]"
+            id={nanoid()}
+          >
+            How do SMBs rate the importance of graphic design to their success?
+          </Paragraph>
+        </div>
+        <Image
+          src="/bubble-diagram.svg"
+          className="absolute md:w-[688px] right-72 top-20"
+          id={nanoid()}
+        />
+      </div>
+    ),
   },
 ];

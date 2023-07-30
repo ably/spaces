@@ -4,12 +4,12 @@ import { useContext } from 'react';
 import { SpacesContext } from '../components';
 import { useMembers } from '../hooks';
 
-interface Props {
+export interface SlidePreviewProps {
   children: React.ReactNode;
   index: number;
 }
 
-export const SlidePreview = ({ children, index }: Props) => {
+export const SlidePreview = ({ children, index }: SlidePreviewProps) => {
   const space = useContext(SpacesContext);
   const { self, members } = useMembers();
   const membersOnASlide = (members || []).filter(({ location }) => location?.slide === index);

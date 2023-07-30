@@ -33,7 +33,13 @@ export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
       {hiddenAvatars.length > 0 && (
         <li>
           <div
-            className="h-[46px] w-[46px] rounded-full flex items-center justify-center bg-gradient-to-b from-white to-white ml-[-9px] relative group"
+            className={cn(
+              'h-[46px] w-[46px] rounded-full flex items-center justify-center bg-white ml-[-9px] relative group',
+              {
+                'bg-white': !isInContent,
+                'bg-[#F7F6F9]': isInContent,
+              },
+            )}
             data-id="avatar-wrapper"
           >
             <div

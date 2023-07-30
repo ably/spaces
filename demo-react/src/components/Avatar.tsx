@@ -27,7 +27,8 @@ export const Avatar = ({
         'rounded-full group relative flex items-center justify-center xs:h-[32px] xs:w-[32px] md:h-[46px] md:w-[46px]',
         {
           'bg-gradient-to-b from-yellow-400 to-yellow-500 ': isSelf,
-          'bg-white': !isSelf,
+          'bg-white': !isSelf && !isInContent,
+          'bg-[#F7F6F9]': isInContent,
         },
       )}
       data-id="avatar-wrapper"
