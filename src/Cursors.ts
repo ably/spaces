@@ -27,7 +27,7 @@ type CursorUpdate = {
 };
 
 type CursorsEventMap = {
-  cursorsUpdate: Record<string, CursorUpdate>;
+  cursorsUpdate: [Record<string, CursorUpdate>];
 };
 
 const emitterHasListeners = (emitter) => {

@@ -1,14 +1,15 @@
 import { Types } from 'ably';
 
-import SpaceOptions from './options/SpaceOptions.js';
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
   type EventKey,
   type EventListener,
+  type EventMap,
 } from './utilities/EventEmitter.js';
 import Locations from './Locations.js';
 import Cursors from './Cursors.js';
+import Members from './Members.js';
 
 // Unique prefix to avoid conflicts with channels
 import { LOCATION_UPDATE, MEMBERS_UPDATE, SPACE_CHANNEL_PREFIX } from './utilities/Constants.js';
@@ -32,33 +33,102 @@ type SpaceLeaver = {
   timeoutId: ReturnType<typeof setTimeout>;
 };
 
-const SPACE_OPTIONS_DEFAULTS = {
-  offlineTimeout: 120_000,
+export type SpaceOptions = {
+  offlineTimeout: number;
+  cursors: {
+    outboundBatchInterval: number;
+    paginationLimit: number;
+  };
 };
 
-type SpaceEventsMap = { membersUpdate: SpaceMember[]; leave: SpaceMember; enter: SpaceMember; update: SpaceMember };
+const SPACE_OPTIONS_DEFAULTS = {
+  offlineTimeout: 120_000,
+  cursors: {
+    outboundBatchInterval: 100,
+    paginationLimit: 5,
+  },
+};
 
-class Space extends EventEmitter<SpaceEventsMap> {
+// Like Partial, but support a nested object
+export type Subset<K> = {
+  [attr in keyof K]?: K[attr] extends object ? Subset<K[attr]> : K[attr];
+};
+
+type SpaceEventsMap = {
+  membersUpdate: [SpaceMember[]];
+  leave: [SpaceMember];
+  enter: [SpaceMember];
+  update: [SpaceMember];
+};
+
+interface Provider<ProviderEventMap extends EventMap> {
+  subscribe<K extends EventKey<ProviderEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<ProviderEventMap[K]>,
+    listener?: EventListener<ProviderEventMap[K]>,
+  );
+
+  unsubscribe<K extends EventKey<ProviderEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<ProviderEventMap[K]>,
+    listener?: EventListener<ProviderEventMap[K]>,
+  );
+}
+
+interface ICursors {
+  set: Cursors['set'];
+  subscribe: Cursors['subscribe'];
+  unsubscribe: Cursors['unsubscribe'];
+  getAll: Cursors['getAll'];
+}
+
+class Space extends EventEmitter<SpaceEventsMap> implements Provider<SpaceEventsMap> {
   private channelName: string;
   private connectionId: string | undefined;
   private channel: Types.RealtimeChannelPromise;
-  private members: SpaceMember[];
+
   private leavers: SpaceLeaver[];
   private options: SpaceOptions;
 
-  readonly locations: Locations;
-  readonly cursors: Cursors;
+  private _cursors: Cursors;
 
-  constructor(readonly name: string, readonly client: Types.RealtimePromise, options?: SpaceOptions) {
+  readonly locations: Locations;
+  readonly members: Members;
+  readonly cursors: ICursors;
+
+  constructor(readonly name: string, readonly client: Types.RealtimePromise, options?: Subset<SpaceOptions>) {
     super();
-    this.options = { ...SPACE_OPTIONS_DEFAULTS, ...options };
+
+    this.options = this.setOptions(options);
     this.connectionId = this.client.connection.id;
-    this.members = [];
-    this.leavers = [];
+
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
     this.setChannel(this.name);
+
+    this.members = new Members(this.connectionId, this.channel, this.options.offlineTimeout);
     this.locations = new Locations(this, this.channel);
-    this.cursors = new Cursors(this, options?.cursors);
+
+    this._cursors = new Cursors(this, options?.cursors);
+
+    this.cursors = {
+      set: this._cursors.set,
+      subscribe: this._cursors.subscribe,
+      unsubscribe: this._cursors.unsubscribe,
+      getAll: this._cursors.getAll,
+    };
+  }
+
+  private setOptions(options?: Subset<SpaceOptions>): SpaceOptions {
+    const {
+      offlineTimeout,
+      cursors: { outboundBatchInterval, paginationLimit },
+    } = SPACE_OPTIONS_DEFAULTS;
+
+    return {
+      offlineTimeout: options?.offlineTimeout ?? offlineTimeout,
+      cursors: {
+        outboundBatchInterval: options?.cursors?.outboundBatchInterval ?? outboundBatchInterval,
+        paginationLimit: options?.cursors?.paginationLimit ?? paginationLimit,
+      },
+    };
   }
 
   private setChannel(rootName: string) {
@@ -178,8 +248,8 @@ class Space extends EventEmitter<SpaceEventsMap> {
   private onPresenceUpdate(message: Types.PresenceMessage) {
     if (!message) return;
 
-    this.updateLeavers(message);
-    this.updateMembers(message);
+    this.members.updateLeavers(message);
+    this.members.updateMembers(message);
 
     this.emit(MEMBERS_UPDATE, this.members);
   }

@@ -63,7 +63,7 @@ export class InvalidArgumentError extends Error {
   }
 }
 
-type EventMap = Record<string, any>;
+export type EventMap = Record<string, [unknown?]>;
 // extract all the keys of an event map and use them as a type
 export type EventKey<T extends EventMap> = string & keyof T;
 export type EventListener<T> = (params: T) => void;
@@ -197,7 +197,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param event the event name
    * @param args the arguments to pass to the listener
    */
-  emit<K extends EventKey<T>>(event: K, ...args: unknown[] /* , args... */) {
+  emit<K extends EventKey<T>>(event: K, ...args: [...T[K]] /* , args... */) {
     const eventThis = { event };
     const listeners: Function[] = [];
 

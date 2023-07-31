@@ -1,17 +1,16 @@
 import { Types } from 'ably';
 
-import Space from './Space.js';
+import Space, { SpaceMember } from './Space.js';
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
   type EventKey,
   type EventListener,
 } from './utilities/EventEmitter.js';
-import { LOCATION_UPDATE } from './utilities/Constants.js';
 
-type LocationUpdate = typeof LOCATION_UPDATE;
-
-type LocationEventMap = Record<LocationUpdate, any>;
+type LocationEventMap = {
+  locationUpdate: [{ member: SpaceMember; previousLocation: unknown; currentLocation: unknown }];
+};
 
 export default class Locations extends EventEmitter<LocationEventMap> {
   constructor(public space: Space, private channel: Types.RealtimeChannelPromise) {
@@ -27,7 +26,7 @@ export default class Locations extends EventEmitter<LocationEventMap> {
     if (member) {
       const { previousLocation, currentLocation } = message.data;
       member.location = currentLocation;
-      this.emit(LOCATION_UPDATE, { member: { ...member }, currentLocation, previousLocation });
+      this.emit('locationUpdate', { member: { ...member }, currentLocation, previousLocation });
     }
   }
 

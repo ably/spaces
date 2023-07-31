@@ -1,7 +1,7 @@
 import * as Ably from 'ably';
 import { Types } from 'ably';
 
-import SpaceOptions from './options/SpaceOptions.js';
+import type { SpaceOptions, Subset } from './Space.js';
 import Space from './Space.js';
 
 class Spaces {
@@ -30,7 +30,7 @@ class Spaces {
     options.agents = { ...(options.agents ?? options.agents), ...agent };
   }
 
-  async get(name: string, options?: SpaceOptions): Promise<Space> {
+  async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {
       throw new Error('Spaces must have a non-empty name');
     }
