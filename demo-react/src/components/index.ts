@@ -4,6 +4,7 @@ export * from './AvatarStack';
 export * from './Comment';
 export * from './CommentDrawer';
 export * from './CurrentSlide';
+export * from './Cursors';
 export * from './Header';
 export * from './Image';
 export * from './Paragraph';

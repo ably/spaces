@@ -1,6 +1,16 @@
 import { useContext, useEffect } from 'react';
 
-import { CommentDrawer, Header, SlideMenu, SpacesContext, Title, Paragraph, Image, CurrentSlide } from './components';
+import {
+  CommentDrawer,
+  Header,
+  SlideMenu,
+  SpacesContext,
+  Title,
+  Paragraph,
+  Image,
+  CurrentSlide,
+  Cursors,
+} from './components';
 import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
 
@@ -43,11 +53,7 @@ const App = () => {
               className="shadow-ably-paper xs:m-4 md:m-0 md:relative md:w-[1020px] md:h-[687px] md:min-w-[1020px] md:min-h-[687px] md:top-[79px] lg:mr-[380px]"
             >
               <CurrentSlide slides={slides} />
-              {/* TODO: cursor container component */}
-              <div
-                data-id="slide-cursor-container"
-                className="h-full w-full z-10 pointer-events-none top-0 left-0 hidden absolute md:block"
-              ></div>
+              <Cursors />
             </section>
             <CommentDrawer />
           </section>
