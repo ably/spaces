@@ -17,7 +17,7 @@ export const Image = ({ src, children, className, id }: Props) => {
   const outlineClasses = getOutlineClasses(activeMember);
 
   return (
-    <figure className={cn('relative xs:my-4 md:my-0', className)}>
+    <div className={cn('relative xs:my-4 md:my-0', className)}>
       <img
         id={id}
         data-before={name}
@@ -30,6 +30,6 @@ export const Image = ({ src, children, className, id }: Props) => {
         onClick={handleSelect}
       />
       {children ? children : null}
-    </figure>
+    </div>
   );
 };

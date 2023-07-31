@@ -62,11 +62,11 @@ export default App;
 const slides = [
   {
     children: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-28 h-full items-center p-8 md:p-20">
+      <div className="grid grid-cols-1 md:grid-cols-[390px_1fr] gap-8 h-full items-center p-8">
         <div>
           <Title
             id="1"
-            className="w-48"
+            className="md:mb-24"
           >
             Key Design Principles
           </Title>
@@ -75,12 +75,12 @@ const slides = [
             appear in every design.
           </Paragraph>
         </div>
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-2">
           <Image
             src="/contrast.svg"
             id="3"
           >
-            <div className="absolute top-4 md:top-8 left-0 scale-[70%]">
+            <div className="absolute top-5 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
                 variant="h2"
                 id="4"
@@ -99,7 +99,7 @@ const slides = [
             src="/repetition.svg"
             id="6"
           >
-            <div className="absolute top-4 md:top-8 left-0 scale-[70%]">
+            <div className="absolute top-3 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
                 variant="h2"
                 id="7"
@@ -120,7 +120,7 @@ const slides = [
           >
             <div
               data-id="slide-figcaption-placeholder"
-              className="absolute top-4 md:top-8 left-0 scale-[70%]"
+              className="absolute top-3 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto"
             >
               <Title
                 variant="h2"
@@ -142,7 +142,7 @@ const slides = [
           >
             <div
               data-id="slide-figcaption-placeholder"
-              className="absolute top-4 md:top-8 left-0 scale-[70%]"
+              className="absolute top-3 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto"
             >
               <Title
                 variant="h2"
@@ -164,7 +164,7 @@ const slides = [
   },
   {
     children: (
-      <div className="grid grid-cols-2 gap-28 h-full items-center p-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8 relative">
         <div>
           <Title
             variant="h3"
@@ -173,8 +173,8 @@ const slides = [
             How users read
           </Title>
           <Title
-            variant="h2"
-            className="mb-4"
+            variant="h1"
+            className="mb-12"
             id="2"
           >
             Add graphics
@@ -194,7 +194,7 @@ const slides = [
         </div>
         <Image
           src="/collaborative-document.svg"
-          className="absolute right-[26px] w-[477px]"
+          className="absolute w-72 -right-1 md:-right-4 md:w-[477px]"
           id="5"
         />
       </div>
@@ -202,17 +202,17 @@ const slides = [
   },
   {
     children: (
-      <div className="grid grid-cols-2 gap-28 h-full items-center p-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8">
         <div>
           <Title
-            variant="h2"
-            className="mb-4"
+            variant="h1"
+            className="mb-12"
             id="1"
           >
             Design Statistics
           </Title>
           <Paragraph
-            className="!mb-[250px]"
+            className="md:!mb-[350px]"
             id="2"
           >
             How do SMBs rate the importance of graphic design to their success?
@@ -220,7 +220,7 @@ const slides = [
         </div>
         <Image
           src="/bubble-diagram.svg"
-          className="absolute md:w-[688px] right-72 top-20"
+          className="absolute md:w-[688px] md:right-60 md:top-20"
           id="3"
         />
       </div>

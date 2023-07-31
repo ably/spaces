@@ -14,22 +14,22 @@ export const Header = ({ self, others }: Props) => {
       id="main-header"
       className="bg-white"
     >
-      <div className="py-4 mx-auto xs:justify-between xs:grid xs:grid-rows-2 xs:grid-cols-2 md:max-w-screen-2xl md:px-16 md:flex md:items-center">
-        <section>
+      <div className="mx-auto justify-between grid grid-rows-2 grid-cols-2 md:max-w-screen-2xl md:px-16 md:flex md:items-center">
+        <section className="py-4">
           <p className="font-semibold pl-8 md:text-2xl">Team Argo</p>
           <p className="leading-5 pl-8">Pitch deck</p>
         </section>
 
-        <section className="ml-auto flex group relative pr-8 xs:mt-2 md:mt-0">
+        <section className="ml-auto flex group relative pr-8 py-4">
           <InfoSvg className="text-ably-black" />
           <p className="ml-2 xs:text-sm md:font-medium md:text-base">How to try this demo</p>
-          <div className="group-hover p-4 bg-[#FAFAFB] rounded-lg hidden group-hover:block absolute top-full mt-2 w-[300px] -left-[70%] border border-[#D9D9DA] xs:text-xs md:text-sm">
+          <div className="group-hover p-4 bg-[#FAFAFB] rounded-lg hidden group-hover:block absolute top-full mt-2 w-[300px] -left-[70%] border border-[#D9D9DA] text-xs md:text-sm z-20">
             Open this page in multiple windows or share the URL with your team to try out the live avatar stack.
           </div>
         </section>
         <section
           id="avatar-stack-container"
-          className="flex justify-end col-span-2 xs:border-t xs:border-[#D9D9DA] xs:ml-0 xs:pr-8 md:ml-8 md:border-t-0"
+          className="flex justify-end col-span-2 xs:border-t xs:border-[#D9D9DA] xs:ml-0 xs:pr-8 md:ml-8 md:border-t-0 py-4"
         >
           <>
             {self && (

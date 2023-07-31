@@ -21,7 +21,7 @@ export const Paragraph = ({ variant = 'regular', id, className, ...props }: Prop
         'text-ably-avatar-stack-demo-slide-text cursor-pointer relative',
         {
           'xs:w-auto xs:text-xs xs:my-4 md:my-0 md:text-lg': variant === 'regular',
-          'text-[13px] p-0': variant === 'aside',
+          'text-[13px] p-0 leading-6': variant === 'aside',
           [`outline-2 outline before:content-[attr(data-before)] before:absolute before:-top-[22px] before:-left-[2px] before:px-[10px] before:text-sm before:text-white before:rounded-t-lg before:normal-case ${outlineClasses}`]:
             !!activeMember,
         },
