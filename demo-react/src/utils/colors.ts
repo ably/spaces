@@ -4,8 +4,19 @@ import { DefaultColors } from 'tailwindcss/types/generated/colors';
 const filteredTwSet = Object.keys(twColorSet)
   .filter(
     (colorName) =>
-      !['gray', 'zinc', 'stone', 'slate', 'amber', 'neutral'].includes(colorName) &&
-      typeof twColorSet[colorName as keyof DefaultColors] === 'object',
+      ![
+        'gray',
+        'zinc',
+        'stone',
+        'slate',
+        'amber',
+        'neutral',
+        'warmGray',
+        'trueGray',
+        'coolGray',
+        'blueGray',
+        'lightBlue',
+      ].includes(colorName) && typeof twColorSet[colorName as keyof DefaultColors] === 'object',
   )
   .map((colorName) => {
     return {
