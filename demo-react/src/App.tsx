@@ -1,16 +1,6 @@
 import { useContext, useEffect } from 'react';
 
-import {
-  ComingSoon,
-  CommentDrawer,
-  Header,
-  SlideMenu,
-  SpacesContext,
-  Title,
-  Paragraph,
-  Image,
-  CurrentSlide,
-} from './components';
+import { CommentDrawer, Header, SlideMenu, SpacesContext, Title, Paragraph, Image, CurrentSlide } from './components';
 import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
 
@@ -42,8 +32,6 @@ const App = () => {
       />
       <div className="text-ably-charcoal-grey bg-slate-500">
         <main>
-          <ComingSoon />
-
           <section
             id="feature-display"
             className="absolute gap-12 bg-[#F7F6F9] w-full h-[calc(100%-80px)] -z-10 overflow-y-hidden overflow-x-hidden flex justify-between min-w-[375px] xs:flex-col md:flex-row"

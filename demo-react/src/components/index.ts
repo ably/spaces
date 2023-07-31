@@ -1,7 +1,6 @@
 export * from './Avatar';
 export * from './AvatarInfo';
 export * from './AvatarStack';
-export * from './ComingSoon';
 export * from './Comment';
 export * from './CommentDrawer';
 export * from './CurrentSlide';

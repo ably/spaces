@@ -1,6 +1,6 @@
 import { getRandomColor } from '../utils';
 import { Comment, CommentProps } from './Comment';
-import { CrossSvg } from './svg';
+import { AblySvg, CrossSvg } from './svg';
 
 export const CommentDrawer = () => {
   return (
@@ -20,6 +20,13 @@ export const CommentDrawer = () => {
             </li>
           ))}
         </ul>
+        <a
+          className="absolute right-6 bottom-6 items-center flex flex-row rounded-md bg-ably-black h-[56px] px-[20px] py-[11px] text-white font-medium"
+          href="https://ably.com/sign-up"
+        >
+          Powered by
+          <AblySvg className="ml-2" />
+        </a>
       </aside>
     </section>
   );
