@@ -1,7 +1,6 @@
 import { useContext, useEffect } from 'react';
 
 import {
-  CommentDrawer,
   Header,
   SlideMenu,
   SpacesContext,
@@ -10,6 +9,7 @@ import {
   Image,
   CurrentSlide,
   Cursors,
+  AblySvg,
 } from './components';
 import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
@@ -55,9 +55,15 @@ const App = () => {
               <CurrentSlide slides={slides} />
               <Cursors />
             </section>
-            <CommentDrawer />
           </section>
         </main>
+        <a
+          className="absolute right-6 bottom-6 items-center flex flex-row rounded-md bg-ably-black h-[56px] px-[20px] py-[11px] text-white font-medium"
+          href="https://ably.com/sign-up"
+        >
+          Powered by
+          <AblySvg className="ml-2" />
+        </a>
       </div>
     </>
   );
