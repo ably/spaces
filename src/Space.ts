@@ -20,6 +20,7 @@ export type SpaceMember = {
   isConnected: boolean;
   profileData: { [key: string]: any };
   location: any;
+  previousLocation?: any;
   lastEvent: {
     name: Types.PresenceAction;
     timestamp: number;
@@ -31,6 +32,12 @@ type SpaceLeaver = {
   connectionId: string;
   timeoutId: ReturnType<typeof setTimeout>;
 };
+
+interface SpaceMemberData {
+  profileData?: any;
+  currentLocation?: any;
+  previousLocation?: any;
+}
 
 const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
@@ -210,11 +217,13 @@ class Space extends EventEmitter<SpaceEventsMap> {
       return;
     } else if (isFunction(profileDataOrUpdateFn) && self) {
       const update = profileDataOrUpdateFn(self.profileData);
-      await this.channel.presence.update({ profileData: update });
+      self.profileData = update;
+      await this.updateSelf(self);
       return;
     }
 
-    await this.channel.presence.update({ profileData: profileDataOrUpdateFn });
+    self.profileData = profileDataOrUpdateFn;
+    await this.updateSelf(self);
     return;
   }
 
@@ -232,6 +241,23 @@ class Space extends EventEmitter<SpaceEventsMap> {
     }
 
     return;
+  }
+
+  updateSelf(member: SpaceMember): Promise<void> {
+    const data: SpaceMemberData = {};
+
+    if (member.profileData) {
+      data.profileData = member.profileData;
+    }
+
+    if (member.location) {
+      data.currentLocation = member.location;
+    }
+    if (member.previousLocation) {
+      data.previousLocation = member.previousLocation;
+    }
+
+    return this.channel.presence.update(data);
   }
 
   subscribe<K extends EventKey<SpaceEventsMap>>(

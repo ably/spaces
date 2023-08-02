@@ -37,11 +37,10 @@ export default class Locations extends EventEmitter<LocationEventMap> {
       throw new Error('Must enter a space before setting a location');
     }
 
-    return this.channel.presence.update({
-      profileData: self.profileData,
-      previousLocation: self.location,
-      currentLocation: location,
-    });
+    self.previousLocation = self.location;
+    self.location = location;
+
+    return this.space.updateSelf(self);
   }
 
   subscribe<K extends EventKey<LocationEventMap>>(

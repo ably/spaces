@@ -38,6 +38,23 @@ describe('Locations (mockClient)', () => {
       await space.enter();
       space.locations.set('location1');
       expect(spy).toHaveBeenCalledOnce();
+      expect(spy).toHaveBeenCalledWith({
+        profileData: {},
+        currentLocation: 'location1',
+      });
+    });
+
+    it<SpaceTestContext>('sets previousLocation after setting location multiple times', async ({ space, presence }) => {
+      const spy = vi.spyOn(presence, 'update');
+      await space.enter();
+      space.locations.set('location1');
+      space.locations.set('location2');
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenNthCalledWith(2, {
+        profileData: {},
+        previousLocation: 'location1',
+        currentLocation: 'location2',
+      });
     });
 
     it<SpaceTestContext>('fires an event when a location is set', async ({ space }) => {

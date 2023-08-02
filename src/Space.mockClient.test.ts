@@ -148,6 +148,34 @@ describe('Space (mockClient)', () => {
         await space.updateProfileData((profileData) => ({ ...profileData, a: 2 }));
         expect(updateSpy).toHaveBeenNthCalledWith(1, { profileData: { a: 2 } });
       });
+
+      it<SpaceTestContext>('maintains the members location in presence data', async ({ presence, space }) => {
+        const spy = vi.spyOn(presence, 'update');
+        vi.spyOn(space, 'getSelf').mockReturnValue({
+          clientId: '1',
+          connectionId: 'testConnectionId',
+          isConnected: true,
+          location: null,
+          lastEvent: {
+            name: 'enter',
+            timestamp: 1,
+          },
+          profileData: {
+            a: 1,
+          },
+        });
+        await space.locations.set('location1');
+        await space.updateProfileData({ a: 2 });
+        expect(spy).toHaveBeenCalledTimes(2);
+        expect(spy).toHaveBeenNthCalledWith(1, {
+          profileData: { a: 1 },
+          currentLocation: 'location1',
+        });
+        expect(spy).toHaveBeenNthCalledWith(2, {
+          profileData: { a: 2 },
+          currentLocation: 'location1',
+        });
+      });
     });
   });
 
