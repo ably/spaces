@@ -5,28 +5,44 @@ import find from 'lodash.find';
 import omit from 'lodash.omit';
 import { CursorSvg, SpacesContext } from '.';
 import { useMembers, CURSOR_ENTER, CURSOR_LEAVE, CURSOR_MOVE } from '../hooks';
+import { SpaceMember } from '@ably-labs/spaces';
 
-// TODO: type this
-const reducer = (state: any, action: any) => {
-  const { connectionId, members, type } = action;
+type ActionType = 'move' | 'enter' | 'leave';
+interface Action {
+  type: ActionType;
+  data: {
+    connectionId: string;
+    members?: SpaceMember[];
+    position?: {
+      x: number;
+      y: number;
+    };
+  };
+}
+interface State {
+  [connectionId: string]: SpaceMember & Action['data'];
+}
+
+const reducer = (state: State, action: Action): State => {
+  const { type, data } = action;
+  const { connectionId, members, position } = data;
   switch (type) {
     case CURSOR_ENTER:
       return {
         ...state,
         [connectionId]: {
-          ...assign(find(members, { connectionId }), action),
+          ...assign(find(members, { connectionId }), { connectionId, position }),
         },
       };
     case CURSOR_LEAVE:
-      const newState = omit(state, connectionId);
       return {
-        ...newState,
+        ...omit(state, connectionId),
       };
     case CURSOR_MOVE:
       return {
         ...state,
         [connectionId]: {
-          ...assign(find(members, { connectionId }), action),
+          ...assign(find(members, { connectionId }), { connectionId, position }),
         },
       };
     default:
@@ -38,27 +54,42 @@ export const Cursors = () => {
   const space = useContext(SpacesContext);
   const { self, members } = useMembers();
   const [activeCursors, dispatch] = useReducer(reducer, {});
+
   useEffect(() => {
-    if (!space) return;
+    if (!space || !members) return;
+
     space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
       const { connectionId } = cursorUpdate;
-      const member = find(members, { connectionId });
+      const member = find<SpaceMember>(members, { connectionId });
 
-      // TODO: why is `connectionId !== self?.connectionId` different types?
-      if (connectionId !== self?.connectionId && member?.location?.slide === self?.location?.slide)
+      if (
+        connectionId !== self?.connectionId &&
+        member?.location?.slide === self?.location?.slide &&
+        cursorUpdate.data
+      ) {
         dispatch({
-          // TODO: type this
-          type: cursorUpdate.data.state,
-          members,
-          ...cursorUpdate,
+          type: cursorUpdate.data.state as ActionType,
+          data: {
+            connectionId,
+            members,
+            position: cursorUpdate.position,
+          },
         });
-      else dispatch({ type: CURSOR_LEAVE, connectionId });
+      } else {
+        dispatch({
+          type: CURSOR_LEAVE,
+          data: {
+            connectionId,
+            members,
+          },
+        });
+      }
     });
 
     return () => {
       space.cursors.unsubscribe('cursorsUpdate');
     };
-  }, [space]);
+  }, [space, members]);
 
   return (
     <div className="h-full w-full z-10 pointer-events-none top-0 left-0 absolute">
@@ -69,8 +100,8 @@ export const Cursors = () => {
             key={connectionId}
             style={{
               position: 'absolute',
-              top: `${activeCursors[cursor].position.y}px`,
-              left: `${activeCursors[cursor].position.x}px`,
+              top: `${activeCursors[cursor].position?.y}px`,
+              left: `${activeCursors[cursor].position?.x}px`,
             }}
           >
             <CursorSvg
