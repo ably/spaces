@@ -1,48 +1,58 @@
-import { useContext, useEffect, useRef } from 'react';
-import { SpacesContext } from '.';
+import { useContext, useEffect, useReducer } from 'react';
+import assign from 'lodash.assign';
+import cn from 'classnames';
+import find from 'lodash.find';
+import omit from 'lodash.omit';
+import { CursorSvg, SpacesContext } from '.';
+import { useMembers, CURSOR_ENTER, CURSOR_LEAVE, CURSOR_MOVE } from '../hooks';
+
+// TODO: type this
+const reducer = (state: any, action: any) => {
+  const { connectionId, members, type } = action;
+  switch (type) {
+    case CURSOR_ENTER:
+      return {
+        ...state,
+        [connectionId]: {
+          ...assign(find(members, { connectionId }), action),
+        },
+      };
+    case CURSOR_LEAVE:
+      const newState = omit(state, connectionId);
+      return {
+        ...newState,
+      };
+    case CURSOR_MOVE:
+      return {
+        ...state,
+        [connectionId]: {
+          ...assign(find(members, { connectionId }), action),
+        },
+      };
+    default:
+      throw new Error('Unknown dispatch type');
+  }
+};
 
 export const Cursors = () => {
   const space = useContext(SpacesContext);
-  const containerRef = useRef<HTMLDivElement>(null);
-
+  const { self, members } = useMembers();
+  const [activeCursors, dispatch] = useReducer(reducer, {});
   useEffect(() => {
-    if (!containerRef.current || !space) return;
-
-    const { current: cursorContainer } = containerRef;
-
-    const cursorHandlers = {
-      enter: (event: MouseEvent) => {
-        const { top, left } = cursorContainer.getBoundingClientRect();
-        space.cursors.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'enter' } });
-      },
-      move: (event: MouseEvent) => {
-        const { top, left } = cursorContainer.getBoundingClientRect();
-        space.cursors.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'move' } });
-      },
-      leave: (event: MouseEvent) => {
-        const { top, left } = cursorContainer.getBoundingClientRect();
-        space.cursors.set({ position: { x: event.clientX - left, y: event.clientY - top }, data: { state: 'leave' } });
-      },
-    };
-
-    cursorContainer.addEventListener('mouseenter', cursorHandlers.enter);
-    cursorContainer.addEventListener('mousemove', cursorHandlers.move);
-    cursorContainer.addEventListener('mouseleave', cursorHandlers.leave);
-
-    return () => {
-      space.cursors.unsubscribe();
-      cursorContainer.removeEventListener('mouseenter', cursorHandlers.enter);
-      cursorContainer.removeEventListener('mousemove', cursorHandlers.move);
-      cursorContainer.removeEventListener('mouseleave', cursorHandlers.leave);
-    };
-  }, [space, containerRef]);
-
-  useEffect(() => {
-    // 1. Subscribe to space.locations.subscribe('locationUpdate')
-    // 2. get a fancy cursor and render it on this component
     if (!space) return;
     space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
-      console.log(cursorUpdate);
+      const { connectionId } = cursorUpdate;
+      const member = find(members, { connectionId });
+
+      // TODO: why is `connectionId !== self?.connectionId` different types?
+      if (connectionId !== self?.connectionId && member?.location?.slide === self?.location?.slide)
+        dispatch({
+          // TODO: type this
+          type: cursorUpdate.data.state,
+          members,
+          ...cursorUpdate,
+        });
+      else dispatch({ type: CURSOR_LEAVE, connectionId });
     });
 
     return () => {
@@ -51,11 +61,37 @@ export const Cursors = () => {
   }, [space]);
 
   return (
-    <div
-      ref={containerRef}
-      className="h-full w-full z-10 pointer-events-none top-0 left-0 absolute"
-    >
-      {/* 3. Render the fancy cursor here */}
+    <div className="h-full w-full z-10 pointer-events-none top-0 left-0 absolute">
+      {Object.keys(activeCursors).map((cursor: any) => {
+        const { connectionId, profileData } = activeCursors[cursor];
+        return (
+          <div
+            key={connectionId}
+            style={{
+              position: 'absolute',
+              top: `${activeCursors[cursor].position.y}px`,
+              left: `${activeCursors[cursor].position.x}px`,
+            }}
+          >
+            <CursorSvg
+              startColor={profileData?.color?.gradientStart?.hex}
+              endColor={profileData?.color?.gradientEnd?.hex}
+              id={connectionId}
+            />
+            {profileData?.name ? (
+              <p
+                className={cn(
+                  profileData.color.gradientStart.tw,
+                  profileData.color.gradientEnd.tw,
+                  'py-2 px-4 bg-gradient-to-b rounded-full absolute text-white text-base truncate transition-all max-w-[120px]',
+                )}
+              >
+                {profileData.name.split(' ')[0]}
+              </p>
+            ) : null}
+          </div>
+        );
+      })}
     </div>
   );
 };

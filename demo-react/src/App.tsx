@@ -1,16 +1,6 @@
 import { useContext, useEffect } from 'react';
 
-import {
-  Header,
-  SlideMenu,
-  SpacesContext,
-  Title,
-  Paragraph,
-  Image,
-  CurrentSlide,
-  Cursors,
-  AblySvg,
-} from './components';
+import { Header, SlideMenu, SpacesContext, Title, Paragraph, Image, CurrentSlide, AblySvg } from './components';
 import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
 
@@ -47,14 +37,7 @@ const App = () => {
             className="absolute gap-12 bg-[#F7F6F9] w-full h-[calc(100%-80px)] -z-10 overflow-y-hidden overflow-x-hidden flex justify-between min-w-[375px] xs:flex-col md:flex-row"
           >
             <SlideMenu slides={slides} />
-
-            <section
-              id="slide-selected"
-              className="shadow-ably-paper xs:m-4 md:m-0 md:relative md:w-[1020px] md:h-[687px] md:min-w-[1020px] md:min-h-[687px] md:top-[79px] lg:mr-[380px]"
-            >
-              <CurrentSlide slides={slides} />
-              <Cursors />
-            </section>
+            <CurrentSlide slides={slides} />
           </section>
         </main>
         <a
