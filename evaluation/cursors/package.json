@@ -1,0 +1,29 @@
+{
+  "name": "cursors-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "playwright test",
+    "circle": "ts-node --esm ./scripts/circle.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.36.1",
+    "@types/yargs": "^17.0.24",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.0"
+  },
+  "dependencies": {
+    "@ably-labs/spaces": "^0.0.12",
+    "ably": "^1.2.42",
+    "dotenv": "^16.3.1",
+    "nanoid": "^4.0.2",
+    "selenium-webdriver": "^4.10.0",
+    "ts-node": "^10.9.1",
+    "unique-username-generator": "^1.1.3",
+    "yargs": "^17.7.2"
+  }
+}
