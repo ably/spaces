@@ -8,6 +8,7 @@ import { useMembers, CURSOR_ENTER, CURSOR_LEAVE, CURSOR_MOVE } from '../hooks';
 import { SpaceMember } from '@ably-labs/spaces';
 
 type ActionType = 'move' | 'enter' | 'leave';
+
 interface Action {
   type: ActionType;
   data: {
@@ -19,6 +20,7 @@ interface Action {
     };
   };
 }
+
 interface State {
   [connectionId: string]: SpaceMember & Action['data'];
 }
@@ -60,7 +62,7 @@ export const Cursors = () => {
 
     space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
       const { connectionId } = cursorUpdate;
-      const member = find<SpaceMember>(members, { connectionId });
+      const member = find<SpaceMember[]>(members, { connectionId });
 
       if (
         connectionId !== self?.connectionId &&
@@ -68,7 +70,7 @@ export const Cursors = () => {
         cursorUpdate.data
       ) {
         dispatch({
-          type: cursorUpdate.data.state as ActionType,
+          type: cursorUpdate.data.state,
           data: {
             connectionId,
             members,
@@ -93,7 +95,7 @@ export const Cursors = () => {
 
   return (
     <div className="h-full w-full z-10 pointer-events-none top-0 left-0 absolute">
-      {Object.keys(activeCursors).map((cursor: any) => {
+      {Object.keys(activeCursors).map((cursor) => {
         const { connectionId, profileData } = activeCursors[cursor];
         return (
           <div

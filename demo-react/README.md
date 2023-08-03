@@ -1,27 +1,15 @@
-# React + TypeScript + Vite
+# Spaces Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An app showcasing the usage of different multiplayer features enabled by the spaces API.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+First, create a `.env` file in this folder, based on the `.env.example`. You will need environment variables listed in there.
 
-## Expanding the ESLint configuration
+You will need [node.js](https://nodejs.org/en/) & the [netlify cli](https://docs.netlify.com/cli/get-started/) installed. The demo has separate dependencies to the library, you will need to run `npm install` in this folder as well as the root one.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+To run the development server, do `npm run start`. This will start a Netlify dev server, and will make sure the auth endpoint in `api` works correctly locally.
 
-- Configure the top-level `parserOptions` property like this:
+## Deployment
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+To deploy, you will need access to the Ably Netlify account. If you have that, [login to Netlify on your machine with the CLI](https://docs.netlify.com/cli/get-started/#obtain-a-token-with-the-command-line). The run `npm run deploy` to deploy a test site and `npm run deploy:production` to deploy the production site.

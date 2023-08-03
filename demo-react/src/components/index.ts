@@ -8,6 +8,7 @@ export * from './Image';
 export * from './Paragraph';
 export * from './SlideMenu';
 export * from './SlidePreview';
+export * from './slides';
 export * from './SpacesContext';
 export * from './svg';
 export * from './Title';

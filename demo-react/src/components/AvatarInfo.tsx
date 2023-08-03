@@ -29,7 +29,7 @@ export const AvatarInfo = ({ isSelf, isConnected, profileData, isList = false }:
         className="text-sm font-semibold text-white whitespace-nowrap"
         data-id="avatar-full-name"
       >
-        {profileData.ƒname}
+        {profileData.name}
       </p>
       <p className="whitespace-nowrap flex gap-1 items-center">
         <span

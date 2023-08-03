@@ -5,7 +5,7 @@ import { SpacesContext } from '../components';
 const membersToOthers = (members: SpaceMember[] = [], self: SpaceMember | undefined): SpaceMember[] =>
   members.filter((m) => m.connectionId !== self?.connectionId);
 
-export const useMembers: () => Partial<{ self: SpaceMember; others: SpaceMember[]; members: SpaceMember[] }> = () => {
+export const useMembers: () => Partial<{ self?: SpaceMember; others: SpaceMember[]; members: SpaceMember[] }> = () => {
   const space = useContext(SpacesContext);
   const [members, setMembers] = useState<SpaceMember[]>([]);
   const [others, setOthers] = useState<SpaceMember[]>([]);
