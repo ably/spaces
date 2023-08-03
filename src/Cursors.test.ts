@@ -1,14 +1,15 @@
 import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 
-import Space, { SpaceMember } from './Space.js';
-import Cursors from './Cursors.js';
+import Space from './Space.js';
+import Cursors, { CURSOR_UPDATE } from './Cursors.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import CursorBatching from './CursorBatching.js';
-import { CURSOR_UPDATE } from './utilities/Constants.js';
 import CursorDispensing from './CursorDispensing.js';
 import CursorHistory from './CursorHistory.js';
-import type { CursorUpdate } from './Cursors.js';
+import type { CursorUpdate, SpaceMember } from './types.js';
+
+import type { RealtimeMessage } from './utilities/types.js';
 
 interface CursorsTestContext {
   client: Types.RealtimePromise;
@@ -18,9 +19,9 @@ interface CursorsTestContext {
   batching: CursorBatching;
   dispensing: CursorDispensing;
   history: CursorHistory;
-  fakeMessageStub: Types.Message;
   selfStub: SpaceMember;
   lastCursorPositionsStub: Record<string, CursorUpdate>;
+  fakeMessageStub: RealtimeMessage;
 }
 
 vi.mock('ably/promises');
@@ -29,7 +30,7 @@ function createPresenceCount(length: number) {
   return async () => Array.from({ length }, (_, i) => createPresenceMessage('enter', { clientId: '' + i }));
 }
 
-describe('Cursors (mockClient)', () => {
+describe('Cursors', () => {
   beforeEach<CursorsTestContext>((context) => {
     const client = new Realtime({});
     context.client = client;
@@ -470,7 +471,7 @@ describe('Cursors (mockClient)', () => {
       selfStub,
     }) => {
       vi.spyOn(space.cursors, 'getAll').mockImplementation(async () => lastCursorPositionsStub);
-      vi.spyOn(space, 'getSelf').mockReturnValue(selfStub);
+      vi.spyOn(space.members, 'getSelf').mockReturnValue(selfStub);
 
       const selfCursor = await space.cursors.getSelf();
       expect(selfCursor).toEqual(lastCursorPositionsStub['connectionId1']);
@@ -478,7 +479,7 @@ describe('Cursors (mockClient)', () => {
 
     it<CursorsTestContext>('returns an empty object if self is not present in cursors', async ({ space }) => {
       vi.spyOn(space.cursors, 'getAll').mockResolvedValue({});
-      vi.spyOn(space, 'getSelf').mockReturnValue(undefined);
+      vi.spyOn(space.members, 'getSelf').mockReturnValue(undefined);
 
       const others = await space.cursors.getOthers();
       expect(others).toEqual({});
@@ -500,7 +501,7 @@ describe('Cursors (mockClient)', () => {
       };
 
       vi.spyOn(space.cursors, 'getAll').mockResolvedValue(onlyMyCursor);
-      vi.spyOn(space, 'getSelf').mockReturnValue(selfStub);
+      vi.spyOn(space.members, 'getSelf').mockReturnValue(selfStub);
 
       const others = await space.cursors.getOthers();
       expect(others).toEqual({});
@@ -512,7 +513,7 @@ describe('Cursors (mockClient)', () => {
       lastCursorPositionsStub,
     }) => {
       vi.spyOn(space.cursors, 'getAll').mockResolvedValue(lastCursorPositionsStub);
-      vi.spyOn(space, 'getSelf').mockReturnValue(selfStub);
+      vi.spyOn(space.members, 'getSelf').mockReturnValue(selfStub);
 
       const others = await space.cursors.getOthers();
       expect(others).toEqual({

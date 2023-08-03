@@ -1,8 +1,8 @@
 import { Types } from 'ably';
 
-import { CursorUpdate } from './Cursors.js';
-import { CURSOR_UPDATE } from './utilities/Constants.js';
-import type { StrictCursorsOptions } from './options/CursorsOptions.js';
+import { CURSOR_UPDATE } from './Cursors.js';
+import type { CursorUpdate } from './types.js';
+import type { CursorsOptions } from './types.js';
 
 type OutgoingBuffer = Pick<CursorUpdate, 'position' | 'data'>[];
 
@@ -20,7 +20,7 @@ export default class CursorBatching {
   // Set to `true` if there is more than one user listening to cursors
   shouldSend: boolean = false;
 
-  constructor(readonly outboundBatchInterval: StrictCursorsOptions['outboundBatchInterval']) {
+  constructor(readonly outboundBatchInterval: CursorsOptions['outboundBatchInterval']) {
     this.batchTime = outboundBatchInterval;
   }
 
