@@ -97,6 +97,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
   private onPresenceUpdate(message: PresenceMember) {
     this.members.processPresenceMessage(message);
     this.locations.processPresenceMessage(message);
+    this.locks.processPresenceMessage(message);
     this.emit('update', { members: this.members.getAll() });
   }
 

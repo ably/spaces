@@ -1,14 +1,20 @@
 import { Types } from 'ably';
 
 import Space from './Space.js';
+import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
-import { ERR_LOCK_REQUEST_EXISTS } from './Errors.js';
+import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS } from './Errors.js';
 
 export enum LockStatus {
   PENDING = 'pending',
   LOCKED = 'locked',
   UNLOCKED = 'unlocked',
 }
+
+export type Lock = {
+  member: SpaceMember;
+  request: LockRequest;
+};
 
 export type LockRequest = {
   id: string;
@@ -27,6 +33,15 @@ export default class Locks {
     private space: Space,
     private presenceUpdate: (update: PresenceMember['data'], extras?: any) => Promise<void>,
   ) {}
+
+  get(id: string): Lock | undefined {
+    for (const member of this.space.members.getAll()) {
+      const request = member.locks.get(id);
+      if (request && request.status === LockStatus.LOCKED) {
+        return { request, member };
+      }
+    }
+  }
 
   async acquire(id: string, opts?: LockOptions): Promise<LockRequest> {
     const self = this.space.members.getSelf();
@@ -70,5 +85,75 @@ export default class Locks {
     await this.presenceUpdate(update, extras);
 
     return req;
+  }
+
+  processPresenceMessage(message: Types.PresenceMessage) {
+    const member = this.space.members.getByConnectionId(message.connectionId);
+    if (!member) {
+      return;
+    }
+
+    if (!message.extras || !message.extras.locks || !Array.isArray(message.extras.locks)) {
+      return;
+    }
+
+    message.extras.locks.forEach((lock: LockRequest) => {
+      // special-case the handling of PENDING requests, which will eventually
+      // be done by the Ably system, at which point this can be removed
+      if (lock.status === LockStatus.PENDING) {
+        this.processPending(member, lock);
+      }
+
+      member.locks.set(lock.id, lock);
+    });
+  }
+
+  // process a PENDING lock request by determining whether it should be
+  // considered LOCKED or UNLOCKED with a reason, potentially invalidating
+  // existing LOCKED requests.
+  //
+  // TODO: remove this once the Ably system processes PENDING requests
+  //       internally using this same logic.
+  processPending(member: SpaceMember, pendingReq: LockRequest) {
+    // if the requested lock ID is not currently locked, then mark the PENDING
+    // request as LOCKED
+    const lock = this.get(pendingReq.id);
+    if (!lock) {
+      pendingReq.status = LockStatus.LOCKED;
+      return;
+    }
+
+    // check if the PENDING lock should invalidate the existing LOCKED request.
+    //
+    // This is necessary because presence data is eventually consistent, so
+    // there's no guarantee that all members see presence messages in the same
+    // order, which could lead to members not agreeing which members hold which
+    // locks.
+    //
+    // For example, if two members both request the same lock at roughly the
+    // same time, and both members see their own request in presence before
+    // seeing the other's request, then they will each consider themselves to
+    // hold the lock.
+    //
+    // To minimise the impact of this propagation issue, a further check is
+    // made allowing a PENDING request to invalidate an existing LOCKED request
+    // if the PENDING request has a timestamp which predates the LOCKED
+    // request, or, if the timestamps are the same, if the PENDING request has
+    // a connectionId which sorts lexicographically before the connectionId of
+    // the LOCKED request.
+    if (
+      pendingReq.timestamp < lock.request.timestamp ||
+      (pendingReq.timestamp == lock.request.timestamp && member.connectionId < lock.member.connectionId)
+    ) {
+      pendingReq.status = LockStatus.LOCKED;
+      lock.request.status = LockStatus.UNLOCKED;
+      lock.request.reason = ERR_LOCK_INVALIDATED;
+      return;
+    }
+
+    // the lock is LOCKED and the PENDING request did not invalidate it, so
+    // mark the PENDING request as UNLOCKED with a reason.
+    pendingReq.status = LockStatus.UNLOCKED;
+    pendingReq.reason = ERR_LOCK_IS_LOCKED;
   }
 }
