@@ -32,3 +32,7 @@ export interface Provider<ProviderEventMap extends EventMap> {
     listener?: EventListener<ProviderEventMap[K]>,
   );
 }
+
+export type RealtimeMessage = Omit<Types.Message, 'connectionId'> & {
+  connectionId: string;
+};

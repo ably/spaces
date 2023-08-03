@@ -13,16 +13,9 @@ import EventEmitter, {
 import CursorHistory from './CursorHistory.js';
 import { CURSOR_UPDATE } from './utilities/Constants.js';
 
-import type { CursorsOptions, StrictCursorsOptions } from './options/CursorsOptions.js';
-type ConnectionId = string;
-type CursorPosition = { x: number; y: number };
-type CursorData = Record<string, unknown>;
-type CursorUpdate = {
-  clientId: string;
-  connectionId: string;
-  position: CursorPosition;
-  data?: CursorData;
-};
+import type { CursorUpdate } from './types.js';
+import type { RealtimeMessage } from './utilities/types.js';
+
 type CursorsEventMap = {
   cursorsUpdate: Record<string, CursorUpdate>;
 };
@@ -125,7 +118,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
       const channel = this.getChannel();
 
       channel.subscribe(CURSOR_UPDATE, (message) => {
-        this.cursorDispensing.processBatch(message);
+        this.cursorDispensing.processBatch(message as RealtimeMessage);
       });
     }
   }
@@ -167,7 +160,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     return allCursors[self.connectionId] as CursorUpdate;
   }
 
-  async getOthers(): Promise<Record<ConnectionId, null | CursorUpdate>> {
+  async getOthers(): Promise<Record<string, null | CursorUpdate>> {
     const self = this.space.getSelf();
     if (!self) return {};
 
@@ -177,5 +170,3 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     return allCursorsFiltered;
   }
 }
-
-export { type CursorPosition, type CursorData, type CursorUpdate };

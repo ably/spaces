@@ -1,8 +1,7 @@
-import { Types } from 'ably';
-
-import { type CursorUpdate } from './Cursors.js';
-
 import { clamp } from './utilities/math.js';
+
+import { type CursorUpdate } from './types.js';
+import { type RealtimeMessage } from './utilities/types.js';
 
 export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};
@@ -66,7 +65,7 @@ export default class CursorDispensing {
     return Math.floor(clamp(finalOutboundBatchInterval / highest, 1, 1000 / 15));
   }
 
-  processBatch(message: Types.Message) {
+  processBatch(message: RealtimeMessage) {
     const updates = message.data || [];
 
     updates.forEach((update) => {
