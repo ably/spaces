@@ -153,7 +153,11 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   async getOthers(): Promise<Record<string, null | CursorUpdate>> {
+<<<<<<< HEAD
     const self = this.space.members.getSelf();
+=======
+    const self = this.space.getSelf();
+>>>>>>> a7025d1 (Sync ably-js version for demo)
     if (!self) return {};
 
     const allCursors = await this.getAll();
@@ -161,9 +165,12 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     delete allCursorsFiltered[self.connectionId];
     return allCursorsFiltered;
   }
+<<<<<<< HEAD
 
   async getAll() {
     const channel = this.getChannel();
     return await this.cursorHistory.getLastCursorUpdate(channel, this.options.paginationLimit);
   }
+=======
+>>>>>>> a7025d1 (Sync ably-js version for demo)
 }
