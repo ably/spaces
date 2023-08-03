@@ -1,5 +1,14 @@
 import Spaces from './Spaces.js';
-import Space, { type SpaceMember } from './Space.js';
 
-export type { Space, SpaceMember };
-export default Spaces;
+export type Space = Awaited<ReturnType<Spaces['get']>>;
+
+// Can be changed to * when we update to TS5
+export type {
+  CursorsOptions,
+  CursorPosition,
+  CursorData,
+  CursorUpdate,
+  SpaceOptions,
+  ProfileData,
+  SpaceMember,
+} from './types.js';
