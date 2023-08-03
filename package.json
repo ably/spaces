@@ -15,9 +15,9 @@
     "watch": "vitest watch",
     "coverage": "vitest run --coverage",
     "build": "npm run build:mjs && npm run build:cjs && npm run build:iife",
-    "build:mjs": "tsc --project tsconfig.mjs.json && cp res/package.mjs.json dist/mjs/package.json",
-    "build:cjs": "tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
-    "build:iife": "rm -rf dist/iife && tsc --project tsconfig.iife.json && rollup dist/iife/index.js --file dist/iife/index.bundle.js --format iife --name Spaces -e ably -g ably:Ably",
+    "build:mjs": "npx tsc --project tsconfig.mjs.json && cp res/package.mjs.json dist/mjs/package.json",
+    "build:cjs": "npx tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
+    "build:iife": "rm -rf dist/iife && npx tsc --project tsconfig.iife.json && rollup dist/iife/index.js --file dist/iife/index.bundle.js --format iife --name Spaces -e ably -g ably:Ably",
     "prepare": "husky install"
   },
   "exports": {
