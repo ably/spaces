@@ -54,7 +54,7 @@
     "vitest": "^0.29.8"
   },
   "dependencies": {
-    "ably": "^1.2.42",
+    "ably": "^1.2.43",
     "nanoid": "^4.0.2"
   }
 }

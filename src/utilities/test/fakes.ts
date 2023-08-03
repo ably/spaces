@@ -21,6 +21,7 @@ const enterPresenceMessage: Types.PresenceMessage = {
       previous: null,
     },
   },
+  extras: {},
   action: 'enter',
   connectionId: '1',
   id: '1',
