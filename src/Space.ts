@@ -1,4 +1,4 @@
-import { Types } from 'ably';
+import Ably, { Types } from 'ably';
 import { nanoid } from 'nanoid';
 
 import EventEmitter, {
@@ -10,6 +10,7 @@ import EventEmitter, {
 import Locations from './Locations.js';
 import Cursors from './Cursors.js';
 import Members from './Members.js';
+import Locks from './Locks.js';
 
 import { isFunction, isObject } from './utilities/is.js';
 
@@ -38,6 +39,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
   readonly cursors: Cursors;
   readonly members: Members;
   readonly channel: Types.RealtimeChannelPromise;
+  readonly locks: Locks;
 
   constructor(name: string, readonly client: Types.RealtimePromise, options?: Subset<SpaceOptions>) {
     super();
@@ -53,18 +55,28 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.locations = new Locations(this, this.presenceUpdate);
     this.cursors = new Cursors(this);
     this.members = new Members(this);
+    this.locks = new Locks(this, this.presenceUpdate);
   }
 
-  private presenceUpdate = (data: PresenceMember['data']) => {
-    return this.channel.presence.update(data);
+  private presenceUpdate = (data: PresenceMember['data'], extras?: any) => {
+    if (!extras) {
+      return this.channel.presence.update(data);
+    }
+    return this.channel.presence.update(Ably.Realtime.PresenceMessage.fromValues({ data, extras }));
   };
 
-  private presenceEnter = (data: PresenceMember['data']) => {
-    return this.channel.presence.enter(data);
+  private presenceEnter = (data: PresenceMember['data'], extras?: any) => {
+    if (!extras) {
+      return this.channel.presence.enter(data);
+    }
+    return this.channel.presence.enter(Ably.Realtime.PresenceMessage.fromValues({ data, extras }));
   };
 
-  private presenceLeave = (data: PresenceMember['data']) => {
-    return this.channel.presence.leave(data);
+  private presenceLeave = (data: PresenceMember['data'], extras?: any) => {
+    if (!extras) {
+      return this.channel.presence.leave(data);
+    }
+    return this.channel.presence.leave(Ably.Realtime.PresenceMessage.fromValues({ data, extras }));
   };
 
   private setOptions(options?: Subset<SpaceOptions>): SpaceOptions {
