@@ -1,52 +1,80 @@
-import { Types } from 'ably';
+import { nanoid } from 'nanoid';
 
-import Space from './Space.js';
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
   type EventKey,
   type EventListener,
 } from './utilities/EventEmitter.js';
-import { LOCATION_UPDATE } from './utilities/Constants.js';
 
-type LocationUpdate = typeof LOCATION_UPDATE;
+import type { SpaceMember } from './types.js';
+import type { PresenceMember } from './utilities/types.js';
+import type Space from './Space.js';
 
-type LocationEventMap = Record<LocationUpdate, any>;
+type LocationsEventMap = {
+  update: { member: SpaceMember; currentLocation: unknown; previousLocation: unknown };
+};
 
-export default class Locations extends EventEmitter<LocationEventMap> {
-  constructor(public space: Space, private channel: Types.RealtimeChannelPromise) {
+export default class Locations extends EventEmitter<LocationsEventMap> {
+  private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};
+
+  constructor(private space: Space, private presenceUpdate: (update: PresenceMember['data']) => Promise<void>) {
     super();
-    this.channel.presence.subscribe(this.onPresenceUpdate.bind(this));
   }
 
-  private onPresenceUpdate(message: Types.PresenceMessage) {
-    if (!['update', 'leave'].includes(message.action)) return;
+  processPresenceMessage(message: PresenceMember) {
+    // Only an update action is currently a valid location update.
+    if (message.action !== 'update') return;
 
-    const member = this.space.getMemberFromConnection(message.connectionId);
+    // Emit updates only if they are different than the last held update.
+    if (
+      !message.data.locationUpdate.id ||
+      this.lastLocationUpdate[message.connectionId] === message.data.locationUpdate.id
+    ) {
+      return;
+    }
+
+    const update = message.data.locationUpdate;
+
+    const { previous } = update;
+    const member = this.space.members.getByConnectionId(message.connectionId);
 
     if (member) {
-      const { previousLocation, currentLocation } = message.data;
-      member.location = currentLocation;
-      this.emit(LOCATION_UPDATE, { member: { ...member }, currentLocation, previousLocation });
+      this.emit('update', {
+        member,
+        currentLocation: member.location,
+        previousLocation: previous,
+      });
+
+      this.lastLocationUpdate[message.connectionId] = message.data.locationUpdate.id;
     }
   }
 
   set(location: unknown) {
-    const self = this.space.getSelf();
+    const self = this.space.members.getSelf();
+
     if (!self) {
-      throw new Error('Must enter a space before setting a location');
+      throw new Error('You must enter a space before setting a location.');
     }
 
-    return this.channel.presence.update({
-      profileData: self.profileData,
-      previousLocation: self.location,
-      currentLocation: location,
-    });
+    const update: PresenceMember['data'] = {
+      profileUpdate: {
+        id: null,
+        current: self.profileData,
+      },
+      locationUpdate: {
+        id: nanoid(),
+        previous: self.location,
+        current: location,
+      },
+    };
+
+    return this.presenceUpdate(update);
   }
 
-  subscribe<K extends EventKey<LocationEventMap>>(
-    listenerOrEvents?: K | K[] | EventListener<LocationEventMap[K]>,
-    listener?: EventListener<LocationEventMap[K]>,
+  subscribe<K extends EventKey<LocationsEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LocationsEventMap[K]>,
+    listener?: EventListener<LocationsEventMap[K]>,
   ) {
     try {
       super.on(listenerOrEvents, listener);
@@ -61,9 +89,9 @@ export default class Locations extends EventEmitter<LocationEventMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<LocationEventMap>>(
-    listenerOrEvents?: K | K[] | EventListener<LocationEventMap[K]>,
-    listener?: EventListener<LocationEventMap[K]>,
+  unsubscribe<K extends EventKey<LocationsEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LocationsEventMap[K]>,
+    listener?: EventListener<LocationsEventMap[K]>,
   ) {
     try {
       super.off(listenerOrEvents, listener);
@@ -78,16 +106,16 @@ export default class Locations extends EventEmitter<LocationEventMap> {
     }
   }
 
-  getSelf(): Location | undefined {
-    const self = this.space.getSelf();
-    return self ? self.location : undefined;
+  getSelf(): unknown {
+    const self = this.space.members.getSelf();
+    return self ? self.location : null;
   }
 
-  getOthers(): Record<string, Location> {
-    const self = this.space.getSelf();
+  getOthers(): Record<string, unknown> {
+    const self = this.space.members.getSelf();
 
-    return this.space
-      .getMembers()
+    return this.space.members
+      .getAll()
       .filter((member) => member.connectionId !== self?.connectionId)
       .reduce((acc, member) => {
         acc[member.connectionId] = member.location;
@@ -95,8 +123,8 @@ export default class Locations extends EventEmitter<LocationEventMap> {
       }, {});
   }
 
-  getAll(): Record<string, Location> {
-    return this.space.getMembers().reduce((acc, member) => {
+  getAll(): Record<string, unknown> {
+    return this.space.members.getAll().reduce((acc, member) => {
       acc[member.connectionId] = member.location;
       return acc;
     }, {});

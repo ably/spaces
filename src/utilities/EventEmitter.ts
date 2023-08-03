@@ -1,4 +1,4 @@
-import { isArray, isFunction, isObject, isString } from './TypeOf.js';
+import { isArray, isFunction, isObject, isString } from './is.js';
 
 function callListener(eventThis: { event: string }, listener: Function, args: unknown[]) {
   try {
@@ -63,7 +63,7 @@ export class InvalidArgumentError extends Error {
   }
 }
 
-type EventMap = Record<string, any>;
+export type EventMap = Record<string, any>;
 // extract all the keys of an event map and use them as a type
 export type EventKey<T extends EventMap> = string & keyof T;
 export type EventListener<T> = (params: T) => void;

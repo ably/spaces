@@ -1,6 +1,22 @@
+import type { SpaceMember } from '../../types.js';
+import type { PresenceMember } from '../../utilities/types.js';
+
+// import { nanoidId } from '../../../__mocks__/nanoid/index.js';
+const nanoidId = 'NanoidID';
+
 const enterPresenceMessage = {
   clientId: '1',
-  data: { profileData: {} },
+  data: {
+    profileUpdate: {
+      id: null,
+      current: null,
+    },
+    locationUpdate: {
+      id: null,
+      current: null,
+      previous: null,
+    },
+  },
   action: 'enter',
   connectionId: '1',
   id: '1',
@@ -10,7 +26,6 @@ const enterPresenceMessage = {
 
 const updatePresenceMessage = {
   ...enterPresenceMessage,
-  data: { profileData: { a: 1 } },
   action: 'update',
 };
 
@@ -33,7 +48,49 @@ const createPresenceMessage = (type, override?) => {
 };
 
 const createPresenceEvent = (space, type, override?) => {
-  space.onPresenceUpdate(createPresenceMessage(type, override));
+  space['onPresenceUpdate'](createPresenceMessage(type, override));
 };
 
-export { createPresenceMessage, createPresenceEvent };
+const createLocationUpdate = (update?: Partial<PresenceMember['data']['locationUpdate']>): PresenceMember['data'] => {
+  return {
+    locationUpdate: {
+      current: null,
+      id: nanoidId,
+      previous: null,
+      ...update,
+    },
+    profileUpdate: {
+      current: null,
+      id: null,
+    },
+  };
+};
+
+const createProfileUpdate = (update?: Partial<PresenceMember['data']['profileUpdate']>): PresenceMember['data'] => {
+  return {
+    locationUpdate: {
+      current: null,
+      id: null,
+      previous: null,
+    },
+    profileUpdate: {
+      current: null,
+      id: nanoidId,
+      ...update,
+    },
+  };
+};
+
+const createSpaceMember = (override?: Partial<SpaceMember>): SpaceMember => {
+  return {
+    clientId: '1',
+    connectionId: '1',
+    isConnected: true,
+    profileData: null,
+    location: null,
+    lastEvent: { name: 'update', timestamp: 1 },
+    ...override,
+  };
+};
+
+export { createPresenceMessage, createPresenceEvent, createSpaceMember, createLocationUpdate, createProfileUpdate };

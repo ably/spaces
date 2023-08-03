@@ -1,36 +1,28 @@
-import * as Ably from 'ably';
 import { Types } from 'ably';
 
-import SpaceOptions from './options/SpaceOptions.js';
 import Space from './Space.js';
 
+import type { SpaceOptions } from './types.js';
+import type { Subset } from './utilities/types.js';
+
 class Spaces {
-  private spaces: Record<string, Space>;
-  private channel: Types.RealtimeChannelPromise;
+  private spaces: Record<string, Space> = {};
   ably: Types.RealtimePromise;
 
   readonly version = '0.0.12';
 
-  constructor(optionsOrAbly: Types.RealtimePromise | Types.ClientOptions | string) {
-    this.spaces = {};
-    if (optionsOrAbly['options']) {
-      this.ably = optionsOrAbly as Types.RealtimePromise;
-      this.addAgent(this.ably['options'], false);
-    } else {
-      let options: Types.ClientOptions = typeof optionsOrAbly === 'string' ? { key: optionsOrAbly } : optionsOrAbly;
-      this.addAgent(options, true);
-      this.ably = new Ably.Realtime.Promise(options);
-    }
+  constructor(client: Types.RealtimePromise) {
+    this.ably = client;
+    this.addAgent(this.ably['options']);
     this.ably.time();
   }
 
-  private addAgent(options: any, isDefault: boolean) {
-    const agent = { 'ably-spaces': this.version, [isDefault ? 'space-default-client' : 'space-custom-client']: true };
-
+  private addAgent(options: { agents?: Record<string, string | boolean> }) {
+    const agent = { 'ably-spaces': this.version, 'space-custom-client': true };
     options.agents = { ...(options.agents ?? options.agents), ...agent };
   }
 
-  async get(name: string, options?: SpaceOptions): Promise<Space> {
+  async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {
       throw new Error('Spaces must have a non-empty name');
     }
