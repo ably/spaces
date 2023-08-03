@@ -26,3 +26,15 @@ export const ERR_LOCK_REQUEST_EXISTS = new ErrorInfo({
   code: 40050,
   statusCode: 400,
 });
+
+export const ERR_LOCK_IS_LOCKED = new ErrorInfo({
+  message: 'lock is currently locked',
+  code: 40051,
+  statusCode: 400,
+});
+
+export const ERR_LOCK_INVALIDATED = new ErrorInfo({
+  message: 'lock was invalidated by a concurrent lock request which now holds the lock',
+  code: 40052,
+  statusCode: 400,
+});

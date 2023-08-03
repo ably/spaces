@@ -1,4 +1,4 @@
-import { Types } from 'ably/promises';
+import Ably, { Types } from 'ably/promises';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
@@ -71,5 +71,9 @@ class MockRealtime {
     this['options'] = {};
   }
 }
+
+// maintain the PresenceMessage class so tests can initialise it directly using
+// PresenceMessage.fromValues.
+MockRealtime.PresenceMessage = Ably.Rest.PresenceMessage;
 
 export { MockRealtime as Realtime };
