@@ -11,8 +11,8 @@ const mockPresence = {
   enter: methodReturningVoidPromise,
   leave: methodReturningVoidPromise,
   subscriptions: {
-    once: async (_, fn) => {
-      return await fn();
+    once: (_: unknown, fn: Function) => {
+      fn();
     },
   },
   subscribe: () => {},
@@ -51,7 +51,10 @@ class MockRealtime {
   };
   public connection: {
     id?: string;
+    state: string;
   };
+
+  public time() {}
 
   constructor() {
     this.channels = {
@@ -62,7 +65,10 @@ class MockRealtime {
     };
     this.connection = {
       id: '1',
+      state: 'connected',
     };
+
+    this['options'] = {};
   }
 }
 

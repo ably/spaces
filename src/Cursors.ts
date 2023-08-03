@@ -3,7 +3,6 @@ import { Types } from 'ably';
 import Space from './Space.js';
 import CursorBatching from './CursorBatching.js';
 import CursorDispensing from './CursorDispensing.js';
-import { OUTGOING_BATCH_TIME_DEFAULT, PAGINATION_LIMIT_DEFAULT } from './utilities/Constants.js';
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
@@ -11,14 +10,15 @@ import EventEmitter, {
   type EventListener,
 } from './utilities/EventEmitter.js';
 import CursorHistory from './CursorHistory.js';
-import { CURSOR_UPDATE } from './utilities/Constants.js';
 
-import type { CursorUpdate } from './types.js';
+import type { CursorsOptions, CursorUpdate } from './types.js';
 import type { RealtimeMessage } from './utilities/types.js';
 
 type CursorsEventMap = {
-  cursorsUpdate: Record<string, CursorUpdate>;
+  cursorsUpdate: CursorUpdate;
 };
+
+export const CURSOR_UPDATE = 'cursorUpdate';
 
 const emitterHasListeners = (emitter) => {
   const flattenEvents = (obj) =>
@@ -39,15 +39,12 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorDispensing: CursorDispensing;
   private readonly cursorHistory: CursorHistory;
   private channel?: Types.RealtimeChannelPromise;
-  readonly options: StrictCursorsOptions;
+  readonly options: CursorsOptions;
 
-  constructor(private space: Space, options: CursorsOptions = {}) {
+  constructor(private space: Space) {
     super();
 
-    this.options = {
-      outboundBatchInterval: options['outboundBatchInterval'] ?? OUTGOING_BATCH_TIME_DEFAULT,
-      paginationLimit: options['paginationLimit'] ?? PAGINATION_LIMIT_DEFAULT,
-    };
+    this.options = this.space.options.cursors;
 
     this.cursorHistory = new CursorHistory();
     this.cursorBatching = new CursorBatching(this.options.outboundBatchInterval);
@@ -64,7 +61,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * @return {void}
    */
   set(cursor: Pick<CursorUpdate, 'position' | 'data'>): void {
-    const self = this.space.getSelf();
+    const self = this.space.members.getSelf();
 
     if (!self) {
       throw new Error('Must enter a space before setting a cursor update');
@@ -79,7 +76,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   private initializeCursorsChannel(): Types.RealtimeChannelPromise {
-    const spaceChannelName = this.space.getChannelName();
+    const spaceChannelName = this.space.channelName;
     const channel = this.space.client.channels.get(`${spaceChannelName}_cursors`);
     channel.presence.subscribe(this.onPresenceUpdate.bind(this));
     channel.presence.enter();
@@ -147,13 +144,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     }
   }
 
-  async getAll() {
-    const channel = this.getChannel();
-    return await this.cursorHistory.getLastCursorUpdate(channel, this.options.paginationLimit);
-  }
-
   async getSelf(): Promise<CursorUpdate | undefined> {
-    const self = this.space.getSelf();
+    const self = this.space.members.getSelf();
     if (!self) return;
 
     const allCursors = await this.getAll();
@@ -161,12 +153,17 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   async getOthers(): Promise<Record<string, null | CursorUpdate>> {
-    const self = this.space.getSelf();
+    const self = this.space.members.getSelf();
     if (!self) return {};
 
     const allCursors = await this.getAll();
     const allCursorsFiltered = allCursors;
     delete allCursorsFiltered[self.connectionId];
     return allCursorsFiltered;
+  }
+
+  async getAll() {
+    const channel = this.getChannel();
+    return await this.cursorHistory.getLastCursorUpdate(channel, this.options.paginationLimit);
   }
 }

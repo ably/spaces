@@ -1,7 +1,7 @@
 import { Types } from 'ably';
 
-import type { CursorUpdate } from './Cursors.js';
-import type { StrictCursorsOptions } from './options/CursorsOptions.js';
+import type { CursorUpdate } from './types.js';
+import type { CursorsOptions } from './types.js';
 
 type ConnectionId = string;
 type ConnectionsLastPosition = Record<ConnectionId, null | CursorUpdate>;
@@ -47,7 +47,7 @@ export default class CursorHistory {
 
   async getLastCursorUpdate(
     channel: Types.RealtimeChannelPromise,
-    paginationLimit: StrictCursorsOptions['paginationLimit'],
+    paginationLimit: CursorsOptions['paginationLimit'],
   ): Promise<ConnectionsLastPosition> {
     const members = await channel.presence.get();
 
