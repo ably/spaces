@@ -220,5 +220,71 @@ describe('Locks (mockClient)', () => {
         }
       });
     });
+
+    it<SpaceTestContext>('sets a released request to UNLOCKED', async ({ space }) => {
+      await space.enter();
+      const member = space.members.getSelf()!;
+
+      let msg = Realtime.PresenceMessage.fromValues({
+        connectionId: member.connectionId,
+        extras: {
+          locks: [
+            {
+              id: lockID,
+              status: LockStatus.PENDING,
+              timestamp: Date.now(),
+            },
+          ],
+        },
+      });
+      space.locks.processPresenceMessage(msg);
+
+      const emitSpy = vi.spyOn(space.locks, 'emit');
+
+      msg = Realtime.PresenceMessage.fromValues({
+        connectionId: member.connectionId,
+        extras: undefined,
+      });
+      space.locks.processPresenceMessage(msg);
+
+      const lock = member.locks.get(lockID);
+      expect(lock).not.toBeDefined();
+      expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, LockStatus.UNLOCKED));
+    });
+  });
+
+  describe('release', () => {
+    it<SpaceTestContext>('errors if releasing before entering the space', ({ space }) => {
+      expect(space.locks.release('test')).rejects.toThrowError();
+    });
+
+    it<SpaceTestContext>('removes the identified lock request from presence extras', async ({ space, presence }) => {
+      await space.enter();
+      const member = space.members.getSelf()!;
+
+      const lockID = 'test';
+      const msg = Realtime.PresenceMessage.fromValues({
+        connectionId: member.connectionId,
+        extras: {
+          locks: [
+            {
+              id: lockID,
+              status: LockStatus.PENDING,
+              timestamp: Date.now(),
+            },
+          ],
+        },
+      });
+      space.locks.processPresenceMessage(msg);
+      expect(space.locks.get(lockID)).toBeDefined();
+
+      const presenceUpdate = vi.spyOn(presence, 'update');
+
+      await space.locks.release(lockID);
+
+      expect(presenceUpdate).toHaveBeenCalledTimes(1);
+      const updateMsg = presenceUpdate.mock.calls[0][0];
+      expect(updateMsg.extras).not.toBeDefined();
+    });
   });
 });
