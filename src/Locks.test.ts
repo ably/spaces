@@ -2,6 +2,7 @@ import { it, describe, expect, vi, beforeEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 
 import Space from './Space.js';
+import type { SpaceMember } from './types.js';
 import { LockStatus } from './Locks.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 
@@ -93,11 +94,20 @@ describe('Locks (mockClient)', () => {
   });
 
   describe('processPresenceMessage', () => {
+    const lockID = 'test';
+
+    const lockEvent = (member: SpaceMember, status: LockStatus) =>
+      expect.objectContaining({
+        member: member,
+        request: expect.objectContaining({ id: lockID, status }),
+      });
+
     it<SpaceTestContext>('sets a PENDING request to LOCKED', async ({ space }) => {
       await space.enter();
       const member = space.members.getSelf()!;
 
-      const lockID = 'test';
+      const emitSpy = vi.spyOn(space.locks, 'emit');
+
       const msg = Realtime.PresenceMessage.fromValues({
         connectionId: member.connectionId,
         extras: {
@@ -114,6 +124,7 @@ describe('Locks (mockClient)', () => {
 
       const lock = member.locks.get(lockID)!;
       expect(lock.status).toBe(LockStatus.LOCKED);
+      expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, LockStatus.LOCKED));
     });
 
     // use table driven tests to check whether a PENDING request for "self"
@@ -160,7 +171,6 @@ describe('Locks (mockClient)', () => {
 
         // process a PENDING request for the other member, which should
         // transition to LOCKED
-        const lockID = 'test';
         let msg = Realtime.PresenceMessage.fromValues({
           connectionId: otherConnId,
           extras: {
@@ -179,6 +189,7 @@ describe('Locks (mockClient)', () => {
 
         // process a PENDING request for the current member and check the
         // result matches what is expected
+        const emitSpy = vi.spyOn(space.locks, 'emit');
         msg = Realtime.PresenceMessage.fromValues({
           connectionId: client.connection.id,
           extras: {
@@ -198,6 +209,15 @@ describe('Locks (mockClient)', () => {
         const otherMember = space.members.getByConnectionId(otherConnId)!;
         const otherLock = otherMember.locks.get(lockID)!;
         expect(otherLock.status).toBe(expectedOtherStatus);
+
+        if (expectedSelfStatus === LockStatus.UNLOCKED) {
+          expect(emitSpy).toHaveBeenCalledTimes(1);
+          expect(emitSpy).toHaveBeenNthCalledWith(1, 'update', lockEvent(selfMember, LockStatus.UNLOCKED));
+        } else {
+          expect(emitSpy).toHaveBeenCalledTimes(2);
+          expect(emitSpy).toHaveBeenNthCalledWith(1, 'update', lockEvent(otherMember, LockStatus.UNLOCKED));
+          expect(emitSpy).toHaveBeenNthCalledWith(2, 'update', lockEvent(selfMember, LockStatus.LOCKED));
+        }
       });
     });
   });

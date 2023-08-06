@@ -4,6 +4,12 @@ import Space from './Space.js';
 import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS } from './Errors.js';
+import EventEmitter, {
+  InvalidArgumentError,
+  inspect,
+  type EventKey,
+  type EventListener,
+} from './utilities/EventEmitter.js';
 
 export enum LockStatus {
   PENDING = 'pending',
@@ -28,11 +34,17 @@ interface LockOptions {
   attributes: Map<string, string>;
 }
 
-export default class Locks {
+type LockEventMap = {
+  update: Lock;
+};
+
+export default class Locks extends EventEmitter<LockEventMap> {
   constructor(
     private space: Space,
     private presenceUpdate: (update: PresenceMember['data'], extras?: any) => Promise<void>,
-  ) {}
+  ) {
+    super();
+  }
 
   get(id: string): Lock | undefined {
     for (const member of this.space.members.getAll()) {
@@ -87,6 +99,40 @@ export default class Locks {
     return req;
   }
 
+  subscribe<K extends EventKey<LockEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LockEventMap[K]>,
+    listener?: EventListener<LockEventMap[K]>,
+  ) {
+    try {
+      super.on(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Locks.subscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  unsubscribe<K extends EventKey<LockEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LockEventMap[K]>,
+    listener?: EventListener<LockEventMap[K]>,
+  ) {
+    try {
+      super.off(listenerOrEvents, listener);
+    } catch (e: unknown) {
+      if (e instanceof InvalidArgumentError) {
+        throw new InvalidArgumentError(
+          'Locks.unsubscribe(): Invalid arguments: ' + inspect([listenerOrEvents, listener]),
+        );
+      } else {
+        throw e;
+      }
+    }
+  }
+
   processPresenceMessage(message: Types.PresenceMessage) {
     const member = this.space.members.getByConnectionId(message.connectionId);
     if (!member) {
@@ -102,6 +148,11 @@ export default class Locks {
       // be done by the Ably system, at which point this can be removed
       if (lock.status === LockStatus.PENDING) {
         this.processPending(member, lock);
+      }
+
+      const existing = member.locks.get(lock.id);
+      if (!existing || existing.status !== lock.status) {
+        this.emit('update', { member, request: lock });
       }
 
       member.locks.set(lock.id, lock);
@@ -148,6 +199,7 @@ export default class Locks {
       pendingReq.status = LockStatus.LOCKED;
       lock.request.status = LockStatus.UNLOCKED;
       lock.request.reason = ERR_LOCK_INVALIDATED;
+      this.emit('update', lock);
       return;
     }
 
