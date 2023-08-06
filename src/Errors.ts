@@ -38,3 +38,9 @@ export const ERR_LOCK_INVALIDATED = new ErrorInfo({
   code: 40052,
   statusCode: 400,
 });
+
+export const ERR_LOCK_RELEASED = new ErrorInfo({
+  message: 'lock was released',
+  code: 40053,
+  statusCode: 400,
+});

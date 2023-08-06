@@ -3,7 +3,7 @@ import { Types } from 'ably';
 import Space from './Space.js';
 import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
-import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS } from './Errors.js';
+import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS, ERR_LOCK_RELEASED } from './Errors.js';
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
@@ -80,23 +80,20 @@ export default class Locks extends EventEmitter<LockEventMap> {
     self.locks.set(id, req);
 
     // reflect the change in the member's presence data
-    const update: PresenceMember['data'] = {
-      profileUpdate: {
-        id: null,
-        current: self.profileData,
-      },
-      locationUpdate: {
-        id: null,
-        current: self?.location ?? null,
-        previous: null,
-      },
-    };
-    const extras = {
-      locks: Array.from(self.locks.values()),
-    };
-    await this.presenceUpdate(update, extras);
+    await this.updatePresence(self);
 
     return req;
+  }
+
+  async release(id: string): Promise<void> {
+    const self = this.space.members.getSelf();
+    if (!self) {
+      throw new Error('Must enter a space before acquiring a lock');
+    }
+
+    self.locks.delete(id);
+
+    await this.updatePresence(self);
   }
 
   subscribe<K extends EventKey<LockEventMap>>(
@@ -140,6 +137,14 @@ export default class Locks extends EventEmitter<LockEventMap> {
     }
 
     if (!message.extras || !message.extras.locks || !Array.isArray(message.extras.locks)) {
+      // there are no locks in presence, so release any existing locks for the
+      // member
+      for (const [id, lock] of member.locks.entries()) {
+        lock.status = LockStatus.UNLOCKED;
+        lock.reason = ERR_LOCK_RELEASED;
+        member.locks.delete(id);
+        this.emit('update', { member, request: lock });
+      }
       return;
     }
 
@@ -157,6 +162,16 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
       member.locks.set(lock.id, lock);
     });
+
+    // handle locks which have been removed from presence extras
+    for (const [id, lock] of member.locks.entries()) {
+      if (!message.extras.locks.some((req: LockRequest) => req.id === id)) {
+        lock.status = LockStatus.UNLOCKED;
+        lock.reason = ERR_LOCK_RELEASED;
+        member.locks.delete(id);
+        this.emit('update', { member, request: lock });
+      }
+    }
   }
 
   // process a PENDING lock request by determining whether it should be
@@ -207,5 +222,26 @@ export default class Locks extends EventEmitter<LockEventMap> {
     // mark the PENDING request as UNLOCKED with a reason.
     pendingReq.status = LockStatus.UNLOCKED;
     pendingReq.reason = ERR_LOCK_IS_LOCKED;
+  }
+
+  updatePresence(member: SpaceMember) {
+    const update: PresenceMember['data'] = {
+      profileUpdate: {
+        id: null,
+        current: member.profileData,
+      },
+      locationUpdate: {
+        id: null,
+        current: member?.location ?? null,
+        previous: null,
+      },
+    };
+    let extras;
+    if (member.locks.size > 0) {
+      extras = {
+        locks: Array.from(member.locks.values()),
+      };
+    }
+    return this.presenceUpdate(update, extras);
   }
 }
