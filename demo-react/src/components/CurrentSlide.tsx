@@ -1,5 +1,5 @@
-import { useContext, useEffect, useRef } from 'react';
-import { Cursors, SpacesContext } from '.';
+import { useRef } from 'react';
+import { Cursors } from '.';
 import { useMembers, useTrackCursor } from '../hooks';
 import { SlidePreviewProps } from './SlidePreview';
 

@@ -62,7 +62,7 @@ export const Cursors = () => {
 
     space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
       const { connectionId } = cursorUpdate;
-      const member = find<SpaceMember[]>(members, { connectionId });
+      const member = find<SpaceMember>(members, { connectionId });
 
       if (
         connectionId !== self?.connectionId &&
@@ -70,7 +70,7 @@ export const Cursors = () => {
         cursorUpdate.data
       ) {
         dispatch({
-          type: cursorUpdate.data.state,
+          type: cursorUpdate.data.state as ActionType,
           data: {
             connectionId,
             members,

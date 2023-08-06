@@ -1,4 +1,6 @@
-import { Paragraph, Title, Image } from '.';
+import { Paragraph } from './Paragraph';
+import { Title } from './Title';
+import { Image } from './Image';
 
 export const slides = [
   {
