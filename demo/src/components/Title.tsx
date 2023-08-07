@@ -3,14 +3,16 @@ import { useElementSelect, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses } from '../utils';
 
 interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
+  id: string;
+  slide: string;
   variant?: 'h1' | 'h2' | 'h3';
 }
 
-export const Title = ({ variant = 'h1', className, id, ...props }: Props) => {
+export const Title = ({ variant = 'h1', className, id, slide, ...props }: Props) => {
   const Component = variant;
   const { members } = useMembers();
   const { handleSelect } = useElementSelect(id);
-  const activeMember = findActiveMember(id, members);
+  const activeMember = findActiveMember(id, slide, members);
   const name = getMemberFirstName(activeMember);
   const outlineClasses = getOutlineClasses(activeMember);
 

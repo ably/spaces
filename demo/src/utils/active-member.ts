@@ -1,8 +1,8 @@
 import { SpaceMember } from '@ably-labs/spaces';
 
-export const findActiveMember = (id?: string, members?: SpaceMember[]) => {
+export const findActiveMember = (id: string, slide: string, members?: SpaceMember[]) => {
   if (!members) return;
-  return members.find((member) => member.location?.element === id);
+  return members.find((member) => member.location?.element === id && member.location?.slide === slide);
 };
 
 export const getMemberFirstName = (member?: SpaceMember) => {

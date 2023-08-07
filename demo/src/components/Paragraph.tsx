@@ -3,13 +3,15 @@ import { useElementSelect, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses } from '../utils';
 
 interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
+  id: string;
+  slide: string;
   variant?: 'regular' | 'aside';
 }
 
-export const Paragraph = ({ variant = 'regular', id, className, ...props }: Props) => {
+export const Paragraph = ({ variant = 'regular', id, slide, className, ...props }: Props) => {
   const { members } = useMembers();
   const { handleSelect } = useElementSelect(id);
-  const activeMember = findActiveMember(id, members);
+  const activeMember = findActiveMember(id, slide, members);
   const name = getMemberFirstName(activeMember);
   const outlineClasses = getOutlineClasses(activeMember);
 

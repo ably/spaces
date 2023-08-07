@@ -17,7 +17,7 @@ export const SlidePreview = ({ children, index }: SlidePreviewProps) => {
 
   const handleSlideClick = () => {
     if (!space || !self) return;
-    space.locations.set({ slide: index, element: null });
+    space.locations.set({ slide: `${index}`, element: null });
   };
 
   return (
