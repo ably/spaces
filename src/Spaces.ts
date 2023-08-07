@@ -5,6 +5,12 @@ import Space from './Space.js';
 import type { SpaceOptions } from './types.js';
 import type { Subset } from './utilities/types.js';
 
+export interface ClientWithOptions extends Types.RealtimePromise {
+  options: {
+    agents?: Record<string, string | boolean>;
+  };
+}
+
 class Spaces {
   private spaces: Record<string, Space> = {};
   ably: Types.RealtimePromise;
@@ -13,7 +19,7 @@ class Spaces {
 
   constructor(client: Types.RealtimePromise) {
     this.ably = client;
-    this.addAgent(this.ably['options']);
+    this.addAgent((this.ably as ClientWithOptions)['options']);
     this.ably.time();
   }
 

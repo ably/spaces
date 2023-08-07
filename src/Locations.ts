@@ -117,14 +117,14 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     return this.space.members
       .getAll()
       .filter((member) => member.connectionId !== self?.connectionId)
-      .reduce((acc, member) => {
+      .reduce((acc: Record<string, unknown>, member: SpaceMember) => {
         acc[member.connectionId] = member.location;
         return acc;
       }, {});
   }
 
   getAll(): Record<string, unknown> {
-    return this.space.members.getAll().reduce((acc, member) => {
+    return this.space.members.getAll().reduce((acc: Record<string, unknown>, member: SpaceMember) => {
       acc[member.connectionId] = member.location;
       return acc;
     }, {});

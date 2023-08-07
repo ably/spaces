@@ -23,13 +23,13 @@ export function removeListener(
   eventFilter?: string,
 ) {
   let listeners: Function[] | Record<string, Function[]>;
-  let index;
-  let eventName;
+  let index: number;
+  let eventName: string;
 
   for (let targetListenersIndex = 0; targetListenersIndex < targetListeners.length; targetListenersIndex++) {
     listeners = targetListeners[targetListenersIndex];
 
-    if (eventFilter) {
+    if (isString(eventFilter) && isObject(listeners)) {
       listeners = listeners[eventFilter];
     }
 
@@ -39,8 +39,9 @@ export function removeListener(
       }
       /* If events object has an event name key with no listeners then
 				 remove the key to stop the list growing indefinitely */
-      if (eventFilter && listeners.length === 0) {
-        delete targetListeners[targetListenersIndex][eventFilter];
+      const parentCollection = targetListeners[targetListenersIndex];
+      if (eventFilter && listeners.length === 0 && isObject(parentCollection)) {
+        delete parentCollection[eventFilter];
       }
     } else if (isObject(listeners)) {
       for (eventName in listeners) {
@@ -58,21 +59,21 @@ export function inspect(args: unknown): string {
 }
 
 export class InvalidArgumentError extends Error {
-  constructor(...args) {
+  constructor(...args: [string | undefined]) {
     super(...args);
   }
 }
 
-export type EventMap = Record<string, any>;
+export type EventMap = Record<string, unknown>;
 // extract all the keys of an event map and use them as a type
 export type EventKey<T extends EventMap> = string & keyof T;
 export type EventListener<T> = (params: T) => void;
 
 export default class EventEmitter<T extends EventMap> {
-  protected any: Array<Function>;
-  protected events: Record<string, Function[]>;
-  protected anyOnce: Array<Function>;
-  protected eventsOnce: Record<string, Function[]>;
+  any: Array<Function>;
+  events: Record<string, Function[]>;
+  anyOnce: Array<Function>;
+  eventsOnce: Record<string, Function[]>;
 
   constructor() {
     this.any = [];
@@ -86,10 +87,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param listenerOrEvents (optional) the name of the event to listen to or the listener to be called.
    * @param listener (optional) the listener to be called.
    */
-  protected on<K extends EventKey<T>>(
-    listenerOrEvents?: K | K[] | EventListener<T[K]>,
-    listener?: EventListener<T[K]>,
-  ): void {
+  on<K extends EventKey<T>>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
     // .on(() => {})
     if (isFunction(listenerOrEvents)) {
       this.any.push(listenerOrEvents);
@@ -120,10 +118,7 @@ export default class EventEmitter<T extends EventMap> {
    * the listener is treated as an 'any' listener.
    * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
    */
-  protected off<K extends EventKey<T>>(
-    listenerOrEvents?: K | K[] | EventListener<T[K]>,
-    listener?: EventListener<T[K]>,
-  ): void {
+  off<K extends EventKey<T>>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
     // .off()
     // don't use arguments.length === 0 here as don't won't handle
     // cases like .off(undefined) which is a valid call
@@ -178,7 +173,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param event (optional) the name of the event, or none for 'any'
    * @return array of events, or null if none
    */
-  protected listeners<K extends EventKey<T>>(event: K): Function[] | null {
+  listeners<K extends EventKey<T>>(event: K): Function[] | null {
     if (event) {
       const listeners = [...(this.events[event] ?? [])];
 
@@ -195,9 +190,9 @@ export default class EventEmitter<T extends EventMap> {
   /**
    * Emit an event
    * @param event the event name
-   * @param args the arguments to pass to the listener
+   * @param arg the arguments to pass to the listener
    */
-  emit<K extends EventKey<T>>(event: K, ...args: unknown[] /* , args... */) {
+  emit<K extends EventKey<T>>(event: K, arg: T[K]) {
     const eventThis = { event };
     const listeners: Function[] = [];
 
@@ -222,7 +217,7 @@ export default class EventEmitter<T extends EventMap> {
     }
 
     listeners.forEach(function (listener) {
-      callListener(eventThis, listener, args);
+      callListener(eventThis, listener, [arg]);
     });
   }
 
@@ -231,7 +226,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param listenerOrEvents (optional) the name of the event to listen to
    * @param listener (optional) the listener to be called
    */
-  protected once<K extends EventKey<T>>(
+  once<K extends EventKey<T>>(
     listenerOrEvents: K | K[] | EventListener<T[K]>,
     listener?: EventListener<T[K]>,
   ): void | Promise<any> {
@@ -245,12 +240,14 @@ export default class EventEmitter<T extends EventMap> {
     // .once(["eventName"], () => {})
     if (isArray(listenerOrEvents) && isFunction(listener)) {
       const self = this;
+
       listenerOrEvents.forEach(function (eventName) {
-        const listenerWrapper = function (listenerThis: any) {
-          const innerArgs = Array.prototype.slice.call(arguments);
+        const listenerWrapper: EventListener<T[K]> = function (this: EventListener<T[K]>, listenerThis) {
+          const innerArgs = Array.prototype.slice.call(arguments) as [params: T[K]];
           listenerOrEvents.forEach((eventName) => {
             self.off(eventName, this);
           });
+
           listener.apply(listenerThis, innerArgs);
         };
         self.once(eventName, listenerWrapper);
@@ -277,12 +274,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param listener the listener to be called
    * @param listenerArgs
    */
-  protected whenState(
-    targetState: string,
-    currentState: string,
-    listener: EventListener<T>,
-    ...listenerArgs: unknown[]
-  ) {
+  whenState(targetState: string, currentState: string, listener: EventListener<T[string]>, ...listenerArgs: unknown[]) {
     const eventThis = { event: targetState };
 
     if (typeof targetState !== 'string' || typeof currentState !== 'string') {

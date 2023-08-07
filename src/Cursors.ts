@@ -20,20 +20,6 @@ type CursorsEventMap = {
 
 export const CURSOR_UPDATE = 'cursorUpdate';
 
-const emitterHasListeners = (emitter) => {
-  const flattenEvents = (obj) =>
-    Object.entries(obj)
-      .map((_, v) => v)
-      .flat();
-
-  return (
-    emitter.any.length > 0 ||
-    emitter.anyOnce.length > 0 ||
-    flattenEvents(emitter.events).length > 0 ||
-    flattenEvents(emitter.eventsOnce).length > 0
-  );
-};
-
 export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
   private readonly cursorDispensing: CursorDispensing;
@@ -92,8 +78,28 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
 
   private isUnsubscribed() {
     const channel = this.getChannel();
-    return !emitterHasListeners(channel['subscriptions']);
+
+    interface ChannelWithSubscriptions extends Types.RealtimeChannelPromise {
+      subscriptions: EventEmitter<{}>;
+    }
+
+    const subscriptions = (channel as ChannelWithSubscriptions).subscriptions;
+    return !this.emitterHasListeners(subscriptions);
   }
+
+  private emitterHasListeners = (emitter: EventEmitter<{}>) => {
+    const flattenEvents = (obj: Record<string, Function[]>) =>
+      Object.entries(obj)
+        .map((_, v) => v)
+        .flat();
+
+    return (
+      emitter.any.length > 0 ||
+      emitter.anyOnce.length > 0 ||
+      flattenEvents(emitter.events).length > 0 ||
+      flattenEvents(emitter.eventsOnce).length > 0
+    );
+  };
 
   subscribe<K extends EventKey<CursorsEventMap>>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap[K]>,
@@ -136,7 +142,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
       }
     }
 
-    const hasListeners = emitterHasListeners(this);
+    const hasListeners = this.emitterHasListeners(this);
 
     if (!hasListeners) {
       const channel = this.getChannel();

@@ -44,14 +44,14 @@ export default class CursorBatching {
     this.outgoingBuffers.push(value);
   }
 
-  private async publishFromBuffer(channel, eventName: string) {
+  private async publishFromBuffer(channel: Types.RealtimeChannelPromise, eventName: string) {
     if (!this.isRunning) {
       this.isRunning = true;
       await this.batchToChannel(channel, eventName);
     }
   }
 
-  private async batchToChannel(channel, eventName: string) {
+  private async batchToChannel(channel: Types.RealtimeChannelPromise, eventName: string) {
     if (!this.hasMovement) {
       this.isRunning = false;
       return;
