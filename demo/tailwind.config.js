@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  mode: 'jit',
-  content: ['./app/index.html', './app/**/*.{html,js,ts,jsx,tsx}'],
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       screens: {
@@ -33,7 +32,7 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(from|to|outline|bg)-(red|orange|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|)-(200|300|400|500|600|700|800)/,
+        /(from|to|outline|bg)-(red|orange|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(200|300|400|500|600|700|800)/,
       variants: ['before'],
     },
   ],

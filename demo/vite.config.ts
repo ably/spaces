@@ -1,11 +1,9 @@
 import { defineConfig } from 'vite';
-import commonjs from 'vite-plugin-commonjs';
-import topLevelAwait from 'vite-plugin-top-level-await';
-import buildcommonjs from '@rollup/plugin-commonjs';
+import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  root: 'app',
+  plugins: [react()],
   server: {
     port: 8080,
     strictPort: true,
@@ -13,14 +11,5 @@ export default defineConfig({
     proxy: {
       '/.netlify': 'http://localhost:9999/.netlify',
     },
-  },
-  build: {
-    outDir: '../dist',
-    sourcemap: true,
-    emptyOutDir: true,
-  },
-  plugins: [commonjs(), buildcommonjs(), topLevelAwait()],
-  resolve: {
-    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.cjs'],
   },
 });
