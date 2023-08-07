@@ -42,7 +42,7 @@ module.exports = {
       extends: ['plugin:jsdoc/recommended'],
     },
   ],
-  ignorePatterns: ['dist', 'build', 'demo-react'],
+  ignorePatterns: ['dist', 'build'],
   settings: {
     jsdoc: {
       tagNamePreference: {
