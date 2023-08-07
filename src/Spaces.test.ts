@@ -1,17 +1,17 @@
 import { it, describe, expect, expectTypeOf, vi, beforeEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 
-import Spaces from './Spaces.js';
+import Spaces, { type ClientWithOptions } from './Spaces.js';
 
 interface SpacesTestContext {
-  client: Types.RealtimePromise;
+  client: ClientWithOptions;
 }
 
 vi.mock('ably/promises');
 
 describe('Spaces', () => {
   beforeEach<SpacesTestContext>((context) => {
-    context.client = new Realtime({ key: 'asd' });
+    context.client = new Realtime({ key: 'asd' }) as ClientWithOptions;
   });
 
   it<SpacesTestContext>('expects the injected client to be of the type RealtimePromise', ({ client }) => {
@@ -32,14 +32,18 @@ describe('Spaces', () => {
 
   it<SpacesTestContext>('applies the agent header to an existing SDK instance', ({ client }) => {
     const spaces = new Spaces(client);
-    expect(client['options'].agents).toEqual({ 'ably-spaces': spaces.version, 'space-custom-client': true });
+    expect(client.options.agents).toEqual({
+      'ably-spaces': spaces.version,
+      'space-custom-client': true,
+    });
   });
 
   it<SpacesTestContext>('extend the agents array when it already exists', ({ client }) => {
-    client['options']['agents'] = { 'some-client': '1.2.3' };
+    (client as ClientWithOptions).options.agents = { 'some-client': '1.2.3' };
     const spaces = new Spaces(client);
+    const ablyClient = spaces.ably as ClientWithOptions;
 
-    expect(spaces.ably['options'].agents).toEqual({
+    expect(ablyClient.options.agents).toEqual({
       'some-client': '1.2.3',
       'ably-spaces': spaces.version,
       'space-custom-client': true,

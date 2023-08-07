@@ -1,10 +1,14 @@
+import { Types } from 'ably';
+
+import Space from '../../Space.js';
+
 import type { SpaceMember } from '../../types.js';
 import type { PresenceMember } from '../../utilities/types.js';
 
 // import { nanoidId } from '../../../__mocks__/nanoid/index.js';
 const nanoidId = 'NanoidID';
 
-const enterPresenceMessage = {
+const enterPresenceMessage: Types.PresenceMessage = {
   clientId: '1',
   data: {
     profileUpdate: {
@@ -24,17 +28,23 @@ const enterPresenceMessage = {
   timestamp: 1,
 };
 
-const updatePresenceMessage = {
+const updatePresenceMessage: Types.PresenceMessage = {
   ...enterPresenceMessage,
   action: 'update',
 };
 
-const leavePresenceMessage = {
+const leavePresenceMessage: Types.PresenceMessage = {
   ...enterPresenceMessage,
   action: 'leave',
 };
 
-const createPresenceMessage = (type, override?) => {
+type MessageMap = {
+  enter: typeof enterPresenceMessage;
+  update: typeof updatePresenceMessage;
+  leave: typeof leavePresenceMessage;
+};
+
+const createPresenceMessage = <T extends keyof MessageMap>(type: T, override?: Partial<MessageMap[T]>) => {
   switch (type) {
     case 'enter':
       return { ...enterPresenceMessage, ...override };
@@ -47,7 +57,7 @@ const createPresenceMessage = (type, override?) => {
   }
 };
 
-const createPresenceEvent = (space, type, override?) => {
+const createPresenceEvent = <T extends keyof MessageMap>(space: Space, type: T, override?: Partial<MessageMap[T]>) => {
   space['onPresenceUpdate'](createPresenceMessage(type, override));
 };
 

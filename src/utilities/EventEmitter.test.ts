@@ -98,14 +98,14 @@ describe('EventEmitter', () => {
     it('adds a listener to the "any" set of event listeners', (context) => {
       context.eventEmitter['on'](context.spy);
       expect(context.eventEmitter['any']).toStrictEqual([context.spy]);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledOnce();
     });
 
     it('adds a listener to a provided field of an event listener', (context) => {
       context.eventEmitter['on']('myEvent', context.spy);
       expect(context.eventEmitter['events']['myEvent']).toStrictEqual([context.spy]);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledOnce();
     });
 
@@ -114,11 +114,11 @@ describe('EventEmitter', () => {
       expect(context.eventEmitter['events']['myEvent']).toStrictEqual([context.spy]);
       expect(context.eventEmitter['events']['myOtherEvent']).toStrictEqual([context.spy]);
       expect(context.eventEmitter['events']['myThirdEvent']).toStrictEqual([context.spy]);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledTimes(1);
-      context.eventEmitter['emit']('myOtherEvent');
+      context.eventEmitter['emit']('myOtherEvent', '');
       expect(context.spy).toHaveBeenCalledTimes(2);
-      context.eventEmitter['emit']('myThirdEvent');
+      context.eventEmitter['emit']('myThirdEvent', '');
       expect(context.spy).toHaveBeenCalledTimes(3);
     });
   });
@@ -148,7 +148,7 @@ describe('EventEmitter', () => {
       expect(context.eventEmitter['anyOnce']).toStrictEqual([]);
       expect(context.eventEmitter['events']).toStrictEqual(Object.create(null));
       expect(context.eventEmitter['eventsOnce']).toStrictEqual(Object.create(null));
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).not.toHaveBeenCalled();
     });
 
@@ -158,7 +158,7 @@ describe('EventEmitter', () => {
       expect(context.eventEmitter['anyOnce']).toStrictEqual([altListener]);
       expect(context.eventEmitter['events']['myEvent']).not.toContain(context.spy);
       expect(context.eventEmitter['eventsOnce']['myEvent']).not.toContain(context.spy);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).not.toHaveBeenCalled();
     });
 
@@ -168,9 +168,9 @@ describe('EventEmitter', () => {
       expect(context.eventEmitter['anyOnce']).toStrictEqual([context.spy, altListener]);
       expect(context.eventEmitter['events']['myEvent']).not.toContain(context.spy);
       expect(context.eventEmitter['events']['myOtherEvent']).toContain(context.spy);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledTimes(2);
-      context.eventEmitter['emit']('myOtherEvent');
+      context.eventEmitter['emit']('myOtherEvent', '');
       expect(context.spy).toHaveBeenCalledTimes(3);
     });
 
@@ -182,11 +182,11 @@ describe('EventEmitter', () => {
       expect(eventEmitter['events']['myEvent']).toBe(undefined);
       expect(eventEmitter['events']['myOtherEvent']).toBe(undefined);
       expect(eventEmitter['events']['myThirdEvent']).toContain(specificListener);
-      eventEmitter['emit']('myEvent');
-      eventEmitter['emit']('myOtherEvent');
+      eventEmitter['emit']('myEvent', '');
+      eventEmitter['emit']('myOtherEvent', '');
       expect(specificListener).not.toHaveBeenCalled();
       expect(eventEmitter['events']['myThirdEvent']).toContain(specificListener);
-      eventEmitter['emit']('myThirdEvent');
+      eventEmitter['emit']('myThirdEvent', '');
       expect(specificListener).toHaveBeenCalledOnce();
     });
 
@@ -241,17 +241,17 @@ describe('EventEmitter', () => {
     it('adds a listener to anyOnce on calling `once` with a listener', (context) => {
       context.eventEmitter['once'](context.spy);
       expect(context.eventEmitter['anyOnce']).toHaveLength(1);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledOnce();
-      context.eventEmitter['emit']('myOtherEvent');
+      context.eventEmitter['emit']('myOtherEvent', '');
     });
 
     it('adds a listener to an eventOnce on calling `once` with a listener and event name', (context) => {
       context.eventEmitter['once']('myEvent', context.spy);
       expect(context.eventEmitter['eventsOnce']['myEvent']).toHaveLength(1);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledOnce();
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledOnce();
     });
 
@@ -260,7 +260,7 @@ describe('EventEmitter', () => {
       expect(context.eventEmitter['eventsOnce']['myEvent']).toHaveLength(1);
       expect(context.eventEmitter['eventsOnce']['myOtherEvent']).toHaveLength(1);
       expect(context.eventEmitter['eventsOnce']['myThirdEvent']).toHaveLength(1);
-      expect(context.eventEmitter['emit']('myEvent'));
+      expect(context.eventEmitter['emit']('myEvent', ''));
       expect(context.eventEmitter['eventsOnce']['myEvent']).toBe(undefined);
       expect(context.eventEmitter['eventsOnce']['myOtherEvent']).toBe(undefined);
       expect(context.eventEmitter['eventsOnce']['myThirdEvent']).toBe(undefined);
@@ -279,7 +279,7 @@ describe('EventEmitter', () => {
       context.eventEmitter['on']('myEvent', context.spy);
       expect(context.eventEmitter['listeners']('myEvent')).toContain(context.spy);
       expect(context.spy).not.toHaveBeenCalled();
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledOnce();
       // anyOnce must also be emptied
       expect(context.eventEmitter['anyOnce']).toStrictEqual([]);
@@ -287,7 +287,7 @@ describe('EventEmitter', () => {
 
     it('emits any events in anyOnce on emitting specific events', (context) => {
       context.eventEmitter['on']('myEvent', context.spy);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.eventEmitter['anyOnce']).toStrictEqual([]);
       expect(context.spy).toHaveBeenCalledOnce();
     });
@@ -295,7 +295,7 @@ describe('EventEmitter', () => {
     it('emits an event and removes it on being called for a once operation', (context) => {
       context.eventEmitter['once']('myEvent', context.spy);
       expect(context.eventEmitter['listeners']('myEvent')).toContain(context.spy);
-      context.eventEmitter['emit']('myEvent');
+      context.eventEmitter['emit']('myEvent', '');
       expect(context.eventEmitter['listeners']('myEvent')).toBe(null);
       expect(context.eventEmitter['anyOnce']).toStrictEqual([]);
       expect(context.spy).toHaveBeenCalledOnce();
