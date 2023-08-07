@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { AvatarStack, CurrentSelectorSvg } from '.';
 import { useContext } from 'react';
-import { SpacesContext } from '../components';
+import { SpacesContext } from '.';
 import { useMembers } from '../hooks';
 
 export interface SlidePreviewProps {

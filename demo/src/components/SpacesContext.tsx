@@ -3,7 +3,7 @@ import Spaces, { type Space } from '@ably-labs/spaces';
 import { Realtime } from 'ably';
 import { nanoid } from 'nanoid';
 
-import { getSpaceNameFromUrl } from '../utils/';
+import { getSpaceNameFromUrl } from '../utils';
 
 const clientId = nanoid();
 
