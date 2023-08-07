@@ -7,13 +7,8 @@ export default class CursorDispensing {
   private buffer: Record<string, CursorUpdate[]> = {};
   private handlerRunning: boolean = false;
   private timerIds: ReturnType<typeof setTimeout>[] = [];
-  private emitCursorUpdate: (update: CursorUpdate) => void;
-  private getCurrentBatchTime: () => number;
 
-  constructor(emitCursorUpdate, getCurrentBatchTime) {
-    this.emitCursorUpdate = emitCursorUpdate;
-    this.getCurrentBatchTime = getCurrentBatchTime;
-  }
+  constructor(private emitCursorUpdate: (update: CursorUpdate) => void, private getCurrentBatchTime: () => number) {}
 
   emitFromBatch(batchDispenseInterval: number) {
     if (!this.bufferHaveData()) {
@@ -66,7 +61,7 @@ export default class CursorDispensing {
   }
 
   processBatch(message: RealtimeMessage) {
-    const updates = message.data || [];
+    const updates: CursorUpdate[] = message.data || [];
 
     updates.forEach((update) => {
       const enhancedMsg = {
