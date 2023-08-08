@@ -1,4 +1,9 @@
+import { useEffect, useState } from 'react';
+
 import cn from 'classnames';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
 import { type SpaceMember } from '../../../src/types';
 import { type ProfileData } from '../utils/types';
 
@@ -8,7 +13,37 @@ type Props = Omit<SpaceMember, 'profileData'> & {
   profileData: ProfileData;
 };
 
-export const AvatarInfo = ({ isSelf, isConnected, profileData, isList = false }: Props) => {
+dayjs.extend(relativeTime);
+
+export const AvatarInfo = ({ isSelf, isConnected, profileData, isList = false, lastEvent }: Props) => {
+  const [currentTime, setCurrentTime] = useState(dayjs());
+
+  const lastSeen = (timestamp: number) => {
+    const diffInSeconds = currentTime.diff(timestamp, 'seconds') + 1;
+
+    if (diffInSeconds === 0) {
+      return `Last seen a moment ago`;
+    } else {
+      return `Last seen ${diffInSeconds} second${diffInSeconds === 1 ? '' : 's'} ago`;
+    }
+  };
+
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setTimeout>;
+
+    if (isSelf) return;
+
+    if (!isConnected) {
+      intervalId = setInterval(() => {
+        setCurrentTime(dayjs());
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isConnected]);
+
   return isSelf ? (
     <div
       data-id="avatar-hover"
@@ -48,7 +83,7 @@ export const AvatarInfo = ({ isSelf, isConnected, profileData, isList = false }:
           data-id="avatar-status"
           className="text-xs text-white"
         >
-          {isConnected ? 'Online now' : 'Left a few minutes ago'}
+          {isConnected ? 'Online now' : lastSeen(lastEvent.timestamp)}
         </span>
       </p>
     </div>
