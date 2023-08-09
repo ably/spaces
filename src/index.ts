@@ -3,6 +3,9 @@ import Spaces from './Spaces.js';
 export type Space = Awaited<ReturnType<Spaces['get']>>;
 
 // Can be changed to * when we update to TS5
+
+export default Spaces;
+
 export type {
   CursorsOptions,
   CursorPosition,
