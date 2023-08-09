@@ -17,7 +17,7 @@
     "build": "npm run build:mjs && npm run build:cjs && npm run build:iife",
     "build:mjs": "npx tsc --project tsconfig.mjs.json && cp res/package.mjs.json dist/mjs/package.json",
     "build:cjs": "npx tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
-    "build:iife": "rm -rf dist/iife && npx tsc --project tsconfig.iife.json && rollup dist/iife/index.js --file dist/iife/index.bundle.js --format iife --name Spaces -e ably -g ably:Ably",
+    "build:iife": "rm -rf dist/iife && npx tsc --project tsconfig.iife.json && rollup -c",
     "prepare": "husky install"
   },
   "exports": {
@@ -49,6 +49,7 @@
     "husky": "^8.0.0",
     "mock-socket": "^9.1.5",
     "prettier": "^2.8.3",
+    "rollup": "^3.28.0",
     "typescript": "^4.9.5",
     "vitest": "^0.29.8"
   },
