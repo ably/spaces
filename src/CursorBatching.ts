@@ -1,6 +1,6 @@
 import { Types } from 'ably';
 
-import { CURSOR_UPDATE } from './Cursors.js';
+import { CURSOR_UPDATE } from './CursorConstants.js';
 import type { CursorUpdate } from './types.js';
 import type { CursorsOptions } from './types.js';
 

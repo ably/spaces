@@ -2,7 +2,8 @@ import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest'
 import { Realtime, Types } from 'ably/promises';
 
 import Space from './Space.js';
-import Cursors, { CURSOR_UPDATE } from './Cursors.js';
+import Cursors from './Cursors.js';
+import { CURSOR_UPDATE } from './CursorConstants.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 import CursorBatching from './CursorBatching.js';
 import CursorDispensing from './CursorDispensing.js';
