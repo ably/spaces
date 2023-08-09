@@ -1,9 +1,12 @@
 import cn from 'classnames';
-import { AvatarProps } from './Avatar';
+import { type SpaceMember } from '../../../src/types';
+import { type ProfileData } from '../utils/types';
 
-interface Props extends AvatarProps {
+type Props = Omit<SpaceMember, 'profileData'> & {
+  isSelf?: boolean;
   isList?: boolean;
-}
+  profileData: ProfileData;
+};
 
 export const AvatarInfo = ({ isSelf, isConnected, profileData, isList = false }: Props) => {
   return isSelf ? (

@@ -1,13 +1,15 @@
 import cn from 'classnames';
-import { SpaceMember } from '@ably-labs/spaces';
+import { type SpaceMember } from '../../../src/types';
 
 import { AvatarInfo } from './AvatarInfo';
 import { LightningSvg } from './svg';
+import { type ProfileData } from '../utils/types';
 
-export interface AvatarProps extends SpaceMember {
+export type AvatarProps = Omit<SpaceMember, 'profileData'> & {
   isInContent?: boolean;
   isSelf?: boolean;
-}
+  profileData: ProfileData;
+};
 
 export const Avatar = ({
   isSelf = false,
