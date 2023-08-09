@@ -1,37 +1,58 @@
 import { useEffect, useState, useContext } from 'react';
-import { type SpaceMember } from '@ably-labs/spaces';
+import { type SpaceMember } from '../../../src/types';
 import { SpacesContext } from '../components';
 
-const membersToOthers = (members: SpaceMember[] = [], self: SpaceMember | undefined): SpaceMember[] =>
+import { type Member } from '../utils/types';
+
+const isMember = (obj: unknown): obj is Member => {
+  return !!(obj as Member)?.profileData?.name && !!(obj as Member)?.profileData?.color;
+};
+
+const areMembers = (arr: unknown): arr is Member[] => {
+  return (arr as Member[]).every((m) => isMember(m));
+};
+
+const membersToOthers = (members: Member[] = [], self: SpaceMember | undefined): Member[] =>
   members.filter((m) => m.connectionId !== self?.connectionId);
 
-export const useMembers: () => Partial<{ self?: SpaceMember; others: SpaceMember[]; members: SpaceMember[] }> = () => {
+export const useMembers: () => Partial<{ self?: Member; others: Member[]; members: Member[] }> = () => {
   const space = useContext(SpacesContext);
-  const [members, setMembers] = useState<SpaceMember[]>([]);
-  const [others, setOthers] = useState<SpaceMember[]>([]);
-  const [self, setSelf] = useState<SpaceMember | undefined>(undefined);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [others, setOthers] = useState<Member[]>([]);
+  const [self, setSelf] = useState<Member | undefined>(undefined);
 
   useEffect(() => {
     if (!space) return;
 
-    const initSelf = space.getSelf();
-    const initMembers = space.getMembers();
+    const initSelf = space.members.getSelf();
+    const initMembers = space.members.getAll();
 
-    setSelf(initSelf);
-    setMembers(initMembers);
-    setOthers(membersToOthers(initMembers, initSelf));
+    if (isMember(initSelf)) {
+      setSelf(initSelf);
+    }
 
-    const handler = (members: SpaceMember[]) => {
-      const self = space.getSelf();
-      setSelf(self);
-      setMembers([...members]);
-      setOthers((members ?? []).filter((m) => m.connectionId !== self?.connectionId));
+    if (areMembers(initMembers)) {
+      setMembers(initMembers);
+      setOthers(membersToOthers(initMembers, initSelf));
+    }
+
+    const handler = ({ members }: { members: SpaceMember[] }) => {
+      const self = space.members.getSelf();
+
+      if (isMember(self)) {
+        setSelf(self);
+      }
+
+      if (areMembers(members)) {
+        setMembers([...members]);
+        setOthers(membersToOthers([...members], self));
+      }
     };
 
-    space.subscribe('membersUpdate', handler);
+    space.subscribe('update', handler);
 
     return () => {
-      space.unsubscribe('membersUpdate', handler);
+      space.unsubscribe('update', handler);
     };
   }, [space]);
 

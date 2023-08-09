@@ -1,11 +1,13 @@
 import { Avatar } from './Avatar';
+
 import cn from 'classnames';
 import { AvatarInfo } from './AvatarInfo';
-import { SpaceMember } from '@ably-labs/spaces';
+
+import { type AvatarProps } from './Avatar';
 
 interface Props {
   isInContent?: boolean;
-  avatars: SpaceMember[];
+  avatars: AvatarProps[];
 }
 
 export const AvatarStack = ({ isInContent = false, avatars }: Props) => {
