@@ -1,11 +1,11 @@
-import { SpaceMember } from '@ably-labs/spaces';
 import { Avatar } from './Avatar';
 import { AvatarStack } from './AvatarStack';
 import { ExternalLinkSvg, InfoSvg } from './svg';
+import { type Member } from '../utils/types';
 
 interface Props {
-  self?: SpaceMember;
-  others?: SpaceMember[];
+  self?: Member;
+  others?: Member[];
 }
 
 export const Header = ({ self, others }: Props) => {

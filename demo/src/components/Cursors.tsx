@@ -5,7 +5,7 @@ import find from 'lodash.find';
 import omit from 'lodash.omit';
 import { CursorSvg, SpacesContext } from '.';
 import { useMembers, CURSOR_ENTER, CURSOR_LEAVE, CURSOR_MOVE } from '../hooks';
-import { SpaceMember } from '@ably-labs/spaces';
+import { type Member } from '../utils/types';
 
 type ActionType = 'move' | 'enter' | 'leave';
 
@@ -13,7 +13,7 @@ interface Action {
   type: ActionType;
   data: {
     connectionId: string;
-    members?: SpaceMember[];
+    members?: Member[];
     position?: {
       x: number;
       y: number;
@@ -22,7 +22,7 @@ interface Action {
 }
 
 interface State {
-  [connectionId: string]: SpaceMember & Action['data'];
+  [connectionId: string]: Member & Action['data'];
 }
 
 const reducer = (state: State, action: Action): State => {
@@ -62,7 +62,7 @@ export const Cursors = () => {
 
     space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
       const { connectionId } = cursorUpdate;
-      const member = find<SpaceMember>(members, { connectionId });
+      const member = find<Member>(members, { connectionId });
 
       if (
         connectionId !== self?.connectionId &&
