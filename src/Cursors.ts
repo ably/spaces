@@ -10,6 +10,7 @@ import EventEmitter, {
   type EventListener,
 } from './utilities/EventEmitter.js';
 import CursorHistory from './CursorHistory.js';
+import { CURSOR_UPDATE } from './CursorConstants.js';
 
 import type { CursorsOptions, CursorUpdate } from './types.js';
 import type { RealtimeMessage } from './utilities/types.js';
@@ -17,8 +18,6 @@ import type { RealtimeMessage } from './utilities/types.js';
 type CursorsEventMap = {
   cursorsUpdate: CursorUpdate;
 };
-
-export const CURSOR_UPDATE = 'cursorUpdate';
 
 export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
