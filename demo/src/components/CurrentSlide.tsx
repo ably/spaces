@@ -10,7 +10,7 @@ interface Props {
 export const CurrentSlide = ({ slides }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { self } = useMembers();
-  const slide = self?.location?.slide || 0;
+  const slide = parseInt(self?.location?.slide || '', 10) || 0;
 
   useTrackCursor(containerRef);
 
