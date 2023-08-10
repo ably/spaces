@@ -11,11 +11,7 @@ import EventEmitter, {
   type EventListener,
 } from './utilities/EventEmitter.js';
 
-export enum LockStatus {
-  PENDING = 'pending',
-  LOCKED = 'locked',
-  UNLOCKED = 'unlocked',
-}
+export type LockStatus = 'pending' | 'locked' | 'unlocked';
 
 export type Lock = {
   member: SpaceMember;
@@ -49,7 +45,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   get(id: string): Lock | undefined {
     for (const member of this.space.members.getAll()) {
       const request = member.locks.get(id);
-      if (request && request.status === LockStatus.LOCKED) {
+      if (request && request.status === 'locked') {
         return { request, member };
       }
     }
@@ -64,14 +60,14 @@ export default class Locks extends EventEmitter<LockEventMap> {
     // check there isn't an existing PENDING or LOCKED request for the current
     // member, since we do not support nested locks
     let req = self.locks.get(id);
-    if (req && req.status !== LockStatus.UNLOCKED) {
+    if (req && req.status !== 'unlocked') {
       throw ERR_LOCK_REQUEST_EXISTS;
     }
 
     // initialise a new PENDING request
     req = {
       id,
-      status: LockStatus.PENDING,
+      status: 'pending',
       timestamp: Date.now(),
     };
     if (opts) {
@@ -140,7 +136,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
       // there are no locks in presence, so release any existing locks for the
       // member
       for (const [id, lock] of member.locks.entries()) {
-        lock.status = LockStatus.UNLOCKED;
+        lock.status = 'unlocked';
         lock.reason = ERR_LOCK_RELEASED;
         member.locks.delete(id);
         this.emit('update', { member, request: lock });
@@ -151,7 +147,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
     message.extras.locks.forEach((lock: LockRequest) => {
       // special-case the handling of PENDING requests, which will eventually
       // be done by the Ably system, at which point this can be removed
-      if (lock.status === LockStatus.PENDING) {
+      if (lock.status === 'pending') {
         this.processPending(member, lock);
       }
 
@@ -166,7 +162,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
     // handle locks which have been removed from presence extras
     for (const [id, lock] of member.locks.entries()) {
       if (!message.extras.locks.some((req: LockRequest) => req.id === id)) {
-        lock.status = LockStatus.UNLOCKED;
+        lock.status = 'unlocked';
         lock.reason = ERR_LOCK_RELEASED;
         member.locks.delete(id);
         this.emit('update', { member, request: lock });
@@ -185,7 +181,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
     // request as LOCKED
     const lock = this.get(pendingReq.id);
     if (!lock) {
-      pendingReq.status = LockStatus.LOCKED;
+      pendingReq.status = 'locked';
       return;
     }
 
@@ -211,8 +207,8 @@ export default class Locks extends EventEmitter<LockEventMap> {
       pendingReq.timestamp < lock.request.timestamp ||
       (pendingReq.timestamp == lock.request.timestamp && member.connectionId < lock.member.connectionId)
     ) {
-      pendingReq.status = LockStatus.LOCKED;
-      lock.request.status = LockStatus.UNLOCKED;
+      pendingReq.status = 'locked';
+      lock.request.status = 'unlocked';
       lock.request.reason = ERR_LOCK_INVALIDATED;
       this.emit('update', lock);
       return;
@@ -220,7 +216,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
     // the lock is LOCKED and the PENDING request did not invalidate it, so
     // mark the PENDING request as UNLOCKED with a reason.
-    pendingReq.status = LockStatus.UNLOCKED;
+    pendingReq.status = 'unlocked';
     pendingReq.reason = ERR_LOCK_IS_LOCKED;
   }
 
