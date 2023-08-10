@@ -49,14 +49,14 @@ describe('Locks (mockClient)', () => {
 
       const lockID = 'test';
       const req = await space.locks.acquire(lockID);
-      expect(req.status).toBe(LockStatus.PENDING);
+      expect(req.status).toBe('pending');
 
       const presenceMessage = expect.objectContaining({
         extras: {
           locks: [
             expect.objectContaining({
               id: lockID,
-              status: LockStatus.PENDING,
+              status: 'pending',
             }),
           ],
         },
@@ -114,7 +114,7 @@ describe('Locks (mockClient)', () => {
           locks: [
             {
               id: lockID,
-              status: LockStatus.PENDING,
+              status: 'pending',
               timestamp: Date.now(),
             },
           ],
@@ -123,8 +123,8 @@ describe('Locks (mockClient)', () => {
       space.locks.processPresenceMessage(msg);
 
       const lock = member.locks.get(lockID)!;
-      expect(lock.status).toBe(LockStatus.LOCKED);
-      expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, LockStatus.LOCKED));
+      expect(lock.status).toBe('locked');
+      expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'locked'));
     });
 
     // use table driven tests to check whether a PENDING request for "self"
@@ -138,32 +138,32 @@ describe('Locks (mockClient)', () => {
         desc: 'assigns the lock to the other member',
         otherConnId: '0',
         otherTimestamp: now - 100,
-        expectedSelfStatus: LockStatus.UNLOCKED,
-        expectedOtherStatus: LockStatus.LOCKED,
+        expectedSelfStatus: 'unlocked',
+        expectedOtherStatus: 'locked',
       },
       {
         name: 'when the other member has the lock with the same timestamp but a lower connectionId',
         desc: 'assigns the lock to the other member',
         otherConnId: '0',
         otherTimestamp: now,
-        expectedSelfStatus: LockStatus.UNLOCKED,
-        expectedOtherStatus: LockStatus.LOCKED,
+        expectedSelfStatus: 'unlocked',
+        expectedOtherStatus: 'locked',
       },
       {
         name: 'when the other member has the lock with the same timestamp but a higher connectionId',
         desc: 'assigns the lock to self',
         otherConnId: '2',
         otherTimestamp: now,
-        expectedSelfStatus: LockStatus.LOCKED,
-        expectedOtherStatus: LockStatus.UNLOCKED,
+        expectedSelfStatus: 'locked',
+        expectedOtherStatus: 'unlocked',
       },
       {
         name: 'when the other member has the lock with a later timestamp',
         desc: 'assigns the lock to self',
         otherConnId: '0',
         otherTimestamp: now + 100,
-        expectedSelfStatus: LockStatus.LOCKED,
-        expectedOtherStatus: LockStatus.UNLOCKED,
+        expectedSelfStatus: 'locked',
+        expectedOtherStatus: 'unlocked',
       },
     ])('$name', ({ desc, otherConnId, otherTimestamp, expectedSelfStatus, expectedOtherStatus }) => {
       it<SpaceTestContext>(desc, async ({ client, space }) => {
@@ -177,7 +177,7 @@ describe('Locks (mockClient)', () => {
             locks: [
               {
                 id: lockID,
-                status: LockStatus.PENDING,
+                status: 'pending',
                 timestamp: otherTimestamp,
               },
             ],
@@ -196,7 +196,7 @@ describe('Locks (mockClient)', () => {
             locks: [
               {
                 id: lockID,
-                status: LockStatus.PENDING,
+                status: 'pending',
                 timestamp: now,
               },
             ],
@@ -210,13 +210,13 @@ describe('Locks (mockClient)', () => {
         const otherLock = otherMember.locks.get(lockID)!;
         expect(otherLock.status).toBe(expectedOtherStatus);
 
-        if (expectedSelfStatus === LockStatus.UNLOCKED) {
+        if (expectedSelfStatus === 'unlocked') {
           expect(emitSpy).toHaveBeenCalledTimes(1);
-          expect(emitSpy).toHaveBeenNthCalledWith(1, 'update', lockEvent(selfMember, LockStatus.UNLOCKED));
+          expect(emitSpy).toHaveBeenNthCalledWith(1, 'update', lockEvent(selfMember, 'unlocked'));
         } else {
           expect(emitSpy).toHaveBeenCalledTimes(2);
-          expect(emitSpy).toHaveBeenNthCalledWith(1, 'update', lockEvent(otherMember, LockStatus.UNLOCKED));
-          expect(emitSpy).toHaveBeenNthCalledWith(2, 'update', lockEvent(selfMember, LockStatus.LOCKED));
+          expect(emitSpy).toHaveBeenNthCalledWith(1, 'update', lockEvent(otherMember, 'unlocked'));
+          expect(emitSpy).toHaveBeenNthCalledWith(2, 'update', lockEvent(selfMember, 'locked'));
         }
       });
     });
@@ -231,7 +231,7 @@ describe('Locks (mockClient)', () => {
           locks: [
             {
               id: lockID,
-              status: LockStatus.PENDING,
+              status: 'pending',
               timestamp: Date.now(),
             },
           ],
@@ -249,7 +249,7 @@ describe('Locks (mockClient)', () => {
 
       const lock = member.locks.get(lockID);
       expect(lock).not.toBeDefined();
-      expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, LockStatus.UNLOCKED));
+      expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'unlocked'));
     });
   });
 
@@ -269,7 +269,7 @@ describe('Locks (mockClient)', () => {
           locks: [
             {
               id: lockID,
-              status: LockStatus.PENDING,
+              status: 'pending',
               timestamp: Date.now(),
             },
           ],

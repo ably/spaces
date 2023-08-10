@@ -4,7 +4,6 @@ import { Realtime, Types } from 'ably/promises';
 import Space from './Space.js';
 import Locations from './Locations.js';
 import Cursors from './Cursors.js';
-import { LockStatus } from './Locks.js';
 
 import {
   createPresenceEvent,
@@ -81,8 +80,8 @@ describe('Space', () => {
           connectionId: '1',
           extras: {
             locks: [
-              { id: 'lock1', status: LockStatus.LOCKED },
-              { id: 'lock2', status: LockStatus.PENDING },
+              { id: 'lock1', status: 'locked' },
+              { id: 'lock2', status: 'pending' },
             ],
           },
         }),
@@ -90,8 +89,8 @@ describe('Space', () => {
           connectionId: '2',
           extras: {
             locks: [
-              { id: 'lock1', status: LockStatus.UNLOCKED },
-              { id: 'lock3', status: LockStatus.LOCKED },
+              { id: 'lock1', status: 'unlocked' },
+              { id: 'lock3', status: 'locked' },
             ],
           },
         }),
@@ -100,13 +99,13 @@ describe('Space', () => {
 
       const member1 = space.members.getByConnectionId('1')!;
       expect(member1.locks.size).toEqual(2);
-      expect(member1.locks.get('lock1')!.status).toBe(LockStatus.LOCKED);
-      expect(member1.locks.get('lock2')!.status).toBe(LockStatus.LOCKED);
+      expect(member1.locks.get('lock1')!.status).toBe('locked');
+      expect(member1.locks.get('lock2')!.status).toBe('locked');
 
       const member2 = space.members.getByConnectionId('2')!;
       expect(member2.locks.size).toEqual(2);
-      expect(member2.locks.get('lock1')!.status).toBe(LockStatus.UNLOCKED);
-      expect(member2.locks.get('lock3')!.status).toBe(LockStatus.LOCKED);
+      expect(member2.locks.get('lock1')!.status).toBe('unlocked');
+      expect(member2.locks.get('lock3')!.status).toBe('locked');
     });
   });
 
