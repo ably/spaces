@@ -23,7 +23,7 @@ export const Title = ({ variant = 'h1', className, id, slide, ...props }: Props)
       className={cn(
         'relative cursor-pointer',
         {
-          'font-semibold text-ably-avatar-stack-demo-slide-text my-2 xs:text-2xl md:text-4xl': variant === 'h1',
+          'font-semibold text-ably-avatar-stack-demo-slide-text my-2 xs:text-3xl md:text-4xl': variant === 'h1',
           'font-semibold text-ably-avatar-stack-demo-slide-text md:text-2xl': variant === 'h2',
           'font-medium uppercase text-ably-avatar-stack-demo-slide-title-highlight xs:text-xs xs:my-4 md:my-0 md:text-md':
             variant === 'h3',

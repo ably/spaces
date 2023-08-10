@@ -28,7 +28,7 @@ export const slides = [
             id="3"
             slide="0"
           >
-            <div className="absolute top-5 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto">
+            <div className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
                 variant="h2"
                 id="4"
@@ -50,7 +50,7 @@ export const slides = [
             id="6"
             slide="0"
           >
-            <div className="absolute top-3 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto">
+            <div className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
                 variant="h2"
                 id="7"
@@ -74,7 +74,7 @@ export const slides = [
           >
             <div
               data-id="slide-figcaption-placeholder"
-              className="absolute top-3 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto"
+              className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto"
             >
               <Title
                 variant="h2"
@@ -99,7 +99,7 @@ export const slides = [
           >
             <div
               data-id="slide-figcaption-placeholder"
-              className="absolute top-3 scale-50 md:scale-100 w-[176px] -left-8 md:top-20 md:left-6 md:right-6 md:mx-auto"
+              className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto"
             >
               <Title
                 variant="h2"
@@ -134,7 +134,7 @@ export const slides = [
           </Title>
           <Title
             variant="h1"
-            className="mb-12"
+            className="md:mb-12"
             id="2"
             slide="1"
           >
@@ -172,7 +172,7 @@ export const slides = [
         <div>
           <Title
             variant="h1"
-            className="mb-12"
+            className="md:mb-12"
             id="1"
             slide="2"
           >
