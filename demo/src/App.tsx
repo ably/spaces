@@ -21,7 +21,7 @@ const App = () => {
   }, [space, self?.profileData.name]);
 
   return (
-    <>
+    <div className="min-w-[375px]">
       <Header
         self={self}
         others={others}
@@ -44,7 +44,7 @@ const App = () => {
           <AblySvg className="ml-2" />
         </a>
       </div>
-    </>
+    </div>
   );
 };
 

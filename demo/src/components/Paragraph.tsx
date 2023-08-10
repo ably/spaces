@@ -22,7 +22,7 @@ export const Paragraph = ({ variant = 'regular', id, slide, className, ...props 
       className={cn(
         'text-ably-avatar-stack-demo-slide-text cursor-pointer relative',
         {
-          'xs:w-auto xs:text-xs xs:my-4 md:my-0 md:text-lg': variant === 'regular',
+          'xs:w-auto text-xs xs:text-base md:text-lg xs:my-4 md:my-0': variant === 'regular',
           'text-[13px] p-0 leading-6': variant === 'aside',
           [`outline-2 outline before:content-[attr(data-before)] before:absolute before:-top-[22px] before:-left-[2px] before:px-[10px] before:text-sm before:text-white before:rounded-t-lg before:normal-case ${outlineClasses}`]:
             !!activeMember,
