@@ -1,6 +1,8 @@
 import cn from 'classnames';
 import { useElementSelect, useMembers } from '../hooks';
+
 import { findActiveMember, getMemberFirstName, getOutlineClasses } from '../utils';
+import { useLockLabelCallback } from '../hooks/useLock';
 
 interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   id: string;
@@ -10,16 +12,16 @@ interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
 
 export const Title = ({ variant = 'h1', className, id, slide, ...props }: Props) => {
   const Component = variant;
-  const { members } = useMembers();
-  const { handleSelect } = useElementSelect(id);
+  const { members, self } = useMembers();
+  const { handleSelect } = useElementSelect(id, true);
   const activeMember = findActiveMember(id, slide, members);
-  const name = getMemberFirstName(activeMember);
   const outlineClasses = getOutlineClasses(activeMember);
+  const label = useLockLabelCallback(slide, id, self?.connectionId) || getMemberFirstName(activeMember);
 
   return (
     <Component
       id={id}
-      data-before={name}
+      data-before={label}
       className={cn(
         'relative cursor-pointer',
         {

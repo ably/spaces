@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { useElementSelect, useMembers } from '../hooks';
+import { useElementSelect, useMembers, useLockLabelCallback } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses } from '../utils';
 
 interface Props extends React.HTMLAttributes<HTMLImageElement> {
@@ -11,15 +11,15 @@ interface Props extends React.HTMLAttributes<HTMLImageElement> {
 }
 
 export const Image = ({ src, children, className, id, slide }: Props) => {
-  const { members } = useMembers();
+  const { members, self } = useMembers();
   const { handleSelect } = useElementSelect(id);
   const activeMember = findActiveMember(id, slide, members);
-  const name = getMemberFirstName(activeMember);
   const outlineClasses = getOutlineClasses(activeMember);
+  const label = useLockLabelCallback(slide, id, self?.connectionId) || getMemberFirstName(activeMember);
 
   return (
     <div
-      data-before={name}
+      data-before={label}
       className={cn('relative xs:my-4 md:my-0', className, {
         [`outline-2 outline before:content-[attr(data-before)] before:absolute before:-top-[22px] before:-left-[2px] before:px-[10px] before:text-sm before:text-white before:rounded-t-lg before:normal-case ${outlineClasses}`]:
           !!activeMember,

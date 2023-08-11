@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { useElementSelect, useMembers } from '../hooks';
+import { useElementSelect, useMembers, useLockLabelCallback } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses } from '../utils';
 
 interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
@@ -9,16 +9,16 @@ interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
 }
 
 export const Paragraph = ({ variant = 'regular', id, slide, className, ...props }: Props) => {
-  const { members } = useMembers();
+  const { members, self } = useMembers();
   const { handleSelect } = useElementSelect(id);
   const activeMember = findActiveMember(id, slide, members);
-  const name = getMemberFirstName(activeMember);
   const outlineClasses = getOutlineClasses(activeMember);
+  const label = useLockLabelCallback(slide, id, self?.connectionId) || getMemberFirstName(activeMember);
 
   return (
     <p
       id={id}
-      data-before={name}
+      data-before={label}
       className={cn(
         'text-ably-avatar-stack-demo-slide-text cursor-pointer relative',
         {

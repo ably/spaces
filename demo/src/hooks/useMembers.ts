@@ -4,7 +4,7 @@ import { SpacesContext } from '../components';
 
 import { type Member } from '../utils/types';
 
-const isMember = (obj: unknown): obj is Member => {
+export const isMember = (obj: unknown): obj is Member => {
   return !!(obj as Member)?.profileData?.name && !!(obj as Member)?.profileData?.color;
 };
 
