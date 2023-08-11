@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
+    "circle": "ts-node --esm ./scripts/circle.ts",
+    "dev": "vite",
     "preview": "vite preview",
-    "test": "playwright test",
-    "circle": "ts-node --esm ./scripts/circle.ts"
+    "random": "ts-node --esm ./scripts/random.ts",
+    "test": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.36.1",
