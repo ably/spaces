@@ -1,8 +1,7 @@
 import { Types } from 'ably';
 
 import { EventKey, EventListener, EventMap } from './EventEmitter.js';
-import { ProfileData } from '../types.js';
-import { LockRequest } from '../Locks.js';
+import { ProfileData, LockRequest } from '../types.js';
 
 export type PresenceMember = {
   data: {

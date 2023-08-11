@@ -2,8 +2,8 @@ import { it, describe, expect, vi, beforeEach } from 'vitest';
 import { Realtime, Types } from 'ably/promises';
 
 import Space from './Space.js';
-import type { SpaceMember } from './types.js';
-import { LockAttributes, LockStatus } from './Locks.js';
+import type { SpaceMember, LockStatus } from './types.js';
+import { LockAttributes } from './Locks.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 
 interface SpaceTestContext {

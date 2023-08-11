@@ -2,7 +2,7 @@
 // application.
 import Ably from 'ably/promises';
 import Spaces from '../dist/cjs/Spaces.js';
-import { Lock, LockAttributes } from '../dist/cjs/Locks.js';
+import { Lock, LockAttributes } from '../dist/cjs/index.js';
 
 // SlideElement represents an element on a slide which a member can both be
 // located at and attempt to lock (e.g. an editable text box).
