@@ -155,12 +155,20 @@ class Space extends EventEmitter<SpaceEventsMap> {
       },
     };
 
+    let extras;
+
+    if (self?.locks && self.locks.size > 0) {
+      extras = {
+        locks: Array.from(self?.locks.values()),
+      };
+    }
+
     if (!self) {
-      await this.presenceEnter(update);
+      await this.presenceEnter(update, extras);
       return;
     }
 
-    return this.presenceUpdate(update);
+    return this.presenceUpdate(update, extras);
   }
 
   leave(profileData: ProfileData = null) {
