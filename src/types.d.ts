@@ -1,5 +1,4 @@
 import { Types } from 'ably';
-import { LockRequest } from './Locks.js';
 
 export interface CursorsOptions {
   outboundBatchInterval: number;
@@ -39,3 +38,18 @@ export interface SpaceMember {
     timestamp: number;
   };
 }
+
+export type LockStatus = 'pending' | 'locked' | 'unlocked';
+
+export type Lock = {
+  member: SpaceMember;
+  request: LockRequest;
+};
+
+export type LockRequest = {
+  id: string;
+  status: LockStatus;
+  timestamp: number;
+  attributes?: LockAttributes;
+  reason?: Types.ErrorInfo;
+};

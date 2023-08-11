@@ -14,4 +14,9 @@ export type {
   SpaceOptions,
   ProfileData,
   SpaceMember,
+  Lock,
+  LockRequest,
+  LockStatus,
 } from './types.js';
+
+export { LockAttributes } from './Locks.js';

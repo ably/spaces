@@ -1,7 +1,7 @@
 import { Types } from 'ably';
 
 import Space from './Space.js';
-import type { SpaceMember } from './types.js';
+import type { Lock, LockRequest, SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS, ERR_LOCK_RELEASED } from './Errors.js';
 import EventEmitter, {
@@ -10,21 +10,6 @@ import EventEmitter, {
   type EventKey,
   type EventListener,
 } from './utilities/EventEmitter.js';
-
-export type LockStatus = 'pending' | 'locked' | 'unlocked';
-
-export type Lock = {
-  member: SpaceMember;
-  request: LockRequest;
-};
-
-export type LockRequest = {
-  id: string;
-  status: LockStatus;
-  timestamp: number;
-  attributes?: LockAttributes;
-  reason?: Types.ErrorInfo;
-};
 
 export class LockAttributes extends Map<string, string> {
   toJSON() {
