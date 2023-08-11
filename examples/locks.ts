@@ -2,7 +2,7 @@
 // application.
 import Ably from 'ably/promises';
 import Spaces from '../dist/cjs/Spaces.js';
-import { Lock } from '../dist/cjs/Locks.js';
+import { Lock, LockAttributes } from '../dist/cjs/Locks.js';
 
 // SlideElement represents an element on a slide which a member can both be
 // located at and attempt to lock (e.g. an editable text box).
@@ -21,8 +21,8 @@ class SlideElement {
   }
 
   // the attributes to use when locking this SlideElement.
-  lockAttributes(): Map<string, string> {
-    const attributes = new Map();
+  lockAttributes(): LockAttributes {
+    const attributes = new LockAttributes();
     attributes.set('slideId', this.slideId);
     attributes.set('elementId', this.elementId);
     return attributes;

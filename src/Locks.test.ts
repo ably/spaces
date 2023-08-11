@@ -3,7 +3,7 @@ import { Realtime, Types } from 'ably/promises';
 
 import Space from './Space.js';
 import type { SpaceMember } from './types.js';
-import { LockStatus } from './Locks.js';
+import { LockAttributes, LockStatus } from './Locks.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 
 interface SpaceTestContext {
@@ -70,7 +70,7 @@ describe('Locks (mockClient)', () => {
       const presenceUpdate = vi.spyOn(presence, 'update');
 
       const lockID = 'test';
-      const attributes = new Map();
+      const attributes = new LockAttributes();
       attributes.set('key1', 'foo');
       attributes.set('key2', 'bar');
       const req = await space.locks.acquire(lockID, { attributes });

@@ -22,12 +22,18 @@ export type LockRequest = {
   id: string;
   status: LockStatus;
   timestamp: number;
-  attributes?: Map<string, string>;
+  attributes?: LockAttributes;
   reason?: Types.ErrorInfo;
 };
 
+export class LockAttributes extends Map<string, string> {
+  toJSON() {
+    return Object.fromEntries(this);
+  }
+}
+
 interface LockOptions {
-  attributes: Map<string, string>;
+  attributes: LockAttributes;
 }
 
 type LockEventMap = {
