@@ -138,7 +138,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
       return;
     }
 
-    if (!message.extras || !message.extras.locks || !Array.isArray(message.extras.locks)) {
+    if (!Array.isArray(message?.extras?.locks)) {
       // there are no locks in presence, so release any existing locks for the
       // member
       for (const [id, lock] of member.locks.entries()) {
