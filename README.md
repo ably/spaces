@@ -144,6 +144,7 @@ space.enter({
 
 // Publish locationUpdate event with a client's location when they select a UI element
 space.locations.set({ slide: '3', component: 'slide-title' });
+```
 
 The following is an example `locationUpdate` event received by subscribers when a user changes location:
 
