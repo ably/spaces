@@ -24,8 +24,9 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
   private readonly cursorDispensing: CursorDispensing;
   private readonly cursorHistory: CursorHistory;
-  private channel?: Types.RealtimeChannelPromise;
   readonly options: CursorsOptions;
+
+  public channel?: Types.RealtimeChannelPromise;
 
   constructor(private space: Space) {
     super();
