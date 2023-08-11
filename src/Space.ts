@@ -58,21 +58,21 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.locks = new Locks(this, this.presenceUpdate);
   }
 
-  private presenceUpdate = (data: PresenceMember['data'], extras?: any) => {
+  private presenceUpdate = (data: PresenceMember['data'], extras?: PresenceMember['extras']) => {
     if (!extras) {
       return this.channel.presence.update(data);
     }
     return this.channel.presence.update(Ably.Realtime.PresenceMessage.fromValues({ data, extras }));
   };
 
-  private presenceEnter = (data: PresenceMember['data'], extras?: any) => {
+  private presenceEnter = (data: PresenceMember['data'], extras?: PresenceMember['extras']) => {
     if (!extras) {
       return this.channel.presence.enter(data);
     }
     return this.channel.presence.enter(Ably.Realtime.PresenceMessage.fromValues({ data, extras }));
   };
 
-  private presenceLeave = (data: PresenceMember['data'], extras?: any) => {
+  private presenceLeave = (data: PresenceMember['data'], extras?: PresenceMember['extras']) => {
     if (!extras) {
       return this.channel.presence.leave(data);
     }

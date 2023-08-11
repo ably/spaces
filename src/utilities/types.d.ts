@@ -2,6 +2,7 @@ import { Types } from 'ably';
 
 import { EventKey, EventListener, EventMap } from './EventEmitter.js';
 import { ProfileData } from '../types.js';
+import { LockRequest } from '../Locks.js';
 
 export type PresenceMember = {
   data: {
@@ -14,6 +15,9 @@ export type PresenceMember = {
       previous: unknown;
       current: unknown;
     };
+  };
+  extras?: {
+    locks: LockRequest[];
   };
 } & Omit<Types.PresenceMessage, 'data'>;
 
