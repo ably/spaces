@@ -20,12 +20,20 @@ Refer to the [Ably docs for the JS SDK](https://ably.com/docs/getting-started/se
 
 ### Properties
 
-#### ably
+#### client
 
 Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) client that was passed to the [constructor](#constructor).
 
 ```ts
-type ably = Ably.RealtimePromise;
+type client = Ably.RealtimePromise;
+```
+
+#### connection
+
+Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) connection, belonging to the client that was passed to the [constructor](#constructor).
+
+```ts
+type connection = Ably.ConnectionPromise;
 ```
 
 #### version
