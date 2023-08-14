@@ -314,3 +314,103 @@ const myCursor = await space.cursors.getSelf();
 // Get a snapshot of everyone else's cursors
 const othersCursors = await space.cursors.getOthers();
 ```
+
+### Component Locking
+
+Use the Component Locking API to lock stateful components whilst being edited by members to reduce the chances of conflicting changes being made.
+
+Locks are identified using a unique string, and the Spaces SDK maintains that at most one member holds a lock with a given string at any given time.
+
+The Component Locking API supports four operations: Query, Acquire, Release, and Subscribe.
+
+### Query
+
+`space.locks.get` is used to query whether a lock identifier is currently locked and by whom. It returns a `Lock` type which has the following fields:
+
+```ts
+type Lock = {
+  id: string;
+  status: LockStatus;
+  member: SpaceMember;
+  timestamp: number;
+  attributes?: LockAttributes;
+  reason?: Types.ErrorInfo;
+};
+```
+
+For example:
+
+```ts
+// check if the id is locked
+const isLocked = space.locks.get(id) !== undefined;
+
+// check which member has the lock
+const { member } = space.locks.get(id);
+
+// check the lock attributes assigned by the member holding the lock
+const { attributes } = space.locks.get(id);
+const value = attributes.get(key);
+```
+
+`space.locks.getAll` returns all lock identifiers which are currently locked as an array of `Lock`:
+
+```ts
+const allLocks = space.locks.getAll();
+
+for (const lock of allLocks) {
+  // ...
+}
+```
+
+### Acquire
+
+`space.locks.acquire` sends a request to acquire a lock using presence.
+
+It returns a Promise which resolves once the presence request has been sent.
+
+```ts
+const req = await space.locks.acquire(id);
+
+// or with some attributes
+const attributes = new Map();
+attributes.set('key', 'value');
+const req = await space.locks.acquire(id, { attributes });
+```
+
+It throws an error if a lock request already exists for the given identifier with a status of `pending` or `locked`.
+
+### Release
+
+`space.locks.release` releases a previously requested lock by removing it from presence.
+
+It returns a Promise which resolves once the presence request has been sent.
+
+```ts
+await space.locks.release(id);
+```
+
+### Subscribe
+
+`space.locks.subscribe` subscribes to changes in lock status across all members.
+
+The callback is called with a value of type `Lock`.
+
+```ts
+space.locks.subscribe('update', (lock) => {
+  // lock.member is the requesting member
+  // lock.request is the request made by the member
+});
+
+// or with destructuring:
+space.locks.subscribe('update', ({ member, request }) => {
+  // request.status is the status of the request, one of PENDING, LOCKED, or UNLOCKED
+  // request.reason is an ErrorInfo if the status is UNLOCKED
+});
+```
+
+Such changes occur when:
+
+- a `pending` request transitions to `locked` because the requesting member now holds the lock
+- a `pending` request transitions to `unlocked` because the requesting member does not hold the lock since another member already does
+- a `locked` request transitions to `unlocked` because the lock was either released or invalidated by a concurrent request which took precedence
+- an `unlocked` request transitions to `locked` because the requesting member reacquired a lock
