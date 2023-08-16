@@ -6,9 +6,11 @@
 
 To use Spaces, you will need the following:
 
-- An Ably account. You can [sign up](https://ably.com/signup) for free.
-- An Ably API key. You can create API keys in an app within your [Ably account](https://ably.com/dashboard).
-  - The API key needs the following [capabilities](https://ably.com/docs/realtime/authentication#capabilities-explained): `publish`, `subscribe`, `presence` and `history`.
+* An Ably account
+  * You can [sign up](https://ably.com/signup) for free
+* An Ably API key
+  * Create API keys in an app within your [Ably account](https://ably.com/dashboard)
+  * The API key needs the following [capabilities](https://ably.com/docs/realtime/authentication#capabilities-explained): `publish`, `subscribe`, `presence` and `history`
 
 ### Environment
 
@@ -85,52 +87,23 @@ The following is an example of setting `offlineTimeout` to 3 minutes and a `pagi
 const space = await spaces.get('demoSlideshow', { offlineTimeout: 180_000, cursors: { paginationLimit: 10 } });
 ```
 
-## Members
+### Subscribe to a space
 
-Members is a core concept of the library. When you enter a space, you become a `member`. On the client, your own membership is to referred to as `self`. You can get your `self` by calling `space.getSelf`. To get all the members (including self), call `space.getMembers`. These method will return (respectively an object and array of):
-
-```js
-{
-  "clientId": "clemons#142",
-  "connectionId": "hd9743gjDc",
-  "isConnected": true,
-  "lastEvent": {
-    "name": "enter",
-    "timestamp": 1677595689759
-  },
-  "location": null,
-  "profileData": {
-    "username": "Claire Lemons",
-    "avatar": "https://slides-internal.com/users/clemons.png"
-  }
-}
-```
-
-See [SpaceMember](/docs/class-definitions.md#spacemember) for details on properties.
-
-### Listen to members updates
-
-The `space` instance is an `EventEmitter`. Events will be emitted for updates to members (including self). You can listen to the following events:
-
-#### enter
-
-Emitted when a member enters a space. Called with the member entering the space.
-
-#### leave
-
-Emitted when a member leaves a space. Called with the member leaving the space.
-
-#### membersUpdate
-
-Emitted when members enter, leave and their location is updated. Called with an array of all the members in the space.
+You can subscribe to events in a space:
 
 ```ts
-space.subscribe('membersUpdate', (members) => {
-  console.log(members);
+space.subscribe('update', (spaceState) => {
+  console.log(spaceState);
 });
 ```
 
-To stop listening to member events, users can call the `space.unsubscribe()` method. See [Event emitters](#event-emitters) for options and usage.
+This gets triggered on [member](#members) and [location](#location) events.
+
+Similarly you can unsubscribe:
+
+```ts
+space.unsubscribe();
+```
 
 ### Enter a space
 
@@ -153,8 +126,8 @@ space.enter({
 
 A leave event is sent when a user leaves a space. This can occur for one of the following reasons:
 
-- `space.leave()` is called explicitly.
-- The user closes the tab.
+- `space.leave()` is called explicitly
+- The user closes the tab
 - The user is abruptly disconnected from the internet for longer than 2 minutes
 
 A leave event does not remove the member immediately from members. Instead, they are removed after a timeout which is configurable by the [`offlineTimeout` option](#options). This allows the UI to display an intermediate state before disconnection/reconnection.
@@ -181,6 +154,85 @@ await space.updateProfileData((oldProfileData) => {
 });
 ```
 
+## Members
+
+When you enter a space, you become a `member`. On the client, your own membership is to referred to as `self`. You can get your `self` by calling `space.members.getSelf()`. To get all the members (including self), call `space.members.getAll()`. These methods will return (respectively an object and array of):
+
+```json
+{
+  "clientId": "clemons#142",
+  "connectionId": "hd9743gjDc",
+  "isConnected": true,
+  "lastEvent": {
+    "name": "enter",
+    "timestamp": 1677595689759
+  },
+  "location": null,
+  "profileData": {
+    "username": "Claire Lemons",
+    "avatar": "https://slides-internal.com/users/clemons.png"
+  }
+}
+```
+
+See [SpaceMember](/docs/class-definitions.md#spacemember) for details on properties.
+
+### Member events
+
+Subscribe to either `enter`, `leave`, `remove` or `update` events related to members in a space.
+
+#### enter
+
+Emitted when a member enters a space. Called with the member entering the space.
+
+```ts
+space.members.subscribe('enter', (memberJoins) => {
+  console.log(memberJoins);
+});
+```
+
+#### leave
+
+Emitted when a member leaves a space. Called with the member leaving the space.
+
+```ts
+space.members.subscribe('leave', (memberLeft) => {
+  console.log(memberLeft);
+});
+```
+
+#### remove
+
+Emitted when a member is removed from a space. Called with the member removed from the space.
+
+```ts
+space.members.subscribe('remove', (memberRemoved) => {
+  console.log(memberRemoved);
+});
+```
+
+#### update
+
+Emitted when for `enter`, `leave` and `remove` events in a space:
+
+
+```ts
+space.members.subscribe('update', (memberUpdate) => {
+  console.log(memberUpdate);
+});
+```
+
+This is the same as not specifying the event:
+
+```ts
+space.members.subscribe((memberUpdate) => {
+  console.log(memberUpdate);
+});
+```
+
+To stop listening to member events, users can call the `space.members.unsubscribe()` method. See [Event emitters](#event-emitters) for options and usage.
+
+
 ## Location
 
 Each member can set a location for themselves:
@@ -193,18 +245,19 @@ A location does not have a prescribed shape. In your UI it can represent a singl
 
 The location property will be set on the [member](#members).
 
-Because locations are part of members, a `memberUpdate` event will be emitted when a member updates their location. When a member leaves, their location is set to `null`.
+A location event will be emitted when a member updates their location:
 
 ```ts
-space.subscribe('membersUpdate', (members) => {
-  console.log(members);
+space.subscribe('update', (member) => {
+  console.log(member.location);
 });
 ```
+When a member leaves, their location is set to `null`.
 
 However, it's possible to listen to just location updates. `locations` is an [event emitter](#event-emitters) and will emit the `locationUpdate` event:
 
 ```ts
-space.locations.subscribe('locationUpdate', (locationUpdate) => {
+space.locations.subscribe('update', (locationUpdate) => {
   console.log(locationUpdate);
 });
 ```
@@ -250,7 +303,7 @@ The most common use case is to show the current mouse pointer position.
 To start listing to cursor events, use the `.subscribe` method:
 
 ```ts
-space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
+space.cursors.subscribe('update', (cursorUpdate) => {
   console.log(cursorUpdate);
 });
 ```
@@ -272,7 +325,7 @@ To set the position of a cursor and emit a `CursorUpdate`, first enter the space
 space.enter();
 ```
 
-Then call `.set`:
+Then call `set`:
 
 ```ts
 window.addEventListener('mousemove', ({ clientX, clientY }) => {
@@ -316,51 +369,51 @@ const lastPositions = await space.cursors.getAll();
 
 ## Event Emitters
 
-`space`, `cursors` & `locations` are event emitters. Event emitters provide `subscribe` and `unsubscribe` methods to attach/detach event listeners. Both methods support overloaded versions, described below.
+`space`, `members`, `cursors` and `locations` are event emitters. Event emitters provide `subscribe` and `unsubscribe` methods to attach/detach event listeners. Both methods support overloaded versions, described below.
 
 
 Calling `subscribe` with a single function argument will subscribe to all events on that emitter.
 
 ```ts
-space.subscribe(() => {});
+space.members.subscribe();
 ```
 
 Calling `subscribe` with a named event and a function argument will subscribe to that event only.
 
 ```ts
-space.subscribe(`membersUpdate`, () => {});
+space.members.subscribe(`enter`, () => {});
 ```
 
 Calling `subscribe` with an array of named events and a function argument will subscribe to those events.
 
 ```ts
-space.subscribe([`membersUpdate`], () => {});
+space.members.subscribe([`enter`, `leave`], () => {});
 ```
 
 Calling `unsubscribe` with no arguments will remove all registered listeners.
 
 ```ts
-space.unsubscribe();
+space.members.unsubscribe();
 ```
 
 Calling `unsubscribe` with a single named event will remove all listeners registered for that event.
 
 ```ts
-space.unsubscribe(`membersUpdate`);
+space.members.unsubscribe(`enter`);
 ```
 
 Calling `unsubscribe` with an array of named events will remove all listeners registered for those events.
 
 ```ts
-space.unsubscribe([`membersUpdate`]);
+space.members.unsubscribe([`enter`, `leave`]);
 ```
 
 Calling `unsubscribe` and adding a listener function as the second argument to both of the above will remove only that listener.
 
 ```ts
 const listener = () => {};
-space.unsubscribe(`membersUpdate`, listener);
-space.unsubscribe([`membersUpdate`], listener);
+space.members.unsubscribe(`update`, listener);
+space.members.unsubscribe([`update`], listener);
 ```
 
 As with the native DOM API, this only works if the listener is the same reference as the one passed to `subscribe`.
