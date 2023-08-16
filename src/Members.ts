@@ -31,22 +31,25 @@ class Members extends EventEmitter<MemberEventsMap> {
   processPresenceMessage(message: PresenceMember) {
     const { action, connectionId } = message;
     const isLeaver = !!this.leavers.getByConnectionId(connectionId);
-    const isMember = !!this.getByConnectionId(connectionId);
+    const isMember = this.members.some((m) => m.connectionId === connectionId);
     const memberUpdate = this.createMember(message);
 
     if (action === 'leave') {
-      this.leavers.addLeaver(memberUpdate, () => this.removeMember(connectionId));
+      this.leavers.addLeaver(memberUpdate, () => this.onMemberOffline(memberUpdate));
       this.emit('leave', memberUpdate);
     } else if (isLeaver) {
       this.leavers.removeLeaver(connectionId);
     }
 
-    if (!isMember) {
+    if (!isMember && action !== 'leave') {
       this.members.push(memberUpdate);
       this.emit('enter', memberUpdate);
-    } else if (['enter', 'update', 'leave'].includes(action) && isMember) {
+    } else if (['enter', 'update'].includes(action) && isMember) {
       const index = this.members.findIndex((m) => m.connectionId === connectionId);
       this.members[index] = memberUpdate;
+    } else if (action === 'leave' && isMember) {
+      const index = this.members.findIndex((m) => m.connectionId === connectionId);
+      this.members.splice(index, 1);
     }
 
     // Emit profileData updates only if they are different then the last held update.
@@ -62,11 +65,11 @@ class Members extends EventEmitter<MemberEventsMap> {
   }
 
   getAll(): SpaceMember[] {
-    return this.members;
+    return this.members.concat(this.leavers.getAll().map((l) => l.member));
   }
 
   getOthers(): SpaceMember[] {
-    return this.members.filter((m) => m.connectionId !== this.space.connectionId);
+    return this.getAll().filter((m) => m.connectionId !== this.space.connectionId);
   }
 
   subscribe<K extends EventKey<MemberEventsMap>>(
@@ -110,7 +113,7 @@ class Members extends EventEmitter<MemberEventsMap> {
   }
 
   getByConnectionId(connectionId: string): SpaceMember | undefined {
-    return this.members.find((m) => m.connectionId === connectionId);
+    return this.getAll().find((m) => m.connectionId === connectionId);
   }
 
   createMember(message: PresenceMember): SpaceMember {
@@ -127,24 +130,20 @@ class Members extends EventEmitter<MemberEventsMap> {
     };
   }
 
-  removeMember(connectionId: string): void {
-    const index = this.members.findIndex((m) => m.connectionId === connectionId);
+  onMemberOffline(member: SpaceMember) {
+    this.leavers.removeLeaver(member.connectionId);
 
-    if (index >= 0) {
-      const member = this.members.splice(index, 1)[0];
+    this.emit('remove', member);
 
-      this.emit('remove', member);
-
-      if (member.location) {
-        this.space.locations.emit('update', {
-          previousLocation: member.location,
-          currentLocation: null,
-          member: { ...member, location: null },
-        });
-      }
-
-      this.space.emit('update', { members: this.getAll() });
+    if (member.location) {
+      this.space.locations.emit('update', {
+        previousLocation: member.location,
+        currentLocation: null,
+        member: { ...member, location: null },
+      });
     }
+
+    this.space.emit('update', { members: this.getAll() });
   }
 }
 
