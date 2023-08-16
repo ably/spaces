@@ -52,7 +52,7 @@ class Members extends EventEmitter<MemberEventsMap> {
     // Emit profileData updates only if they are different then the last held update.
     // A locationUpdate is handled in Locations.
     if (message.data.profileUpdate.id && this.lastMemberUpdate[connectionId] !== message.data.profileUpdate.id) {
-      this.lastMemberUpdate[message.connectionId] = message.data.locationUpdate.id;
+      this.lastMemberUpdate[message.connectionId] = message.data.profileUpdate.id;
       this.emit('update', memberUpdate);
     }
   }
