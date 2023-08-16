@@ -12,7 +12,7 @@
   </a>
 </p>
 
-The [Ably](https://ably.com) Collaborative Spaces SDK enables you to implement realtime collaborative features in your applications. 
+The [Ably](https://ably.com) Collaborative Spaces SDK enables you to implement realtime collaborative features in your applications.
 
 ![Example collaboration GIF](/docs/images/collab.gif)
 
@@ -41,7 +41,7 @@ The Collaborative Spaces SDK is currently under development. If you are interest
 Get started quickly using this section, or take a look at:
 
 * more detailed [usage instructions](/docs/usage.md)
-* [class definitions](/docs/class-definitions.md)  
+* [class definitions](/docs/class-definitions.md)
 * how the Spaces SDK uses [Ably internally](/docs/channel-behaviors.md)
 
 ### Prerequisites
