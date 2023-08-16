@@ -80,8 +80,8 @@ describe('Space', () => {
           connectionId: '1',
           extras: {
             locks: [
-              { id: 'lock1', status: 'locked' },
-              { id: 'lock2', status: 'pending' },
+              { id: 'lock1', status: 'pending', timestamp: 2 },
+              { id: 'lock2', status: 'pending', timestamp: 2 },
             ],
           },
         }),
@@ -89,8 +89,8 @@ describe('Space', () => {
           connectionId: '2',
           extras: {
             locks: [
-              { id: 'lock1', status: 'unlocked' },
-              { id: 'lock3', status: 'locked' },
+              { id: 'lock1', status: 'pending', timestamp: 1 },
+              { id: 'lock3', status: 'pending', timestamp: 3 },
             ],
           },
         }),
@@ -98,14 +98,14 @@ describe('Space', () => {
       await space.enter();
 
       const member1 = space.members.getByConnectionId('1')!;
-      expect(member1.locks.size).toEqual(2);
-      expect(member1.locks.get('lock1')!.status).toBe('locked');
-      expect(member1.locks.get('lock2')!.status).toBe('locked');
-
       const member2 = space.members.getByConnectionId('2')!;
-      expect(member2.locks.size).toEqual(2);
-      expect(member2.locks.get('lock1')!.status).toBe('unlocked');
-      expect(member2.locks.get('lock3')!.status).toBe('locked');
+
+      const lock1 = space.locks.get('lock1')!;
+      expect(lock1.member).toEqual(member2);
+      const lock2 = space.locks.get('lock2')!;
+      expect(lock2.member).toEqual(member1);
+      const lock3 = space.locks.get('lock3')!;
+      expect(lock3.member).toEqual(member2);
     });
   });
 

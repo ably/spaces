@@ -100,7 +100,6 @@ const createSpaceMember = (override?: Partial<SpaceMember>): SpaceMember => {
     profileData: null,
     location: null,
     lastEvent: { name: 'update', timestamp: 1 },
-    locks: new Map(),
     ...override,
   };
 };

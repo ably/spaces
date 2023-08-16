@@ -339,7 +339,6 @@ describe('Cursors', () => {
         isConnected: true,
         profileData: {},
         location: {},
-        locks: new Map(),
         lastEvent: { name: 'enter', timestamp: 0 },
       };
 
