@@ -44,9 +44,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
   get(id: string): Lock | undefined {
     const locks = this.locks.get(id);
-    if (!locks) {
-      return;
-    }
+    if (!locks) return;
     for (const lock of locks.values()) {
       if (lock.request.status === 'locked') {
         return lock;
@@ -131,9 +129,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
   processPresenceMessage(message: Types.PresenceMessage) {
     const member = this.space.members.getByConnectionId(message.connectionId);
-    if (!member) {
-      return;
-    }
+    if (!member) return;
 
     if (!Array.isArray(message?.extras?.locks)) {
       // there are no locks in presence, so release any existing locks for the
@@ -253,9 +249,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
   getLock(id: string, connectionId: string): Lock | undefined {
     const locks = this.locks.get(id);
-    if (!locks) {
-      return;
-    }
+    if (!locks) return;
     return locks.get(connectionId);
   }
 
@@ -270,17 +264,13 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
   deleteLock(id: string, connectionId: string) {
     const locks = this.locks.get(id);
-    if (!locks) {
-      return;
-    }
+    if (!locks) return;
     return locks.delete(connectionId);
   }
 
   getLockRequest(id: string, connectionId: string): LockRequest | undefined {
     const lock = this.getLock(id, connectionId);
-    if (!lock) {
-      return;
-    }
+    if (!lock) return;
     return lock.request;
   }
 
