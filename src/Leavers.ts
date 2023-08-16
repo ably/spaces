@@ -1,6 +1,7 @@
 import type { SpaceMember } from './types.js';
 
-type SpaceLeaver = SpaceMember & {
+type SpaceLeaver = {
+  member: SpaceMember;
   timeoutId: ReturnType<typeof setTimeout>;
 };
 
@@ -10,7 +11,11 @@ class Leavers {
   constructor(private offlineTimeout: number) {}
 
   getByConnectionId(connectionId: string): SpaceLeaver | undefined {
-    return this.leavers.find((leaver) => leaver.connectionId === connectionId);
+    return this.leavers.find((leaver) => leaver.member.connectionId === connectionId);
+  }
+
+  getAll(): SpaceLeaver[] {
+    return this.leavers;
   }
 
   addLeaver(member: SpaceMember, timeoutCallback: () => void) {
@@ -18,13 +23,13 @@ class Leavers {
     this.removeLeaver(member.connectionId);
 
     this.leavers.push({
-      ...member,
+      member,
       timeoutId: setTimeout(timeoutCallback, this.offlineTimeout),
     });
   }
 
   removeLeaver(connectionId: string) {
-    const leaverIndex = this.leavers.findIndex((leaver) => leaver.connectionId === connectionId);
+    const leaverIndex = this.leavers.findIndex((leaver) => leaver.member.connectionId === connectionId);
 
     if (leaverIndex >= 0) {
       clearTimeout(this.leavers[leaverIndex].timeoutId);

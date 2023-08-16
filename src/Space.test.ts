@@ -280,8 +280,8 @@ describe('Space', () => {
         createPresenceEvent(space, 'leave');
         expect(callbackSpy).toHaveBeenNthCalledWith(3, {
           members: [
-            createSpaceMember({ lastEvent: { name: 'leave', timestamp: 1 }, isConnected: false }),
             createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
+            createSpaceMember({ lastEvent: { name: 'leave', timestamp: 1 }, isConnected: false }),
           ],
         });
 
@@ -289,8 +289,8 @@ describe('Space', () => {
         createPresenceEvent(space, 'enter');
         expect(callbackSpy).toHaveBeenNthCalledWith(4, {
           members: [
-            createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } }),
             createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
+            createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } }),
           ],
         });
 
