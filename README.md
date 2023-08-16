@@ -48,8 +48,10 @@ Get started quickly using this section, or take a look at:
 
 To begin, you will need the following:
 
-* An Ably account. You can [sign up](https://ably.com/signup) for free.
-* An Ably API key. You can create API keys in an app within your [Ably account](https://ably.com/dashboard).
+* An Ably account
+  * You can [sign up](https://ably.com/signup) for free
+* An Ably API key
+  * Create API keys in an app within your [Ably account](https://ably.com/dashboard)
   * The API key needs the following [capabilities](https://ably.com/docs/auth/capabilities): `publish`, `subscribe`, `presence` and `history`.
 
 You can use [basic authentication](https://ably.com/docs/auth/basic) for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/auth/token) in production environments.
@@ -83,29 +85,27 @@ You can also use Spaces with a CDN, such as [unpkg](https://www.unpkg.com/):
 <script src="https://unpkg.com/@ably-labs/spaces@0.0.10/dist/iife/index.bundle.js"></script>
 ```
 
-### Space membership
+### Space
 
 A space is the virtual, collaborative area of an application you want to monitor. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself. Create a space and listen for events to see when clients enter and leave.
-
-Space membership is used to build avatar stacks and find out which members are online within a space.
 
 ```ts
 // Create a new space
 const space = await spaces.get('demoSlideshow');
 
-// Register a listener to subscribe to events of when users enter or leave the space
-space.subscribe('membersUpdate', (members) => {
-  console.log(members);
+// Subscribe to space state events
+space.subscribe('update', (spaceState) => {
+  console.log(spaceState.members);
 });
 
-// Enter a space, publishing a memberUpdate event, including optional profile data
+// Enter a space, publishing an update event, including optional profile data
 space.enter({
   username: 'Claire Lemons',
   avatar: 'https://slides-internal.com/users/clemons.png',
 });
 ```
 
-The following is an example `membersUpdate` event received by listeners when a user enters a space:
+The following is an example `update` event received by listeners when a user enters a space:
 
 ```json
 [
@@ -126,13 +126,71 @@ The following is an example `membersUpdate` event received by listeners when a u
 ]
 ```
 
+### Members
+
+Members is used to build avatar stacks and find out which members are online within a space.
+
+```ts
+// Subscribe to all member events in a space by passing the 'update' event
+space.members.subscribe('update', (memberUpdate) => {
+  console.log(memberUpdate);
+});
+
+// Subscribe to when a member enters the space
+space.members.subscribe('enter', (memberJoined) => {
+  console.log(memberJoined);
+});
+
+// Subscribe to when a member leaves the space
+space.members.subscribe('leave', (memberLeft) => {
+  console.log(memberLeft);
+});
+
+// Subscribe to when a member is removed from the space
+space.members.subscribe('remove', (memberRemoved) => {
+  console.log(memberRemoved);
+});
+```
+
+The following is an example `memberUpdate` event received by listeners:
+
+```json
+{
+  "clientId": "clemons#142",
+  "connectionId": "hd9743gjDc",
+  "isConnected": true,
+  "lastEvent": {
+    "name": "enter",
+    "timestamp": 1677595689759
+  },
+  "location": null,
+  "profileData": {
+    "username": "Claire Lemons",
+    "avatar": "https://slides-internal.com/users/clemons.png"
+  }
+}
+```
+
+Members has methods to get the current snapshot of member state:
+
+```ts
+// Get all members in a space
+const allMembers = await space.members.getAll();
+
+// Get your own member object
+const myMemberInfo = await space.members.getSelf();
+
+// Get everyone else's member object but yourself
+const othersMemberInfo = await space.members.getOthers();
+```
+
 ### Location
 
-Member locations enable you to track where users are within an application. A location could be a form field, multiple cells in a spreadsheet or a slide in a slide deck editor. Subscribe to all location updates, specific location, or locations changes for a given member.
+Member locations enable you to track where users are within an application. A location could be a form field, multiple cells in a spreadsheet or a slide in a slide deck editor.
 
 ```ts
 // Register a listener to subscribe to events of when users change location
-space.locations.on('locationUpdate', (locationUpdate) => {
+space.locations.subscribe('update', (locationUpdate) => {
   console.log(locationUpdate);
 });
 
@@ -189,15 +247,14 @@ space.enter({
   avatar: 'https://slides-internal.com/users/clemons.png',
 });
 
+// Listen to events published on "mousemove" by all members
+space.cursors.subscribe('update', (cursorUpdate) => {
+  console.log(cursorUpdate);
+});
+
 // Publish a CursorUpdate with the location of a mouse, including optional data for the current member
 window.addEventListener('mousemove', ({ clientX, clientY }) => {
   space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
-});
-
-
-// Listen to events published on "mousemove" by all members
-space.cursors.on('cursorsUpdate', (cursorUpdate) => {
-  console.log(cursorUpdate);
 });
 ```
 
