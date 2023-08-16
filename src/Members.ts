@@ -25,7 +25,7 @@ class Members extends EventEmitter<MemberEventsMap> {
 
   constructor(private space: Space) {
     super();
-    this.leavers = new Leavers(this.space);
+    this.leavers = new Leavers(this.space.options.offlineTimeout);
   }
 
   processPresenceMessage(message: PresenceMember) {
@@ -34,11 +34,8 @@ class Members extends EventEmitter<MemberEventsMap> {
     const isMember = !!this.getByConnectionId(connectionId);
     const memberUpdate = this.createMember(message);
 
-    if (action === 'leave' && !isLeaver) {
-      this.leavers.addLeaver(connectionId);
-      this.emit('leave', memberUpdate);
-    } else if (action === 'leave' && isLeaver) {
-      this.leavers.refreshTimeout(connectionId);
+    if (action === 'leave') {
+      this.leavers.addLeaver(memberUpdate, () => this.removeMember(connectionId));
       this.emit('leave', memberUpdate);
     } else if (isLeaver) {
       this.leavers.removeLeaver(connectionId);
