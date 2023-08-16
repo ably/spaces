@@ -122,7 +122,7 @@ describe('Locks (mockClient)', () => {
       });
       space.locks.processPresenceMessage(msg);
 
-      const lock = member.locks.get(lockID)!;
+      const lock = space.locks.getLockRequest(lockID, member.connectionId)!;
       expect(lock.status).toBe('locked');
       expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'locked'));
     });
@@ -204,10 +204,10 @@ describe('Locks (mockClient)', () => {
         });
         space.locks.processPresenceMessage(msg);
         const selfMember = space.members.getByConnectionId(client.connection.id!)!;
-        const selfLock = selfMember.locks.get(lockID)!;
+        const selfLock = space.locks.getLockRequest(lockID, selfMember.connectionId)!;
         expect(selfLock.status).toBe(expectedSelfStatus);
         const otherMember = space.members.getByConnectionId(otherConnId)!;
-        const otherLock = otherMember.locks.get(lockID)!;
+        const otherLock = space.locks.getLockRequest(lockID, otherMember.connectionId)!;
         expect(otherLock.status).toBe(expectedOtherStatus);
 
         if (expectedSelfStatus === 'unlocked') {
@@ -247,7 +247,7 @@ describe('Locks (mockClient)', () => {
       });
       space.locks.processPresenceMessage(msg);
 
-      const lock = member.locks.get(lockID);
+      const lock = space.locks.getLockRequest(lockID, member.connectionId);
       expect(lock).not.toBeDefined();
       expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'unlocked'));
     });

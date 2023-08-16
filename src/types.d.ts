@@ -32,7 +32,6 @@ export interface SpaceMember {
   isConnected: boolean;
   profileData: ProfileData;
   location: unknown;
-  locks: Map<string, LockRequest>;
   lastEvent: {
     name: Types.PresenceAction;
     timestamp: number;

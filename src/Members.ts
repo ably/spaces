@@ -123,7 +123,6 @@ class Members extends EventEmitter<MemberEventsMap> {
       isConnected: message.action !== 'leave',
       profileData: message.data.profileUpdate.current,
       location: message.data.locationUpdate.current,
-      locks: new Map(),
       lastEvent: {
         name: message.action,
         timestamp: message.timestamp,
