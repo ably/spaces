@@ -102,6 +102,14 @@ An instance of a Space created using [spaces.get](#get). Inherits from [EventEmi
 
 ## Properties
 
+### members
+
+An instance of [Members](#members).
+
+```ts
+type members = instanceof Members;
+```
+
 ### cursors
 
 An instance of [Cursors](#cursors).
@@ -154,66 +162,112 @@ await space.updateProfileData((oldProfileData) => {
 })
 ```
 
+# Members
+
+Handles members within a space.
+
+## Methods
+
 ### subscribe
 
-Listen to events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
+Listen to member events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
 Available events:
 
-- #### **membersUpdate**
+- #### **update**
 
-  Listen to updates to members.
+  Listen to profile data updates of members.
 
   ```ts
-  space.subscribe('membersUpdate', (members: SpaceMember[]) => {});
+  space.members.subscribe('update', (member: SpaceMember) => {});
   ```
 
-  Triggers on:
-  - presence updates ([`enter`, `leave`, `update` and `present` events](https://ably.com/docs/presence-occupancy/presence?lang=javascript))
-  - [location updates](#locationupdate)
-
-  The argument supplied to the callback is an array of [SpaceMember](#spacemember) (members) objects within the space.
+  The argument supplied to the callback is the [SpaceMember](#spacemember) object representing the member that triggered the event.
 
 - #### **enter**
+
   Listen to enter events of members.
 
   ```ts
-  space.subscribe('enter', (member: SpaceMember) => {})
+  space.members.subscribe('enter', (member: SpaceMember) => {})
   ```
   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
 
 - #### **leave**
-  
-  Listen to leave events of members. Note that the leave event will only fire once the [offlineTimeout](#spaceoptions) has passed.
+
+  Listen to leave events of members. The leave event will be issued when a member calls `space.leave()` or is disconnected.
 
   ```ts
-  space.subscribe('leave', (member: SpaceMember) => {})
+  space.members.subscribe('leave', (member: SpaceMember) => {})
   ```
 
   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member leaving the space.
 
-### off
+- #### **remove**
+
+  Listen to remove events of members. The remove event will be issued when the [offlineTimeout](#spaceoptions) has passed.
+
+  ```ts
+  space.members.subscribe('remove', (member: SpaceMember) => {})
+  ```
+
+  The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member removed from the space.
+
+### unsubscribe
 
 Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
 
 ```ts
-space.off('enter');
-```
+// Unsubscribe from all events
+space.members.unsubscribe();
 
-### getMembers
+// Unsubscribe from enter events
+space.members.unsubscribe('enter');
 
-Returns an array of all [SpaceMember](#spacemember) objects (members) currently in the space, including any who have left and not yet timed out. (_see: [offlineTimeout](#spaceoptions)_)
-
-```ts
-type getMembers = () => SpaceMember[];
+// Unsubscribe from leave events
+space.members.unsubscribe('leave');
 ```
 
 ### getSelf
 
-Gets the [SpaceMember](#spacemember) object which relates to the local connection. Will return `undefined` if the client hasn't entered the space yet.
+Returns a Promise which resolves to the [SpaceMember](#spacemember) object relating to the local connection. Will resolve to `undefined` if the client hasn't entered the space yet.
 
 ```ts
-type getSelf = () => SpaceMember | undefined;
+type getSelf = () => Promise<SpaceMember | undefined>;
+```
+
+Example:
+
+```ts
+const myMember = await space.members.getSelf();
+```
+
+### getAll
+
+Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, including any who have left and not yet timed out. (_see: [offlineTimeout](#spaceoptions)_)
+
+```ts
+type getAll = () => Promise<SpaceMember[]>;
+```
+
+Example:
+
+```ts
+const allMembers = await space.members.getAll();
+```
+
+### getOthers
+
+Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, excluding your own member object.
+
+```ts
+type getSelf = () => Promise<SpaceMember[]>;
+```
+
+Example:
+
+```ts
+const otherMembers = await space.members.getOthers();
 ```
 
 ## Related Types
@@ -272,53 +326,76 @@ Handles the tracking of member locations within a space. Inherits from [EventEmi
 
 ## Methods
 
-### set
-
-Set your current location. [Location](#location-1) can be any JSON-serializable object. Emits a [locationUpdate](#locationupdate) event to all connected clients in this space.
-
-```ts
-type set = (update: Location) => void;
-```
-### getSelf
-Get location for self
-```ts
-await space.locations.getSelf()
-```
-### getAll
-Get location for all members
-
-```ts
-await space.locations.getAll()
-```
-### getOthers
-Get location for other members
-
-```ts
-await space.locations.getOthers()
-```
-
-
-
 ### subscribe
 
 Listen to events for locations. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
 
 Available events:
 
-- #### **locationUpdate**
+- #### **update**
 
-  Fires when a member updates their location. The argument supplied to the event listener is an [LocationUpdate](#locationupdate-1).
+  Fires when a member updates their location. The argument supplied to the event listener is a [LocationUpdate](#locationupdate-1).
 
   ```ts
-  space.locations.subscribe('locationUpdate', (locationUpdate: LocationUpdate) => {});
+  space.locations.subscribe('update', (locationUpdate: LocationUpdate) => {});
   ```
 
-### off
+### set
+
+Set your current location. [Location](#location-1) can be any JSON-serializable object. Emits a [locationUpdate](#locationupdate) event to all connected clients in this space.
+
+```ts
+type set = (update: Location) => Promise<void>;
+```
+
+### unsubscribe
 
 Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
 
 ```ts
-space.locations.off('locationUpdate');
+space.locations.unsubscribe('update');
+```
+
+### getSelf
+
+Get location for self.
+
+```ts
+type getSelf = () => Promise<Location | undefined>;
+```
+
+Example:
+
+```ts
+const myLocation = await space.locations.getSelf();
+```
+
+### getAll
+
+Get location for all members.
+
+```ts
+type getAll = () => Promise<Record<ConnectionId, Location>>;
+```
+
+Example:
+
+```ts
+const allLocations = await space.locations.getAll();
+```
+
+### getOthers
+
+Get location for other members
+
+```ts
+type getOthers = () => Promise<Record<ConnectionId, Location>>;
+```
+
+Example:
+
+```ts
+const otherLocations = await space.locations.getOthers()
 ```
 
 ## Related types
@@ -349,6 +426,20 @@ Handles tracking of member cursors within a space. Inherits from [EventEmitter](
 
 ## Methods
 
+### subscribe
+
+Listen to `CursorUpdate` events. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+
+Available events:
+
+- #### **update**
+
+  Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate).
+
+  ```ts
+  space.cursors.subscribe('update', (cursorUpdate: CursorUpdate) => {});
+  ```
+
 ### set
 
 Set the position of a cursor. This will emit a `CursorUpdate` event. If a member has not yet entered the space, this method will error.
@@ -367,18 +458,12 @@ window.addEventListener('mousemove', ({ clientX, clientY }) => {
 });
 ```
 
-### getAll
+### unsubscribe
 
-Get the last CursorUpdate for each connection.
-
-```ts
-type getAll = () => Record<ConnectionId, CursorUpdate>;
-```
-
-Example:
+Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
 
 ```ts
-const lastPositions = space.cursors.getAll();
+space.cursors.unsubscribe('update');
 ```
 
 ### getSelf
@@ -395,6 +480,20 @@ Example:
 const selfPosition = space.cursors.getSelf();
 ```
 
+### getAll
+
+Get the last CursorUpdate for each connection.
+
+```ts
+type getAll = () => Record<ConnectionId, CursorUpdate>;
+```
+
+Example:
+
+```ts
+const allLatestPositions = space.cursors.getAll();
+```
+
 ### getOthers
 
 Get the last CursorUpdate for each connection.
@@ -407,28 +506,6 @@ Example:
 
 ```ts
 const otherPositions = space.cursors.getOthers();
-```
-
-### subscribe
-
-Listen to `CursorUpdate` events. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
-
-Available events:
-
-- #### **cursorsUpdate**
-
-  Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate).
-
-  ```ts
-  space.cursors.subscribe('cursorsUpdate', (cursorUpdate: CursorUpdate) => {});
-  ```
-
-### off
-
-Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
-
-```ts
-space.cursors.off('cursorsUpdate');
 ```
 
 ## Related types
