@@ -189,7 +189,7 @@ describe('Space', () => {
         data: createProfileUpdate({ current: { name: 'Betty' } }),
       });
 
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+      expect(callbackSpy).toHaveBeenNthCalledWith(2, {
         members: [
           member1,
           createSpaceMember({
@@ -215,7 +215,7 @@ describe('Space', () => {
         data: createProfileUpdate({ current: { name: 'Betty' } }),
       });
 
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+      expect(callbackSpy).toHaveBeenNthCalledWith(2, {
         members: [createSpaceMember({ profileData: { name: 'Betty' } })],
       });
     });
@@ -230,7 +230,7 @@ describe('Space', () => {
       });
 
       createPresenceEvent(space, 'leave');
-      expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+      expect(callbackSpy).toHaveBeenNthCalledWith(2, {
         members: [createSpaceMember({ isConnected: false, lastEvent: { name: 'leave', timestamp: 1 } })],
       });
     });
@@ -254,13 +254,13 @@ describe('Space', () => {
         });
 
         createPresenceEvent(space, 'leave');
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+        expect(callbackSpy).toHaveBeenNthCalledWith(2, {
           members: [createSpaceMember({ isConnected: false, lastEvent: { name: 'leave', timestamp: 1 } })],
         });
 
         vi.advanceTimersByTime(130_000);
 
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, { members: [] });
+        expect(callbackSpy).toHaveBeenNthCalledWith(3, { members: [] });
         expect(callbackSpy).toHaveBeenCalledTimes(3);
       });
 
@@ -270,7 +270,7 @@ describe('Space', () => {
 
         createPresenceEvent(space, 'enter');
         createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2' });
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+        expect(callbackSpy).toHaveBeenNthCalledWith(2, {
           members: [
             createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } }),
             createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
@@ -278,7 +278,7 @@ describe('Space', () => {
         });
 
         createPresenceEvent(space, 'leave');
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+        expect(callbackSpy).toHaveBeenNthCalledWith(3, {
           members: [
             createSpaceMember({ lastEvent: { name: 'leave', timestamp: 1 }, isConnected: false }),
             createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
@@ -287,7 +287,7 @@ describe('Space', () => {
 
         vi.advanceTimersByTime(60_000);
         createPresenceEvent(space, 'enter');
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+        expect(callbackSpy).toHaveBeenNthCalledWith(4, {
           members: [
             createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } }),
             createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
@@ -295,13 +295,6 @@ describe('Space', () => {
         });
 
         vi.advanceTimersByTime(130_000); // 2:10 passed, default timeout is 2 min
-        expect(callbackSpy).toHaveBeenNthCalledWith(1, {
-          members: [
-            createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } }),
-            createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
-          ],
-        });
-
         expect(callbackSpy).toHaveBeenCalledTimes(4);
       });
 
