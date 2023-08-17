@@ -145,16 +145,14 @@ export const slides = [
             id="3"
             slide="1"
           >
-            No one likes boring text blocks on a website. And{' '}
-            <span className="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span>{' '}
-            are the fastest way to get information.
+            No one likes boring text blocks on a website. And images and icons are the fastest way to get information.
           </Paragraph>
           <Paragraph
             id="4"
             slide="1"
           >
-            But <span className="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>
-            . If you can't explain for what purpose you put this line or icon, it's better to abandon it.
+            But don't overdo it. If you can't explain for what purpose you put this line or icon, it's better to abandon
+            it.
           </Paragraph>
         </div>
         <Image

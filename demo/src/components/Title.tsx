@@ -13,13 +13,13 @@ interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   children: string;
 }
 
-export const Title = ({ variant = 'h1', className, id, slide, children }: Props) => {
+export const Title = ({ variant = 'h1', className, id, slide, children, ...props }: Props) => {
   const { members, self } = useMembers();
   const { handleSelect } = useElementSelect(id, true);
   const activeMember = findActiveMember(id, slide, members);
   const outlineClasses = getOutlineClasses(activeMember);
   const memberName = getMemberFirstName(activeMember);
-  const { label: lockingLabel, lockedByYou } = useLockAndStatus(slide, id, self?.connectionId);
+  const { label: lockingLabel, locked, lockedByYou } = useLockAndStatus(slide, id, self?.connectionId);
   const label = lockingLabel || memberName;
   const { channel } = useChannel(`[?rewind=1]title-${id}-changes`, (message) => {
     if (message.connectionId === self?.connectionId) return;
@@ -28,7 +28,10 @@ export const Title = ({ variant = 'h1', className, id, slide, children }: Props)
   const [content, setContent] = useState(children);
 
   return (
-    <div onClick={handleSelect}>
+    <div
+      {...props}
+      onClick={handleSelect}
+    >
       <ContentEditable
         id={id}
         tagName={variant}
@@ -44,6 +47,8 @@ export const Title = ({ variant = 'h1', className, id, slide, children }: Props)
               variant === 'h3',
             [`outline-2 outline before:content-[attr(data-before)] before:absolute before:-top-[22px] before:-left-[2px] before:px-[10px] before:text-sm before:text-white before:rounded-t-lg before:normal-case ${outlineClasses}`]:
               !!activeMember,
+            'cursor-not-allowed': locked && !lockedByYou && !!activeMember,
+            'bg-slate-200': locked && !lockedByYou && !!activeMember,
           },
           className,
         )}
