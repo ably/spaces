@@ -53,7 +53,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   }
 
   async acquire(id: string, opts?: LockOptions): Promise<LockRequest> {
-    const self = this.space.members.getSelf();
+    const self = await this.space.members.getSelf();
     if (!self) {
       throw new Error('Must enter a space before acquiring a lock');
     }
@@ -83,7 +83,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   }
 
   async release(id: string): Promise<void> {
-    const self = this.space.members.getSelf();
+    const self = await this.space.members.getSelf();
     if (!self) {
       throw new Error('Must enter a space before acquiring a lock');
     }
@@ -127,8 +127,8 @@ export default class Locks extends EventEmitter<LockEventMap> {
     }
   }
 
-  processPresenceMessage(message: Types.PresenceMessage) {
-    const member = this.space.members.getByConnectionId(message.connectionId);
+  async processPresenceMessage(message: Types.PresenceMessage) {
+    const member = await this.space.members.getByConnectionId(message.connectionId);
     if (!member) return;
 
     if (!Array.isArray(message?.extras?.locks)) {

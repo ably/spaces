@@ -104,7 +104,7 @@ describe('Locks (mockClient)', () => {
 
     it<SpaceTestContext>('sets a PENDING request to LOCKED', async ({ space }) => {
       await space.enter();
-      const member = space.members.getSelf()!;
+      const member = (await space.members.getSelf())!;
 
       const emitSpy = vi.spyOn(space.locks, 'emit');
 
@@ -120,7 +120,7 @@ describe('Locks (mockClient)', () => {
           ],
         },
       });
-      space.locks.processPresenceMessage(msg);
+      await space.locks.processPresenceMessage(msg);
 
       const lock = space.locks.getLockRequest(lockID, member.connectionId)!;
       expect(lock.status).toBe('locked');
@@ -183,7 +183,7 @@ describe('Locks (mockClient)', () => {
             ],
           },
         });
-        space.locks.processPresenceMessage(msg);
+        await space.locks.processPresenceMessage(msg);
         const lock = space.locks.get(lockID)!;
         expect(lock.member.connectionId).toBe(otherConnId);
 
@@ -202,11 +202,11 @@ describe('Locks (mockClient)', () => {
             ],
           },
         });
-        space.locks.processPresenceMessage(msg);
-        const selfMember = space.members.getByConnectionId(client.connection.id!)!;
+        await space.locks.processPresenceMessage(msg);
+        const selfMember = (await space.members.getByConnectionId(client.connection.id!))!;
         const selfLock = space.locks.getLockRequest(lockID, selfMember.connectionId)!;
         expect(selfLock.status).toBe(expectedSelfStatus);
-        const otherMember = space.members.getByConnectionId(otherConnId)!;
+        const otherMember = (await space.members.getByConnectionId(otherConnId))!;
         const otherLock = space.locks.getLockRequest(lockID, otherMember.connectionId)!;
         expect(otherLock.status).toBe(expectedOtherStatus);
 
@@ -223,7 +223,7 @@ describe('Locks (mockClient)', () => {
 
     it<SpaceTestContext>('sets a released request to UNLOCKED', async ({ space }) => {
       await space.enter();
-      const member = space.members.getSelf()!;
+      const member = (await space.members.getSelf())!;
 
       let msg = Realtime.PresenceMessage.fromValues({
         connectionId: member.connectionId,
@@ -237,7 +237,7 @@ describe('Locks (mockClient)', () => {
           ],
         },
       });
-      space.locks.processPresenceMessage(msg);
+      await space.locks.processPresenceMessage(msg);
 
       const emitSpy = vi.spyOn(space.locks, 'emit');
 
@@ -245,7 +245,7 @@ describe('Locks (mockClient)', () => {
         connectionId: member.connectionId,
         extras: undefined,
       });
-      space.locks.processPresenceMessage(msg);
+      await space.locks.processPresenceMessage(msg);
 
       const lock = space.locks.getLockRequest(lockID, member.connectionId);
       expect(lock).not.toBeDefined();
@@ -260,7 +260,7 @@ describe('Locks (mockClient)', () => {
 
     it<SpaceTestContext>('removes the identified lock request from presence extras', async ({ space, presence }) => {
       await space.enter();
-      const member = space.members.getSelf()!;
+      const member = (await space.members.getSelf())!;
 
       const lockID = 'test';
       const msg = Realtime.PresenceMessage.fromValues({
@@ -275,7 +275,7 @@ describe('Locks (mockClient)', () => {
           ],
         },
       });
-      space.locks.processPresenceMessage(msg);
+      await space.locks.processPresenceMessage(msg);
       expect(space.locks.get(lockID)).toBeDefined();
 
       const presenceUpdate = vi.spyOn(presence, 'update');

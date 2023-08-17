@@ -44,8 +44,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * @param {CursorUpdate} cursor
    * @return {void}
    */
-  set(cursor: Pick<CursorUpdate, 'position' | 'data'>): void {
-    const self = this.space.members.getSelf();
+  async set(cursor: Pick<CursorUpdate, 'position' | 'data'>) {
+    const self = await this.space.members.getSelf();
 
     if (!self) {
       throw new Error('Must enter a space before setting a cursor update');
@@ -149,7 +149,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   async getSelf(): Promise<CursorUpdate | undefined> {
-    const self = this.space.members.getSelf();
+    const self = await this.space.members.getSelf();
     if (!self) return;
 
     const allCursors = await this.getAll();
@@ -157,7 +157,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   async getOthers(): Promise<Record<string, null | CursorUpdate>> {
-    const self = this.space.members.getSelf();
+    const self = await this.space.members.getSelf();
     if (!self) return {};
 
     const allCursors = await this.getAll();

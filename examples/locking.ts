@@ -22,8 +22,8 @@ if (!isLocked) {
 }
 
 // Update UI when parts of the UI are locked
-space.locks.subscribe('update', (lock) => {
-  const self = space.members.getSelf();
+space.locks.subscribe('update', async (lock) => {
+  const self = await space.members.getSelf();
 
   if (lock.request.status === LockStatus.LOCKED && self.connectionId === lock.member.connectionId) {
     const location = {

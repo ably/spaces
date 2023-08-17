@@ -282,19 +282,19 @@ type set = (update: Location) => void;
 ### getSelf
 Get location for self
 ```ts
-space.locations.getSelf()
+await space.locations.getSelf()
 ```
 ### getAll
 Get location for all members
 
 ```ts
-space.locations.getAll()
+await space.locations.getAll()
 ```
 ### getOthers
 Get location for other members
 
 ```ts
-space.locations.getOthers()
+await space.locations.getOthers()
 ```
 
 

@@ -24,32 +24,36 @@ export const useMembers: () => Partial<{ self?: Member; others: Member[]; member
   useEffect(() => {
     if (!space) return;
 
-    const initSelf = space.members.getSelf();
-    const initMembers = space.members.getAll();
+    const init = async () => {
+      const initSelf = await space.members.getSelf();
+      const initMembers = await space.members.getAll();
 
-    if (isMember(initSelf)) {
-      setSelf(initSelf);
-    }
-
-    if (areMembers(initMembers)) {
-      setMembers(initMembers);
-      setOthers(membersToOthers(initMembers, initSelf));
-    }
-
-    const handler = ({ members }: { members: SpaceMember[] }) => {
-      const self = space.members.getSelf();
-
-      if (isMember(self)) {
-        setSelf(self);
+      if (isMember(initSelf)) {
+        setSelf(initSelf);
       }
 
-      if (areMembers(members)) {
-        setMembers([...members]);
-        setOthers(membersToOthers([...members], self));
+      if (areMembers(initMembers)) {
+        setMembers(initMembers);
+        setOthers(membersToOthers(initMembers, initSelf));
       }
+
+      const handler = async ({ members }: { members: SpaceMember[] }) => {
+        const self = await space.members.getSelf();
+
+        if (isMember(self)) {
+          setSelf(self);
+        }
+
+        if (areMembers(members)) {
+          setMembers([...members]);
+          setOthers(membersToOthers([...members], self));
+        }
+      };
+
+      space.subscribe('update', handler);
     };
 
-    space.subscribe('update', handler);
+    init();
 
     return () => {
       space.unsubscribe('update', handler);

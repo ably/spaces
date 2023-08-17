@@ -28,7 +28,7 @@ class Members extends EventEmitter<MemberEventsMap> {
     this.leavers = new Leavers(this.space.options.offlineTimeout);
   }
 
-  processPresenceMessage(message: PresenceMember) {
+  async processPresenceMessage(message: PresenceMember) {
     const { action, connectionId } = message;
     const isLeaver = !!this.leavers.getByConnectionId(connectionId);
     const isMember = this.members.some((m) => m.connectionId === connectionId);
@@ -60,16 +60,17 @@ class Members extends EventEmitter<MemberEventsMap> {
     }
   }
 
-  getSelf(): SpaceMember | undefined {
-    return this.space.connectionId ? this.getByConnectionId(this.space.connectionId) : undefined;
+  async getSelf(): Promise<SpaceMember | undefined> {
+    return this.space.connectionId ? await this.getByConnectionId(this.space.connectionId) : undefined;
   }
 
-  getAll(): SpaceMember[] {
+  async getAll(): Promise<SpaceMember[]> {
     return this.members.concat(this.leavers.getAll().map((l) => l.member));
   }
 
-  getOthers(): SpaceMember[] {
-    return this.getAll().filter((m) => m.connectionId !== this.space.connectionId);
+  async getOthers(): Promise<SpaceMember[]> {
+    const members = await this.getAll();
+    return members.filter((m) => m.connectionId !== this.space.connectionId);
   }
 
   subscribe<K extends EventKey<MemberEventsMap>>(
@@ -112,8 +113,9 @@ class Members extends EventEmitter<MemberEventsMap> {
     return members;
   }
 
-  getByConnectionId(connectionId: string): SpaceMember | undefined {
-    return this.getAll().find((m) => m.connectionId === connectionId);
+  async getByConnectionId(connectionId: string): Promise<SpaceMember | undefined> {
+    const members = await this.getAll();
+    return members.find((m) => m.connectionId === connectionId);
   }
 
   createMember(message: PresenceMember): SpaceMember {
@@ -130,7 +132,7 @@ class Members extends EventEmitter<MemberEventsMap> {
     };
   }
 
-  onMemberOffline(member: SpaceMember) {
+  async onMemberOffline(member: SpaceMember) {
     this.leavers.removeLeaver(member.connectionId);
 
     this.emit('remove', member);
@@ -143,7 +145,7 @@ class Members extends EventEmitter<MemberEventsMap> {
       });
     }
 
-    this.space.emit('update', { members: this.getAll() });
+    this.space.emit('update', { members: await this.getAll() });
   }
 }
 
