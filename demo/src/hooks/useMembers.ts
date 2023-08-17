@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { type SpaceMember } from '../../../src/types';
+import { type SpaceMember } from '@ably-labs/spaces';
 import { SpacesContext } from '../components';
 
 import { type Member } from '../utils/types';

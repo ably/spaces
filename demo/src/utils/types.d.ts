@@ -1,4 +1,4 @@
-import { type SpaceMember } from '../../../src';
+import { type SpaceMember } from '@ably-labs/spaces';
 
 interface ProfileData {
   name: string;

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 
-import { type Lock } from '../../../src';
+import { type Lock } from '@ably-labs/spaces';
 
 import { SpacesContext } from '../components';
 import { buildLockId } from '../utils/locking';
@@ -55,4 +55,24 @@ export const useLockLabelCallback = (slide: string, id: string, selfConnectionId
   }, [member, status, slide, id, selfConnectionId]);
 
   return label;
+};
+
+export const useLockAndStatus = (slide: string, id: string, selfConnectionId?: string) => {
+  const { member, status } = useLock(slide, id);
+  const [label, setLabel] = useState<string | undefined>(undefined);
+
+  const lockedByYou = status === 'locked' && member?.connectionId === selfConnectionId;
+
+  useEffect(() => {
+    // We're locking this component
+    if (lockedByYou) {
+      setLabel(`Locked by You`);
+    } else if (status === 'locked') {
+      setLabel(`Locked by ${getMemberFirstName(member)}`);
+    } else if (status === 'unlocked') {
+      setLabel(undefined);
+    }
+  }, [member, status, slide, id, selfConnectionId]);
+
+  return { label, lockedByYou };
 };

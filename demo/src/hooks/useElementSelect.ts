@@ -16,11 +16,11 @@ export const useElementSelect = (element?: string, lockable: boolean = true) => 
       const lock = space.locks.get(lockId);
 
       if (lock?.request.status === 'locked' && self.locks.get(lockId)) {
-        alert('You are already locking this location');
+        // alert('You are already locking this location');
       } else if (lock?.request.status === 'locked') {
-        alert('Location is locked by another user');
+        // alert('Location is locked by another user');
       } else {
-        if (window.confirm('Would you like to lock this location?')) {
+        if (/*window.confirm('Would you like to lock this location?')*/ true) {
           await releaseMyLocks(space, self);
           await space.locks.acquire(lockId);
 

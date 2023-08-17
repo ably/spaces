@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import ContentEditable from 'react-contenteditable';
 import cn from 'classnames';
+import ContentEditable from 'react-contenteditable';
 import { useChannel } from '@ably-labs/react-hooks';
 
 import { useElementSelect, useLockAndStatus, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses } from '../utils';
 
-interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
+interface EditableTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   id: string;
   slide: string;
   variant?: 'h1' | 'h2' | 'h3';
   children: string;
 }
 
-export const Title = ({ variant = 'h1', className, id, slide, children }: Props) => {
+export const EditableTitle = ({ variant = 'h1', className, id, slide, children }: EditableTitleProps) => {
   const { members, self } = useMembers();
   const { handleSelect } = useElementSelect(id, true);
   const activeMember = findActiveMember(id, slide, members);

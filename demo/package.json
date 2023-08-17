@@ -12,7 +12,8 @@
     "deploy:production": "npm run build && netlify deploy --prod"
   },
   "dependencies": {
-    "@ably-labs/spaces": "^0.0.12-alpha",
+    "@ably-labs/react-hooks": "file:../../react-hooks",
+    "@ably-labs/spaces": "file:../",
     "ably": "^1.2.43",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.9",
@@ -22,6 +23,7 @@
     "nanoid": "^4.0.2",
     "random-words": "^2.0.0",
     "react": "^18.2.0",
+    "react-contenteditable": "^3.3.7",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
