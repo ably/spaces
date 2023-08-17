@@ -67,10 +67,10 @@ describe('Space', () => {
       vi.spyOn(presence, 'get').mockImplementationOnce(async () => [createPresenceMessage('update')]);
 
       await space.enter();
-      const member = space.members.getByConnectionId('1');
+      const member = await space.members.getByConnectionId('1');
       expect(member).toEqual(createSpaceMember());
 
-      const noMember = space.members.getByConnectionId('nonExistentConnectionId');
+      const noMember = await space.members.getByConnectionId('nonExistentConnectionId');
       expect(noMember).toBe(undefined);
     });
 
@@ -97,8 +97,8 @@ describe('Space', () => {
       ]);
       await space.enter();
 
-      const member1 = space.members.getByConnectionId('1')!;
-      const member2 = space.members.getByConnectionId('2')!;
+      const member1 = await space.members.getByConnectionId('1')!;
+      const member2 = await space.members.getByConnectionId('2')!;
 
       const lock1 = space.locks.get('lock1')!;
       expect(lock1.member).toEqual(member2);
@@ -176,14 +176,14 @@ describe('Space', () => {
     it<SpaceTestContext>('adds new members', async ({ space }) => {
       const callbackSpy = vi.fn();
       space.subscribe('update', callbackSpy);
-      createPresenceEvent(space, 'enter');
+      await createPresenceEvent(space, 'enter');
 
       const member1 = createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } });
       expect(callbackSpy).toHaveBeenNthCalledWith(1, {
         members: [member1],
       });
 
-      createPresenceEvent(space, 'enter', {
+      await createPresenceEvent(space, 'enter', {
         clientId: '2',
         connectionId: '2',
         data: createProfileUpdate({ current: { name: 'Betty' } }),
@@ -206,12 +206,12 @@ describe('Space', () => {
       const callbackSpy = vi.fn();
       space.subscribe('update', callbackSpy);
 
-      createPresenceEvent(space, 'enter');
+      await createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith(1, {
         members: [createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } })],
       });
 
-      createPresenceEvent(space, 'update', {
+      await createPresenceEvent(space, 'update', {
         data: createProfileUpdate({ current: { name: 'Betty' } }),
       });
 
@@ -224,12 +224,12 @@ describe('Space', () => {
       const callbackSpy = vi.fn();
       space.subscribe('update', callbackSpy);
 
-      createPresenceEvent(space, 'enter');
+      await createPresenceEvent(space, 'enter');
       expect(callbackSpy).toHaveBeenNthCalledWith(1, {
         members: [createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } })],
       });
 
-      createPresenceEvent(space, 'leave');
+      await createPresenceEvent(space, 'leave');
       expect(callbackSpy).toHaveBeenNthCalledWith(2, {
         members: [createSpaceMember({ isConnected: false, lastEvent: { name: 'leave', timestamp: 1 } })],
       });
@@ -248,17 +248,17 @@ describe('Space', () => {
         const callbackSpy = vi.fn();
         space.subscribe('update', callbackSpy);
 
-        createPresenceEvent(space, 'enter');
+        await createPresenceEvent(space, 'enter');
         expect(callbackSpy).toHaveBeenNthCalledWith(1, {
           members: [createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } })],
         });
 
-        createPresenceEvent(space, 'leave');
+        await createPresenceEvent(space, 'leave');
         expect(callbackSpy).toHaveBeenNthCalledWith(2, {
           members: [createSpaceMember({ isConnected: false, lastEvent: { name: 'leave', timestamp: 1 } })],
         });
 
-        vi.advanceTimersByTime(130_000);
+        await vi.advanceTimersByTimeAsync(130_000);
 
         expect(callbackSpy).toHaveBeenNthCalledWith(3, { members: [] });
         expect(callbackSpy).toHaveBeenCalledTimes(3);
@@ -268,8 +268,8 @@ describe('Space', () => {
         const callbackSpy = vi.fn();
         space.subscribe('update', callbackSpy);
 
-        createPresenceEvent(space, 'enter');
-        createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2' });
+        await createPresenceEvent(space, 'enter');
+        await createPresenceEvent(space, 'enter', { clientId: '2', connectionId: '2' });
         expect(callbackSpy).toHaveBeenNthCalledWith(2, {
           members: [
             createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } }),
@@ -277,7 +277,7 @@ describe('Space', () => {
           ],
         });
 
-        createPresenceEvent(space, 'leave');
+        await createPresenceEvent(space, 'leave');
         expect(callbackSpy).toHaveBeenNthCalledWith(3, {
           members: [
             createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
@@ -285,8 +285,8 @@ describe('Space', () => {
           ],
         });
 
-        vi.advanceTimersByTime(60_000);
-        createPresenceEvent(space, 'enter');
+        await vi.advanceTimersByTimeAsync(60_000);
+        await createPresenceEvent(space, 'enter');
         expect(callbackSpy).toHaveBeenNthCalledWith(4, {
           members: [
             createSpaceMember({ clientId: '2', connectionId: '2', lastEvent: { name: 'enter', timestamp: 1 } }),
@@ -294,16 +294,16 @@ describe('Space', () => {
           ],
         });
 
-        vi.advanceTimersByTime(130_000); // 2:10 passed, default timeout is 2 min
+        await vi.advanceTimersByTimeAsync(130_000); // 2:10 passed, default timeout is 2 min
         expect(callbackSpy).toHaveBeenCalledTimes(4);
       });
 
       it<SpaceTestContext>('unsubscribes when unsubscribe is called', async ({ space }) => {
         const spy = vi.fn();
         space.subscribe('update', spy);
-        createPresenceEvent(space, 'enter', { clientId: '2' });
+        await createPresenceEvent(space, 'enter', { clientId: '2' });
         space.unsubscribe('update', spy);
-        createPresenceEvent(space, 'enter', { clientId: '2' });
+        await createPresenceEvent(space, 'enter', { clientId: '2' });
 
         expect(spy).toHaveBeenCalledOnce();
       });
@@ -311,9 +311,9 @@ describe('Space', () => {
       it<SpaceTestContext>('unsubscribes when unsubscribe is called with no arguments', async ({ space }) => {
         const spy = vi.fn();
         space.subscribe('update', spy);
-        createPresenceEvent(space, 'enter', { clientId: '2' });
+        await createPresenceEvent(space, 'enter', { clientId: '2' });
         space.unsubscribe();
-        createPresenceEvent(space, 'enter', { clientId: '2' });
+        await createPresenceEvent(space, 'enter', { clientId: '2' });
 
         expect(spy).toHaveBeenCalledOnce();
       });

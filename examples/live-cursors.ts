@@ -16,8 +16,9 @@ const space = await spaces.get('slide-deck-224');
 space.enter({ name: 'Helmut' });
 
 // Listen to all changes to all members within a space
-space.cursors.subscribe('update', (cursorUpdate) => {
-  const member = space.members.getAll().find((member) => member.connectionId === cursorUpdate.connectionId);
+space.cursors.subscribe('update', async (cursorUpdate) => {
+  const members = await space.members.getAll();
+  const member = members.find((member) => member.connectionId === cursorUpdate.connectionId);
   renderCursor(cursorUpdate, member);
 });
 

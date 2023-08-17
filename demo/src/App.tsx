@@ -14,7 +14,7 @@ const App = () => {
     const enter = async () => {
       const name = getRandomName();
       await space.enter({ name, color: getRandomColor() });
-      space.locations.set({ slide: `${0}`, element: null });
+      await space.locations.set({ slide: `${0}`, element: null });
     };
 
     enter();
