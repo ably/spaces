@@ -60,10 +60,17 @@ const createPresenceMessage = <T extends keyof MessageMap>(type: T, override?: P
 
 const createPresenceEvent = async <T extends keyof MessageMap>(
   space: Space,
+  presenceMap: Map<string, Types.PresenceMessage>,
   type: T,
   override?: Partial<MessageMap[T]>,
 ) => {
-  await space['onPresenceUpdate'](createPresenceMessage(type, override));
+  const member = createPresenceMessage(type, override);
+  if (type == 'leave') {
+    presenceMap.delete(member.connectionId);
+  } else {
+    presenceMap.set(member.connectionId, member);
+  }
+  await space['onPresenceUpdate'](member);
 };
 
 const createLocationUpdate = (update?: Partial<PresenceMember['data']['locationUpdate']>): PresenceMember['data'] => {
