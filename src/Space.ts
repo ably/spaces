@@ -111,10 +111,10 @@ class Space extends EventEmitter<SpaceEventsMap> {
 
       (presence as PresenceWithSubscriptions).subscriptions.once('enter', async () => {
         const presenceMessages = await presence.get();
-        const members = this.members.mapPresenceMembersToSpaceMembers(presenceMessages);
 
         presenceMessages.forEach((msg) => this.locks.processPresenceMessage(msg));
 
+        const members = await this.members.getAll();
         resolve(members);
       });
 

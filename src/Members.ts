@@ -21,8 +21,6 @@ class Members extends EventEmitter<MemberEventsMap> {
   private lastMemberUpdate: Record<string, PresenceMember['data']['profileUpdate']['id']> = {};
   private leavers: Leavers;
 
-  members: SpaceMember[] = [];
-
   constructor(private space: Space) {
     super();
     this.leavers = new Leavers(this.space.options.offlineTimeout);
@@ -31,32 +29,24 @@ class Members extends EventEmitter<MemberEventsMap> {
   async processPresenceMessage(message: PresenceMember) {
     const { action, connectionId } = message;
     const isLeaver = !!this.leavers.getByConnectionId(connectionId);
-    const isMember = this.members.some((m) => m.connectionId === connectionId);
-    const memberUpdate = this.createMember(message);
+    const member = this.createMember(message);
 
     if (action === 'leave') {
-      this.leavers.addLeaver(memberUpdate, () => this.onMemberOffline(memberUpdate));
-      this.emit('leave', memberUpdate);
+      this.leavers.addLeaver(member, () => this.onMemberOffline(member));
+      this.emit('leave', member);
     } else if (isLeaver) {
       this.leavers.removeLeaver(connectionId);
     }
 
-    if (!isMember && action !== 'leave') {
-      this.members.push(memberUpdate);
-      this.emit('enter', memberUpdate);
-    } else if (['enter', 'update'].includes(action) && isMember) {
-      const index = this.members.findIndex((m) => m.connectionId === connectionId);
-      this.members[index] = memberUpdate;
-    } else if (action === 'leave' && isMember) {
-      const index = this.members.findIndex((m) => m.connectionId === connectionId);
-      this.members.splice(index, 1);
+    if (action === 'enter') {
+      this.emit('enter', member);
     }
 
     // Emit profileData updates only if they are different then the last held update.
     // A locationUpdate is handled in Locations.
     if (message.data.profileUpdate.id && this.lastMemberUpdate[connectionId] !== message.data.profileUpdate.id) {
       this.lastMemberUpdate[message.connectionId] = message.data.profileUpdate.id;
-      this.emit('update', memberUpdate);
+      this.emit('update', member);
     }
   }
 
@@ -65,7 +55,9 @@ class Members extends EventEmitter<MemberEventsMap> {
   }
 
   async getAll(): Promise<SpaceMember[]> {
-    return this.members.concat(this.leavers.getAll().map((l) => l.member));
+    const presenceMembers = await this.space.channel.presence.get();
+    const members = presenceMembers.map((m) => this.createMember(m));
+    return members.concat(this.leavers.getAll().map((l) => l.member));
   }
 
   async getOthers(): Promise<SpaceMember[]> {
@@ -105,12 +97,6 @@ class Members extends EventEmitter<MemberEventsMap> {
         throw e;
       }
     }
-  }
-
-  mapPresenceMembersToSpaceMembers(messages: PresenceMember[]) {
-    const members = messages.map((message) => this.createMember(message));
-    this.members = [...members];
-    return members;
   }
 
   async getByConnectionId(connectionId: string): Promise<SpaceMember | undefined> {
