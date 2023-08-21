@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
-import * as sanitize from 'sanitize-html';
+import sanitize from 'sanitize-html';
 
 interface EditableTextProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onChange' | 'children'> {
   as?: string;
@@ -8,6 +8,7 @@ interface EditableTextProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onC
   value: string;
   onChange(nextValue: string): void;
   maxChars?: number;
+  className?: string;
 }
 
 export const EditableText: React.FC<EditableTextProps> = ({
@@ -48,8 +49,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
   );
 
   useEffect(() => {
-    if (!disabled) {
-      elementRef.current?.focus();
+    if (!disabled && elementRef.current) {
+      moveCursorToEnd(elementRef.current);
     }
   }, [disabled]);
 
@@ -65,4 +66,14 @@ export const EditableText: React.FC<EditableTextProps> = ({
       {...restProps}
     />
   );
+};
+
+const moveCursorToEnd = (el: HTMLElement) => {
+  el.focus();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
 };
