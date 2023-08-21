@@ -5,7 +5,7 @@ import App from './App';
 import './index.css';
 
 import { ably, SpaceContextProvider } from './components';
-import { SlidesStateContext, SlidesStateContextProvider } from './components/SlidesStateContext.tsx';
+import { SlidesStateContextProvider } from './components/SlidesStateContext.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 

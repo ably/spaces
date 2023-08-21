@@ -7,4 +7,5 @@ export const releaseMyLocks = async (space: Space, self: Member) => {
   }
 };
 
-export const buildLockId = (slide: string, element: string | undefined) => `/slide/${slide}/element/${element}`;
+export const buildLockId = (slide: string | undefined, element: string | undefined) =>
+  `/slide/${slide}/element/${element}`;

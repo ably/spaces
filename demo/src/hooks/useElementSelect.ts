@@ -15,18 +15,12 @@ export const useElementSelect = (element?: string, lockable: boolean = true) => 
       const lockId = buildLockId(self.location?.slide, element);
       const lock = space.locks.get(lockId);
 
-      if (lock?.request.status === 'locked' && self.locks.get(lockId)) {
-        // alert('You are already locking this location');
-      } else if (lock?.request.status === 'locked') {
-        // alert('Location is locked by another user');
-      } else {
-        if (/*window.confirm('Would you like to lock this location?')*/ true) {
-          await releaseMyLocks(space, self);
-          await space.locks.acquire(lockId);
+      if (lock?.request.status !== 'locked') {
+        await releaseMyLocks(space, self);
+        await space.locks.acquire(lockId);
 
-          // The lock is pending but we enter the location optimistically
-          space.locations.set({ slide: self.location?.slide, element });
-        }
+        // The lock is pending but we enter the location optimistically
+        space.locations.set({ slide: self.location?.slide, element });
       }
     } else {
       await releaseMyLocks(space, self);

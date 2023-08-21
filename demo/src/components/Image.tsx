@@ -13,7 +13,7 @@ interface Props extends React.HTMLAttributes<HTMLImageElement> {
 
 export const Image = ({ src, children, className, id, slide, locatable = true }: Props) => {
   const { members, self } = useMembers();
-  const { handleSelect } = useElementSelect(id);
+  const { handleSelect } = useElementSelect(id, false);
   const activeMember = findActiveMember(id, slide, members);
   const { outlineClasses, stickyLabelClasses } = getOutlineClasses(activeMember);
   const memberName = getMemberFirstName(activeMember);

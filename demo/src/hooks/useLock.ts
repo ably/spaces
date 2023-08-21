@@ -6,10 +6,7 @@ import { SpacesContext } from '../components';
 import { buildLockId } from '../utils/locking';
 import { isMember, useMembers } from '../hooks';
 
-import { getMemberFirstName } from '../utils';
-
 import { type Member } from '../utils/types';
-import members from '../../../src/Members.ts';
 
 export const useLock = (slide: string, id: string): { status?: string; member?: Member } => {
   const space = useContext(SpacesContext);
@@ -40,7 +37,7 @@ export const useLock = (slide: string, id: string): { status?: string; member?: 
 
   useEffect(() => {
     if (status !== undefined) return;
-    for (const member of others) {
+    for (const member of others ?? []) {
       const lock = member.locks.get(locationLockId);
       if (lock) {
         setMember(member);
@@ -50,24 +47,6 @@ export const useLock = (slide: string, id: string): { status?: string; member?: 
   }, [others, status]);
 
   return { status, member };
-};
-
-export const useLockLabelCallback = (slide: string, id: string, selfConnectionId?: string) => {
-  const { member, status } = useLock(slide, id);
-  const [label, setLabel] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    // We're locking this component
-    if (status === 'locked' && member?.connectionId === selfConnectionId) {
-      setLabel(`Locked by You`);
-    } else if (status === 'locked') {
-      setLabel(`Locked by ${getMemberFirstName(member)}`);
-    } else if (status === 'unlocked') {
-      setLabel(undefined);
-    }
-  }, [member, status, slide, id, selfConnectionId]);
-
-  return label;
 };
 
 export const useLockStatus = (slide: string, id: string, selfConnectionId?: string) => {
