@@ -57,23 +57,11 @@ export const useLockLabelCallback = (slide: string, id: string, selfConnectionId
   return label;
 };
 
-export const useLockAndStatus = (slide: string, id: string, selfConnectionId?: string) => {
+export const useLockStatus = (slide: string, id: string, selfConnectionId?: string) => {
   const { member, status } = useLock(slide, id);
-  const [label, setLabel] = useState<string | undefined>(undefined);
 
   const locked = status === 'locked';
   const lockedByYou = locked && member?.connectionId === selfConnectionId;
 
-  useEffect(() => {
-    // We're locking this component
-    if (lockedByYou) {
-      setLabel(`Locked by You`);
-    } else if (locked) {
-      setLabel(`Locked by ${getMemberFirstName(member)}`);
-    } else {
-      setLabel(undefined);
-    }
-  }, [member, status, slide, id, selfConnectionId]);
-
-  return { label, locked, lockedByYou };
+  return { locked, lockedByYou };
 };

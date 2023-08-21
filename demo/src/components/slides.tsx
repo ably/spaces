@@ -5,7 +5,10 @@ import { Image } from './Image';
 export const slides = [
   {
     children: (
-      <div className="grid grid-cols-1 md:grid-cols-[390px_1fr] gap-8 h-full items-center p-8">
+      <div
+        key={0}
+        className="grid grid-cols-1 md:grid-cols-[390px_1fr] gap-8 h-full items-center p-8"
+      >
         <div>
           <Title
             id="1"
@@ -27,6 +30,7 @@ export const slides = [
             src="/contrast.svg"
             id="3"
             slide="0"
+            locatable={false}
           >
             <div className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
@@ -49,6 +53,7 @@ export const slides = [
             src="/repetition.svg"
             id="6"
             slide="0"
+            locatable={false}
           >
             <div className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
@@ -71,6 +76,7 @@ export const slides = [
             src="/alignment.svg"
             id="9"
             slide="0"
+            locatable={false}
           >
             <div
               data-id="slide-figcaption-placeholder"
@@ -96,6 +102,7 @@ export const slides = [
             src="/proximity.svg"
             id="12"
             slide="0"
+            locatable={false}
           >
             <div
               data-id="slide-figcaption-placeholder"
@@ -123,7 +130,10 @@ export const slides = [
   },
   {
     children: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8 relative">
+      <div
+        key={1}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8 relative"
+      >
         <div>
           <Title
             variant="h3"
@@ -166,7 +176,10 @@ export const slides = [
   },
   {
     children: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8">
+      <div
+        key={2}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8"
+      >
         <div>
           <Title
             variant="h1"

@@ -11,9 +11,16 @@ export const getMemberFirstName = (member?: Member) => {
 };
 
 export const getOutlineClasses = (member?: Member) => {
-  if (!member) return '';
+  if (!member)
+    return {
+      outlineClasses: '',
+      stickyLabelClasses: '',
+    };
   const { color } = member.profileData;
   const { name } = color;
   const { intensity } = color.gradientStart;
-  return `outline-${name}-${intensity} before:bg-${name}-${intensity}`;
+  return {
+    outlineClasses: `outline-${name}-${intensity}`,
+    stickyLabelClasses: `bg-${name}-${intensity}`,
+  };
 };
