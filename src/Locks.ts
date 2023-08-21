@@ -1,5 +1,3 @@
-import { Types } from 'ably';
-
 import Space from './Space.js';
 import type { Lock, LockRequest, SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
@@ -127,9 +125,9 @@ export default class Locks extends EventEmitter<LockEventMap> {
     }
   }
 
-  async processPresenceMessage(message: Types.PresenceMessage) {
+  async processPresenceMessage(message: PresenceMember) {
     const member = await this.space.members.getByConnectionId(message.connectionId);
-    if (!member) return;
+    if (!member || !message?.extras) return;
 
     if (!Array.isArray(message?.extras?.locks)) {
       // there are no locks in presence, so release any existing locks for the

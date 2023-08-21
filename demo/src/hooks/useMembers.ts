@@ -24,6 +24,21 @@ export const useMembers: () => Partial<{ self?: Member; others: Member[]; member
   useEffect(() => {
     if (!space) return;
 
+    const handler = ({ members }: { members: SpaceMember[] }) => {
+      (async () => {
+        const self = await space.members.getSelf();
+
+        if (isMember(self)) {
+          setSelf(self);
+        }
+
+        if (areMembers(members)) {
+          setMembers([...members]);
+          setOthers(membersToOthers([...members], self));
+        }
+      })();
+    };
+
     const init = async () => {
       const initSelf = await space.members.getSelf();
       const initMembers = await space.members.getAll();
@@ -36,19 +51,6 @@ export const useMembers: () => Partial<{ self?: Member; others: Member[]; member
         setMembers(initMembers);
         setOthers(membersToOthers(initMembers, initSelf));
       }
-
-      const handler = async ({ members }: { members: SpaceMember[] }) => {
-        const self = await space.members.getSelf();
-
-        if (isMember(self)) {
-          setSelf(self);
-        }
-
-        if (areMembers(members)) {
-          setMembers([...members]);
-          setOthers(membersToOthers([...members], self));
-        }
-      };
 
       space.subscribe('update', handler);
     };

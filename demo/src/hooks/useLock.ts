@@ -4,7 +4,7 @@ import { type Lock, LockStatus } from '@ably-labs/spaces';
 
 import { SpacesContext } from '../components';
 import { buildLockId } from '../utils/locking';
-import { isMember, useMembers } from '../hooks';
+import { isMember } from '../hooks';
 
 import { type Member } from '../utils/types';
 
@@ -13,7 +13,6 @@ export const useLock = (slide: string, id: string): { status?: string; member?: 
   const locationLockId = buildLockId(slide, id);
   const [status, setStatus] = useState<LockStatus | undefined>(undefined);
   const [member, setMember] = useState<Member | undefined>(undefined);
-  const { others } = useMembers();
 
   useEffect(() => {
     if (!space) return;
@@ -37,14 +36,12 @@ export const useLock = (slide: string, id: string): { status?: string; member?: 
 
   useEffect(() => {
     if (status !== undefined) return;
-    for (const member of others ?? []) {
-      const lock = member.locks.get(locationLockId);
-      if (lock) {
-        setMember(member);
-        setStatus(lock.status);
-      }
+    const lock = space?.locks.get(locationLockId);
+    if (lock) {
+      setMember(lock.member as any);
+      setStatus(lock.request.status);
     }
-  }, [others, status]);
+  }, [status]);
 
   return { status, member };
 };

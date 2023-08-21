@@ -18,10 +18,7 @@ type LocationsEventMap = {
 export default class Locations extends EventEmitter<LocationsEventMap> {
   private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};
 
-  constructor(
-    private space: Space,
-    private presenceUpdate: (update: PresenceMember['data'], extras: PresenceMember['extras']) => Promise<void>,
-  ) {
+  constructor(private space: Space, private presenceUpdate: (update: PresenceMember['data']) => Promise<void>) {
     super();
   }
 

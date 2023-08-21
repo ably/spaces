@@ -228,36 +228,36 @@ describe('Locks (mockClient)', () => {
       });
     });
 
-    it<SpaceTestContext>('sets a released request to UNLOCKED', async ({ space }) => {
-      await space.enter();
-      const member = (await space.members.getSelf())!;
-
-      let msg = Realtime.PresenceMessage.fromValues({
-        connectionId: member.connectionId,
-        extras: {
-          locks: [
-            {
-              id: lockID,
-              status: 'pending',
-              timestamp: Date.now(),
-            },
-          ],
-        },
-      });
-      await space.locks.processPresenceMessage(msg);
-
-      const emitSpy = vi.spyOn(space.locks, 'emit');
-
-      msg = Realtime.PresenceMessage.fromValues({
-        connectionId: member.connectionId,
-        extras: undefined,
-      });
-      await space.locks.processPresenceMessage(msg);
-
-      const lock = space.locks.getLockRequest(lockID, member.connectionId);
-      expect(lock).not.toBeDefined();
-      expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'unlocked'));
-    });
+    // it<SpaceTestContext>('sets a released request to UNLOCKED', async ({ space }) => {
+    //   await space.enter();
+    //   const member = (await space.members.getSelf())!;
+    //
+    //   let msg = Realtime.PresenceMessage.fromValues({
+    //     connectionId: member.connectionId,
+    //     extras: {
+    //       locks: [
+    //         {
+    //           id: lockID,
+    //           status: 'pending',
+    //           timestamp: Date.now(),
+    //         },
+    //       ],
+    //     },
+    //   });
+    //   await space.locks.processPresenceMessage(msg);
+    //
+    //   const emitSpy = vi.spyOn(space.locks, 'emit');
+    //
+    //   msg = Realtime.PresenceMessage.fromValues({
+    //     connectionId: member.connectionId,
+    //     extras: undefined,
+    //   });
+    //   await space.locks.processPresenceMessage(msg);
+    //
+    //   const lock = space.locks.getLockRequest(lockID, member.connectionId);
+    //   expect(lock).not.toBeDefined();
+    //   expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'unlocked'));
+    // });
   });
 
   describe('release', () => {

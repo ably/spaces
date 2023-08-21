@@ -43,7 +43,7 @@ export const Paragraph = ({ variant = 'regular', id, slide, className, children,
         visible={!!activeMember}
         className={`${stickyLabelClasses} flex flex-row items-center`}
       >
-        {lockedByYou ? 'You' : memberName}
+        {activeMember?.connectionId === self?.connectionId ? 'You' : memberName}
         {locked && !lockedByYou && !!activeMember && <LockFilledSvg className="text-white" />}
       </StickyLabel>
       <EditableText

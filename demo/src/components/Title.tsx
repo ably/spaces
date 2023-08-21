@@ -44,7 +44,7 @@ export const Title = ({ variant = 'h1', className, id, slide, children, ...props
         visible={!!activeMember}
         className={`${stickyLabelClasses} flex flex-row items-center`}
       >
-        {lockedByYou ? 'You' : memberName}
+        {activeMember?.connectionId === self?.connectionId ? 'You' : memberName}
         {locked && !lockedByYou && !!activeMember && <LockFilledSvg className="text-white" />}
       </StickyLabel>
       <EditableText
