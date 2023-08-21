@@ -5,6 +5,7 @@ import App from './App';
 import './index.css';
 
 import { ably, SpaceContextProvider } from './components';
+import { SlidesStateContext, SlidesStateContextProvider } from './components/SlidesStateContext.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -12,7 +13,9 @@ root.render(
   <React.StrictMode>
     <SpaceContextProvider>
       <AblyProvider client={ably}>
-        <App />
+        <SlidesStateContextProvider>
+          <App />
+        </SlidesStateContextProvider>
       </AblyProvider>
     </SpaceContextProvider>
   </React.StrictMode>,

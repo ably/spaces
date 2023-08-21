@@ -8,6 +8,7 @@ import { LockFilledSvg } from './svg/LockedFilled.tsx';
 import { StickyLabel } from './StickyLabel.tsx';
 import { EditableText } from './EditableText.tsx';
 import { buildLockId } from '../utils/locking.ts';
+import { useSlideElementContent } from '../hooks/useSlideElementContent.ts';
 
 interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   id: string;
@@ -24,11 +25,13 @@ export const Title = ({ variant = 'h1', className, id, slide, children, ...props
   const { outlineClasses, stickyLabelClasses } = getOutlineClasses(activeMember);
   const memberName = getMemberFirstName(activeMember);
   const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
-  const channelName = `[?rewind=1]${spaceName}-${buildLockId(slide, id)}`;
+  const lockId = buildLockId(slide, id);
+  const channelName = `[?rewind=1]${spaceName}${lockId}`;
+  const [content, setContent] = useSlideElementContent(lockId, children);
   const { channel } = useChannel(channelName, (message) => {
+    if (message.connectionId === self?.connectionId) return;
     setContent(message.data);
   });
-  const [content, setContent] = useState(children);
   const editIsNotAllowed = locked && !lockedByYou && !!activeMember;
 
   return (

@@ -35,7 +35,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
       const enterPressed = key === 'Enter';
       const deleteButtonPressed = key === 'Backspace' || key === 'Delete';
       const replacing = window.getSelection()?.toString() !== '';
-      const limitReached = elementRef.current?.innerText.length ?? 0 >= maxChars;
+      const limitReached = (elementRef.current?.innerText.length ?? 0) >= maxChars;
       if (enterPressed || (limitReached && !replacing && !deleteButtonPressed)) {
         event.stopPropagation();
         event.preventDefault();

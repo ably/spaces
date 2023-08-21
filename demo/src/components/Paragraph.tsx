@@ -7,6 +7,7 @@ import { StickyLabel } from './StickyLabel';
 import { LockFilledSvg } from './svg/LockedFilled.tsx';
 import { EditableText } from './EditableText.tsx';
 import { buildLockId } from '../utils/locking.ts';
+import { useSlideElementContent } from '../hooks/useSlideElementContent.ts';
 
 interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
   id: string;
@@ -23,11 +24,13 @@ export const Paragraph = ({ variant = 'regular', id, slide, className, children,
   const { outlineClasses, stickyLabelClasses } = getOutlineClasses(activeMember);
   const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
   const memberName = getMemberFirstName(activeMember);
-  const channelName = `[?rewind=1]${spaceName}-${buildLockId(slide, id)}`;
+  const lockId = buildLockId(slide, id);
+  const channelName = `[?rewind=1]${spaceName}${lockId}`;
+  const [content, setContent] = useSlideElementContent(lockId, children);
   const { channel } = useChannel(channelName, (message) => {
+    if (message.connectionId === self?.connectionId) return;
     setContent(message.data);
   });
-  const [content, setContent] = useState(children);
   const editIsNotAllowed = locked && !lockedByYou && !!activeMember;
 
   return (
