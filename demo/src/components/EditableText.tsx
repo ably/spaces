@@ -3,7 +3,7 @@ import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
 import * as sanitize from 'sanitize-html';
 
 interface EditableTextProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onChange' | 'children'> {
-  as: string;
+  as?: string;
   disabled: boolean;
   value: string;
   onChange(nextValue: string): void;
