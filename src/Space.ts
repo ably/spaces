@@ -160,7 +160,8 @@ class Space extends EventEmitter<SpaceEventsMap> {
       return;
     }
 
-    return this.presenceUpdate(update);
+    const extras = this.locks.getLockExtras(self.connectionId);
+    return this.presenceUpdate(update, extras);
   }
 
   async leave(profileData: ProfileData = null) {

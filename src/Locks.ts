@@ -239,12 +239,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
         previous: null,
       },
     };
-    let extras;
-    const locks = this.getLockRequests(member.connectionId);
-    if (locks.length > 0) {
-      extras = { locks };
-    }
-    return this.presenceUpdate(update, extras);
+    return this.presenceUpdate(update, this.getLockExtras(member.connectionId));
   }
 
   getLock(id: string, connectionId: string): Lock | undefined {
@@ -283,5 +278,11 @@ export default class Locks extends EventEmitter<LockEventMap> {
       }
     }
     return requests;
+  }
+
+  getLockExtras(connectionId: string): PresenceMember['extras'] {
+    const locks = this.getLockRequests(connectionId);
+    if (locks.length === 0) return;
+    return { locks };
   }
 }
