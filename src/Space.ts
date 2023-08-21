@@ -94,11 +94,11 @@ class Space extends EventEmitter<SpaceEventsMap> {
     };
   }
 
-  private onPresenceUpdate(message: PresenceMember) {
-    this.members.processPresenceMessage(message);
-    this.locations.processPresenceMessage(message);
-    this.locks.processPresenceMessage(message);
-    this.emit('update', { members: this.members.getAll() });
+  private async onPresenceUpdate(message: PresenceMember) {
+    await this.members.processPresenceMessage(message);
+    await this.locations.processPresenceMessage(message);
+    await this.locks.processPresenceMessage(message);
+    this.emit('update', { members: await this.members.getAll() });
   }
 
   async enter(profileData: ProfileData = null): Promise<SpaceMember[]> {
@@ -111,10 +111,10 @@ class Space extends EventEmitter<SpaceEventsMap> {
 
       (presence as PresenceWithSubscriptions).subscriptions.once('enter', async () => {
         const presenceMessages = await presence.get();
-        const members = this.members.mapPresenceMembersToSpaceMembers(presenceMessages);
 
         presenceMessages.forEach((msg) => this.locks.processPresenceMessage(msg));
 
+        const members = await this.members.getAll();
         resolve(members);
       });
 
@@ -137,7 +137,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
       | Record<string, unknown>
       | ((update: Record<string, unknown> | null) => Record<string, unknown>),
   ): Promise<void> {
-    const self = this.members.getSelf();
+    const self = await this.members.getSelf();
 
     if (!isObject(profileDataOrUpdateFn) && !isFunction(profileDataOrUpdateFn)) {
       throw new Error('Space.updateProfileData(): Invalid arguments: ' + inspect([profileDataOrUpdateFn]));
@@ -171,8 +171,8 @@ class Space extends EventEmitter<SpaceEventsMap> {
     return this.presenceUpdate(update, extras);
   }
 
-  leave(profileData: ProfileData = null) {
-    const self = this.members.getSelf();
+  async leave(profileData: ProfileData = null) {
+    const self = await this.members.getSelf();
 
     if (!self) {
       throw new Error('You must enter a space before attempting to leave it');
@@ -190,11 +190,12 @@ class Space extends EventEmitter<SpaceEventsMap> {
       },
     };
 
-    return this.presenceLeave(update);
+    await this.presenceLeave(update);
   }
 
-  getState(): { members: SpaceMember[] } {
-    return { members: this.members.getAll() };
+  async getState(): Promise<{ members: SpaceMember[] }> {
+    const members = await this.members.getAll();
+    return { members };
   }
 
   subscribe<K extends EventKey<SpaceEventsMap>>(

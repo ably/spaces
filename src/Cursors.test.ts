@@ -339,7 +339,6 @@ describe('Cursors', () => {
         isConnected: true,
         profileData: {},
         location: {},
-        locks: new Map(),
         lastEvent: { name: 'enter', timestamp: 0 },
       };
 
@@ -465,7 +464,7 @@ describe('Cursors', () => {
       selfStub,
     }) => {
       vi.spyOn(space.cursors, 'getAll').mockImplementation(async () => lastCursorPositionsStub);
-      vi.spyOn(space.members, 'getSelf').mockReturnValue(selfStub);
+      vi.spyOn(space.members, 'getSelf').mockResolvedValue(selfStub);
 
       const selfCursor = await space.cursors.getSelf();
       expect(selfCursor).toEqual(lastCursorPositionsStub['connectionId1']);
@@ -473,7 +472,7 @@ describe('Cursors', () => {
 
     it<CursorsTestContext>('returns an empty object if self is not present in cursors', async ({ space }) => {
       vi.spyOn(space.cursors, 'getAll').mockResolvedValue({});
-      vi.spyOn(space.members, 'getSelf').mockReturnValue(undefined);
+      vi.spyOn(space.members, 'getSelf').mockResolvedValue(undefined);
 
       const others = await space.cursors.getOthers();
       expect(others).toEqual({});
@@ -496,7 +495,7 @@ describe('Cursors', () => {
       };
 
       vi.spyOn(space.cursors, 'getAll').mockResolvedValue(onlyMyCursor);
-      vi.spyOn(space.members, 'getSelf').mockReturnValue(selfStub);
+      vi.spyOn(space.members, 'getSelf').mockResolvedValue(selfStub);
 
       const others = await space.cursors.getOthers();
       expect(others).toEqual({});
@@ -508,7 +507,7 @@ describe('Cursors', () => {
       lastCursorPositionsStub,
     }) => {
       vi.spyOn(space.cursors, 'getAll').mockResolvedValue(lastCursorPositionsStub);
-      vi.spyOn(space.members, 'getSelf').mockReturnValue(selfStub);
+      vi.spyOn(space.members, 'getSelf').mockResolvedValue(selfStub);
 
       const others = await space.cursors.getOthers();
       expect(others).toEqual({

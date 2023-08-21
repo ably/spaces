@@ -22,4 +22,4 @@ space.locations.subscribe('update', ({ member, currentLocation, previousLocation
 });
 
 // Set your location
-space.locations.set({ slide: 0, elementId: 'title' });
+await space.locations.set({ slide: 0, elementId: 'title' });

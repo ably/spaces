@@ -58,8 +58,19 @@ const createPresenceMessage = <T extends keyof MessageMap>(type: T, override?: P
   }
 };
 
-const createPresenceEvent = <T extends keyof MessageMap>(space: Space, type: T, override?: Partial<MessageMap[T]>) => {
-  space['onPresenceUpdate'](createPresenceMessage(type, override));
+const createPresenceEvent = async <T extends keyof MessageMap>(
+  space: Space,
+  presenceMap: Map<string, Types.PresenceMessage>,
+  type: T,
+  override?: Partial<MessageMap[T]>,
+) => {
+  const member = createPresenceMessage(type, override);
+  if (type == 'leave') {
+    presenceMap.delete(member.connectionId);
+  } else {
+    presenceMap.set(member.connectionId, member);
+  }
+  await space['onPresenceUpdate'](member);
 };
 
 const createLocationUpdate = (update?: Partial<PresenceMember['data']['locationUpdate']>): PresenceMember['data'] => {
@@ -100,7 +111,6 @@ const createSpaceMember = (override?: Partial<SpaceMember>): SpaceMember => {
     profileData: null,
     location: null,
     lastEvent: { name: 'update', timestamp: 1 },
-    locks: new Map(),
     ...override,
   };
 };

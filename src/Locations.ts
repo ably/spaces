@@ -25,7 +25,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     super();
   }
 
-  processPresenceMessage(message: PresenceMember) {
+  async processPresenceMessage(message: PresenceMember) {
     // Only an update action is currently a valid location update.
     if (message.action !== 'update') return;
 
@@ -40,7 +40,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     const update = message.data.locationUpdate;
 
     const { previous } = update;
-    const member = this.space.members.getByConnectionId(message.connectionId);
+    const member = await this.space.members.getByConnectionId(message.connectionId);
 
     if (member) {
       this.emit('update', {
@@ -53,8 +53,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     }
   }
 
-  set(location: unknown) {
-    const self = this.space.members.getSelf();
+  async set(location: unknown) {
+    const self = await this.space.members.getSelf();
 
     if (!self) {
       throw new Error('You must enter a space before setting a location.');
@@ -72,15 +72,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
       },
     };
 
-    let extras;
-
-    if (self.locks.size > 0) {
-      extras = {
-        locks: Array.from(self.locks.values()),
-      };
-    }
-
-    return this.presenceUpdate(update, extras);
+    await this.presenceUpdate(update);
   }
 
   subscribe<K extends EventKey<LocationsEventMap>>(
@@ -117,25 +109,23 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     }
   }
 
-  getSelf(): unknown {
-    const self = this.space.members.getSelf();
+  async getSelf(): Promise<unknown> {
+    const self = await this.space.members.getSelf();
     return self ? self.location : null;
   }
 
-  getOthers(): Record<string, unknown> {
-    const self = this.space.members.getSelf();
+  async getOthers(): Promise<Record<string, unknown>> {
+    const members = await this.space.members.getOthers();
 
-    return this.space.members
-      .getAll()
-      .filter((member) => member.connectionId !== self?.connectionId)
-      .reduce((acc: Record<string, unknown>, member: SpaceMember) => {
-        acc[member.connectionId] = member.location;
-        return acc;
-      }, {});
+    return members.reduce((acc: Record<string, unknown>, member: SpaceMember) => {
+      acc[member.connectionId] = member.location;
+      return acc;
+    }, {});
   }
 
-  getAll(): Record<string, unknown> {
-    return this.space.members.getAll().reduce((acc: Record<string, unknown>, member: SpaceMember) => {
+  async getAll(): Promise<Record<string, unknown>> {
+    const members = await this.space.members.getAll();
+    return members.reduce((acc: Record<string, unknown>, member: SpaceMember) => {
       acc[member.connectionId] = member.location;
       return acc;
     }, {});
