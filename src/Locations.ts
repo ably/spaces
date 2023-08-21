@@ -18,7 +18,10 @@ type LocationsEventMap = {
 export default class Locations extends EventEmitter<LocationsEventMap> {
   private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};
 
-  constructor(private space: Space, private presenceUpdate: (update: PresenceMember['data']) => Promise<void>) {
+  constructor(
+    private space: Space,
+    private presenceUpdate: (update: PresenceMember['data'], extras?: PresenceMember['extras']) => Promise<void>,
+  ) {
     super();
   }
 
@@ -69,7 +72,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
       },
     };
 
-    await this.presenceUpdate(update);
+    const extras = this.space.locks.getLockExtras(self.connectionId);
+    await this.presenceUpdate(update, extras);
   }
 
   subscribe<K extends EventKey<LocationsEventMap>>(
