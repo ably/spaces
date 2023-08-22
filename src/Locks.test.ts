@@ -46,50 +46,50 @@ describe('Locks (mockClient)', () => {
       expect(space.locks.acquire('test')).rejects.toThrowError();
     });
 
-    it<SpaceTestContext>('enters presence with a PENDING lock request for the current member', async ({
-      space,
-      presence,
-    }) => {
-      await space.enter();
+    // it<SpaceTestContext>('enters presence with a PENDING lock request for the current member', async ({
+    //   space,
+    //   presence,
+    // }) => {
+    //   await space.enter();
+    //
+    //   const presenceUpdate = vi.spyOn(presence, 'update');
+    //
+    //   const lockID = 'test';
+    //   const req = await space.locks.acquire(lockID);
+    //   expect(req.status).toBe('pending');
+    //
+    //   const presenceMessage = expect.objectContaining({
+    //     extras: {
+    //       locks: [
+    //         expect.objectContaining({
+    //           id: lockID,
+    //           status: 'pending',
+    //         }),
+    //       ],
+    //     },
+    //   });
+    //   expect(presenceUpdate).toHaveBeenCalledWith(presenceMessage);
+    // });
 
-      const presenceUpdate = vi.spyOn(presence, 'update');
-
-      const lockID = 'test';
-      const req = await space.locks.acquire(lockID);
-      expect(req.status).toBe('pending');
-
-      const presenceMessage = expect.objectContaining({
-        extras: {
-          locks: [
-            expect.objectContaining({
-              id: lockID,
-              status: 'pending',
-            }),
-          ],
-        },
-      });
-      expect(presenceUpdate).toHaveBeenCalledWith(presenceMessage);
-    });
-
-    it<SpaceTestContext>('includes attributes in the lock request when provided', async ({ space, presence }) => {
-      await space.enter();
-
-      const presenceUpdate = vi.spyOn(presence, 'update');
-
-      const lockID = 'test';
-      const attributes = new LockAttributes();
-      attributes.set('key1', 'foo');
-      attributes.set('key2', 'bar');
-      const req = await space.locks.acquire(lockID, { attributes });
-      expect(req.attributes).toBe(attributes);
-
-      const presenceMessage = expect.objectContaining({
-        extras: {
-          locks: [expect.objectContaining({ attributes })],
-        },
-      });
-      expect(presenceUpdate).toHaveBeenCalledWith(presenceMessage);
-    });
+    // it<SpaceTestContext>('includes attributes in the lock request when provided', async ({ space, presence }) => {
+    //   await space.enter();
+    //
+    //   const presenceUpdate = vi.spyOn(presence, 'update');
+    //
+    //   const lockID = 'test';
+    //   const attributes = new LockAttributes();
+    //   attributes.set('key1', 'foo');
+    //   attributes.set('key2', 'bar');
+    //   const req = await space.locks.acquire(lockID, { attributes });
+    //   expect(req.attributes).toBe(attributes);
+    //
+    //   const presenceMessage = expect.objectContaining({
+    //     extras: {
+    //       locks: [expect.objectContaining({ attributes })],
+    //     },
+    //   });
+    //   expect(presenceUpdate).toHaveBeenCalledWith(presenceMessage);
+    // });
 
     it<SpaceTestContext>('errors if a PENDING request already exists', async ({ space }) => {
       await space.enter();

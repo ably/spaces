@@ -16,14 +16,14 @@ export const useElementSelect = (element?: string, lockable: boolean = true) => 
       const lock = space.locks.get(lockId);
 
       if (lock?.request.status !== 'locked') {
-        await releaseMyLocks(space, self);
-        await space.locks.acquire(lockId);
+        releaseMyLocks(space, self);
+        space.locks.acquire(lockId);
 
         // The lock is pending but we enter the location optimistically
         space.locations.set({ slide: self.location?.slide, element });
       }
     } else {
-      await releaseMyLocks(space, self);
+      releaseMyLocks(space, self);
       space.locations.set({ slide: self.location?.slide, element });
     }
   };

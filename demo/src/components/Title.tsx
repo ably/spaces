@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 import { useChannel } from '@ably-labs/react-hooks';
 
-import { useElementSelect, useLockStatus, useMembers } from '../hooks';
+import { useElementSelect, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses, getSpaceNameFromUrl } from '../utils';
 import { LockFilledSvg } from './svg/LockedFilled.tsx';
 import { StickyLabel } from './StickyLabel.tsx';
@@ -24,7 +24,9 @@ export const Title = ({ variant = 'h1', className, id, slide, children, ...props
   const activeMember = findActiveMember(id, slide, members);
   const { outlineClasses, stickyLabelClasses } = getOutlineClasses(activeMember);
   const memberName = getMemberFirstName(activeMember);
-  const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
+  //const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
+  const locked = !!activeMember;
+  const lockedByYou = activeMember?.connectionId === self?.connectionId;
   const lockId = buildLockId(slide, id);
   const channelName = `[?rewind=1]${spaceName}${lockId}`;
   const [content, setContent] = useSlideElementContent(lockId, children);
@@ -38,7 +40,7 @@ export const Title = ({ variant = 'h1', className, id, slide, children, ...props
     <div
       {...props}
       className="relative"
-      onClick={handleSelect}
+      onClick={editIsNotAllowed ? undefined : handleSelect}
     >
       <StickyLabel
         visible={!!activeMember}
