@@ -37,6 +37,7 @@ export const slides = [
                 variant="h2"
                 id="4"
                 slide="0"
+                maxlength={15}
               >
                 Contrast
               </Title>
@@ -44,6 +45,7 @@ export const slides = [
                 variant="aside"
                 id="5"
                 slide="0"
+                maxlength={105}
               >
                 When a design uses several elements, the goal is to make each one distinct.
               </Paragraph>
@@ -60,6 +62,7 @@ export const slides = [
                 variant="h2"
                 id="7"
                 slide="0"
+                maxlength={15}
               >
                 Repetition
               </Title>
@@ -67,6 +70,7 @@ export const slides = [
                 variant="aside"
                 id="8"
                 slide="0"
+                maxlength={105}
               >
                 Repetition helps designers establish relationships, develop organization and strengthen unity.
               </Paragraph>
@@ -86,6 +90,7 @@ export const slides = [
                 variant="h2"
                 id="10"
                 slide="0"
+                maxlength={12}
               >
                 Alignment
               </Title>
@@ -93,6 +98,7 @@ export const slides = [
                 variant="aside"
                 id="11"
                 slide="0"
+                maxlength={105}
               >
                 Alignment creates a clean, sophisticated look. All elements should relate to all others in some way.
               </Paragraph>
@@ -112,6 +118,7 @@ export const slides = [
                 variant="h2"
                 id="13"
                 slide="0"
+                maxlength={15}
               >
                 Proximity
               </Title>
@@ -119,6 +126,7 @@ export const slides = [
                 variant="aside"
                 id="14"
                 slide="0"
+                maxlength={105}
               >
                 When items are grouped, they become a single visual unit, rather than several separate entities.
               </Paragraph>

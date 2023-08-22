@@ -24,7 +24,7 @@ export const useMembers: () => Partial<{ self?: Member; others: Member[]; member
   useEffect(() => {
     if (!space) return;
 
-    const handler = ({ members }: { members: SpaceMember[] }) => {
+    const handler = ({ members }: { members: SpaceMember[] }) =>
       (async () => {
         const self = await space.members.getSelf();
 
@@ -37,7 +37,6 @@ export const useMembers: () => Partial<{ self?: Member; others: Member[]; member
           setOthers(membersToOthers([...members], self));
         }
       })();
-    };
 
     const init = async () => {
       const initSelf = await space.members.getSelf();

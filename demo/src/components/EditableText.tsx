@@ -7,14 +7,14 @@ interface EditableTextProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onC
   disabled: boolean;
   value: string;
   onChange(nextValue: string): void;
-  maxChars?: number;
+  maxlength?: number;
   className?: string;
 }
 
 export const EditableText: React.FC<EditableTextProps> = ({
   as,
   disabled,
-  maxChars = 300,
+  maxlength = 300,
   value,
   onChange,
   ...restProps
@@ -24,7 +24,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
     (evt: ContentEditableEvent) => {
       const nextValue = sanitize(evt.target.value, {
         allowedTags: [],
-      }).substring(0, maxChars);
+      }).substring(0, maxlength);
       onChange(nextValue);
     },
     [onChange],
@@ -36,7 +36,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
       const enterPressed = key === 'Enter';
       const deleteButtonPressed = key === 'Backspace' || key === 'Delete';
       const replacing = window.getSelection()?.toString() !== '';
-      const limitReached = (elementRef.current?.innerText.length ?? 0) >= maxChars;
+      const limitReached = (elementRef.current?.innerText.length ?? 0) >= maxlength;
       if (enterPressed || (limitReached && !replacing && !deleteButtonPressed)) {
         event.stopPropagation();
         event.preventDefault();
@@ -45,12 +45,13 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
       return undefined;
     },
-    [maxChars],
+    [maxlength],
   );
 
   useEffect(() => {
-    if (!disabled && elementRef.current) {
-      moveCursorToEnd(elementRef.current);
+    const element = elementRef.current;
+    if (!disabled && element) {
+      moveCursorToEnd(element);
     }
   }, [disabled]);
 

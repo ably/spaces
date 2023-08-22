@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import cn from 'classnames';
 import { useChannel } from '@ably-labs/react-hooks';
-import { useElementSelect, useMembers } from '../hooks';
+import { useClickOutside, useElementSelect, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses, getSpaceNameFromUrl } from '../utils';
 import { StickyLabel } from './StickyLabel';
 import { LockFilledSvg } from './svg/LockedFilled.tsx';
@@ -14,9 +14,19 @@ interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
   slide: string;
   variant?: 'regular' | 'aside';
   children: string;
+  maxlength?: number;
 }
 
-export const Paragraph = ({ variant = 'regular', id, slide, className, children, ...props }: Props) => {
+export const Paragraph = ({
+  variant = 'regular',
+  id,
+  slide,
+  className,
+  children,
+  maxlength = 300,
+  ...props
+}: Props) => {
+  const ref = useRef<HTMLDivElement | null>(null);
   const spaceName = getSpaceNameFromUrl();
   const { members, self } = useMembers();
   const { handleSelect } = useElementSelect(id);
@@ -35,8 +45,11 @@ export const Paragraph = ({ variant = 'regular', id, slide, className, children,
   });
   const editIsNotAllowed = locked && !lockedByYou && !!activeMember;
 
+  useClickOutside(ref, self, lockedByYou);
+
   return (
     <div
+      ref={ref}
       {...props}
       className="relative"
       onClick={editIsNotAllowed ? undefined : handleSelect}
@@ -57,6 +70,7 @@ export const Paragraph = ({ variant = 'regular', id, slide, className, children,
           setContent(nextValue);
           channel.publish('update', nextValue);
         }}
+        maxlength={maxlength}
         className={cn(
           'text-ably-avatar-stack-demo-slide-text break-all',
           {

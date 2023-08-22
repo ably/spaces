@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import cn from 'classnames';
 import { useChannel } from '@ably-labs/react-hooks';
 
-import { useElementSelect, useMembers } from '../hooks';
+import { useClickOutside, useElementSelect, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses, getSpaceNameFromUrl } from '../utils';
 import { LockFilledSvg } from './svg/LockedFilled.tsx';
 import { StickyLabel } from './StickyLabel.tsx';
@@ -15,9 +15,11 @@ interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   slide: string;
   variant?: 'h1' | 'h2' | 'h3';
   children: string;
+  maxlength?: number;
 }
 
-export const Title = ({ variant = 'h1', className, id, slide, children, ...props }: Props) => {
+export const Title = ({ variant = 'h1', className, id, slide, children, maxlength = 70, ...props }: Props) => {
+  const ref = useRef<HTMLDivElement | null>(null);
   const spaceName = getSpaceNameFromUrl();
   const { members, self } = useMembers();
   const { handleSelect } = useElementSelect(id, true);
@@ -36,8 +38,11 @@ export const Title = ({ variant = 'h1', className, id, slide, children, ...props
   });
   const editIsNotAllowed = locked && !lockedByYou && !!activeMember;
 
+  useClickOutside(ref, self, lockedByYou);
+
   return (
     <div
+      ref={ref}
       {...props}
       className="relative"
       onClick={editIsNotAllowed ? undefined : handleSelect}
@@ -53,7 +58,7 @@ export const Title = ({ variant = 'h1', className, id, slide, children, ...props
         id={id}
         as={variant}
         disabled={!activeMember || !lockedByYou}
-        maxChars={70}
+        maxlength={maxlength}
         value={content}
         onChange={(nextValue) => {
           setContent(nextValue);
