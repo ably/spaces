@@ -60,7 +60,7 @@ export const Cursors = () => {
   useEffect(() => {
     if (!space || !members) return;
 
-    space.cursors.subscribe('cursorsUpdate', (cursorUpdate) => {
+    space.cursors.subscribe('update', (cursorUpdate) => {
       const { connectionId } = cursorUpdate;
       const member = find<Member>(members, { connectionId });
 
@@ -89,7 +89,7 @@ export const Cursors = () => {
     });
 
     return () => {
-      space.cursors.unsubscribe('cursorsUpdate');
+      space.cursors.unsubscribe('update');
     };
   }, [space, members]);
 
