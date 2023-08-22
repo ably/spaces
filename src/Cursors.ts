@@ -16,7 +16,7 @@ import type { CursorsOptions, CursorUpdate } from './types.js';
 import type { RealtimeMessage } from './utilities/types.js';
 
 type CursorsEventMap = {
-  cursorsUpdate: CursorUpdate;
+  update: CursorUpdate;
 };
 
 export default class Cursors extends EventEmitter<CursorsEventMap> {
@@ -34,7 +34,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     this.cursorHistory = new CursorHistory();
     this.cursorBatching = new CursorBatching(this.options.outboundBatchInterval);
 
-    const emitCursorUpdate = (update: CursorUpdate): void => this.emit('cursorsUpdate', update);
+    const emitCursorUpdate = (update: CursorUpdate): void => this.emit('update', update);
     this.cursorDispensing = new CursorDispensing(emitCursorUpdate);
   }
 

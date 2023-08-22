@@ -38,7 +38,7 @@ describe('Cursors', () => {
     context.space = new Space('test', client);
     context.cursors = context.space.cursors;
     // This will set the channel
-    context.cursors.subscribe('cursorsUpdate', () => {});
+    context.cursors.subscribe('update', () => {});
     context.channel = context.cursors['channel'] as Types.RealtimeChannelPromise;
     context.batching = context.space.cursors['cursorBatching'];
     context.dispensing = context.space.cursors['cursorDispensing'];
