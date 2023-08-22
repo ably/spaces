@@ -1,0 +1,38 @@
+name: Publish to CDN
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The release tag to use"
+        required: true
+      bucket:
+        description: "S3 bucket to upload to"
+        default: "prod-cdn.ably.com"
+        type: choice
+        options:
+          - "prod-cdn.ably.com"
+          - "nonprod-cdn.ably.com"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # These permissions are necessary to run the configure-aws-credentials action
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.version }}
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ABLY_AWS_ACCOUNT_ID_SDK }}:role/prod-ably-sdk-cdn
+          aws-region: us-east-1
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+      - run: npm run build
+      - run: |
+          aws s3 cp ./dist/iife/index.bundle.js s3://${{ github.event.inputs.bucket }}/spaces/${{ github.event.input.version }}/iife/index.bundle.js
+
