@@ -41,5 +41,5 @@ jobs:
           node-version: 14.x
       - run: npm run build
       - run: |
-          aws s3 cp ./dist/iife/index.bundle.js s3://${{ github.event.inputs.bucket }}/spaces/${{ github.event.input.version }}/iife/index.bundle.js
+          aws s3 cp ./dist/iife/index.bundle.js s3://${{ github.event.inputs.bucket }}/spaces/${{ github.event.inputs.version }}/iife/index.bundle.js
 
