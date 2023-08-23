@@ -12,6 +12,13 @@ on:
         options:
           - "prod-cdn.ably.com"
           - "nonprod-cdn.ably.com"
+      role-to-assume:
+        description: "The AWS role to assume"
+        default: "prod-ably-sdk-cdn"
+        type: choice
+        options:
+          - "prod-ably-sdk-cdn"
+          - "nonprod-ably-sdk-cdn"
 
 jobs:
   publish:
@@ -26,7 +33,7 @@ jobs:
           ref: ${{ github.event.inputs.version }}
       - uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ABLY_AWS_ACCOUNT_ID_SDK }}:role/prod-ably-sdk-cdn
+          role-to-assume: arn:aws:iam::${{ secrets.ABLY_AWS_ACCOUNT_ID_SDK }}:role/${{ github.event.inputs.role-to-assume }}
           aws-region: us-east-1
       - name: Use Node.js 14.x
         uses: actions/setup-node@v3
