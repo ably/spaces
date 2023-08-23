@@ -18,12 +18,13 @@
       - A major update in the AblyJS SDK will also require a major update in the Spaces API.
       - The second number represents a minor release, which lets users know new functionality or features have been added.
       - The third number represents a patch release, which represents bug-fixes and may be used when no action should be required from users.
-   1. The commit should update `package.json`, the `Spaces.ts` class containing a `version` property and `package-lock.json`. 
+   1. The commit should update `package.json`, the `Spaces.ts` class containing a `version` property and `package-lock.json`.
       Running `npm install` after changing `package.json` will update `package-lock.json`.
 1. Merge the commit into main.
 1. Tag a release using [Github releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release). The version needs to match the one from the commit. Use the "Generate release notes" button to
    add changelog notes and update as required.
 1. Ensure that the GitHub release action (.github/workflows/release.yml) has run successfully and package was published.
+1. Run the GitHub CDN publish action (.github/workflows/cdn.yml) with the same tag.
 
 ## Test suite
 
