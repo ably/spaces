@@ -158,6 +158,18 @@ describe('Space', () => {
         expect(updateSpy).toHaveBeenNthCalledWith(1, createProfileUpdate({ current: { name: 'Betty' } }));
       });
     });
+
+    it<SpaceTestContext>('maintains lock state in presence', async ({ space, presence, presenceMap }) => {
+      presenceMap.set('1', createPresenceMessage('enter'));
+
+      const lockID = 'test';
+      const lockReq = await space.locks.acquire(lockID);
+
+      const updateSpy = vi.spyOn(presence, 'update');
+      await space.updateProfileData({ name: 'Betty' });
+      const extras = { locks: [lockReq] };
+      expect(updateSpy).toHaveBeenCalledWith(expect.objectContaining({ extras }));
+    });
   });
 
   describe('leave', () => {

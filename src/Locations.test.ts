@@ -81,6 +81,18 @@ describe('Locations', () => {
         previousLocation: 'location1',
       });
     });
+
+    it<SpaceTestContext>('maintains lock state in presence', async ({ space, presence, presenceMap }) => {
+      presenceMap.set('1', createPresenceMessage('enter'));
+
+      const lockID = 'test';
+      const lockReq = await space.locks.acquire(lockID);
+
+      const spy = vi.spyOn(presence, 'update');
+      await space.locations.set('location');
+      const extras = { locks: [lockReq] };
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ extras }));
+    });
   });
 
   describe('location getters', () => {
