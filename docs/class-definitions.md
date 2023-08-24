@@ -59,15 +59,15 @@ type SpaceOptions = {
 };
 ```
 
-#### offlineTimeout
+##### offlineTimeout
 
-Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list. The default is 120000ms (2 minutes).
+Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list. The default is 120000ms (2 minutes). 
 
-#### cursors
+##### cursors
 
 Options relating to configuring the cursors API (see below).
 
-#### CursorsOptions
+##### CursorsOptions
 
 ```ts
 type CursorsOptions = {
@@ -76,11 +76,11 @@ type CursorsOptions = {
 };
 ```
 
-#### outboundBatchInterval
+##### outboundBatchInterval
 
 The interval in milliseconds at which a batch of cursor positions are published. This is multiplied by the number of members in the space minus 1. The default value is 100ms.
 
-#### paginationLimit
+##### paginationLimit
 
 The number of pages searched from [history](https://ably.com/docs/storage-history/history) for the last published cursor position. The default is 5.
 
@@ -158,7 +158,7 @@ Handles members within a space.
 
 #### subscribe()
 
-Listen to member events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
+Listen to member events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
 
   ```ts
   space.members.subscribe((member: SpaceMember) => {});
@@ -322,7 +322,7 @@ Handles the tracking of member locations within a space. Inherits from [EventEmi
 
 #### subscribe()
 
-Listen to events for locations. See [EventEmitter](/docs/usage.md#event-emitters) for overloading usage.
+Listen to events for locations. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
 
 Available events:
 
@@ -436,9 +436,9 @@ Available events:
 
 #### set()
 
-Set the position of a cursor. This will emit a `CursorUpdate` event. If a member has not yet entered the space, this method will error.
+Set the position of a cursor. If a member has not yet entered the space, this method will error.
 
-A `CursorUpdate` is an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
+A event payload returned contains an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
 
 ```ts
 type set = (update: { position: CursorPosition, data?: CursorData })
@@ -462,7 +462,7 @@ space.cursors.unsubscribe('update');
 
 #### getSelf()
 
-Get the last CursorUpdate for self.
+Get the last `CursorUpdate` object for self.
 
 ```ts
 type getSelf = () => <CursorUpdate | undefined>;
@@ -476,7 +476,7 @@ const selfPosition = space.cursors.getSelf();
 
 #### getAll()
 
-Get the last CursorUpdate for each connection.
+Get the last `CursorUpdate` object for all the members.
 
 ```ts
 type getAll = () => Record<ConnectionId, CursorUpdate>;
@@ -490,7 +490,7 @@ const allLatestPositions = space.cursors.getAll();
 
 #### getOthers()
 
-Get the last CursorUpdate for each connection.
+Get the last `CursorUpdate` object for everyone else but yourself.
 
 ```ts
 type getOthers = () => Record<ConnectionId, CursorUpdate>;
