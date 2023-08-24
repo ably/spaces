@@ -3,7 +3,13 @@ import { Types } from 'ably';
 import Space from './Space.js';
 import type { Lock, LockRequest, SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
-import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS, ERR_LOCK_RELEASED } from './Errors.js';
+import {
+  ERR_LOCK_IS_LOCKED,
+  ERR_LOCK_INVALIDATED,
+  ERR_LOCK_REQUEST_EXISTS,
+  ERR_LOCK_RELEASED,
+  ERR_OUT_OF_SPACE,
+} from './Errors.js';
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
@@ -69,7 +75,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   async acquire(id: string, opts?: LockOptions): Promise<LockRequest> {
     const self = await this.space.members.getSelf();
     if (!self) {
-      throw new Error('Must enter a space before acquiring a lock');
+      throw ERR_OUT_OF_SPACE;
     }
 
     // check there isn't an existing PENDING or LOCKED request for the current
@@ -99,7 +105,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   async release(id: string): Promise<void> {
     const self = await this.space.members.getSelf();
     if (!self) {
-      throw new Error('Must enter a space before acquiring a lock');
+      throw ERR_OUT_OF_SPACE;
     }
 
     this.deleteLock(id, self.connectionId);

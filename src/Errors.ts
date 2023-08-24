@@ -21,26 +21,38 @@ export class ErrorInfo extends Error {
   }
 }
 
+export const ERR_SPACE_NAME_MISSING = new ErrorInfo({
+  message: 'must have a non-empty name',
+  code: 101000,
+  statusCode: 400,
+});
+
+export const ERR_OUT_OF_SPACE = new ErrorInfo({
+  message: 'must enter a space to perform this operation',
+  code: 101001,
+  statusCode: 400,
+});
+
 export const ERR_LOCK_REQUEST_EXISTS = new ErrorInfo({
   message: 'lock request already exists',
-  code: 40050,
+  code: 101002,
   statusCode: 400,
 });
 
 export const ERR_LOCK_IS_LOCKED = new ErrorInfo({
   message: 'lock is currently locked',
-  code: 40051,
+  code: 101003,
   statusCode: 400,
 });
 
 export const ERR_LOCK_INVALIDATED = new ErrorInfo({
   message: 'lock was invalidated by a concurrent lock request which now holds the lock',
-  code: 40052,
+  code: 101004,
   statusCode: 400,
 });
 
 export const ERR_LOCK_RELEASED = new ErrorInfo({
   message: 'lock was released',
-  code: 40053,
+  code: 101005,
   statusCode: 400,
 });

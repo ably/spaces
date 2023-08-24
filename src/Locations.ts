@@ -10,6 +10,7 @@ import EventEmitter, {
 import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
+import { ERR_OUT_OF_SPACE } from './Errors.js';
 
 type LocationsEventMap = {
   update: { member: SpaceMember; currentLocation: unknown; previousLocation: unknown };
@@ -57,7 +58,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     const self = await this.space.members.getSelf();
 
     if (!self) {
-      throw new Error('You must enter a space before setting a location.');
+      throw ERR_OUT_OF_SPACE;
     }
 
     const update: PresenceMember['data'] = {
