@@ -52,6 +52,20 @@ export default class Locks extends EventEmitter<LockEventMap> {
     }
   }
 
+  getAll(): Lock[] {
+    const allLocks = [];
+
+    for (const locks of this.locks.values()) {
+      for (const lock of locks.values()) {
+        if (lock.request.status === 'locked') {
+          allLocks.push(lock);
+        }
+      }
+    }
+
+    return allLocks;
+  }
+
   async acquire(id: string, opts?: LockOptions): Promise<LockRequest> {
     const self = await this.space.members.getSelf();
     if (!self) {
