@@ -1,16 +1,18 @@
-# Usage
+# Usage Instructions
+
+This page contains detailed documentation to help you use the Spaces SDK.
 
 ## Prerequisites
 
 ### Ably API key
 
-To use Spaces, you will need the following:
+To start using this SDK, you will need the following:
 
 * An Ably account
-  * You can [sign up](https://ably.com/signup) for free
+  * You can [sign up](https://ably.com/signup) to the generous free tier.
 * An Ably API key
-  * Create API keys in an app within your [Ably account](https://ably.com/dashboard)
-  * The API key needs the following [capabilities](https://ably.com/docs/realtime/authentication#capabilities-explained): `publish`, `subscribe`, `presence` and `history`
+  * Use the default or create a new API key in an app within your [Ably account dashboard](https://ably.com/dashboard).
+  * Make sure your API key has the following [capabilities](https://ably.com/docs/auth/capabilities): `publish`, `subscribe`, `presence` and `history`.
 
 ### Environment
 
@@ -20,14 +22,10 @@ Spaces is built on top of the [Ably JavaScript SDK](https://github.com/ably/ably
 
 ### NPM
 
-```sh
-npm install @ably-labs/spaces
-```
-
-If you need the Ably client (see [Authentication & instantiation](#authentication-and-instantiation))
+You'll need to install both the ably client and the spaces client:
 
 ```sh
-npm install ably
+npm install ably @ably-labs/spaces
 ```
 
 ### CDN
@@ -39,23 +37,11 @@ You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
 <script src="https://unpkg.com/@ably-labs/spaces@0.0.10/dist/iife/index.bundle.js"></script>
 ```
 
-Note that when you use a CDN, you need to include Ably Client as well, the Spaces bundle does not include it.
-
 ## Authentication and instantiation
 
-Spaces use an [Ably promise-based realtime client](https://github.com/ably/ably-js#using-the-async-api-style). You can either pass an existing client to Spaces or pass the [client options](https://ably.com/docs/api/realtime-sdk?lang=javascript#client-options) directly to the spaces constructor.
+Spaces use an [Ably promise-based realtime client](https://github.com/ably/ably-js#using-the-async-api-style). You can pass an Ably client directly to the spaces constructor.
 
-To instantiate with options, you will need at minimum an [Ably API key](#ably-api-key) and a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascripts). A clientId represents an identity of an connection. In most cases this will something like the id of a user:
-
-_**Deprecated: the ClientOptions option will be removed in the next release. Use the Ably client instance method described underneath.**_
-
-```ts
-import Spaces from '@ably-labs/spaces';
-
-const spaces = new Spaces({ key: "<API-key>", clientId: "<client-ID>" });
-```
-
-If you already have an ably client in your application, you can just pass it directly to Spaces (the client will still need to instantiated with a clientId):
+The Ably client instantiation accepts client options. You will need at minimum an [Ably API key](#ably-api-key) and a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascripts). A clientId represents an identity of an connection. In most cases this will something like the id of a user:
 
 ```ts
 import { Realtime } from 'ably/promise';
@@ -65,13 +51,13 @@ const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" 
 const spaces = new Spaces(client);
 ```
 
-In both scenarios, you can access the client via `spaces.ably`.
+You can access the Ably client via `spaces.ably`.
 
 To learn more about authenticating with ably, see our [authentication documentation](https://ably.com/docs/auth).
 
 ## Create a space
 
-A space is the virtual area of an application you want to collaborate in, such as a web page, or slideshow. A `space` is uniquely identified by its name. A space is created, or an existing space retrieved from the `spaces` collection by calling the `get()` method. You can only connect to one space in a single operation. The following is an example of creating a space called "demonSlideshow":
+A space is the virtual area of an application you want users to collaborate in, such as a web page, or slideshow. A `space` is uniquely identified by its name. A space is created, or an existing space retrieved from the `spaces` collection by calling the `get()` method. You can only connect to one space in a single operation. The following is an example of creating a space called "demonSlideshow":
 
 ```ts
 const space = await spaces.get('demoSlideshow');
@@ -130,7 +116,7 @@ A leave event is sent when a user leaves a space. This can occur for one of the 
 - The user closes the tab
 - The user is abruptly disconnected from the internet for longer than 2 minutes
 
-A leave event does not remove the member immediately from members. Instead, they are removed after a timeout which is configurable by the [`offlineTimeout` option](#options). This allows the UI to display an intermediate state before disconnection/reconnection.
+A leave event does not remove the member immediately from `space.members`. Instead, they are removed after a timeout which is configurable by the [`offlineTimeout` option](#options). This allows the UI to display an intermediate state before disconnection/reconnection.
 
 As with `enter`, you can update the `profileData` on leave:
 
@@ -143,7 +129,7 @@ space.leave({
 
 ### Update profileData
 
-To update `profileData` provided when entering the space, use the `updateProfileData` method. Pass new `profileData` or a function to base the new `profileData` of the existing value:
+To update `profileData` after entering the space, use the `updateProfileData()` method. Pass new `profileData` or a function to base the new `profileData` of the existing value:
 
 ```ts
 await space.updateProfileData((oldProfileData) => {
@@ -179,15 +165,21 @@ See [SpaceMember](/docs/class-definitions.md#spacemember) for details on propert
 
 ### Member events
 
-Subscribe to either `enter`, `leave`, `remove` or `update` events related to members in a space.
+Subscribe to either all the member events or specifically to `enter`, `leave`, `remove` or `update` events related to members in a space.
+
+```ts
+space.members.subscribe((memberUpdate) => {
+  console.log(memberUpdate);
+});
+```
 
 #### enter
 
 Emitted when a member enters a space. Called with the member entering the space.
 
 ```ts
-space.members.subscribe('enter', (memberJoins) => {
-  console.log(memberJoins);
+space.members.subscribe('enter', (memberJoined) => {
+  console.log(memberJoined);
 });
 ```
 
@@ -213,20 +205,11 @@ space.members.subscribe('remove', (memberRemoved) => {
 
 #### update
 
-Emitted when for `enter`, `leave` and `remove` events in a space:
-
-
-```ts
-space.members.subscribe('update', (memberUpdate) => {
-  console.log(memberUpdate);
-});
-```
-
-This is the same as not specifying the event:
+Emitted when a member updates their `profileData` via `space.updateProfileData()`:
 
 ```ts
-space.members.subscribe((memberUpdate) => {
-  console.log(memberUpdate);
+space.members.subscribe('update', (memberProfileUpdated) => {
+  console.log(memberProfileUpdated);
 });
 ```
 
@@ -248,19 +231,12 @@ The location property will be set on the [member](#members).
 A location event will be emitted when a member updates their location:
 
 ```ts
-space.subscribe('update', (member) => {
-  console.log(member.location);
-});
-```
-When a member leaves, their location is set to `null`.
-
-However, it's possible to listen to just location updates. `locations` is an [event emitter](#event-emitters) and will emit the `locationUpdate` event:
-
-```ts
 space.locations.subscribe('update', (locationUpdate) => {
   console.log(locationUpdate);
 });
 ```
+
+When a member leaves, their location is set to `null`.
 
 This event will include the member affected by the change, as well as their previous and current locations:
 
@@ -300,7 +276,7 @@ A common feature of collaborative apps is to show where a users cursors is posit
 
 The most common use case is to show the current mouse pointer position.
 
-To start listing to cursor events, use the `.subscribe` method:
+To start listening to cursor events, use the `subscribe()` method:
 
 ```ts
 space.cursors.subscribe('update', (cursorUpdate) => {
@@ -319,7 +295,7 @@ The listener will be called with a `CursorUpdate`:
 }
 ```
 
-To set the position of a cursor and emit a `CursorUpdate`, first enter the space:
+To set the position of a cursor and emit a `CursorUpdate`, first enter the space if you haven't already:
 
 ```ts
 space.enter();
@@ -369,51 +345,51 @@ const lastPositions = await space.cursors.getAll();
 
 ## Event Emitters
 
-`space`, `members`, `cursors` and `locations` are event emitters. Event emitters provide `subscribe` and `unsubscribe` methods to attach/detach event listeners. Both methods support overloaded versions, described below.
+`space`, `members`, `cursors` and `locations` are event emitters. Event emitters provide `subscribe()` and `unsubscribe()` methods to attach/detach event listeners. Both methods support overloaded versions, described below.
 
 
-Calling `subscribe` with a single function argument will subscribe to all events on that emitter.
+Calling `subscribe()` with a single function argument will subscribe to all events on that emitter.
 
 ```ts
 space.members.subscribe();
 ```
 
-Calling `subscribe` with a named event and a function argument will subscribe to that event only.
+Calling `subscribe()` with a named event and a function argument will subscribe to that event only.
 
 ```ts
-space.members.subscribe(`enter`, () => {});
+space.members.subscribe('enter', () => {});
 ```
 
-Calling `subscribe` with an array of named events and a function argument will subscribe to those events.
+Calling `subscribe()` with an array of named events and a function argument will subscribe to those events.
 
 ```ts
-space.members.subscribe([`enter`, `leave`], () => {});
+space.members.subscribe(['enter', 'leave'], () => {});
 ```
 
-Calling `unsubscribe` with no arguments will remove all registered listeners.
+Calling `unsubscribe()` with no arguments will remove all registered listeners.
 
 ```ts
 space.members.unsubscribe();
 ```
 
-Calling `unsubscribe` with a single named event will remove all listeners registered for that event.
+Calling `unsubscribe()` with a single named event will remove all listeners registered for that event.
 
 ```ts
-space.members.unsubscribe(`enter`);
+space.members.unsubscribe('enter');
 ```
 
-Calling `unsubscribe` with an array of named events will remove all listeners registered for those events.
+Calling `unsubscribe()` with an array of named events will remove all listeners registered for those events.
 
 ```ts
-space.members.unsubscribe([`enter`, `leave`]);
+space.members.unsubscribe(['enter', 'leave']);
 ```
 
-Calling `unsubscribe` and adding a listener function as the second argument to both of the above will remove only that listener.
+Calling `unsubscribe()` and adding a listener function as the second argument to both of the above will remove only that listener.
 
 ```ts
 const listener = () => {};
-space.members.unsubscribe(`update`, listener);
-space.members.unsubscribe([`update`], listener);
+space.members.unsubscribe('update', listener);
+space.members.unsubscribe(['update'], listener);
 ```
 
-As with the native DOM API, this only works if the listener is the same reference as the one passed to `subscribe`.
+As with the native DOM API, this only works if the listener is the same reference as the one passed to `subscribe()`.
