@@ -1,4 +1,5 @@
 import { Types } from 'ably';
+import { ERR_SPACE_NAME_MISSING } from './Errors.js';
 
 import Space from './Space.js';
 
@@ -30,7 +31,7 @@ class Spaces {
 
   async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {
-      throw new Error('Spaces must have a non-empty name');
+      throw ERR_SPACE_NAME_MISSING;
     }
 
     if (this.spaces[name]) return this.spaces[name];

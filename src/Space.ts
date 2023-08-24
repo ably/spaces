@@ -12,6 +12,8 @@ import Cursors from './Cursors.js';
 import Members from './Members.js';
 import Locks from './Locks.js';
 
+import { ERR_OUT_OF_SPACE } from './Errors.js';
+
 import { isFunction, isObject } from './utilities/is.js';
 
 import type { SpaceOptions, SpaceMember, ProfileData } from './types.js';
@@ -168,7 +170,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     const self = await this.members.getSelf();
 
     if (!self) {
-      throw new Error('You must enter a space before attempting to leave it');
+      throw ERR_OUT_OF_SPACE;
     }
 
     const update = {
