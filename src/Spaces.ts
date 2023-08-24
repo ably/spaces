@@ -15,7 +15,7 @@ class Spaces {
   private spaces: Record<string, Space> = {};
   ably: Types.RealtimePromise;
 
-  readonly version = '0.0.12';
+  readonly version = '0.0.13';
 
   constructor(client: Types.RealtimePromise) {
     this.ably = client;
