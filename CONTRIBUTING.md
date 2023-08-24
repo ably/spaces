@@ -20,6 +20,7 @@
       - The third number represents a patch release, which represents bug-fixes and may be used when no action should be required from users.
    1. The commit should update `package.json`, the `Spaces.ts` class containing a `version` property and `package-lock.json`.
       Running `npm install` after changing `package.json` will update `package-lock.json`.
+   1. Update the README.md for any references to the new version, such as the CDN link.
 1. Merge the commit into main.
 1. Tag a release using [Github releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release). The version needs to match the one from the commit. Use the "Generate release notes" button to
    add changelog notes and update as required.
