@@ -24,28 +24,15 @@ export const EditableText: React.FC<EditableTextProps> = ({
     (evt: ContentEditableEvent) => {
       const nextValue = sanitize(evt.target.value, {
         allowedTags: [],
-      }).substring(0, maxlength);
-      onChange(nextValue);
-    },
-    [onChange],
-  );
+      });
 
-  const handleKeyPress = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      const { key } = event;
-      const enterPressed = key === 'Enter';
-      const deleteButtonPressed = key === 'Backspace' || key === 'Delete';
-      const replacing = window.getSelection()?.toString() !== '';
-      const limitReached = (elementRef.current?.innerText.length ?? 0) >= maxlength;
-      if (enterPressed || (limitReached && !replacing && !deleteButtonPressed)) {
-        event.stopPropagation();
-        event.preventDefault();
-        return false;
+      if (nextValue.length > maxlength) {
+        onChange(value);
+      } else {
+        onChange(nextValue);
       }
-
-      return undefined;
     },
-    [maxlength],
+    [onChange, maxlength],
   );
 
   useEffect(() => {
@@ -61,8 +48,6 @@ export const EditableText: React.FC<EditableTextProps> = ({
       innerRef={elementRef}
       disabled={disabled}
       html={value}
-      onKeyDown={handleKeyPress}
-      onKeyUp={handleKeyPress}
       onChange={handleTextChange}
       {...restProps}
     />
