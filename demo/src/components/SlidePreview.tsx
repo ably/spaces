@@ -19,8 +19,6 @@ export const SlidePreview = ({ children, index }: SlidePreviewProps) => {
 
   const handleSlideClick = async () => {
     if (!space || !self) return;
-
-    await releaseMyLocks(space, self);
     space.locations.set({ slide: `${index}`, element: null });
   };
 
