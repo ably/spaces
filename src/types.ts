@@ -1,4 +1,5 @@
 import { Types } from 'ably';
+import { LockAttributes } from './Locks';
 
 export interface CursorsOptions {
   outboundBatchInterval: number;

@@ -3,7 +3,7 @@ import { Types } from 'ably';
 import Space from '../../Space.js';
 
 import type { SpaceMember } from '../../types.js';
-import type { PresenceMember } from '../../utilities/types.js';
+import type { PresenceMember } from '../types.js';
 
 // import { nanoidId } from '../../../__mocks__/nanoid/index.js';
 const nanoidId = 'NanoidID';
