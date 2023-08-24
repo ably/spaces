@@ -116,6 +116,7 @@ describe('Locks (mockClient)', () => {
       const emitSpy = vi.spyOn(space.locks, 'emit');
 
       const msg = Realtime.PresenceMessage.fromValues({
+        action: 'update',
         connectionId: member.connectionId,
         extras: {
           locks: [
@@ -179,6 +180,7 @@ describe('Locks (mockClient)', () => {
         // process a PENDING request for the other member, which should
         // transition to LOCKED
         let msg = Realtime.PresenceMessage.fromValues({
+          action: 'update',
           connectionId: otherConnId,
           extras: {
             locks: [
@@ -198,6 +200,7 @@ describe('Locks (mockClient)', () => {
         // result matches what is expected
         const emitSpy = vi.spyOn(space.locks, 'emit');
         msg = Realtime.PresenceMessage.fromValues({
+          action: 'update',
           connectionId: client.connection.id,
           extras: {
             locks: [
@@ -233,6 +236,7 @@ describe('Locks (mockClient)', () => {
       const member = (await space.members.getSelf())!;
 
       let msg = Realtime.PresenceMessage.fromValues({
+        action: 'update',
         connectionId: member.connectionId,
         extras: {
           locks: [
@@ -249,6 +253,7 @@ describe('Locks (mockClient)', () => {
       const emitSpy = vi.spyOn(space.locks, 'emit');
 
       msg = Realtime.PresenceMessage.fromValues({
+        action: 'update',
         connectionId: member.connectionId,
         extras: undefined,
       });
@@ -257,6 +262,45 @@ describe('Locks (mockClient)', () => {
       const lock = space.locks.getLockRequest(lockID, member.connectionId);
       expect(lock).not.toBeDefined();
       expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'unlocked'));
+    });
+
+    it<SpaceTestContext>('sets all locks to UNLOCKED when a member leaves', async ({ space }) => {
+      await space.enter();
+      const member = (await space.members.getSelf())!;
+
+      let msg = Realtime.PresenceMessage.fromValues({
+        action: 'update',
+        connectionId: member.connectionId,
+        extras: {
+          locks: [
+            {
+              id: 'lock1',
+              status: 'pending',
+              timestamp: Date.now(),
+            },
+            {
+              id: 'lock2',
+              status: 'pending',
+              timestamp: Date.now(),
+            },
+          ],
+        },
+      });
+      await space.locks.processPresenceMessage(msg);
+      let lock1 = space.locks.get('lock1');
+      expect(lock1).toBeDefined();
+      expect(lock1!.member).toEqual(member);
+      let lock2 = space.locks.get('lock2');
+      expect(lock2).toBeDefined();
+      expect(lock2!.member).toEqual(member);
+
+      msg.action = 'leave';
+      await space.locks.processPresenceMessage(msg);
+
+      lock1 = space.locks.get('lock1');
+      expect(lock1).not.toBeDefined();
+      lock2 = space.locks.get('lock2');
+      expect(lock2).not.toBeDefined();
     });
   });
 
