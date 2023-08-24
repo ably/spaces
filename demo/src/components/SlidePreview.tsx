@@ -4,8 +4,6 @@ import { useContext } from 'react';
 import { SpacesContext } from '.';
 import { useMembers } from '../hooks';
 
-import { releaseMyLocks } from '../utils/locking';
-
 export interface SlidePreviewProps {
   children: React.ReactNode;
   index: number;
