@@ -131,9 +131,9 @@ export default class Locks extends EventEmitter<LockEventMap> {
     const member = await this.space.members.getByConnectionId(message.connectionId);
     if (!member) return;
 
-    if (!Array.isArray(message?.extras?.locks)) {
-      // there are no locks in presence, so release any existing locks for the
-      // member
+    if (message.action === 'leave' || !Array.isArray(message?.extras?.locks)) {
+      // the member has left, or they have no locks in presence, so release any
+      // existing locks for that member
       for (const locks of this.locks.values()) {
         const lock = locks.get(member.connectionId);
         if (lock) {
