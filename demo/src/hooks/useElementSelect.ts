@@ -16,7 +16,7 @@ export const useElementSelect = (element?: string, lockable: boolean = true) => 
       const lockId = buildLockId(self.location?.slide, element);
       const lock = space.locks.get(lockId);
 
-      if (lock?.request.status !== 'locked') {
+      if (!lock) {
         // The lock is not set but we enter the location optimistically
         await space.locations.set({ slide: self.location?.slide, element });
         // TODO delete this workaround when spaces API is ready
