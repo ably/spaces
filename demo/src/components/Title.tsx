@@ -2,13 +2,14 @@ import React, { useRef } from 'react';
 import cn from 'classnames';
 import { useChannel } from '@ably-labs/react-hooks';
 
-import { useClickOutside, useElementSelect, useMembers } from '../hooks';
+import { useClearOnFailedLock, useClickOutside, useElementSelect, useLockStatus, useMembers } from '../hooks';
 import { findActiveMember, getMemberFirstName, getOutlineClasses, getSpaceNameFromUrl } from '../utils';
 import { LockFilledSvg } from './svg/LockedFilled.tsx';
 import { StickyLabel } from './StickyLabel.tsx';
 import { EditableText } from './EditableText.tsx';
 import { buildLockId } from '../utils/locking.ts';
 import { useSlideElementContent } from '../hooks/useSlideElementContent.ts';
+import { useMiniature } from './MiniatureContext.tsx';
 
 interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   id: string;
@@ -22,42 +23,47 @@ export const Title = ({ variant = 'h1', className, id, slide, children, maxlengt
   const ref = useRef<HTMLDivElement | null>(null);
   const spaceName = getSpaceNameFromUrl();
   const { members, self } = useMembers();
-  const { handleSelect } = useElementSelect(id, true);
+  const { handleSelect } = useElementSelect(id);
   const activeMember = findActiveMember(id, slide, members);
   const { outlineClasses, stickyLabelClasses } = getOutlineClasses(activeMember);
+  const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
   const memberName = getMemberFirstName(activeMember);
-  //const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
-  const locked = !!activeMember;
-  const lockedByYou = activeMember?.connectionId === self?.connectionId;
   const lockId = buildLockId(slide, id);
   const channelName = `[?rewind=1]${spaceName}${lockId}`;
   const [content, setContent] = useSlideElementContent(lockId, children);
+  const miniature = useMiniature();
+
   const { channel } = useChannel(channelName, (message) => {
-    if (message.connectionId === self?.connectionId) return;
+    if (message.connectionId === self?.connectionId || miniature) return;
     setContent(message.data);
   });
-  const editIsNotAllowed = locked && !lockedByYou && !!activeMember;
 
-  useClickOutside(ref, self, lockedByYou);
+  const optimisticallyLocked = !!activeMember;
+  const optimisticallyLockedByYou = optimisticallyLocked && activeMember?.connectionId === self?.connectionId;
+  const editIsNotAllowed = !optimisticallyLockedByYou && optimisticallyLocked;
+  const lockConflict = optimisticallyLockedByYou && locked && !lockedByYou && !miniature;
+
+  useClickOutside(ref, self, optimisticallyLockedByYou && !miniature);
+  useClearOnFailedLock(lockConflict, self);
 
   return (
     <div
       ref={ref}
       {...props}
       className="relative"
-      onClick={editIsNotAllowed ? undefined : handleSelect}
+      onClick={optimisticallyLocked ? undefined : handleSelect}
     >
       <StickyLabel
         visible={!!activeMember}
         className={`${stickyLabelClasses} flex flex-row items-center`}
       >
-        {activeMember?.connectionId === self?.connectionId ? 'You' : memberName}
-        {locked && !lockedByYou && !!activeMember && <LockFilledSvg className="text-white" />}
+        {optimisticallyLockedByYou ? 'You' : memberName}
+        {editIsNotAllowed && <LockFilledSvg className="text-white" />}
       </StickyLabel>
       <EditableText
         id={id}
         as={variant}
-        disabled={!activeMember || !lockedByYou}
+        disabled={!optimisticallyLockedByYou}
         maxlength={maxlength}
         value={content}
         onChange={(nextValue) => {
@@ -71,8 +77,8 @@ export const Title = ({ variant = 'h1', className, id, slide, children, maxlengt
             'font-semibold text-ably-avatar-stack-demo-slide-text md:text-2xl': variant === 'h2',
             'font-medium uppercase text-ably-avatar-stack-demo-slide-title-highlight xs:text-xs xs:my-4 md:my-0 md:text-md':
               variant === 'h3',
-            [`outline-2 outline ${outlineClasses}`]: !!activeMember,
-            'cursor-pointer': !editIsNotAllowed,
+            [`outline-2 outline ${outlineClasses}`]: optimisticallyLocked,
+            'cursor-pointer': !optimisticallyLocked,
             'cursor-not-allowed': editIsNotAllowed,
             'bg-slate-200': editIsNotAllowed,
           },

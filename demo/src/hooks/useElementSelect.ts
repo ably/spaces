@@ -17,10 +17,11 @@ export const useElementSelect = (element?: string, lockable: boolean = true) => 
       const lock = space.locks.get(lockId);
 
       if (lock?.request.status !== 'locked') {
-        space.locks.acquire(lockId);
-
-        // The lock is pending but we enter the location optimistically
-        space.locations.set({ slide: self.location?.slide, element });
+        // The lock is not set but we enter the location optimistically
+        await space.locations.set({ slide: self.location?.slide, element });
+        // TODO delete this workaround when spaces API is ready
+        await delay(60);
+        await space.locks.acquire(lockId);
       }
     } else {
       space.locations.set({ slide: self.location?.slide, element });
@@ -30,16 +31,18 @@ export const useElementSelect = (element?: string, lockable: boolean = true) => 
   return { handleSelect };
 };
 
-export const useClickOutside = (ref: MutableRefObject<HTMLElement | null>, self?: Member, locked?: boolean) => {
+export const useClickOutside = (ref: MutableRefObject<HTMLElement | null>, self?: Member, enabled?: boolean) => {
   const space = useContext(SpacesContext);
 
   useEffect(() => {
-    if (!locked) return;
-    const handleClick = (e: DocumentEventMap['click']) => {
+    if (!enabled) return;
+    const handleClick = async (e: DocumentEventMap['click']) => {
       const clickedOutside = !ref.current?.contains(e.target as Node);
       if (clickedOutside && space && self) {
-        releaseMyLocks(space, self);
-        space.locations.set({ slide: self.location?.slide, element: undefined });
+        await space.locations.set({ slide: self.location?.slide, element: undefined });
+        // TODO delete this workaround when spaces API is ready
+        await delay(60);
+        await releaseMyLocks(space, self);
       }
     };
 
@@ -48,5 +51,17 @@ export const useClickOutside = (ref: MutableRefObject<HTMLElement | null>, self?
     return () => {
       document.removeEventListener('click', handleClick, true);
     };
-  }, [space, self, locked]);
+  }, [space, self, enabled]);
 };
+
+export const useClearOnFailedLock = (lockConflict: boolean, self?: Member) => {
+  const space = useContext(SpacesContext);
+
+  useEffect(() => {
+    if (lockConflict) {
+      space?.locations.set({ slide: self?.location?.slide, element: undefined });
+    }
+  }, [lockConflict]);
+};
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
