@@ -32,7 +32,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
         onChange(nextValue);
       }
     },
-    [onChange, maxlength],
+    [onChange, value, maxlength],
   );
 
   useEffect(() => {
