@@ -5,7 +5,10 @@ import { Image } from './Image';
 export const slides = [
   {
     children: (
-      <div className="grid grid-cols-1 md:grid-cols-[390px_1fr] gap-8 h-full items-center p-8">
+      <div
+        key={0}
+        className="grid grid-cols-1 md:grid-cols-[390px_1fr] gap-8 h-full items-center p-8"
+      >
         <div>
           <Title
             id="1"
@@ -27,12 +30,14 @@ export const slides = [
             src="/contrast.svg"
             id="3"
             slide="0"
+            locatable={false}
           >
             <div className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
                 variant="h2"
                 id="4"
                 slide="0"
+                maxlength={15}
               >
                 Contrast
               </Title>
@@ -40,6 +45,7 @@ export const slides = [
                 variant="aside"
                 id="5"
                 slide="0"
+                maxlength={105}
               >
                 When a design uses several elements, the goal is to make each one distinct.
               </Paragraph>
@@ -49,12 +55,14 @@ export const slides = [
             src="/repetition.svg"
             id="6"
             slide="0"
+            locatable={false}
           >
             <div className="absolute w-[176px] left-[20px] top-[86px] md:top-20 md:left-6 md:right-6 md:mx-auto">
               <Title
                 variant="h2"
                 id="7"
                 slide="0"
+                maxlength={15}
               >
                 Repetition
               </Title>
@@ -62,6 +70,7 @@ export const slides = [
                 variant="aside"
                 id="8"
                 slide="0"
+                maxlength={105}
               >
                 Repetition helps designers establish relationships, develop organization and strengthen unity.
               </Paragraph>
@@ -71,6 +80,7 @@ export const slides = [
             src="/alignment.svg"
             id="9"
             slide="0"
+            locatable={false}
           >
             <div
               data-id="slide-figcaption-placeholder"
@@ -80,6 +90,7 @@ export const slides = [
                 variant="h2"
                 id="10"
                 slide="0"
+                maxlength={12}
               >
                 Alignment
               </Title>
@@ -87,6 +98,7 @@ export const slides = [
                 variant="aside"
                 id="11"
                 slide="0"
+                maxlength={105}
               >
                 Alignment creates a clean, sophisticated look. All elements should relate to all others in some way.
               </Paragraph>
@@ -96,6 +108,7 @@ export const slides = [
             src="/proximity.svg"
             id="12"
             slide="0"
+            locatable={false}
           >
             <div
               data-id="slide-figcaption-placeholder"
@@ -105,6 +118,7 @@ export const slides = [
                 variant="h2"
                 id="13"
                 slide="0"
+                maxlength={15}
               >
                 Proximity
               </Title>
@@ -112,6 +126,7 @@ export const slides = [
                 variant="aside"
                 id="14"
                 slide="0"
+                maxlength={105}
               >
                 When items are grouped, they become a single visual unit, rather than several separate entities.
               </Paragraph>
@@ -123,7 +138,10 @@ export const slides = [
   },
   {
     children: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8 relative">
+      <div
+        key={1}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8 relative"
+      >
         <div>
           <Title
             variant="h3"
@@ -145,16 +163,14 @@ export const slides = [
             id="3"
             slide="1"
           >
-            No one likes boring text blocks on a website. And{' '}
-            <span className="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">images and icons</span>{' '}
-            are the fastest way to get information.
+            No one likes boring text blocks on a website. And images and icons are the fastest way to get information.
           </Paragraph>
           <Paragraph
             id="4"
             slide="1"
           >
-            But <span className="text-ably-avatar-stack-demo-slide-title-highlight font-semibold">don't overdo it</span>
-            . If you can't explain for what purpose you put this line or icon, it's better to abandon it.
+            But don't overdo it. If you can't explain for what purpose you put this line or icon, it's better to abandon
+            it.
           </Paragraph>
         </div>
         <Image
@@ -168,7 +184,10 @@ export const slides = [
   },
   {
     children: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8">
+      <div
+        key={2}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center p-8"
+      >
         <div>
           <Title
             variant="h1"

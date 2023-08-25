@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Spaces, { type Space } from '../../../src/index';
+import Spaces, { type Space } from '@ably-labs/spaces';
 import { Realtime } from 'ably';
 import { nanoid } from 'nanoid';
 
@@ -7,7 +7,7 @@ import { getSpaceNameFromUrl } from '../utils';
 
 const clientId = nanoid();
 
-const ably = new Realtime.Promise({
+export const ably = new Realtime.Promise({
   authUrl: `/api/ably-token-request?clientId=${clientId}`,
   clientId,
 });

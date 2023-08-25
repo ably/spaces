@@ -3,6 +3,7 @@ import { useContext, useEffect } from 'react';
 import { Header, SlideMenu, SpacesContext, CurrentSlide, AblySvg, slides } from './components';
 import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
+import { PreviewProvider } from './components/PreviewContext.tsx';
 
 const App = () => {
   const space = useContext(SpacesContext);
@@ -32,7 +33,9 @@ const App = () => {
             id="feature-display"
             className="absolute gap-12 bg-[#F7F6F9] w-full h-[calc(100%-80px)] -z-10 overflow-y-hidden overflow-x-hidden flex justify-between min-w-[375px] xs:flex-col md:flex-row"
           >
-            <SlideMenu slides={slides} />
+            <PreviewProvider preview>
+              <SlideMenu slides={slides} />
+            </PreviewProvider>
             <CurrentSlide slides={slides} />
           </section>
         </main>

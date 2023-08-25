@@ -15,7 +15,7 @@ export const SlidePreview = ({ children, index }: SlidePreviewProps) => {
   const membersOnASlide = (members || []).filter(({ location }) => location?.slide === `${index}`);
   const isActive = self?.location?.slide === `${index}`;
 
-  const handleSlideClick = () => {
+  const handleSlideClick = async () => {
     if (!space || !self) return;
     space.locations.set({ slide: `${index}`, element: null });
   };
@@ -43,7 +43,7 @@ export const SlidePreview = ({ children, index }: SlidePreviewProps) => {
       </p>
       <div
         data-id="slide-preview-container"
-        className="relative rounded-[30px] border-2 border-ably-avatar-stack-demo-slide-preview-border w-[1020px] h-[687px] min-w-[1020px] min-h-[687px] bg-white"
+        className="relative rounded-[30px] border-2 border-ably-avatar-stack-demo-slide-preview-border w-[1020px] h-[687px] min-w-[1020px] min-h-[687px] bg-white pointer-events-none"
       >
         {children}
       </div>
