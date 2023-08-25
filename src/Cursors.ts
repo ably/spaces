@@ -14,7 +14,7 @@ import { CURSOR_UPDATE } from './CursorConstants.js';
 
 import type { CursorsOptions, CursorUpdate } from './types.js';
 import type { RealtimeMessage } from './utilities/types.js';
-import { ERR_OUT_OF_SPACE } from './Errors.js';
+import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
 
 type CursorsEventMap = {
   update: CursorUpdate;
@@ -49,7 +49,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     const self = await this.space.members.getSelf();
 
     if (!self) {
-      throw ERR_OUT_OF_SPACE;
+      throw ERR_NOT_ENTERED_SPACE;
     }
 
     const channel = this.getChannel();

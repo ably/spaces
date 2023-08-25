@@ -27,7 +27,7 @@ export const ERR_SPACE_NAME_MISSING = new ErrorInfo({
   statusCode: 400,
 });
 
-export const ERR_OUT_OF_SPACE = new ErrorInfo({
+export const ERR_NOT_ENTERED_SPACE = new ErrorInfo({
   message: 'must enter a space to perform this operation',
   code: 101001,
   statusCode: 400,
