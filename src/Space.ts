@@ -142,7 +142,9 @@ class Space extends EventEmitter<SpaceEventsMap> {
     const self = await this.members.getSelf();
 
     if (!isObject(profileDataOrUpdateFn) && !isFunction(profileDataOrUpdateFn)) {
-      throw new Error('Space.updateProfileData(): Invalid arguments: ' + inspect([profileDataOrUpdateFn]));
+      throw new InvalidArgumentError(
+        'Space.updateProfileData(): Invalid arguments: ' + inspect([profileDataOrUpdateFn]),
+      );
     }
 
     const update = {

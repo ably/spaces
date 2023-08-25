@@ -278,7 +278,7 @@ export default class EventEmitter<T extends EventMap> {
     const eventThis = { event: targetState };
 
     if (typeof targetState !== 'string' || typeof currentState !== 'string') {
-      throw 'whenState requires a valid event String argument';
+      throw new InvalidArgumentError('whenState requires a valid event String argument');
     }
     if (typeof listener !== 'function' && Promise) {
       return new Promise((resolve) => {
