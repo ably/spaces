@@ -8,7 +8,7 @@ import {
   ERR_LOCK_INVALIDATED,
   ERR_LOCK_REQUEST_EXISTS,
   ERR_LOCK_RELEASED,
-  ERR_OUT_OF_SPACE,
+  ERR_NOT_ENTERED_SPACE,
 } from './Errors.js';
 import EventEmitter, {
   InvalidArgumentError,
@@ -75,7 +75,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   async acquire(id: string, opts?: LockOptions): Promise<LockRequest> {
     const self = await this.space.members.getSelf();
     if (!self) {
-      throw ERR_OUT_OF_SPACE;
+      throw ERR_NOT_ENTERED_SPACE;
     }
 
     // check there isn't an existing PENDING or LOCKED request for the current
@@ -105,7 +105,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   async release(id: string): Promise<void> {
     const self = await this.space.members.getSelf();
     if (!self) {
-      throw ERR_OUT_OF_SPACE;
+      throw ERR_NOT_ENTERED_SPACE;
     }
 
     this.deleteLock(id, self.connectionId);
