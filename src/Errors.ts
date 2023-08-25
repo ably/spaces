@@ -22,7 +22,7 @@ export class ErrorInfo extends Error {
 }
 
 export const ERR_SPACE_NAME_MISSING = new ErrorInfo({
-  message: 'must have a non-empty name',
+  message: 'must have a non-empty name for the space',
   code: 101000,
   statusCode: 400,
 });
