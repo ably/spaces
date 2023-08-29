@@ -16,7 +16,7 @@ describe('Spaces', () => {
 
   it<SpacesTestContext>('expects the injected client to be of the type RealtimePromise', ({ client }) => {
     const spaces = new Spaces(client);
-    expectTypeOf(spaces.ably).toMatchTypeOf<Types.RealtimePromise>();
+    expectTypeOf(spaces.client).toMatchTypeOf<Types.RealtimePromise>();
   });
 
   it<SpacesTestContext>('creates and retrieves spaces successfully', async ({ client }) => {
@@ -41,7 +41,7 @@ describe('Spaces', () => {
   it<SpacesTestContext>('extend the agents array when it already exists', ({ client }) => {
     (client as ClientWithOptions).options.agents = { 'some-client': '1.2.3' };
     const spaces = new Spaces(client);
-    const ablyClient = spaces.ably as ClientWithOptions;
+    const ablyClient = spaces.client as ClientWithOptions;
 
     expect(ablyClient.options.agents).toEqual({
       'some-client': '1.2.3',

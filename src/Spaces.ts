@@ -14,14 +14,14 @@ export interface ClientWithOptions extends Types.RealtimePromise {
 
 class Spaces {
   private spaces: Record<string, Space> = {};
-  ably: Types.RealtimePromise;
+  client: Types.RealtimePromise;
 
   readonly version = '0.0.13';
 
   constructor(client: Types.RealtimePromise) {
-    this.ably = client;
-    this.addAgent((this.ably as ClientWithOptions)['options']);
-    this.ably.time();
+    this.client = client;
+    this.addAgent((this.client as ClientWithOptions)['options']);
+    this.client.time();
   }
 
   private addAgent(options: { agents?: Record<string, string | boolean> }) {
@@ -36,11 +36,11 @@ class Spaces {
 
     if (this.spaces[name]) return this.spaces[name];
 
-    if (this.ably.connection.state !== 'connected') {
-      await this.ably.connection.once('connected');
+    if (this.client.connection.state !== 'connected') {
+      await this.client.connection.once('connected');
     }
 
-    const space = new Space(name, this.ably, options);
+    const space = new Space(name, this.client, options);
     this.spaces[name] = space;
 
     return space;
