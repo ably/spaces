@@ -8,7 +8,7 @@ function isObject(arg: unknown): arg is Record<string, unknown> {
 }
 
 function isFunction(arg: unknown): arg is Function {
-  return typeOf(arg) === 'Function';
+  return typeOf(arg) === 'Function' || typeOf(arg) === 'AsyncFunction';
 }
 
 function isString(arg: unknown): arg is String {
