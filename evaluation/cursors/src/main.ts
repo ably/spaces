@@ -13,7 +13,8 @@ const client = new Realtime.Promise({
 });
 const spaces = new Spaces(client);
 
-const space = await spaces.get("demo");
+// const space = await spaces.get("demo");
+const space = await spaces.get('demo', { cursors: { outboundBatchInterval: 10 } });
 
 space.enter({ username: generateUsername() });
 
@@ -30,11 +31,12 @@ space.subscribe('update', updateMemberCount);
 window.addEventListener("mousemove", ({ clientX, clientY }) => {
   space.cursors.set({
     position: { x: clientX, y: clientY },
-    data: { color: "red" },
+    data: { time: Date.now() },
   });
 });
 
 // Listen to events published on "mousemove" by all members
+let latencyUpdatedAt;
 space.cursors.subscribe("update", async (update: any) => {
   const self = await space.members.getSelf();
 
@@ -46,7 +48,15 @@ space.cursors.subscribe("update", async (update: any) => {
   const member = members
     .find((member) => member.connectionId === update.connectionId);
 
-  if (!member || self?.connectionId === update.connectionId) return;
+  if (!member) return;
+
+  if (member.connectionId === self.connectionId) {
+    if (!latencyUpdatedAt || Date.now() - latencyUpdatedAt > 100) {
+      const latency = Date.now() - update.data.time;
+      document.getElementById('latency').innerText = `${latency}ms`;
+      latencyUpdatedAt = Date.now();
+    }
+  }
 
   if (!(cursorNode instanceof HTMLElement)) {
     cursorNode = createCursor(update.connectionId);
