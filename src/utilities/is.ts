@@ -8,7 +8,7 @@ function isObject(arg: unknown): arg is Record<string, unknown> {
 }
 
 function isFunction(arg: unknown): arg is Function {
-  return typeOf(arg) === 'Function' || typeOf(arg) === 'AsyncFunction';
+  return ['Function', 'AsyncFunction', 'GeneratorFunction', 'Proxy'].includes(typeOf(arg));
 }
 
 function isString(arg: unknown): arg is String {
