@@ -96,13 +96,13 @@ space.unsubscribe();
 To become a member of a space (and use the other APIs, like location or cursors) a client needs to enter a space.
 
 ```ts
-space.enter();
+await space.enter();
 ```
 
 This method can take an optional object called `profileData` so that users can include convenient metadata to update an avatar stack, such as a username and profile picture.
 
 ```ts
-space.enter({
+await space.enter({
   username: 'Claire Lemons',
   avatar: 'https://slides-internal.com/users/clemons.png',
 });
@@ -121,7 +121,7 @@ A leave event does not remove the member immediately from `space.members`. Inste
 As with `enter`, you can update the `profileData` on leave:
 
 ```ts
-space.leave({
+await space.leave({
   username: 'Claire Lemons',
   avatar: 'https://slides-internal.com/users/inactive.png',
 });

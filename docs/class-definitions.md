@@ -224,10 +224,10 @@ space.members.unsubscribe('leave');
 
 #### getSelf()
 
-Returns a Promise which resolves to the [SpaceMember](#spacemember) object relating to the local connection. Will resolve to `undefined` if the client hasn't entered the space yet.
+Returns a Promise which resolves to the [SpaceMember](#spacemember) object relating to the local connection. Will resolve to `null` if the client hasn't entered the space yet.
 
 ```ts
-type getSelf = () => Promise<SpaceMember | undefined>;
+type getSelf = () => Promise<SpaceMember | null>;
 ```
 
 Example:
@@ -355,7 +355,7 @@ space.locations.unsubscribe('update');
 Get location for self.
 
 ```ts
-type getSelf = () => Promise<Location | undefined>;
+type getSelf = () => Promise<Location>;
 ```
 
 Example:
@@ -465,13 +465,13 @@ space.cursors.unsubscribe('update');
 Get the last `CursorUpdate` object for self.
 
 ```ts
-type getSelf = () => <CursorUpdate | undefined>;
+type getSelf = () => Promise<CursorUpdate | null>;
 ```
 
 Example:
 
 ```ts
-const selfPosition = space.cursors.getSelf();
+const selfPosition = await space.cursors.getSelf();
 ```
 
 #### getAll()
@@ -479,13 +479,13 @@ const selfPosition = space.cursors.getSelf();
 Get the last `CursorUpdate` object for all the members.
 
 ```ts
-type getAll = () => Record<ConnectionId, CursorUpdate>;
+type getAll = () => Promise<Record<string, CursorUpdate | null>>;
 ```
 
 Example:
 
 ```ts
-const allLatestPositions = space.cursors.getAll();
+const allLatestPositions = await space.cursors.getAll();
 ```
 
 #### getOthers()
@@ -493,13 +493,13 @@ const allLatestPositions = space.cursors.getAll();
 Get the last `CursorUpdate` object for everyone else but yourself.
 
 ```ts
-type getOthers = () => Record<ConnectionId, CursorUpdate>;
+type getOthers = () => Promise<Record<string, CursorUpdate | null>>;
 ```
 
 Example:
 
 ```ts
-const otherPositions = space.cursors.getOthers();
+const otherPositions = await space.cursors.getOthers();
 ```
 
 ### Related types

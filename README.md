@@ -74,7 +74,7 @@ To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/get
 import Spaces from '@ably-labs/spaces';
 import { Realtime } from 'ably';
 
-const client = new Realtime.Promise({key: "<API-key>", clientId: "<client-ID>"});
+const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);
 ```
 You can use [basic authentication](https://ably.com/docs/auth/basic) i.e. the API Key directly for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/auth/token) in production environments.
@@ -107,7 +107,7 @@ space.subscribe('update', (spaceState) => {
 });
 
 // Enter a space, publishing an update event, including optional profile data
-space.enter({
+await space.enter({
   username: 'Claire Lemons',
   avatar: 'https://slides-internal.com/users/clemons.png',
 });
@@ -136,7 +136,7 @@ The following is an example event payload received by subscribers when a user en
 
 ## Space members
 
-The `members` namespace within a Space is a client-side filtered listener optimized for building avatar stacks. Subscribe to members entering, leaving, being removed from the Space (after a timeout) or updating their profile information.
+The `members` namespace contains methods dedicated to building avatar stacks. Subscribe to members entering, leaving, being removed from the Space (after a timeout) or updating their profile information.
 
 ```ts
 // Subscribe to all member events in a space
@@ -201,17 +201,17 @@ const othersMemberInfo = await space.members.getOthers();
 
 ## Member locations
 
-The `locations` namespace within a Space is a client-side filtered listener optimized for building member locations which enable you to track where users are within an application. A location could be a form field, multiple cells in a spreadsheet or a slide in a slide deck editor.
+The `locations` namespace contains methods dedicated to building member locations, enabling you to track where users are within an application. A location could be a form field, multiple cells in a spreadsheet or a slide in a slide deck editor.
 
 ```ts
 // You need to enter a space before publishing your location
-space.enter({
+await space.enter({
   username: 'Claire Lemons',
   avatar: 'https://slides-internal.com/users/clemons.png',
 });
 
 // Publish your location based on the UI element selected
-space.locations.set({ slide: '3', component: 'slide-title' });
+await space.locations.set({ slide: '3', component: 'slide-title' });
 
 // Subscribe to location events from all members in a space
 space.locations.subscribe('update', (locationUpdate) => {
@@ -258,22 +258,22 @@ Member locations has methods to get the current snapshot of member state:
 
 ```ts
 // Get a snapshot of all the member locations
-const allLocations = space.locations.getAll();
+const allLocations = await space.locations.getAll();
 
 // Get a snapshot of my location
-const myLocation = space.locations.getSelf();
+const myLocation = await space.locations.getSelf();
 
 // Get a snapshot of everyone else's locations
-const othersLocations = space.locations.getOthers();
+const othersLocations = await space.locations.getOthers();
 ```
 
 ## Live cursors
 
-The `cursors` namespace within a Space is a client-side filtered listener optimized for building live cursors which allows you to track a member's pointer position updates across an application. Events can also include associated data, such as pointer attributes and the IDs of associated UI elements:
+The `cursors` namespace contains methods dedicated to building live cursors, allowing you to track a member's pointer position updates across an application. Events can also include associated data, such as pointer attributes and the IDs of associated UI elements:
 
 ```ts
 // You need to enter a space before publishing your cursor updates
-space.enter({
+await space.enter({
   username: 'Claire Lemons',
   avatar: 'https://slides-internal.com/users/clemons.png',
 });
@@ -306,11 +306,11 @@ Member cursors has methods to get the current snapshot of member state:
 
 ```ts
 // Get a snapshot of all the cursors
-const allCursors = space.cursors.getAll();
+const allCursors = await space.cursors.getAll();
 
 // Get a snapshot of my cursor
-const myCursor = space.cursors.getSelf();
+const myCursor = await space.cursors.getSelf();
 
 // Get a snapshot of everyone else's cursors
-const othersCursors = space.cursors.getOthers();
+const othersCursors = await space.cursors.getOthers();
 ```
