@@ -4,7 +4,7 @@ import { CURSOR_UPDATE } from './CursorConstants.js';
 import type { CursorUpdate } from './types.js';
 import type { CursorsOptions } from './types.js';
 
-type OutgoingBuffer = { cursor: Pick<CursorUpdate, 'position' | 'data'>; offset: number };
+export type OutgoingBuffer = { cursor: Pick<CursorUpdate, 'position' | 'data'>; offset: number };
 
 export default class CursorBatching {
   outgoingBuffer: OutgoingBuffer[] = [];
