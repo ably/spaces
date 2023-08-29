@@ -17,6 +17,15 @@ const space = await spaces.get("demo");
 
 space.enter({ username: generateUsername() });
 
+// display the number of members present in the space.
+const updateMemberCount = async () => {
+  const members = await space.members.getAll();
+
+  document.getElementById('memberCount').innerText = members.length;
+};
+updateMemberCount();
+space.subscribe('update', updateMemberCount);
+
 // Publish a CursorUpdate with the location of a mouse, including optional data for the current member
 window.addEventListener("mousemove", ({ clientX, clientY }) => {
   space.cursors.set({
@@ -81,3 +90,22 @@ const createCursor = (
 
   return container;
 };
+
+// display some stats by crudely dividing the message count for the current
+// minute interval by the number of seconds since the start of the minute.
+setInterval(async () => {
+  const page = await client.stats();
+  const stat = page.items[0];
+
+  let inboundRate = 0;
+  if (stat.inbound.realtime.messages.count > 0) {
+    inboundRate = stat.inbound.realtime.messages.count / new Date().getSeconds();
+  }
+  document.getElementById('inboundRate').innerText = inboundRate.toFixed(2);
+
+  let outboundRate = 0;
+  if (stat.outbound.realtime.messages.count > 0) {
+    outboundRate = stat.outbound.realtime.messages.count / new Date().getSeconds();
+  }
+  document.getElementById('outboundRate').innerText = outboundRate.toFixed(2);
+}, 2000);
