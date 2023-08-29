@@ -1,7 +1,7 @@
-import { Types } from 'ably';
+import type { Types } from 'ably';
 
-import { EventKey, EventListener, EventMap } from './EventEmitter.js';
-import { ProfileData, LockRequest } from '../types.js';
+import type { EventKey, EventListener, EventMap } from './EventEmitter.js';
+import type { ProfileData, LockRequest } from '../types.js';
 
 export type PresenceMember = {
   data: {
@@ -28,12 +28,12 @@ export interface Provider<ProviderEventMap extends EventMap> {
   subscribe<K extends EventKey<ProviderEventMap>>(
     listenerOrEvents?: K | K[] | EventListener<ProviderEventMap[K]>,
     listener?: EventListener<ProviderEventMap[K]>,
-  );
+  ): void;
 
   unsubscribe<K extends EventKey<ProviderEventMap>>(
     listenerOrEvents?: K | K[] | EventListener<ProviderEventMap[K]>,
     listener?: EventListener<ProviderEventMap[K]>,
-  );
+  ): void;
 }
 
 export type RealtimeMessage = Omit<Types.Message, 'connectionId'> & {
