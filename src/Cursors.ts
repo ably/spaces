@@ -149,12 +149,12 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     }
   }
 
-  async getSelf(): Promise<CursorUpdate | undefined> {
+  async getSelf(): Promise<CursorUpdate | null> {
     const self = await this.space.members.getSelf();
-    if (!self) return;
+    if (!self) return null;
 
     const allCursors = await this.getAll();
-    return allCursors[self.connectionId] as CursorUpdate;
+    return allCursors[self.connectionId];
   }
 
   async getOthers(): Promise<Record<string, null | CursorUpdate>> {
@@ -167,7 +167,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     return allCursorsFiltered;
   }
 
-  async getAll() {
+  async getAll(): Promise<Record<string, null | CursorUpdate>> {
     const channel = this.getChannel();
     return await this.cursorHistory.getLastCursorUpdate(channel, this.options.paginationLimit);
   }

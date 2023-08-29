@@ -455,7 +455,7 @@ describe('Cursors', () => {
       vi.spyOn(space.cursors, 'getAll').mockImplementation(async () => ({}));
 
       const self = await space.cursors.getSelf();
-      expect(self).toBeUndefined();
+      expect(self).toBeNull();
     });
 
     it<CursorsTestContext>('returns the cursor update for self', async ({
@@ -472,7 +472,7 @@ describe('Cursors', () => {
 
     it<CursorsTestContext>('returns an empty object if self is not present in cursors', async ({ space }) => {
       vi.spyOn(space.cursors, 'getAll').mockResolvedValue({});
-      vi.spyOn(space.members, 'getSelf').mockResolvedValue(undefined);
+      vi.spyOn(space.members, 'getSelf').mockResolvedValue(null);
 
       const others = await space.cursors.getOthers();
       expect(others).toEqual({});

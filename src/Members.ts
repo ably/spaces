@@ -50,8 +50,8 @@ class Members extends EventEmitter<MemberEventsMap> {
     }
   }
 
-  async getSelf(): Promise<SpaceMember | undefined> {
-    return this.space.connectionId ? await this.getByConnectionId(this.space.connectionId) : undefined;
+  async getSelf(): Promise<SpaceMember | null> {
+    return this.space.connectionId ? await this.getByConnectionId(this.space.connectionId) : null;
   }
 
   async getAll(): Promise<SpaceMember[]> {
@@ -99,9 +99,9 @@ class Members extends EventEmitter<MemberEventsMap> {
     }
   }
 
-  async getByConnectionId(connectionId: string): Promise<SpaceMember | undefined> {
+  async getByConnectionId(connectionId: string): Promise<SpaceMember | null> {
     const members = await this.getAll();
-    return members.find((m) => m.connectionId === connectionId);
+    return members.find((m) => m.connectionId === connectionId) ?? null;
   }
 
   createMember(message: PresenceMember): SpaceMember {
