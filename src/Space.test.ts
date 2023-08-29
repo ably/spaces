@@ -77,7 +77,7 @@ describe('Space', () => {
       expect(member).toEqual(createSpaceMember());
 
       const noMember = await space.members.getByConnectionId('nonExistentConnectionId');
-      expect(noMember).toBe(undefined);
+      expect(noMember).toBeNull();
     });
 
     it<SpaceTestContext>('initialises locks', async ({ presenceMap, space }) => {
