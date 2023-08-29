@@ -254,6 +254,16 @@ describe('Space', () => {
       });
     });
 
+    it<SpaceTestContext>('accepts an async function', async ({ space, presenceMap }) => {
+      const callbackSpy = vi.fn();
+      space.subscribe('update', async (v) => callbackSpy(v));
+
+      await createPresenceEvent(space, presenceMap, 'enter');
+      expect(callbackSpy).toHaveBeenNthCalledWith(1, {
+        members: [createSpaceMember({ lastEvent: { name: 'enter', timestamp: 1 } })],
+      });
+    });
+
     describe('leavers', () => {
       beforeEach(() => {
         vi.useFakeTimers();
