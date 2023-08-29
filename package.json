@@ -41,6 +41,7 @@
   "keywords": [],
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.1",
+    "@rollup/plugin-terser": "^0.4.3",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "@vitest/coverage-c8": "^0.28.4",
