@@ -26,15 +26,15 @@ window.addEventListener("mousemove", ({ clientX, clientY }) => {
 });
 
 // Listen to events published on "mousemove" by all members
-space.cursors.subscribe("cursorsUpdate", (update: any) => {
-  const self = space.members.getSelf();
+space.cursors.subscribe("update", async (update: any) => {
+  const self = await space.members.getSelf();
 
   let cursorNode: HTMLElement | null = document.querySelector(
     `#cursor-${update.connectionId}`
   );
 
-  const member = space.members
-    .getAll()
+  const members = await space.members.getAll();
+  const member = members
     .find((member) => member.connectionId === update.connectionId);
 
   if (!member || self?.connectionId === update.connectionId) return;
