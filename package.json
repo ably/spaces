@@ -50,7 +50,6 @@
     "eslint-plugin-jsdoc": "^39.8.0",
     "eslint-plugin-security": "^1.7.1",
     "husky": "^8.0.0",
-    "mock-socket": "^9.1.5",
     "prettier": "^2.8.3",
     "rollup": "^3.28.0",
     "ts-node": "^10.9.1",
