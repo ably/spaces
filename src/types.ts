@@ -1,5 +1,5 @@
 import { Types } from 'ably';
-import { LockAttributes } from './Locks.js';
+import type { LockAttributes } from './Locks.js';
 
 export interface CursorsOptions {
   outboundBatchInterval: number;
