@@ -387,13 +387,16 @@ describe('Cursors', () => {
       const client1Message = {
         connectionId: 'connectionId1',
         clientId: 'clientId1',
-        data: [{ position: { x: 1, y: 1 } }, { position: { x: 2, y: 3 }, data: { color: 'blue' } }],
+        data: [
+          { cursor: { position: { x: 1, y: 1 } } },
+          { cursor: { position: { x: 2, y: 3 }, data: { color: 'blue' } } },
+        ],
       };
 
       const client2Message = {
         connectionId: 'connectionId2',
         clientId: 'clientId2',
-        data: [{ position: { x: 25, y: 44 } }],
+        data: [{ cursor: { position: { x: 25, y: 44 } } }],
       };
 
       vi.spyOn(channel.presence, 'get').mockImplementation(async () => [

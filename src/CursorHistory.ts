@@ -2,6 +2,7 @@ import { Types } from 'ably';
 
 import type { CursorUpdate } from './types.js';
 import type { CursorsOptions } from './types.js';
+import type { OutgoingBuffer } from './CursorBatching.js';
 
 type ConnectionId = string;
 type ConnectionsLastPosition = Record<ConnectionId, null | CursorUpdate>;
@@ -35,10 +36,17 @@ export default class CursorHistory {
         const lastMessage = page.items.find((item) => item.connectionId === connectionId);
         if (!lastMessage) return [connectionId, cursors];
 
-        const { data, clientId }: { data: CursorUpdate[] } & Pick<Types.Message, 'clientId'> = lastMessage;
+        const { data = [], clientId }: { data: OutgoingBuffer[] } & Pick<Types.Message, 'clientId'> = lastMessage;
 
-        const lastUpdate =
-          data?.length > 0 ? this.messageToUpdate(connectionId, clientId, data[data.length - 1]) : null;
+        const lastPositionSet = data[data.length - 1]?.cursor;
+        const lastUpdate = lastPositionSet
+          ? {
+              clientId,
+              connectionId,
+              position: lastPositionSet.position,
+              data: lastPositionSet.data,
+            }
+          : null;
 
         return [connectionId, lastUpdate];
       }),
