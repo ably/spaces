@@ -5,6 +5,10 @@ export const findActiveMember = (id: string, slide: string, members?: Member[]) 
   return members.find((member) => member.location?.element === id && member.location?.slide === slide);
 };
 
+export const findActiveMembers = (id: string, slide: string, members?: Member[]) => {
+  return (members ?? []).filter((member) => member.location?.element === id && member.location?.slide === slide);
+};
+
 export const getMemberFirstName = (member?: Member) => {
   if (!member) return '';
   return member.profileData.name.split(' ')[0];

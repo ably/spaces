@@ -40,8 +40,11 @@ export const Avatar = ({
       <div
         className={cn(
           'rounded-full flex items-center justify-center h-[32px] w-[32px] md:h-[40px] md:w-[40px] bg-gradient-to-tr',
-          profileData.color.gradientStart.tw,
-          profileData.color.gradientEnd.tw,
+          {
+            [profileData.color.gradientStart.tw]: isConnected,
+            [profileData.color.gradientEnd.tw]: isConnected,
+            'bg-[#D9D9DA]': !isConnected,
+          },
         )}
         data-id="avatar-inner-wrapper"
       >

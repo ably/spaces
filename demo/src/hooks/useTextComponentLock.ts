@@ -7,6 +7,7 @@ import { useMembers } from './useMembers.ts';
 import { useClearOnFailedLock, useClickOutside, useElementSelect } from './useElementSelect.ts';
 import { useLockStatus } from './useLock.ts';
 import { useSlideElementContent } from './useSlideElementContent.ts';
+import sanitize from 'sanitize-html';
 
 interface UseTextComponentLockArgs {
   id: string;
@@ -14,6 +15,7 @@ interface UseTextComponentLockArgs {
   defaultText: string;
   containerRef: MutableRefObject<HTMLElement | null>;
 }
+
 export const useTextComponentLock = ({ id, slide, defaultText, containerRef }: UseTextComponentLockArgs) => {
   const spaceName = getSpaceNameFromUrl();
   const { members, self } = useMembers();
@@ -32,7 +34,8 @@ export const useTextComponentLock = ({ id, slide, defaultText, containerRef }: U
 
   const { channel } = useChannel(channelName, (message) => {
     if (message.connectionId === self?.connectionId) return;
-    updateContent(message.data);
+    const sanitizedValue = sanitize(message.data, { allowedTags: [] });
+    updateContent(sanitizedValue);
   });
 
   const optimisticallyLocked = !!activeMember;
