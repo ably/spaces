@@ -42,13 +42,9 @@ export interface SpaceMember {
 export type LockStatus = 'pending' | 'locked' | 'unlocked';
 
 export type Lock = {
-  member: SpaceMember;
-  request: LockRequest;
-};
-
-export type LockRequest = {
   id: string;
   status: LockStatus;
+  member: SpaceMember;
   timestamp: number;
   attributes?: LockAttributes;
   reason?: Types.ErrorInfo;

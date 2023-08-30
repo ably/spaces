@@ -106,7 +106,8 @@ describe('Locks (mockClient)', () => {
     const lockEvent = (member: SpaceMember, status: LockStatus) =>
       expect.objectContaining({
         member: member,
-        request: expect.objectContaining({ id: lockID, status }),
+        id: lockID,
+        status,
       });
 
     it<SpaceTestContext>('sets a PENDING request to LOCKED', async ({ space }) => {
@@ -130,7 +131,7 @@ describe('Locks (mockClient)', () => {
       });
       await space.locks.processPresenceMessage(msg);
 
-      const lock = space.locks.getLockRequest(lockID, member.connectionId)!;
+      const lock = space.locks.getLock(lockID, member.connectionId)!;
       expect(lock.status).toBe('locked');
       expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'locked'));
     });
@@ -214,10 +215,10 @@ describe('Locks (mockClient)', () => {
         });
         await space.locks.processPresenceMessage(msg);
         const selfMember = (await space.members.getByConnectionId(client.connection.id!))!;
-        const selfLock = space.locks.getLockRequest(lockID, selfMember.connectionId)!;
+        const selfLock = space.locks.getLock(lockID, selfMember.connectionId)!;
         expect(selfLock.status).toBe(expectedSelfStatus);
         const otherMember = (await space.members.getByConnectionId(otherConnId))!;
-        const otherLock = space.locks.getLockRequest(lockID, otherMember.connectionId)!;
+        const otherLock = space.locks.getLock(lockID, otherMember.connectionId)!;
         expect(otherLock.status).toBe(expectedOtherStatus);
 
         if (expectedSelfStatus === 'unlocked') {
@@ -259,7 +260,7 @@ describe('Locks (mockClient)', () => {
       });
       await space.locks.processPresenceMessage(msg);
 
-      const lock = space.locks.getLockRequest(lockID, member.connectionId);
+      const lock = space.locks.getLock(lockID, member.connectionId);
       expect(lock).not.toBeDefined();
       expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'unlocked'));
     });
@@ -393,7 +394,7 @@ describe('Locks (mockClient)', () => {
       const locks = space.locks.getAll();
       expect(locks.length).toEqual(3);
       for (const lock of locks) {
-        switch (lock.request.id) {
+        switch (lock.id) {
           case 'lock1':
           case 'lock2':
             expect(lock.member).toEqual(member1);
@@ -402,7 +403,7 @@ describe('Locks (mockClient)', () => {
             expect(lock.member).toEqual(member2);
             break;
           default:
-            throw new Error(`unexpected lock id: ${lock.request.id}`);
+            throw new Error(`unexpected lock id: ${lock.id}`);
         }
       }
     });
