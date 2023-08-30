@@ -19,14 +19,14 @@ export const Image = ({ src, children, className, id, slide, locatable = true }:
   const { members, self } = useMembers();
   const { handleSelect } = useElementSelect(id, false);
   const activeMembers = findActiveMembers(id, slide, members);
-  const locatedByMe = activeMembers.some((member) => member.connectionId === self?.connectionId);
+  const occupiedByMe = activeMembers.some((member) => member.connectionId === self?.connectionId);
   const [firstMember] = activeMembers;
   const { outlineClasses, stickyLabelClasses } = getOutlineClasses(firstMember);
   const memberName = getMemberFirstName(firstMember);
-  const name = locatedByMe ? 'You' : memberName;
+  const name = occupiedByMe ? 'You' : memberName;
   const label = activeMembers.length > 1 ? `${name} +${activeMembers.length - 1}` : name;
 
-  useClickOutside(containerRef, self, locatedByMe && !preview);
+  useClickOutside(containerRef, self, occupiedByMe && !preview);
 
   return (
     <div
