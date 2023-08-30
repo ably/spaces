@@ -1,7 +1,7 @@
 import { Types } from 'ably';
 
 import Space from './Space.js';
-import type { Lock, LockRequest, SpaceMember } from './types.js';
+import type { Lock, SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import {
   ERR_LOCK_IS_LOCKED,
@@ -52,18 +52,18 @@ export default class Locks extends EventEmitter<LockEventMap> {
     const locks = this.locks.get(id);
     if (!locks) return;
     for (const lock of locks.values()) {
-      if (lock.request.status === 'locked') {
+      if (lock.status === 'locked') {
         return lock;
       }
     }
   }
 
   getAll(): Lock[] {
-    const allLocks = [];
+    const allLocks: Lock[] = [];
 
     for (const locks of this.locks.values()) {
       for (const lock of locks.values()) {
-        if (lock.request.status === 'locked') {
+        if (lock.status === 'locked') {
           allLocks.push(lock);
         }
       }
@@ -72,7 +72,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
     return allLocks;
   }
 
-  async acquire(id: string, opts?: LockOptions): Promise<LockRequest> {
+  async acquire(id: string, opts?: LockOptions): Promise<Lock> {
     const self = await this.space.members.getSelf();
     if (!self) {
       throw ERR_NOT_ENTERED_SPACE;
@@ -80,26 +80,29 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
     // check there isn't an existing PENDING or LOCKED request for the current
     // member, since we do not support nested locks
-    let req = this.getLockRequest(id, self.connectionId);
-    if (req && req.status !== 'unlocked') {
+    let lock = this.getLock(id, self.connectionId);
+    if (lock && lock.status !== 'unlocked') {
       throw ERR_LOCK_REQUEST_EXISTS;
     }
 
     // initialise a new PENDING request
-    req = {
+    lock = {
       id,
       status: 'pending',
       timestamp: Date.now(),
+      member: self,
     };
+
     if (opts) {
-      req.attributes = opts.attributes;
+      lock.attributes = opts.attributes;
     }
-    this.setLock({ member: self, request: req });
+
+    this.setLock(lock);
 
     // reflect the change in the member's presence data
     await this.updatePresence(self);
 
-    return req;
+    return lock;
   }
 
   async release(id: string): Promise<void> {
@@ -156,18 +159,20 @@ export default class Locks extends EventEmitter<LockEventMap> {
       // existing locks for that member
       for (const locks of this.locks.values()) {
         const lock = locks.get(member.connectionId);
+
         if (lock) {
-          lock.request.status = 'unlocked';
-          lock.request.reason = ERR_LOCK_RELEASED;
+          lock.status = 'unlocked';
+          lock.reason = ERR_LOCK_RELEASED;
           locks.delete(member.connectionId);
           this.emit('update', lock);
         }
       }
+
       return;
     }
 
-    message.extras.locks.forEach((lock: LockRequest) => {
-      const existing = this.getLockRequest(lock.id, member.connectionId);
+    message.extras.locks.forEach((lock: Lock) => {
+      const existing = this.getLock(lock.id, member.connectionId);
 
       // special-case the handling of PENDING requests, which will eventually
       // be done by the Ably system, at which point this can be removed
@@ -176,21 +181,23 @@ export default class Locks extends EventEmitter<LockEventMap> {
       }
 
       if (!existing || existing.status !== lock.status) {
-        this.emit('update', { member, request: lock });
+        this.emit('update', { ...lock, member });
       }
 
-      this.setLock({ member, request: lock });
+      this.setLock({ ...lock, member });
     });
 
     // handle locks which have been removed from presence extras
     for (const locks of this.locks.values()) {
       const lock = locks.get(member.connectionId);
+
       if (!lock) {
         continue;
       }
-      if (!message.extras.locks.some((req: LockRequest) => req.id === lock.request.id)) {
-        lock.request.status = 'unlocked';
-        lock.request.reason = ERR_LOCK_RELEASED;
+
+      if (!message.extras.locks.some((l: Lock) => l.id === lock.id)) {
+        lock.status = 'unlocked';
+        lock.reason = ERR_LOCK_RELEASED;
         locks.delete(member.connectionId);
         this.emit('update', lock);
       }
@@ -203,12 +210,12 @@ export default class Locks extends EventEmitter<LockEventMap> {
   //
   // TODO: remove this once the Ably system processes PENDING requests
   //       internally using this same logic.
-  processPending(member: SpaceMember, pendingReq: LockRequest) {
+  processPending(member: SpaceMember, pendingLock: Lock) {
     // if the requested lock ID is not currently locked, then mark the PENDING
-    // request as LOCKED
-    const lock = this.get(pendingReq.id);
+    // lock request as LOCKED
+    const lock = this.get(pendingLock.id);
     if (!lock) {
-      pendingReq.status = 'locked';
+      pendingLock.status = 'locked';
       return;
     }
 
@@ -231,20 +238,20 @@ export default class Locks extends EventEmitter<LockEventMap> {
     // a connectionId which sorts lexicographically before the connectionId of
     // the LOCKED request.
     if (
-      pendingReq.timestamp < lock.request.timestamp ||
-      (pendingReq.timestamp == lock.request.timestamp && member.connectionId < lock.member.connectionId)
+      pendingLock.timestamp < lock.timestamp ||
+      (pendingLock.timestamp == lock.timestamp && member.connectionId < lock.member.connectionId)
     ) {
-      pendingReq.status = 'locked';
-      lock.request.status = 'unlocked';
-      lock.request.reason = ERR_LOCK_INVALIDATED;
+      pendingLock.status = 'locked';
+      lock.status = 'unlocked';
+      lock.reason = ERR_LOCK_INVALIDATED;
       this.emit('update', lock);
       return;
     }
 
     // the lock is LOCKED and the PENDING request did not invalidate it, so
     // mark the PENDING request as UNLOCKED with a reason.
-    pendingReq.status = 'unlocked';
-    pendingReq.reason = ERR_LOCK_IS_LOCKED;
+    pendingLock.status = 'unlocked';
+    pendingLock.reason = ERR_LOCK_IS_LOCKED;
   }
 
   updatePresence(member: SpaceMember) {
@@ -269,10 +276,10 @@ export default class Locks extends EventEmitter<LockEventMap> {
   }
 
   setLock(lock: Lock) {
-    let locks = this.locks.get(lock.request.id);
+    let locks = this.locks.get(lock.id);
     if (!locks) {
       locks = new Map();
-      this.locks.set(lock.request.id, locks);
+      this.locks.set(lock.id, locks);
     }
     locks.set(lock.member.connectionId, lock);
   }
@@ -283,25 +290,22 @@ export default class Locks extends EventEmitter<LockEventMap> {
     return locks.delete(connectionId);
   }
 
-  getLockRequest(id: string, connectionId: string): LockRequest | undefined {
-    const lock = this.getLock(id, connectionId);
-    if (!lock) return;
-    return lock.request;
-  }
+  getLocksForConnectionId(connectionId: string): Lock[] {
+    const requests: Lock[] = [];
 
-  getLockRequests(connectionId: string): LockRequest[] {
-    const requests = [];
     for (const locks of this.locks.values()) {
       const lock = locks.get(connectionId);
+
       if (lock) {
-        requests.push(lock.request);
+        requests.push(lock);
       }
     }
+
     return requests;
   }
 
   getLockExtras(connectionId: string): PresenceMember['extras'] {
-    const locks = this.getLockRequests(connectionId);
+    const locks = this.getLocksForConnectionId(connectionId);
     if (locks.length === 0) return;
     return { locks };
   }
