@@ -58,7 +58,9 @@ export default class Locks extends EventEmitter<LockEventMap> {
     }
   }
 
-  getAll(): Lock[] {
+  // This will be async in the future, when pending requests are no longer processed
+  // in the library.
+  async getAll(): Promise<Lock[]> {
     const allLocks: Lock[] = [];
 
     for (const locks of this.locks.values()) {
@@ -70,6 +72,23 @@ export default class Locks extends EventEmitter<LockEventMap> {
     }
 
     return allLocks;
+  }
+
+  async getSelf(): Promise<Lock[]> {
+    const self = await this.space.members.getSelf();
+
+    if (!self) return [];
+
+    return this.getLocksForConnectionId(self.connectionId).filter((lock) => lock.status === 'locked');
+  }
+
+  async getOthers(): Promise<Lock[]> {
+    const self = await this.space.members.getSelf();
+    const allLocks = await this.getAll();
+
+    if (!self) return allLocks;
+
+    return allLocks.filter((lock) => lock.member.connectionId !== self.connectionId);
   }
 
   async acquire(id: string, opts?: LockOptions): Promise<Lock> {
