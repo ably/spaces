@@ -343,8 +343,8 @@ describe('Locks (mockClient)', () => {
     });
   });
 
-  describe('getAll', () => {
-    it<SpaceTestContext>('returns all locks in the LOCKED state', async ({ space }) => {
+  describe('get*', () => {
+    beforeEach<SpaceTestContext>(async ({ space }) => {
       await space.locks.processPresenceMessage(
         Realtime.PresenceMessage.fromValues({
           action: 'update',
@@ -381,31 +381,79 @@ describe('Locks (mockClient)', () => {
           },
         }),
       );
+    });
 
-      const member1 = await space.members.getByConnectionId('1')!;
-      const member2 = await space.members.getByConnectionId('2')!;
+    it<SpaceTestContext>('correctly sets up locks', ({ space }) => {
       const lock1 = space.locks.get('lock1');
       expect(lock1).toBeDefined();
+
       const lock2 = space.locks.get('lock2');
       expect(lock2).toBeDefined();
+
       const lock3 = space.locks.get('lock3');
       expect(lock3).toBeDefined();
+    });
 
-      const locks = space.locks.getAll();
-      expect(locks.length).toEqual(3);
-      for (const lock of locks) {
-        switch (lock.id) {
-          case 'lock1':
-          case 'lock2':
-            expect(lock.member).toEqual(member1);
-            break;
-          case 'lock3':
-            expect(lock.member).toEqual(member2);
-            break;
-          default:
-            throw new Error(`unexpected lock id: ${lock.id}`);
+    describe('getSelf', () => {
+      it<SpaceTestContext>('returns all locks in the LOCKED state that belong to self', async ({ space }) => {
+        const member1 = await space.members.getByConnectionId('1')!;
+
+        const locks = await space.locks.getSelf();
+        expect(locks.length).toEqual(2);
+
+        for (const lock of locks) {
+          switch (lock.id) {
+            case 'lock1':
+            case 'lock2':
+              expect(lock.member).toEqual(member1);
+              break;
+            default:
+              throw new Error(`unexpected lock id: ${lock.id}`);
+          }
         }
-      }
+      });
+    });
+
+    describe('getOthers', () => {
+      it<SpaceTestContext>('returns all locks in the LOCKED state for every member but self', async ({ space }) => {
+        const member2 = await space.members.getByConnectionId('2')!;
+
+        const locks = await space.locks.getOthers();
+        expect(locks.length).toEqual(1);
+
+        for (const lock of locks) {
+          switch (lock.id) {
+            case 'lock3':
+              expect(lock.member).toEqual(member2);
+              break;
+            default:
+              throw new Error(`unexpected lock id: ${lock.id}`);
+          }
+        }
+      });
+    });
+
+    describe('getAll', () => {
+      it<SpaceTestContext>('returns all locks in the LOCKED state', async ({ space }) => {
+        const member1 = await space.members.getByConnectionId('1')!;
+        const member2 = await space.members.getByConnectionId('2')!;
+
+        const locks = await space.locks.getAll();
+        expect(locks.length).toEqual(3);
+        for (const lock of locks) {
+          switch (lock.id) {
+            case 'lock1':
+            case 'lock2':
+              expect(lock.member).toEqual(member1);
+              break;
+            case 'lock3':
+              expect(lock.member).toEqual(member2);
+              break;
+            default:
+              throw new Error(`unexpected lock id: ${lock.id}`);
+          }
+        }
+      });
     });
   });
 });
