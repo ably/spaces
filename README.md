@@ -1,5 +1,9 @@
 # Ably Spaces SDK
 
+The **Spaces SDK** contains a purpose built set of APIs that help you build collaborative environments for your apps to quickly enable remote team collaboration. Try out a [live demo](https://space.ably.dev) of a slideshow application for an example of realtime collaboration powered by the Spaces SDK.
+
+![Example collaboration GIF](/docs/images/collab.gif)
+
 <p align="left">
   <a href="">
     <img src="https://badgen.net/badge/development-status/beta/yellow?icon=github" alt="Development status"   />
@@ -16,9 +20,7 @@ _[Ably](https://ably.com) is the scalable and five nines reliable middleware, us
 
 ---
 
-The **Spaces SDK** contains a purpose built set of APIs that help you build collaborative environments for your apps to quickly enable remote team collaboration. Try out a [live demo](https://space.ably.dev) of a slideshow application for an example of realtime collaboration powered by the Spaces SDK.
 
-![Example collaboration GIF](/docs/images/collab.gif)
 
 
 ## Realtime collaboration
