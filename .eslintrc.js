@@ -26,7 +26,7 @@ module.exports = {
         'no-undef': 'off',
         'no-dupe-class-members': 'off',
         // see:
-        // https://github.com/ably-labs/spaces/issues/76
+        // https://github.com/ably/spaces/issues/76
         // https://github.com/microsoft/TypeScript/issues/16577#issuecomment-703190339
         'import/extensions': [
           'error',

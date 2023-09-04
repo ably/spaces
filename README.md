@@ -5,7 +5,7 @@
     <img src="https://badgen.net/badge/development-status/alpha/yellow?icon=github" alt="Development status"   />
   </a>
   <a href="">
-    <img src="https://github.com/ably-labs/spaces/actions/workflows/dev-ci.yml/badge.svg?branch=main" alt="CI status"   />
+    <img src="https://github.com/ably/spaces/actions/workflows/dev-ci.yml/badge.svg?branch=main" alt="CI status"   />
   </a>
     <a href="">
     <img src="https://badgen.net/github/license/3scale/saas-operator" alt="License" />
@@ -65,13 +65,13 @@ To start using this SDK, you will need the following:
 Install the Ably JavaScript SDK and the Spaces SDK:
 
 ```sh
-npm install ably @ably-labs/spaces
+npm install ably @ably/spaces
 ```
 
 To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/getting-started/setup) and pass it into the Spaces constructor:
 
 ```ts
-import Spaces from '@ably-labs/spaces';
+import Spaces from '@ably/spaces';
 import { Realtime } from 'ably';
 
 const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });

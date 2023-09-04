@@ -25,7 +25,7 @@ Spaces is built on top of the [Ably JavaScript SDK](https://github.com/ably/ably
 You'll need to install both the ably client and the spaces client:
 
 ```sh
-npm install ably @ably-labs/spaces
+npm install ably @ably/spaces
 ```
 
 ### CDN
@@ -34,7 +34,7 @@ You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
 
 ```html
 <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-<script src="https://unpkg.com/@ably-labs/spaces@0.0.10/dist/iife/index.bundle.js"></script>
+<script src="https://unpkg.com/@ably/spaces@0.0.10/dist/iife/index.bundle.js"></script>
 ```
 
 ## Authentication and instantiation
@@ -45,7 +45,7 @@ The Ably client instantiation accepts client options. You will need at minimum a
 
 ```ts
 import { Realtime } from 'ably/promise';
-import Spaces from '@ably-labs/spaces';
+import Spaces from '@ably/spaces';
 
 const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);

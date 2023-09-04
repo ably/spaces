@@ -1,5 +1,5 @@
 {
-  "name": "@ably-labs/spaces",
+  "name": "@ably/spaces",
   "version": "0.0.13",
   "description": "",
   "main": "dist/cjs/index.js",
@@ -27,14 +27,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ably-labs/spaces.git"
+    "url": "git+https://github.com/ably/spaces.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": ""
   },
-  "homepage": "https://github.com/ably-labs/spaces",
+  "homepage": "https://github.com/ably/spaces",
   "publishConfig": {
     "access": "public"
   },

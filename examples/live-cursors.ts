@@ -1,4 +1,4 @@
-import Spaces from '@ably-labs/spaces';
+import Spaces from '@ably/spaces';
 import { Realtime } from 'ably';
 
 import renderCursor from './my-application';
