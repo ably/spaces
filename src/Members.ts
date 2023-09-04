@@ -14,6 +14,7 @@ type MemberEventsMap = {
   leave: SpaceMember;
   enter: SpaceMember;
   update: SpaceMember;
+  updateProfile: SpaceMember;
   remove: SpaceMember;
 };
 
@@ -34,18 +35,21 @@ class Members extends EventEmitter<MemberEventsMap> {
     if (action === 'leave') {
       this.leavers.addLeaver(member, () => this.onMemberOffline(member));
       this.emit('leave', member);
+      this.emit('update', member);
     } else if (isLeaver) {
       this.leavers.removeLeaver(connectionId);
     }
 
     if (action === 'enter') {
       this.emit('enter', member);
+      this.emit('update', member);
     }
 
     // Emit profileData updates only if they are different then the last held update.
     // A locationUpdate is handled in Locations.
     if (message.data.profileUpdate.id && this.lastMemberUpdate[connectionId] !== message.data.profileUpdate.id) {
       this.lastMemberUpdate[message.connectionId] = message.data.profileUpdate.id;
+      this.emit('updateProfile', member);
       this.emit('update', member);
     }
   }
@@ -122,6 +126,7 @@ class Members extends EventEmitter<MemberEventsMap> {
     this.leavers.removeLeaver(member.connectionId);
 
     this.emit('remove', member);
+    this.emit('update', member);
 
     if (member.location) {
       this.space.locations.emit('update', {
