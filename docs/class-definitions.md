@@ -6,7 +6,7 @@ Create a new instance of the Space SDK by passing an instance of the realtime, p
 
 ```ts
 import { Realtime } from 'ably/promise';
-import Spaces from '@ably-labs/spaces';
+import Spaces from '@ably/spaces';
 
 const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);

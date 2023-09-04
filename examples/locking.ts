@@ -1,4 +1,4 @@
-import Spaces, { LockStatus } from '@ably-labs/spaces';
+import Spaces, { LockStatus } from '@ably/spaces';
 import { Realtime } from 'ably';
 
 import { enableLocationEditing, lockId } from './my-application';
