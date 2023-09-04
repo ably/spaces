@@ -2,7 +2,7 @@
 
 <p align="left">
   <a href="">
-    <img src="https://badgen.net/badge/development-status/alpha/yellow?icon=github" alt="Development status"   />
+    <img src="https://badgen.net/badge/development-status/beta/yellow?icon=github" alt="Development status"   />
   </a>
   <a href="">
     <img src="https://github.com/ably/spaces/actions/workflows/dev-ci.yml/badge.svg?branch=main" alt="CI status"   />
