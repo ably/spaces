@@ -165,10 +165,18 @@ See [SpaceMember](/docs/class-definitions.md#spacemember) for details on propert
 
 ### Member events
 
-Subscribe to either all the member events or specifically to `enter`, `leave`, `remove` or `update` events related to members in a space.
+Subscribe to either all the member events or specifically to `enter`, `leave`, `remove` or `updateProfile` events related to members in a space.
+
+To listen to all events pass either no event name or `update`:
 
 ```ts
 space.members.subscribe((memberUpdate) => {
+  console.log(memberUpdate);
+});
+```
+
+```ts
+space.members.subscribe('update', (memberUpdate) => {
   console.log(memberUpdate);
 });
 ```
@@ -203,15 +211,17 @@ space.members.subscribe('remove', (memberRemoved) => {
 });
 ```
 
-#### update
+#### updateProfile
 
 Emitted when a member updates their `profileData` via `space.updateProfileData()`:
 
 ```ts
-space.members.subscribe('update', (memberProfileUpdated) => {
+space.members.subscribe('updateProfile', (memberProfileUpdated) => {
   console.log(memberProfileUpdated);
 });
 ```
+
+
 
 To stop listening to member events, users can call the `space.members.unsubscribe()` method. See [Event emitters](#event-emitters) for options and usage.
 
