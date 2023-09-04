@@ -207,14 +207,24 @@ Available events:
 
   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member removed from the space.
 
-- ##### **update**
+- ##### **updateProfile**
 
   Listen to profile update events of members.
 
   ```ts
-  space.members.subscribe('update', (member: SpaceMember) => {})
+  space.members.subscribe('updateProfile', (member: SpaceMember) => {})
   ```
   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
+
+- ##### **update**
+
+  Listen to `enter`, `leave`, `updateProfile` and `remove` events.
+
+  ```ts
+  space.members.subscribe('update', (member: SpaceMember) => {})
+  ```
+
+  The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member affected by the change.
 
 
 #### unsubscribe()

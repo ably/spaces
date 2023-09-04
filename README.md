@@ -159,9 +159,14 @@ space.members.subscribe('remove', (memberRemoved) => {
   console.log(memberRemoved);
 });
 
-// Subscribe to member profile update events only
-space.members.subscribe('update', (memberProfileUpdated) => {
+// Subscribe to profile updates on members only
+space.members.subscribe('updateProfile', (memberProfileUpdated) => {
   console.log(memberProfileUpdated);
+});
+
+// Subscribe to all updates to members
+space.members.subscribe('update', (memberUpdate) => {
+  console.log(memberUpdate);
 });
 ```
 
