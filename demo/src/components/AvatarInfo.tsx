@@ -4,7 +4,7 @@ import cn from 'classnames';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-import { type SpaceMember } from '@ably-labs/spaces';
+import { type SpaceMember } from '@ably/spaces';
 import { type ProfileData } from '../utils/types';
 
 type Props = Omit<SpaceMember, 'profileData'> & {

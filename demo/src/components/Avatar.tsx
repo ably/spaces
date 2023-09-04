@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { type SpaceMember } from '@ably-labs/spaces';
+import { type SpaceMember } from '@ably/spaces';
 
 import { AvatarInfo } from './AvatarInfo';
 import { LightningSvg } from './svg';

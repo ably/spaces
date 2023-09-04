@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Spaces, { type Space } from '@ably-labs/spaces';
+import Spaces, { type Space } from '@ably/spaces';
 import { Realtime } from 'ably';
 import { nanoid } from 'nanoid';
 

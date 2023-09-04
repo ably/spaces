@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { type SpaceMember } from '@ably-labs/spaces';
+import { type SpaceMember } from '@ably/spaces';
 import { SpacesContext } from '../components';
 
 import { type Member } from '../utils/types';
@@ -12,7 +12,7 @@ const areMembers = (arr: unknown): arr is Member[] => {
   return (arr as Member[]).every((m) => isMember(m));
 };
 
-const membersToOthers = (members: Member[] = [], self: SpaceMember | undefined): Member[] =>
+const membersToOthers = (members: Member[] = [], self: SpaceMember | null): Member[] =>
   members.filter((m) => m.connectionId !== self?.connectionId);
 
 export const useMembers: () => Partial<{ self?: Member; others: Member[]; members: Member[] }> = () => {
