@@ -168,13 +168,15 @@ Handles members within a space.
 
 Listen to member events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
 
-  ```ts
-  space.members.subscribe((member: SpaceMember) => {});
-  ```
+The argument supplied to the callback is the [SpaceMember](#spacemember) object representing the member that triggered the event.
 
-  The argument supplied to the callback is the [SpaceMember](#spacemember) object representing the member that triggered the event.
+Example:
 
-  Available events:
+```ts
+space.members.subscribe((member: SpaceMember) => {});
+```
+
+Available events:
 
 - ##### **enter**
 
@@ -449,7 +451,7 @@ Set the position of a cursor. If a member has not yet entered the space, this me
 A event payload returned contains an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
 
 ```ts
-type set = (update: { position: CursorPosition, data?: CursorData })
+type set = (update: { position: CursorPosition, data?: CursorData }) => void;
 ```
 
 Example usage:
@@ -543,4 +545,156 @@ Represent data that can be associated with a cursor update.
 
 ```ts
 type CursorData = Record<string, unknown>;
+```
+
+## Component Locking
+
+Provides a mechanism to "lock" a component, reducing the chances of conflict in an application whilst being edited by multiple members. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+
+### Methods
+
+#### acquire()
+
+Send a request to acquire a lock. Returns a Promise which resolves once the request has been sent. A resolved Promise holds a `pending` [Lock](#lock). An error will be thrown if a lock request with a status of `pending` or `locked` already exists, returning a rejected promise.
+
+When a lock acquisition by a member is confirmed with the `locked` status, an `update` event will be emitted. Hence to handle lock acquisition, `acquire()` needs to always be used together with `subscribe()`.
+
+```ts
+type acquire = (lockId: string) => Promise<Lock>;
+```
+
+Example:
+
+```ts
+const id = "/slide/1/element/3";
+const lockRequest = await space.locks.acquire(id);
+```
+
+#### release()
+
+Releases a previously requested lock.
+
+```ts
+type release = (lockId: string) => Promise<void>;
+```
+
+Example:
+
+```ts
+const id = "/slide/1/element/3";
+await space.locks.release(id);
+```
+
+#### subscribe()
+
+Listen to lock events. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+
+Available events:
+
+- ##### **update**
+
+  Listen to changes to locks.
+
+  ```ts
+  space.locks.subscribe('update', (lock: Lock) => {})
+  ```
+
+  The argument supplied to the callback is a [Lock](#lock), representing the lock request and it's status.
+
+#### unsubscribe()
+
+Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+
+```ts
+space.locks.unsubscribe('update');
+```
+
+#### get()
+
+Get a lock by its id.
+
+```ts
+type get = (lockId: string) => Lock | undefined
+```
+
+Example:
+
+```ts
+const id = "/slide/1/element/3";
+const lock = space.locks.get(id);
+```
+
+#### getSelf()
+
+Get all locks belonging to self that have the `locked` status.
+
+```ts
+type getSelf = () => Promise<Lock[]>
+```
+
+Example:
+
+```ts
+const locks = await space.locks.getSelf();
+```
+
+#### getOthers()
+
+Get all locks belonging to all members except self that have the `locked` status.
+
+```ts
+type getOthers = () => Promise<Lock[]>
+```
+
+Example:
+
+```ts
+const locks = await space.locks.getOthers();
+```
+
+#### getAll()
+
+Get all locks that have the `locked` status.
+
+```ts
+type getAll = () => Promise<Lock[]>
+```
+
+Example:
+
+```ts
+const locks = await space.locks.getAll();
+```
+
+### Related types
+
+#### Lock
+
+Represents a Lock.
+
+```ts
+type Lock = {
+  id: string;
+  status: LockStatus;
+  member: SpaceMember;
+  timestamp: number;
+  attributes?: LockAttributes;
+  reason?: Types.ErrorInfo;
+};
+```
+
+#### LockStatus
+
+Represents a status of a lock.
+
+```ts
+type LockStatus = 'pending' | 'locked' | 'unlocked';
+```
+
+#### LockAttributes
+
+Additional attributes that can be set when acquiring a lock.
+
+```ts
+type LockAttributes = Map<string, string>;
 ```
