@@ -172,7 +172,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     const self = await this.members.getSelf();
 
     if (!self) {
-      throw ERR_NOT_ENTERED_SPACE;
+      throw ERR_NOT_ENTERED_SPACE();
     }
 
     const update = {

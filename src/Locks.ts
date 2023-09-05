@@ -94,14 +94,14 @@ export default class Locks extends EventEmitter<LockEventMap> {
   async acquire(id: string, opts?: LockOptions): Promise<Lock> {
     const self = await this.space.members.getSelf();
     if (!self) {
-      throw ERR_NOT_ENTERED_SPACE;
+      throw ERR_NOT_ENTERED_SPACE();
     }
 
     // check there isn't an existing PENDING or LOCKED request for the current
     // member, since we do not support nested locks
     let lock = this.getLock(id, self.connectionId);
     if (lock && lock.status !== 'unlocked') {
-      throw ERR_LOCK_REQUEST_EXISTS;
+      throw ERR_LOCK_REQUEST_EXISTS();
     }
 
     // initialise a new PENDING request
@@ -127,7 +127,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   async release(id: string): Promise<void> {
     const self = await this.space.members.getSelf();
     if (!self) {
-      throw ERR_NOT_ENTERED_SPACE;
+      throw ERR_NOT_ENTERED_SPACE();
     }
 
     this.deleteLock(id, self.connectionId);
@@ -181,7 +181,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
         if (lock) {
           lock.status = 'unlocked';
-          lock.reason = ERR_LOCK_RELEASED;
+          lock.reason = ERR_LOCK_RELEASED();
           locks.delete(member.connectionId);
           this.emit('update', lock);
         }
@@ -216,7 +216,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
       if (!message.extras.locks.some((l: Lock) => l.id === lock.id)) {
         lock.status = 'unlocked';
-        lock.reason = ERR_LOCK_RELEASED;
+        lock.reason = ERR_LOCK_RELEASED();
         locks.delete(member.connectionId);
         this.emit('update', lock);
       }
@@ -262,7 +262,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
     ) {
       pendingLock.status = 'locked';
       lock.status = 'unlocked';
-      lock.reason = ERR_LOCK_INVALIDATED;
+      lock.reason = ERR_LOCK_INVALIDATED();
       this.emit('update', lock);
       return;
     }
@@ -270,7 +270,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
     // the lock is LOCKED and the PENDING request did not invalidate it, so
     // mark the PENDING request as UNLOCKED with a reason.
     pendingLock.status = 'unlocked';
-    pendingLock.reason = ERR_LOCK_IS_LOCKED;
+    pendingLock.reason = ERR_LOCK_IS_LOCKED();
   }
 
   updatePresence(member: SpaceMember) {

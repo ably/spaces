@@ -50,7 +50,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     const self = await this.space.members.getSelf();
 
     if (!self) {
-      throw ERR_NOT_ENTERED_SPACE;
+      throw ERR_NOT_ENTERED_SPACE();
     }
 
     const channel = this.getChannel();
