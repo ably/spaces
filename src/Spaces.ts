@@ -33,7 +33,7 @@ class Spaces {
 
   async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {
-      throw ERR_SPACE_NAME_MISSING;
+      throw ERR_SPACE_NAME_MISSING();
     }
 
     if (this.spaces[name]) return this.spaces[name];
