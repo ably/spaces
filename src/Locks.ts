@@ -130,7 +130,12 @@ export default class Locks extends EventEmitter<LockEventMap> {
       throw ERR_NOT_ENTERED_SPACE();
     }
 
+    const lock = this.locks.get(id)?.get(self.connectionId);
     this.deleteLock(id, self.connectionId);
+    if (lock) {
+      lock.status = 'unlocked';
+      this.emit('update', lock);
+    }
 
     await this.updatePresence(self);
   }
