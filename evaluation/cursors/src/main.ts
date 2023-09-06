@@ -16,7 +16,7 @@ const spaces = new Spaces(client);
 // const space = await spaces.get("demo");
 const space = await spaces.get('demo', { cursors: { outboundBatchInterval: 10 } });
 
-space.enter({ username: generateUsername() });
+await space.enter({ username: generateUsername() });
 
 // display the number of members present in the space.
 const updateMemberCount = async () => {
