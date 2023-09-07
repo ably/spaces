@@ -36,11 +36,11 @@ class Spaces {
       throw ERR_SPACE_NAME_MISSING();
     }
 
-    if (this.spaces[name]) return this.spaces[name];
-
     if (this.connection.state !== 'connected') {
       await this.connection.once('connected');
     }
+
+    if (this.spaces[name]) return this.spaces[name];
 
     const space = new Space(name, this.client, options);
     this.spaces[name] = space;
