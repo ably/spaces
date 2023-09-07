@@ -15,7 +15,7 @@ interface SpaceTestContext {
 
 vi.mock('ably/promises');
 
-describe('Locks (mockClient)', () => {
+describe('Locks', () => {
   beforeEach<SpaceTestContext>((context) => {
     const client = new Realtime({});
     const presence = client.channels.get('').presence;
@@ -147,7 +147,7 @@ describe('Locks (mockClient)', () => {
         desc: 'assigns the lock to the other member',
         otherConnId: '0',
         otherTimestamp: now - 100,
-        expectedSelfStatus: 'unlocked',
+        expectedSelfStatus: undefined,
         expectedOtherStatus: 'locked',
       },
       {
@@ -155,7 +155,7 @@ describe('Locks (mockClient)', () => {
         desc: 'assigns the lock to the other member',
         otherConnId: '0',
         otherTimestamp: now,
-        expectedSelfStatus: 'unlocked',
+        expectedSelfStatus: undefined,
         expectedOtherStatus: 'locked',
       },
       {
@@ -164,7 +164,7 @@ describe('Locks (mockClient)', () => {
         otherConnId: '2',
         otherTimestamp: now,
         expectedSelfStatus: 'locked',
-        expectedOtherStatus: 'unlocked',
+        expectedOtherStatus: undefined,
       },
       {
         name: 'when the other member has the lock with a later timestamp',
@@ -172,7 +172,7 @@ describe('Locks (mockClient)', () => {
         otherConnId: '0',
         otherTimestamp: now + 100,
         expectedSelfStatus: 'locked',
-        expectedOtherStatus: 'unlocked',
+        expectedOtherStatus: undefined,
       },
     ])('$name', ({ desc, otherConnId, otherTimestamp, expectedSelfStatus, expectedOtherStatus }) => {
       it<SpaceTestContext>(desc, async ({ client, space }) => {
@@ -216,12 +216,12 @@ describe('Locks (mockClient)', () => {
         await space.locks.processPresenceMessage(msg);
         const selfMember = (await space.members.getByConnectionId(client.connection.id!))!;
         const selfLock = space.locks.getLock(lockID, selfMember.connectionId)!;
-        expect(selfLock.status).toBe(expectedSelfStatus);
+        expect(selfLock?.status).toBe(expectedSelfStatus);
         const otherMember = (await space.members.getByConnectionId(otherConnId))!;
         const otherLock = space.locks.getLock(lockID, otherMember.connectionId)!;
-        expect(otherLock.status).toBe(expectedOtherStatus);
+        expect(otherLock?.status).toBe(expectedOtherStatus);
 
-        if (expectedSelfStatus === 'unlocked') {
+        if (!expectedSelfStatus) {
           expect(emitSpy).toHaveBeenCalledTimes(1);
           expect(emitSpy).toHaveBeenNthCalledWith(1, 'update', lockEvent(selfMember, 'unlocked'));
         } else {
@@ -318,6 +318,7 @@ describe('Locks (mockClient)', () => {
       const member = (await space.members.getSelf())!;
 
       const lockID = 'test';
+      const timestamp = Date.now();
       const msg = Realtime.PresenceMessage.fromValues({
         connectionId: member.connectionId,
         extras: {
@@ -325,7 +326,7 @@ describe('Locks (mockClient)', () => {
             {
               id: lockID,
               status: 'pending',
-              timestamp: Date.now(),
+              timestamp,
             },
           ],
         },
@@ -339,7 +340,7 @@ describe('Locks (mockClient)', () => {
 
       expect(presenceUpdate).toHaveBeenCalledTimes(1);
       const updateMsg = presenceUpdate.mock.calls[0][0];
-      expect(updateMsg.extras).not.toBeDefined();
+      expect(updateMsg.extras).toEqual({ locks: [{ id: lockID, member, timestamp, status: 'unlocked' }] });
     });
   });
 
