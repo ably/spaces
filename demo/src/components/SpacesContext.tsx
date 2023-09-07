@@ -1,37 +1,38 @@
 import * as React from 'react';
+import { AblyProvider } from '@ably-labs/react-hooks';
+
 import Spaces, { type Space } from '@ably/spaces';
 import { Realtime } from 'ably';
 import { nanoid } from 'nanoid';
 
 import { getSpaceNameFromUrl } from '../utils';
 
-const clientId = nanoid();
-
-export const ably = new Realtime.Promise({
-  authUrl: `/api/ably-token-request?clientId=${clientId}`,
-  clientId,
-});
-
-const spaces = new Spaces(ably);
-
 export const SpacesContext = React.createContext<Space | undefined>(undefined);
 
 const SpaceContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [space, setSpace] = React.useState<Space | undefined>(undefined);
+  const spaceName = getSpaceNameFromUrl();
+
+  const [spaces, ably] = React.useMemo(() => {
+    const clientId = nanoid();
+
+    const ably = new Realtime.Promise({
+      authUrl: `/api/ably-token-request?clientId=${clientId}`,
+      clientId,
+    });
+
+    return [new Spaces(ably), ably];
+  }, []);
 
   React.useEffect(() => {
-    let ignore: boolean = false;
+    let ignore = false;
 
     const init = async () => {
-      if (ignore) {
-        return;
-      }
-
       const spaceInstance = await spaces.get(getSpaceNameFromUrl(), {
         offlineTimeout: 10_000,
       });
 
-      if (spaceInstance && !space) {
+      if (spaceInstance && !space && !ignore) {
         setSpace(spaceInstance);
       }
     };
@@ -41,9 +42,13 @@ const SpaceContextProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => {
       ignore = true;
     };
-  });
+  }, [spaceName, spaces]);
 
-  return <SpacesContext.Provider value={space}>{children}</SpacesContext.Provider>;
+  return (
+    <AblyProvider client={ably}>
+      <SpacesContext.Provider value={space}>{children}</SpacesContext.Provider>{' '}
+    </AblyProvider>
+  );
 };
 
 export { SpaceContextProvider };
