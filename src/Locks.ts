@@ -3,13 +3,7 @@ import { Types } from 'ably';
 import Space from './Space.js';
 import type { Lock, SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
-import {
-  ERR_LOCK_IS_LOCKED,
-  ERR_LOCK_INVALIDATED,
-  ERR_LOCK_REQUEST_EXISTS,
-  ERR_LOCK_RELEASED,
-  ERR_NOT_ENTERED_SPACE,
-} from './Errors.js';
+import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS, ERR_NOT_ENTERED_SPACE } from './Errors.js';
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
@@ -126,18 +120,20 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
   async release(id: string): Promise<void> {
     const self = await this.space.members.getSelf();
+
     if (!self) {
       throw ERR_NOT_ENTERED_SPACE();
     }
 
-    const lock = this.locks.get(id)?.get(self.connectionId);
-    this.deleteLock(id, self.connectionId);
-    if (lock) {
-      lock.status = 'unlocked';
-      this.emit('update', lock);
-    }
+    const lock = this.getLock(id, self.connectionId);
+    if (!lock) return;
 
-    await this.updatePresence(self);
+    lock.status = 'unlocked';
+    lock.reason = undefined;
+    // Send presence update with the updated lock, but delete afterwards so when the
+    // message is processed an update event is fired
+    this.updatePresence(self);
+    this.deleteLock(id, self.connectionId);
   }
 
   subscribe<K extends EventKey<LockEventMap>>(
@@ -186,9 +182,9 @@ export default class Locks extends EventEmitter<LockEventMap> {
 
         if (lock) {
           lock.status = 'unlocked';
-          lock.reason = ERR_LOCK_RELEASED();
-          locks.delete(member.connectionId);
+          lock.reason = undefined;
           this.emit('update', lock);
+          locks.delete(member.connectionId);
         }
       }
 
@@ -211,19 +207,12 @@ export default class Locks extends EventEmitter<LockEventMap> {
       this.setLock({ ...lock, member });
     });
 
-    // handle locks which have been removed from presence extras
+    // handle locks which have been unlocked and longer need to be held locally
     for (const locks of this.locks.values()) {
-      const lock = locks.get(member.connectionId);
-
-      if (!lock) {
-        continue;
-      }
-
-      if (!message.extras.locks.some((l: Lock) => l.id === lock.id)) {
-        lock.status = 'unlocked';
-        lock.reason = ERR_LOCK_RELEASED();
-        locks.delete(member.connectionId);
-        this.emit('update', lock);
+      for (const lock of locks.values()) {
+        if (lock.status === 'unlocked') {
+          this.deleteLock(lock.id, lock.member.connectionId);
+        }
       }
     }
   }
