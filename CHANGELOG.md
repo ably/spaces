@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v0.1.1
+
+No breaking changes were introduced in this release.
+
+* Update README.md by @Srushtika in https://github.com/ably/spaces/pull/159
+* Update README.md by @Srushtika in https://github.com/ably/spaces/pull/160
+* refactor: avoid early initialisation of common errors by @owenpearson in https://github.com/ably/spaces/pull/163
+* Update demo to use latest version of Spaces by @dpiatek in https://github.com/ably/spaces/pull/161
+* fix: unlock update hasn't triggered after lock release by @ttypic in https://github.com/ably/spaces/pull/164
+* [MMB-247] Channel tagging by @dpiatek in https://github.com/ably/spaces/pull/166
+
 ## v0.1.0
 
 In this release, we're advancing Spaces from alpha to beta. Along with introducing this library to a wider audience, we've decided to move it to the `ably` organisation as Spaces is no longer an experiment, it's something we see as an excellent supplement to our core SDKs to help developers build collaborative environments in their apps. We are committed to grow and officially maintain it. 
