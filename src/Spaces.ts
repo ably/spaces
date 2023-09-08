@@ -17,7 +17,7 @@ class Spaces {
   client: Types.RealtimePromise;
   connection: Types.ConnectionPromise;
 
-  readonly version = '0.1.0';
+  readonly version = '0.1.1';
 
   constructor(client: Types.RealtimePromise) {
     this.client = client;
