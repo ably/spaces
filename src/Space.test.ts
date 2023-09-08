@@ -46,7 +46,7 @@ describe('Space', () => {
       const channelSpy = vi.spyOn(channels, 'get');
       const space = new Space('test', client);
 
-      expect(channelSpy).toHaveBeenNthCalledWith(1, '_ably_space_test');
+      expect(channelSpy).toHaveBeenNthCalledWith(1, 'test-space');
       expectTypeOf(space).toMatchTypeOf<Space>();
     });
   });
