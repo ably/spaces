@@ -25,7 +25,7 @@ const SPACE_CHANNEL_TAG = '-space';
 const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
   cursors: {
-    outboundBatchInterval: 100,
+    outboundBatchInterval: 25,
     paginationLimit: 5,
   },
 };

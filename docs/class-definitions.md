@@ -86,7 +86,7 @@ type CursorsOptions = {
 
 ##### outboundBatchInterval
 
-The interval in milliseconds at which a batch of cursor positions are published. This is multiplied by the number of members in the space minus 1. The default value is 100ms.
+The interval in milliseconds at which a batch of cursor positions are published. This is multiplied by the number of members in the space minus 1. The default value is 25ms.
 
 ##### paginationLimit
 
