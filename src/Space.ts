@@ -19,7 +19,8 @@ import { isFunction, isObject } from './utilities/is.js';
 import type { SpaceOptions, SpaceMember, ProfileData } from './types.js';
 import type { Subset, PresenceMember } from './utilities/types.js';
 
-const SPACE_CHANNEL_PREFIX = '_ably_space_';
+// Replace by ::$spaces when that channel tag will be available
+const SPACE_CHANNEL_TAG = '-space';
 
 const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
@@ -42,13 +43,15 @@ class Space extends EventEmitter<SpaceEventsMap> {
   readonly members: Members;
   readonly channel: Types.RealtimeChannelPromise;
   readonly locks: Locks;
+  readonly name: string;
 
   constructor(name: string, readonly client: Types.RealtimePromise, options?: Subset<SpaceOptions>) {
     super();
 
     this.options = this.setOptions(options);
     this.connectionId = this.client.connection.id;
-    this.channelName = `${SPACE_CHANNEL_PREFIX}${name}`;
+    this.name = name;
+    this.channelName = `${name}${SPACE_CHANNEL_TAG}`;
 
     this.channel = this.client.channels.get(this.channelName);
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);

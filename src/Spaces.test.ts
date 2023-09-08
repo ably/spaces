@@ -27,7 +27,7 @@ describe('Spaces', () => {
     await spaces.get('test');
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith('_ably_space_test');
+    expect(spy).toHaveBeenCalledWith('test-space');
   });
 
   it<SpacesTestContext>('applies the agent header to an existing SDK instance', ({ client }) => {

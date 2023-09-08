@@ -20,11 +20,14 @@ type CursorsEventMap = {
   update: CursorUpdate;
 };
 
+const CURSORS_CHANNEL_TAG = '::$cursors';
+
 export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
   private readonly cursorDispensing: CursorDispensing;
   private readonly cursorHistory: CursorHistory;
   readonly options: CursorsOptions;
+  readonly channelName: string;
 
   public channel?: Types.RealtimeChannelPromise;
 
@@ -32,6 +35,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     super();
 
     this.options = this.space.options.cursors;
+    this.channelName = `${this.space.name}${CURSORS_CHANNEL_TAG}`;
 
     this.cursorHistory = new CursorHistory();
     this.cursorBatching = new CursorBatching(this.options.outboundBatchInterval);
@@ -62,8 +66,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   private initializeCursorsChannel(): Types.RealtimeChannelPromise {
-    const spaceChannelName = this.space.channelName;
-    const channel = this.space.client.channels.get(`${spaceChannelName}_cursors`);
+    const channel = this.space.client.channels.get(this.channelName);
     channel.presence.subscribe(this.onPresenceUpdate.bind(this));
     channel.presence.enter();
     return channel;
