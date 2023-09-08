@@ -19,7 +19,7 @@ import { isFunction, isObject } from './utilities/is.js';
 import type { SpaceOptions, SpaceMember, ProfileData } from './types.js';
 import type { Subset, PresenceMember } from './utilities/types.js';
 
-// Replace by ::$spaces when that channel tag will be available
+// Replace by ::$space when that channel tag will be available
 const SPACE_CHANNEL_TAG = '-space';
 
 const SPACE_OPTIONS_DEFAULTS = {
