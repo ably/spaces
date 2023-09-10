@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v0.1.2
+
+No breaking changes were introduced in this release.
+
+* cursors: Fix cursor batching calculation by @lmars in https://github.com/ably/spaces/pull/169
+* [MMB-260] Update default batch time to 25ms by @dpiatek in https://github.com/ably/spaces/pull/167
+
 ## v0.1.1
 
 No breaking changes were introduced in this release.
