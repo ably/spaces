@@ -76,7 +76,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     const channel = this.getChannel();
     const cursorsMembers = await channel.presence.get();
     this.cursorBatching.setShouldSend(cursorsMembers.length > 1);
-    this.cursorBatching.setBatchTime((cursorsMembers.length - 1) * this.options.outboundBatchInterval);
+    this.cursorBatching.setBatchTime(cursorsMembers.length * this.options.outboundBatchInterval);
   }
 
   private isUnsubscribed() {
