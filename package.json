@@ -18,7 +18,8 @@
     "build:mjs": "npx tsc --project tsconfig.mjs.json && cp res/package.mjs.json dist/mjs/package.json",
     "build:cjs": "npx tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
     "build:iife": "rm -rf dist/iife && npx tsc --project tsconfig.iife.json && rollup -c",
-    "examples:locks": "ts-node ./examples/locks.ts"
+    "examples:locks": "ts-node ./examples/locks.ts",
+    "docs": "typedoc"
   },
   "exports": {
     "import": "./dist/mjs/index.js",
@@ -52,6 +53,7 @@
     "prettier": "^2.8.3",
     "rollup": "^3.28.0",
     "ts-node": "^10.9.1",
+    "typedoc": "^0.25.2",
     "typescript": "^4.9.5",
     "vitest": "^0.34.3"
   },
