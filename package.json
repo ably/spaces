@@ -19,7 +19,8 @@
     "build:cjs": "npx tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
     "build:iife": "rm -rf dist/iife && npx tsc --project tsconfig.iife.json && rollup -c",
     "prepare": "husky install",
-    "examples:locks": "ts-node ./examples/locks.ts"
+    "examples:locks": "ts-node ./examples/locks.ts",
+    "docs": "typedoc"
   },
   "exports": {
     "import": "./dist/mjs/index.js",
@@ -57,7 +58,8 @@
     "vitest": "^0.34.3"
   },
   "dependencies": {
-    "nanoid": "^4.0.2"
+    "nanoid": "^4.0.2",
+    "typedoc": "^0.25.1"
   },
   "peerDependencies": {
     "ably": "^1.2.43"
