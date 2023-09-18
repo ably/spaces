@@ -5,6 +5,7 @@ node_modules/
 .vscode
 coverage
 .env
+docs/typedoc/generated/
 
 # Local Netlify folder
 .netlify
