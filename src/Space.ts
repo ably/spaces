@@ -43,16 +43,17 @@ export interface SpaceEventMap {
  *
  * The following features can be implemented within a space:
  *
- * * "Avatar stack":/spaces/avatar
- * * "Member location":/spaces/locations
- * * "Live cursors":/spaces/cursors
- * * "Component locking":/spaces/locking
+ * - [Avatar stack](/spaces/avatar)
+ * - [Member location](/spaces/locations)
+ * - [Live cursors](/spaces/cursors)
+ * - [Component locking](/spaces/locking)
  *
- * The @space@ namespace consists of a state object that represents the realtime status of all members in a given virtual space. This includes a list of which members are currently online or have recently left and each member's location within the application. The position of members' cursors are excluded from the space state due to their high frequency of updates. In the beta release, which UI components members have locked are also excluded from the space state.
+ * The `space` namespace consists of a state object that represents the realtime status of all members in a given virtual space. This includes a list of which members are currently online or have recently left and each member’s location within the application. The position of members’ cursors are excluded from the space state due to their high frequency of updates. In the beta release, which UI components members have locked are also excluded from the space state.
  *
- * Space state can be "subscribed":#subscribe to in the @space@ namespace. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
+ * Space state can be [subscribed](#subscribe) to in the `space` namespace. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
  *
  * To subscribe to any events in a space, you first need to create or retrieve a space.
+ *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
  * > **Documentation source**
@@ -176,17 +177,17 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L43-L55) -->
-   * Entering a space will register a client as a member and emit an "@enter@":/spaces/members#events event to all subscribers. Use the @enter()@ method to enter a space.
+   * Entering a space will register a client as a member and emit an [`enter`](/spaces/members#events) event to all subscribers. Use the `enter()` method to enter a space.
    *
    * Being entered into a space is required for members to:
    *
-   * * Update their "profile data":#update-profile.
-   * * Set their "location":/spaces/locations.
-   * * Set their "cursor position":/spaces/cursors.
+   * - Update their [profile data](#update-profile).
+   * - Set their [location](/spaces/locations).
+   * - Set their [cursor position](/spaces/cursors).
    *
    * The following is an example of entering a space:
    *
-   * ```[javascript]
+   * ```javascript
    * await space.enter();
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
@@ -195,13 +196,13 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L71-L82) -->
-   * Profile data can be set when "entering":#enter a space. It is optional data that can be used to associate information with a member, such as a preferred username, or profile picture that can be subsequently displayed in their avatar. Profile data can be any arbitrary JSON-serializable object.
+   * Profile data can be set when [entering](#enter) a space. It is optional data that can be used to associate information with a member, such as a preferred username, or profile picture that can be subsequently displayed in their avatar. Profile data can be any arbitrary JSON-serializable object.
    *
    * Profile data is returned in the payload of all space events.
    *
    * The following is an example of setting profile data when entering a space:
    *
-   * ```[javascript]
+   * ```javascript
    * await space.enter({
    *   username: 'Claire Oranges',
    *   avatar: 'https://slides-internal.com/users/coranges.png',
@@ -244,20 +245,19 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L86-L103) -->
-   * Profile data can be updated at any point after entering a space by calling @updateProfileData()@. This will emit an @update@ event. If a client hasn't yet entered the space, @updateProfileData()@ will instead "enter the space":#enter, with the profile data, and emit an "@enter@":/spaces/members#events event.
+   * Profile data can be updated at any point after entering a space by calling `updateProfileData()`. This will emit an `update` event. If a client hasn’t yet entered the space, `updateProfileData()` will instead [enter the space](#enter), with the profile data, and emit an [`enter`](/spaces/members#events) event.
    *
    * The following is an example of updating profile data:
    *
-   * ```[javascript]
+   * ```javascript
    * space.updateProfileData({
    *   username: 'Claire Lemons',
    *   avatar: 'https://slides-internal.com/users/clemons.png',
    * });
    * ```
+   * A function can be passed to `updateProfileData()` in order to update a field based on the existing profile data:
    *
-   * A function can be passed to @updateProfileData()@ in order to update a field based on the existing profile data:
-   *
-   * ```[javascript]
+   * ```javascript
    * space.updateProfileData(currentProfile => {
    *   return { ...currentProfile, username: 'Clara Lemons' }
    * });
@@ -312,15 +312,15 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /*
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L59-L67) -->
-   * Leaving a space will emit a "@leave@":/spaces/members#events event to all subscribers.
+   * Leaving a space will emit a [`leave`](/spaces/members#events) event to all subscribers.
    *
    * The following is an example of explicitly leaving a space:
    *
-   * ```[javascript]
+   * ```javascript
    * await space.leave();
    * ```
+   * Members will implicitly leave a space after 15 seconds if they abruptly disconnect. If experiencing network disruption, and they reconnect within 15 seconds, then they will remain part of the space and no `leave` event will be emitted.
    *
-   * Members will implicitly leave a space after 15 seconds if they abruptly disconnect. If experiencing network disruption, and they reconnect within 15 seconds, then they will remain part of the space and no @leave@ event will be emitted.
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * > **Documentation source**
@@ -356,11 +356,11 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L191-L197) -->
-   * The current state of the space can be retrieved in a one-off call. This will return an array of all @member@ objects currently in the space. This is a local call and retrieves the membership of the space retained in memory by the SDK.
+   * The current state of the space can be retrieved in a one-off call. This will return an array of all `member` objects currently in the space. This is a local call and retrieves the membership of the space retained in memory by the SDK.
    *
    * The following is an example of retrieving the current space state. Ths includes members that have recently left the space, but have not yet been removed:
    *
-   * ```[javascript]
+   * ```javascript
    * const spaceState = await space.getState();
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
@@ -372,34 +372,41 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L107-L177) -->
-   * Subscribe to space state updates by registering a listener. Use the @subscribe()@ method on the @space@ object to receive updates.
+   * Subscribe to space state updates by registering a listener. Use the `subscribe()` method on the `space` object to receive updates.
    *
    * The following events will trigger a space event:
    *
-   * * A member enters the space
-   * * A member leaves the space
-   * * A member is removed from the space state "after the offlineTimeout period":#options has elapsed
-   * * A member updates their profile data
-   * * A member sets a new location
+   * - A member enters the space
+   * - A member leaves the space
+   * - A member is removed from the space state [after the offlineTimeout period](#options) has elapsed
+   * - A member updates their profile data
+   * - A member sets a new location
    *
-   * Space state contains a single object called @members@. Any events that trigger a change in space state will always return the current state of the space as an array of @member@ objects.
+   * Space state contains a single object called `members`. Any events that trigger a change in space state will always return the current state of the space as an array of `member` objects.
    *
    * <aside data-type='note'>
-   * <p>"Avatar stacks":/spaces/members and "member location":/spaces/locations events can be subscribed to on their individual namespaces; @space.members@ and @space.locations@. These events are filtered versions of space state events. Only a single "message":/channels/messages is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.</p>
-   * <p>The key difference between the subscribing to space state or to individual feature events, is that space state events return the current state of the space as an array of all members in each event payload. Individual member and location event payloads only include the relevant data for the member that triggered the event.</p>
+   * <p>
+   *
+   * [Avatar stacks](/spaces/members) and [member location](/spaces/locations) events can be subscribed to on their individual namespaces; `space.members` and `space.locations`. These events are filtered versions of space state events. Only a single [message](/channels/messages) is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.
+   *
+   * </p>
+   * <p>
+   *
+   * The key difference between the subscribing to space state or to individual feature events, is that space state events return the current state of the space as an array of all members in each event payload. Individual member and location event payloads only include the relevant data for the member that triggered the event.
+   *
+   * </p>
    * </aside>
    *
    * The following is an example of subscribing to space events:
    *
-   * ```[javascript]
+   * ```javascript
    * space.subscribe('update', (spaceState) => {
    *   console.log(spaceState.members);
    * });
    * ```
-   *
    * The following is an example payload of a space event.
    *
-   * ```[json]
+   * ```json
    * [
    *     {
    *         "clientId": "clemons#142",
@@ -432,17 +439,18 @@ class Space extends EventEmitter<SpaceEventMap> {
    *     ...
    * ]
    * ```
+   * The following are the properties of an individual `member` within a space event payload:
    *
-   * The following are the properties of an individual @member@ within a space event payload:
+   * | Property            | Description                                                            | Type    |
+   * |---------------------|------------------------------------------------------------------------|---------|
+   * | clientId            | The [client identifier](/auth/identified-clients) for the member.      | String  |
+   * | connectionId        | The unique identifier of the member’s [connection](/connect).          | String  |
+   * | isConnected         | Whether the member is connected to Ably or not.                        | Boolean |
+   * | profileData         | The optional [profile data](#profile-data) associated with the member. | Object  |
+   * | location            | The current [location](/spaces/locations) of the member.               | Object  |
+   * | lastEvent.name      | The most recent event emitted by the member.                           | String  |
+   * | lastEvent.timestamp | The timestamp of the most recently emitted event.                      | Number  |
    *
-   * |_. Property |_. Description |_. Type |
-   * | clientId | The "client identifier":/auth/identified-clients for the member. | String |
-   * | connectionId | The unique identifier of the member's "connection":/connect. | String |
-   * | isConnected | Whether the member is connected to Ably or not. | Boolean |
-   * | profileData | The optional "profile data":#profile-data associated with the member. | Object |
-   * | location | The current "location":/spaces/locations of the member. | Object |
-   * | lastEvent.name | The most recent event emitted by the member. | String |
-   * | lastEvent.timestamp | The timestamp of the most recently emitted event. | Number |
    * <!-- END WEBSITE DOCUMENTATION -->
    */
   subscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap, K>): void;
@@ -470,7 +478,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    *
    * The following is an example of removing a listener:
    *
-   * ```[javascript]
+   * ```javascript
    * space.unsubscribe('update', listener);
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->

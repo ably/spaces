@@ -26,26 +26,32 @@ const CURSORS_CHANNEL_TAG = '::$cursors';
  *
  * Cursor events are emitted whenever a member moves their mouse within a space. In order to optimize the efficiency and frequency of updates, cursor position events are automatically batched. The batching interval may be customized in order to further optimize for increased performance versus the number of events published.
  *
- * Live cursor updates are not available as part of the "space state":/spaces/space#subscribe and must be subscribed to using "@space.cursors.subscribe()@":#subscribe.
+ * Live cursor updates are not available as part of the [space state](/spaces/space#subscribe) and must be subscribed to using [`space.cursors.subscribe()`](#subscribe).
  *
  * <aside data-type='important'>
- * <p>Live cursors are a great way of providing contextual awareness as to what members are looking at within an application. However, too many cursors moving across a page can often be a distraction rather than an enhancement. As such, Ably recommends a maximum of 20 members simultaneously streaming their cursors in a space at any one time for an optimal end-user experience.</p>
+ * <p>
+ *
+ * Live cursors are a great way of providing contextual awareness as to what members are looking at within an application. However, too many cursors moving across a page can often be a distraction rather than an enhancement. As such, Ably recommends a maximum of 20 members simultaneously streaming their cursors in a space at any one time for an optimal end-user experience.
+ *
+ * </p>
  * </aside>
+ *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
  * > **Documentation source**
  * >
  * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
  * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/cursors.textile?plain=1#L254-L262) -->
- * h2(#foundations). Live cursor foundations
+ * ## Live cursor foundations
  *
- * The Spaces SDK is built upon existing Ably functionality available in Ably's Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
+ * The Spaces SDK is built upon existing Ably functionality available in Ably’s Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
  *
- * Live cursors build upon the functionality of the Pub/Sub Channels "presence":/presence-occupancy/presence feature.
+ * Live cursors build upon the functionality of the Pub/Sub Channels [presence](/presence-occupancy/presence) feature.
  *
- * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own "channel":/channels. The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the "space state":/spaces/space and may only be subscribed to on the @cursors@ namespace.
+ * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](/channels). The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the [space state](/spaces/space) and may only be subscribed to on the `cursors` namespace.
  *
- * The channel is only created when a member calls @space.cursors.set()@. The live cursors channel object can be accessed through @space.cursors.channel@. To monitor the "underlying state of the cursors channel":/channels#states, the channel object can be accessed through @space.cursors.channel@.
+ * The channel is only created when a member calls `space.cursors.set()`. The live cursors channel object can be accessed through `space.cursors.channel`. To monitor the [underlying state of the cursors channel](/channels#states), the channel object can be accessed through `space.cursors.channel`.
+ *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
  * > **Documentation source**
@@ -88,36 +94,58 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/cursors.textile?plain=1#L21-L74) -->
-   * Set the position of a member's cursor using the @set()@ method. A position must contain an X-axis value and a Y-axis value to set the cursor position on a 2D plane. Calling @set()@ will emit a cursor event so that other members are informed of the cursor movement in realtime.
+   * Set the position of a member’s cursor using the `set()` method. A position must contain an X-axis value and a Y-axis value to set the cursor position on a 2D plane. Calling `set()` will emit a cursor event so that other members are informed of the cursor movement in realtime.
    *
-   * A member must have been "entered":/spaces/space#enter into the space to set their cursor position.
+   * A member must have been [entered](/spaces/space#enter) into the space to set their cursor position.
    *
-   * The @set()@ method takes the following parameters:
+   * The `set()` method takes the following parameters:
    *
-   * |_. Parameter |_. Description |_. Type |
-   * | position.x | The position of the member's cursor on the X-axis. | Number |
-   * | position.y | The position of the member's cursor on the Y-axis. | Number |
-   * | data | An optional arbitrary JSON-serializable object containing additional information about the cursor, such as a color. | Object |
+   * | Parameter  | Description                                                                                                         | Type   |
+   * |------------|---------------------------------------------------------------------------------------------------------------------|--------|
+   * | position.x | The position of the member’s cursor on the X-axis.                                                                  | Number |
+   * | position.y | The position of the member’s cursor on the Y-axis.                                                                  | Number |
+   * | data       | An optional arbitrary JSON-serializable object containing additional information about the cursor, such as a color. | Object |
    *
    * <aside data-type='note'>
-   * <p>The @data@ parameter can be used to stream additional information related to a cursor's movement, such as:</p>
-   * <ul><li>The color that other member's should display a cursor as.</li>
-   * <li>The ID of an element that a user may be dragging for drag and drop functionality.</li>
-   * <li>Details of any cursor annotations.</li></ul>
-   * <p>Be aware that as live cursor updates are batched it is not advisable to publish data unrelated to cursor position in the @data@ parameter. Use a "pub/sub channel":/channels instead.</p>
+   * <p>
+   *
+   * The `data` parameter can be used to stream additional information related to a cursor’s movement, such as:
+   *
+   * </p>
+   * <ul>
+   * <li>
+   *
+   * The color that other member’s should display a cursor as.
+   *
+   * </li>
+   * <li>
+   *
+   * The ID of an element that a user may be dragging for drag and drop functionality.
+   *
+   * </li>
+   * <li>
+   *
+   * Details of any cursor annotations.
+   *
+   * </li>
+   * </ul>
+   * <p>
+   *
+   * Be aware that as live cursor updates are batched it is not advisable to publish data unrelated to cursor position in the `data` parameter. Use a [pub/sub channel](/channels) instead.
+   *
+   * </p>
    * </aside>
    *
-   * The following is an example of a member setting their cursor position by adding an event listener to obtain their cursor coordinates and then publishing their position using the @set()@ method:
+   * The following is an example of a member setting their cursor position by adding an event listener to obtain their cursor coordinates and then publishing their position using the `set()` method:
    *
-   * ```[javascript]
+   * ```javascript
    * window.addEventListener('mousemove', ({ clientX, clientY }) => {
    *   space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: 'red' } });
    * });
    * ```
+   * The following is an example payload of a cursor event. Cursor events are uniquely identifiable by the `connectionId` of a cursor.
    *
-   * The following is an example payload of a cursor event. Cursor events are uniquely identifiable by the @connectionId@ of a cursor.
-   *
-   * ```[json]
+   * ```json
    * {
    *   "hd9743gjDc": {
    *     "connectionId": "hd9743gjDc",
@@ -132,16 +160,17 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *   }
    * }
    * ```
-   *
    * The following are the properties of a cursor event payload:
    *
-   * |_. Property |_. Description |_. Type |
-   * | connectionId | The unique identifier of the member's "connection":/connect. | String |
-   * | clientId | The "client identifier":/auth/identified-clients for the member. | String |
-   * | position | An object containing the position of a member's cursor. | Object |
-   * | position.x | The position of the member's cursor on the X-axis. | Number |
-   * | position.y | The position of the member's cursor on the Y-axis. | Number |
-   * | data | An optional arbitrary JSON-serializable object containing additional information about the cursor. | Object |
+   * | Property     | Description                                                                                        | Type   |
+   * |--------------|----------------------------------------------------------------------------------------------------|--------|
+   * | connectionId | The unique identifier of the member’s [connection](/connect).                                      | String |
+   * | clientId     | The [client identifier](/auth/identified-clients) for the member.                                  | String |
+   * | position     | An object containing the position of a member’s cursor.                                            | Object |
+   * | position.x   | The position of the member’s cursor on the X-axis.                                                 | Number |
+   * | position.y   | The position of the member’s cursor on the Y-axis.                                                 | Number |
+   * | data         | An optional arbitrary JSON-serializable object containing additional information about the cursor. | Object |
+   *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * > **Documentation source**
@@ -224,15 +253,19 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/cursors.textile?plain=1#L78-L90) -->
-   * Subscribe to cursor events by registering a listener. Cursor events are emitted whenever a member moves their cursor by calling @set()@. Use the @subscribe()@ method on the @cursors@ object of a space to receive updates.
+   * Subscribe to cursor events by registering a listener. Cursor events are emitted whenever a member moves their cursor by calling `set()`. Use the `subscribe()` method on the `cursors` object of a space to receive updates.
    *
    * <aside data-type='note'>
-   * <p>The rate at which cursor events are published is controlled by the @outboundBatchInterval@ property set in the "cursor options":#options of a space.</p>
+   * <p>
+   *
+   * The rate at which cursor events are published is controlled by the `outboundBatchInterval` property set in the [cursor options](#options) of a space.
+   *
+   * </p>
    * </aside>
    *
    * The following is an example of subscribing to cursor events:
    *
-   * ```[javascript]
+   * ```javascript
    * space.cursors.subscribe('update', (cursorUpdate) => {
    *   console.log(cursorUpdate);
    * });
@@ -295,13 +328,12 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *
    * The following is an example of removing a listener for cursor update events:
    *
-   * ```[javascript]
+   * ```javascript
    * space.cursors.unsubscribe(`update`, listener);
    * ```
-   *
    * Or remove all listeners:
    *
-   * ```[javascript]
+   * ```javascript
    * space.cursors.unsubscribe();
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
@@ -413,15 +445,14 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/cursors.textile?plain=1#L126-L211) -->
    * Cursor positions can be retrieved in one-off calls. These are local calls that retrieve the latest position of cursors retained in memory by the SDK.
    *
-   * The following is an example of retrieving a member's own cursor position:
+   * The following is an example of retrieving a member’s own cursor position:
    *
-   * ```[javascript]
+   * ```javascript
    * const myCursor = await space.cursors.getSelf();
    * ```
+   * The following is an example payload returned by `space.cursors.getSelf()`:
    *
-   * The following is an example payload returned by @space.cursors.getSelf()@:
-   *
-   * ```[json]
+   * ```json
    * {
    *   “clientId”: “DzOBJqgGXzyUBb816Oa6i”,
    *   “connectionId”: “__UJBKZchX”,
@@ -431,16 +462,14 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *   }
    * }
    * ```
-   *
    * The following is an example of retrieving the cursor positions for all members other than the member themselves:
    *
-   * ```[javascript]
+   * ```javascript
    * const othersCursors = await space.cursors.getOthers();
    * ```
+   * The following is an example payload returned by `space.cursors.getOthers()`:
    *
-   * The following is an example payload returned by @space.cursors.getOthers()@:
-   *
-   * ```[json]
+   * ```json
    * {
    *   "3ej3q7yZZz": {
    *       "clientId": "yyXidHatpP3hJpMpXZi8W",
@@ -460,16 +489,14 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *   }
    * }
    * ```
+   * The following is an example of retrieving the cursor positions for all members, including the member themselves. `getAll()` is useful for retrieving the initial position of members’ cursors.
    *
-   * The following is an example of retrieving the cursor positions for all members, including the member themselves. @getAll()@ is useful for retrieving the initial position of members' cursors.
-   *
-   * ```[javascript]
+   * ```javascript
    * const allCursors = await space.cursors.getAll();
    * ```
+   * The following is an example payload returned by `space.cursors.getAll()`:
    *
-   * The following is an example payload returned by @space.cursors.getAll()@:
-   *
-   * ```[json]
+   * ```json
    * {
    *   "3ej3q7yZZz": {
    *       "clientId": "yyXidHatpP3hJpMpXZi8W",
