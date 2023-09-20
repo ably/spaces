@@ -46,6 +46,13 @@ export interface MembersEventMap {
  *
  * Avatar stacks build upon the functionality of the Pub/Sub Channels "presence":/presence-occupancy/presence feature. Members are entered into the presence set when they "enter the space":/spaces/space#enter.
  * <!-- END WEBSITE DOCUMENTATION -->
+ *
+ * > **Documentation source**
+ * >
+ * > The following documentation is copied from `docs/class-definitions.md`.
+ * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+ * Handles members within a space.
+ * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 class Members extends EventEmitter<MembersEventMap> {
   private lastMemberUpdate: Record<string, PresenceMember['data']['profileUpdate']['id']> = {};
@@ -88,6 +95,23 @@ class Members extends EventEmitter<MembersEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Returns a Promise which resolves to the [SpaceMember](#spacemember) object relating to the local connection. Will resolve to `null` if the client hasn't entered the space yet.
+   *
+   * ```ts
+   * type getSelf = () => Promise<SpaceMember | null>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const myMember = await space.members.getSelf();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getSelf(): Promise<SpaceMember | null> {
     return this.space.connectionId ? await this.getByConnectionId(this.space.connectionId) : null;
@@ -221,6 +245,23 @@ class Members extends EventEmitter<MembersEventMap> {
    * ]
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, including any who have left and not yet timed out. (_see: [offlineTimeout](#spaceoptions)_)
+   *
+   * ```ts
+   * type getAll = () => Promise<SpaceMember[]>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const allMembers = await space.members.getAll();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getAll(): Promise<SpaceMember[]> {
     const presenceMembers = await this.space.channel.presence.get();
@@ -231,6 +272,23 @@ class Members extends EventEmitter<MembersEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, excluding your own member object.
+   *
+   * ```ts
+   * type getSelf = () => Promise<SpaceMember[]>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const otherMembers = await space.members.getOthers();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getOthers(): Promise<SpaceMember[]> {
     const members = await this.getAll();
@@ -318,6 +376,71 @@ class Members extends EventEmitter<MembersEventMap> {
    * <p>Avatar stack subscription listeners only trigger on events related to members' online status and profile updates. Each event only contains the payload of the member that triggered it. Alternatively, "space state":/spaces/space can be subscribed to which returns an array of all members with their latest state every time any event is triggered.</p>
    * </aside>
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Listen to member events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   *
+   * The argument supplied to the callback is the [SpaceMember](#spacemember) object representing the member that triggered the event.
+   *
+   * Example:
+   *
+   * ```ts
+   * space.members.subscribe((member: SpaceMember) => {});
+   * ```
+   *
+   * Available events:
+   *
+   * - ##### **enter**
+   *
+   *   Listen to enter events of members.
+   *
+   *   ```ts
+   *   space.members.subscribe('enter', (member: SpaceMember) => {})
+   *   ```
+   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
+   *
+   * - ##### **leave**
+   *
+   *   Listen to leave events of members. The leave event will be issued when a member calls `space.leave()` or is disconnected.
+   *
+   *   ```ts
+   *   space.members.subscribe('leave', (member: SpaceMember) => {})
+   *   ```
+   *
+   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member leaving the space.
+   *
+   * - ##### **remove**
+   *
+   *   Listen to remove events of members. The remove event will be triggered when the [offlineTimeout](#spaceoptions) has passed.
+   *
+   *   ```ts
+   *   space.members.subscribe('remove', (member: SpaceMember) => {})
+   *   ```
+   *
+   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member removed from the space.
+   *
+   * - ##### **updateProfile**
+   *
+   *   Listen to profile update events of members.
+   *
+   *   ```ts
+   *   space.members.subscribe('updateProfile', (member: SpaceMember) => {})
+   *   ```
+   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
+   *
+   * - ##### **update**
+   *
+   *   Listen to `enter`, `leave`, `updateProfile` and `remove` events.
+   *
+   *   ```ts
+   *   space.members.subscribe('update', (member: SpaceMember) => {})
+   *   ```
+   *
+   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member affected by the change.
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   subscribe<K extends keyof MembersEventMap>(
     eventOrEvents: K | K[],
@@ -366,6 +489,24 @@ class Members extends EventEmitter<MembersEventMap> {
    * space.members.unsubscribe();
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Remove all the event listeners or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   *
+   * ```ts
+   * // Unsubscribe from all events
+   * space.members.unsubscribe();
+   *
+   * // Unsubscribe from enter events
+   * space.members.unsubscribe('enter');
+   *
+   * // Unsubscribe from leave events
+   * space.members.unsubscribe('leave');
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   unsubscribe<K extends keyof MembersEventMap>(
     eventOrEvents: K | K[],

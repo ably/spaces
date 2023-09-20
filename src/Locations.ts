@@ -38,6 +38,13 @@ export interface LocationsEventMap {
  *
  * Member locations build upon the functionality of the Pub/Sub Channels "presence":/presence-occupancy/presence feature. Members are entered into the presence set when they "enter the space":/spaces/space#enter.
  * <!-- END WEBSITE DOCUMENTATION -->
+ *
+ * > **Documentation source**
+ * >
+ * > The following documentation is copied from `docs/class-definitions.md`.
+ * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+ * Handles the tracking of member locations within a space. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export default class Locations extends EventEmitter<LocationsEventMap> {
   private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};
@@ -93,6 +100,17 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * await space.locations.set({ slide: '3', component: 'slide-title' });
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Set your current location. [Location](#location-1) can be any JSON-serializable object. Emits a [locationUpdate](#locationupdate) event to all connected clients in this space.
+   *
+   * ```ts
+   * type set = (update: Location) => Promise<void>;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async set(location: unknown) {
     const self = await this.space.members.getSelf();
@@ -174,6 +192,23 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * <p>Member location subscription listeners only trigger on events related to members' locations. Each event only contains the payload of the member that triggered it. Alternatively, "space state":/spaces/space can be subscribed to which returns an array of all members with their latest state every time any event is triggered.</p>
    * </aside>
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Listen to events for locations. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   *
+   * Available events:
+   *
+   * - ##### **update**
+   *
+   *   Fires when a member updates their location. The argument supplied to the event listener is a [LocationUpdate](#locationupdate-1).
+   *
+   *   ```ts
+   *   space.locations.subscribe('update', (locationUpdate: LocationUpdate) => {});
+   *   ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   subscribe<K extends keyof LocationsEventMap>(
     eventOrEvents: K | K[],
@@ -216,6 +251,17 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * space.locations.unsubscribe();
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   *
+   * ```ts
+   * space.locations.unsubscribe('update');
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   unsubscribe<K extends keyof LocationsEventMap>(
     eventOrEvents: K | K[],
@@ -242,6 +288,23 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get location for self.
+   *
+   * ```ts
+   * type getSelf = () => Promise<Location>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const myLocation = await space.locations.getSelf();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getSelf(): Promise<unknown> {
     const self = await this.space.members.getSelf();
@@ -251,6 +314,23 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get location for other members
+   *
+   * ```ts
+   * type getOthers = () => Promise<Record<ConnectionId, Location>>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const otherLocations = await space.locations.getOthers()
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getOthers(): Promise<Record<string, unknown>> {
     const members = await this.space.members.getOthers();
@@ -329,6 +409,23 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * }
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get location for all members.
+   *
+   * ```ts
+   * type getAll = () => Promise<Record<ConnectionId, Location>>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const allLocations = await space.locations.getAll();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getAll(): Promise<Record<string, unknown>> {
     const members = await this.space.members.getAll();

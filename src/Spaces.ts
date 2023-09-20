@@ -14,11 +14,69 @@ export interface ClientWithOptions extends Types.RealtimePromise {
 
 class Spaces {
   private spaces: Record<string, Space> = {};
+  /**
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) client that was passed to the [constructor](#constructor).
+   *
+   * ```ts
+   * type client = Ably.RealtimePromise;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   */
   client: Types.RealtimePromise;
+  /**
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) connection, belonging to the client that was passed to the [constructor](#constructor).
+   *
+   * ```ts
+   * type connection = Ably.ConnectionPromise;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   */
   connection: Types.ConnectionPromise;
 
+  /**
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Version of the Spaces library.
+   *
+   * ```ts
+   * type version = string;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   */
   readonly version = '0.1.3';
 
+  /**
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Create a new instance of the Space SDK by passing an instance of the realtime, promise-based [Ably client](https://github.com/ably/ably-js):
+   *
+   * ```ts
+   * import { Realtime } from 'ably/promise';
+   * import Spaces from '@ably/spaces';
+   *
+   * const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
+   * const spaces = new Spaces(client);
+   * ```
+   *
+   * Please note that a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascript) is required.
+   *
+   * An API key will required for [basic authentication](https://ably.com/docs/auth/basic?lang=javascript). We strongly recommended that you use [token authentication](https://ably.com/docs/realtime/authentication#token-authentication) in any production environments.
+   *
+   * Refer to the [Ably docs for the JS SDK](https://ably.com/docs/getting-started/setup?lang=javascript) for information on setting up a realtime promise client.
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   */
   constructor(client: Types.RealtimePromise) {
     this.client = client;
     this.connection = client.connection;
@@ -122,6 +180,17 @@ class Spaces {
    *
    * The volume of messages sent can be high when using live cursors. Because of this, the last known position of every members' cursor is obtained from "history":/storage-history/history. The @paginationLimit@ is the number of pages that should be searched to find the last position of each cursor. The default is 5.
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * > **Documentation source**
+   * >
+   * > The following documentation is copied from `docs/class-definitions.md`.
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get or create a Space instance. Returns a [Space](#space) instance. Configure the space by passing [SpaceOptions](#spaceoptions) as the second argument.
+   *
+   * ```ts
+   * type get = (name: string, options?: SpaceOptions) => Promise<Space>;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {
