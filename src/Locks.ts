@@ -15,11 +15,11 @@ import SpaceUpdate from './SpaceUpdate.js';
 
 export type LockAttributes = Record<string, unknown>;
 
-interface LockOptions {
+export interface LockOptions {
   attributes: LockAttributes;
 }
 
-type LocksEventMap = {
+export type LocksEventMap = {
   update: Lock;
 };
 
