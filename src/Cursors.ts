@@ -31,6 +31,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
 
   public channel?: Types.RealtimeChannelPromise;
 
+  /** @internal */
   constructor(private space: Space) {
     super();
 
