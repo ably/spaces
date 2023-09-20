@@ -1,6 +1,6 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
-import { Header, SlideMenu, SpacesContext, CurrentSlide, AblySvg, slides } from './components';
+import { Header, SlideMenu, SpacesContext, CurrentSlide, AblySvg, slides, Modal } from './components';
 import { getRandomName, getRandomColor } from './utils';
 import { useMembers } from './hooks';
 import { PreviewProvider } from './components/PreviewContext.tsx';
@@ -8,14 +8,17 @@ import { PreviewProvider } from './components/PreviewContext.tsx';
 const App = () => {
   const space = useContext(SpacesContext);
   const { self, others } = useMembers();
+  const [isModalVisible, setModalIsVisible] = useState(false);
 
   useEffect(() => {
     if (!space || self?.profileData.name) return;
 
+    
     const enter = async () => {
       const name = getRandomName();
       await space.enter({ name, color: getRandomColor() });
       await space.locations.set({ slide: `${0}`, element: null });
+      setModalIsVisible(true)
     };
 
     enter();
@@ -47,6 +50,7 @@ const App = () => {
           <AblySvg className="ml-2" />
         </a>
       </div>
+      <Modal self={self} isVisible={isModalVisible} setIsVisible={setModalIsVisible} />
     </div>
   );
 };

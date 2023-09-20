@@ -49,13 +49,13 @@ export const useMembers: () => Partial<{ self?: Member; others: Member[]; member
       if (areMembers(initMembers)) {
         setMembers(initMembers);
         setOthers(membersToOthers(initMembers, initSelf));
-      }
-
-      space.subscribe('update', handler);
+      } 
     };
 
     init();
-
+    console.log('update!')
+    space.subscribe('update', handler);
+    
     return () => {
       space.unsubscribe('update', handler);
     };
