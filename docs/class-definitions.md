@@ -327,6 +327,8 @@ The most recent event emitted by [presence](https://ably.com/docs/presence-occup
 
 #### PresenceEvent
 
+TODO This type doesn’t exist in the codebase; it's defined inline in SpaceMember
+
 ```ts
 type PresenceEvent = {
   name: 'enter' | 'leave' | 'update' | 'present';
@@ -416,6 +418,8 @@ const otherLocations = await space.locations.getOthers()
 
 #### Location
 
+TODO this type doesn’t exist in the codebase; `unknown` is used
+
 Represents a location in an application.
 
 ```ts
@@ -423,6 +427,8 @@ type Location = string | Record<string, unknown> | null;
 ```
 
 #### LocationUpdate
+
+TODO this type doesn’t exist in the codebase; it’s defined inline in LocationEventMap
 
 Represents a change between locations for a given [`SpaceMember`](#spacemember).
 
