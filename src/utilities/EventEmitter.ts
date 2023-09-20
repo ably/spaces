@@ -70,11 +70,18 @@ export type EventKey<T extends EventMap> = string & keyof T;
 export type EventListener<T> = (params: T) => void;
 
 export default class EventEmitter<T extends EventMap> {
+  /** @internal */
   any: Array<Function>;
+  /** @internal */
   events: Record<string, Function[]>;
+  /** @internal */
   anyOnce: Array<Function>;
+  /** @internal */
   eventsOnce: Record<string, Function[]>;
 
+  /**
+   * @internal
+   */
   constructor() {
     this.any = [];
     this.events = Object.create(null);
@@ -188,6 +195,8 @@ export default class EventEmitter<T extends EventMap> {
   }
 
   /**
+   * @internal
+   *
    * Emit an event
    * @param event the event name
    * @param arg the arguments to pass to the listener
@@ -247,7 +256,7 @@ export default class EventEmitter<T extends EventMap> {
   }
 
   /**
-   * Private API
+   * @internal
    *
    * Listen for a single occurrence of a state event and fire immediately if currentState matches targetState
    * @param targetState the name of the state event to listen to

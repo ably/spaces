@@ -22,11 +22,13 @@ class Members extends EventEmitter<MembersEventMap> {
   private lastMemberUpdate: Record<string, PresenceMember['data']['profileUpdate']['id']> = {};
   private leavers: Leavers;
 
+  /** @internal */
   constructor(private space: Space) {
     super();
     this.leavers = new Leavers(this.space.options.offlineTimeout);
   }
 
+  /** @internal */
   async processPresenceMessage(message: PresenceMember) {
     const { action, connectionId } = message;
     const isLeaver = !!this.leavers.getByConnectionId(connectionId);
@@ -103,12 +105,13 @@ class Members extends EventEmitter<MembersEventMap> {
     }
   }
 
+  /** @internal */
   async getByConnectionId(connectionId: string): Promise<SpaceMember | null> {
     const members = await this.getAll();
     return members.find((m) => m.connectionId === connectionId) ?? null;
   }
 
-  createMember(message: PresenceMember): SpaceMember {
+  private createMember(message: PresenceMember): SpaceMember {
     return {
       clientId: message.clientId,
       connectionId: message.connectionId,
@@ -122,7 +125,7 @@ class Members extends EventEmitter<MembersEventMap> {
     };
   }
 
-  async onMemberOffline(member: SpaceMember) {
+  private async onMemberOffline(member: SpaceMember) {
     this.leavers.removeLeaver(member.connectionId);
 
     this.emit('remove', member);

@@ -34,7 +34,14 @@ type SpaceEventMap = {
 };
 
 class Space extends EventEmitter<SpaceEventMap> {
-  readonly channelName: string;
+  /**
+   * @internal
+   */
+  readonly client: Types.RealtimePromise;
+  private readonly channelName: string;
+  /**
+   * @internal
+   */
   readonly connectionId: string | undefined;
   readonly options: SpaceOptions;
   readonly locations: Locations;
@@ -44,9 +51,11 @@ class Space extends EventEmitter<SpaceEventMap> {
   readonly locks: Locks;
   readonly name: string;
 
-  constructor(name: string, readonly client: Types.RealtimePromise, options?: Subset<SpaceOptions>) {
+  /** @internal */
+  constructor(name: string, client: Types.RealtimePromise, options?: Subset<SpaceOptions>) {
     super();
 
+    this.client = client;
     this.options = this.setOptions(options);
     this.connectionId = this.client.connection.id;
     this.name = name;
