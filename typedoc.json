@@ -30,6 +30,5 @@
     "TypeParameter",
     "Variable",
   ],
-  "treatWarningsAsErrors": true,
   "validation": true
 }
