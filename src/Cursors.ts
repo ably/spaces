@@ -27,10 +27,11 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorDispensing: CursorDispensing;
   private readonly cursorHistory: CursorHistory;
   readonly options: CursorsOptions;
-  readonly channelName: string;
+  private readonly channelName: string;
 
   public channel?: Types.RealtimeChannelPromise;
 
+  /** @internal */
   constructor(private space: Space) {
     super();
 

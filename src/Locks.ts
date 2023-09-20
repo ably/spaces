@@ -32,6 +32,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   // have requested.
   private locks: Map<string, Map<string, Lock>>;
 
+  /** @internal */
   constructor(private space: Space, private presenceUpdate: Space['presenceUpdate']) {
     super();
     this.locks = new Map();
@@ -165,6 +166,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     }
   }
 
+  /** @internal */
   async processPresenceMessage(message: Types.PresenceMessage) {
     const member = await this.space.members.getByConnectionId(message.connectionId);
     if (!member) return;
@@ -219,7 +221,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   //
   // TODO: remove this once the Ably system processes PENDING requests
   //       internally using this same logic.
-  processPending(member: SpaceMember, pendingLock: Lock) {
+  private processPending(member: SpaceMember, pendingLock: Lock) {
     // if the requested lock ID is not currently locked, then mark the PENDING
     // lock request as LOCKED
     const lock = this.get(pendingLock.id);
@@ -263,18 +265,19 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     pendingLock.reason = ERR_LOCK_IS_LOCKED();
   }
 
-  updatePresence(self: SpaceMember) {
+  private updatePresence(self: SpaceMember) {
     const update = new SpaceUpdate({ self, extras: this.getLockExtras(self.connectionId) });
     return this.presenceUpdate(update.noop());
   }
 
+  /** @internal */
   getLock(id: string, connectionId: string): Lock | undefined {
     const locks = this.locks.get(id);
     if (!locks) return;
     return locks.get(connectionId);
   }
 
-  setLock(lock: Lock) {
+  private setLock(lock: Lock) {
     let locks = this.locks.get(lock.id);
     if (!locks) {
       locks = new Map();
@@ -283,7 +286,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     locks.set(lock.member.connectionId, lock);
   }
 
-  deleteLock(id: string, connectionId: string) {
+  private deleteLock(id: string, connectionId: string) {
     const locks = this.locks.get(id);
     if (!locks) return;
     return locks.delete(connectionId);
@@ -303,6 +306,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     return requests;
   }
 
+  /** @internal */
   getLockExtras(connectionId: string): PresenceMember['extras'] {
     const locks = this.getLocksForConnectionId(connectionId);
     if (locks.length === 0) return;

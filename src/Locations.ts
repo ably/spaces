@@ -18,10 +18,12 @@ type LocationsEventMap = {
 export default class Locations extends EventEmitter<LocationsEventMap> {
   private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};
 
+  /** @internal */
   constructor(private space: Space, private presenceUpdate: Space['presenceUpdate']) {
     super();
   }
 
+  /** @internal */
   async processPresenceMessage(message: PresenceMember) {
     // Only an update action is currently a valid location update.
     if (message.action !== 'update') return;
