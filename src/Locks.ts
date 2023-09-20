@@ -23,11 +23,11 @@ interface LockOptions {
   attributes: LockAttributes;
 }
 
-type LockEventMap = {
+type LocksEventMap = {
   update: Lock;
 };
 
-export default class Locks extends EventEmitter<LockEventMap> {
+export default class Locks extends EventEmitter<LocksEventMap> {
   // locks tracks the local state of locks, which is used to determine whether
   // a lock's status has changed when processing presence updates.
   //
@@ -135,9 +135,9 @@ export default class Locks extends EventEmitter<LockEventMap> {
     this.deleteLock(id, self.connectionId);
   }
 
-  subscribe<K extends EventKey<LockEventMap>>(
-    listenerOrEvents?: K | K[] | EventListener<LockEventMap[K]>,
-    listener?: EventListener<LockEventMap[K]>,
+  subscribe<K extends EventKey<LocksEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LocksEventMap[K]>,
+    listener?: EventListener<LocksEventMap[K]>,
   ) {
     try {
       super.on(listenerOrEvents, listener);
@@ -152,9 +152,9 @@ export default class Locks extends EventEmitter<LockEventMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<LockEventMap>>(
-    listenerOrEvents?: K | K[] | EventListener<LockEventMap[K]>,
-    listener?: EventListener<LockEventMap[K]>,
+  unsubscribe<K extends EventKey<LocksEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<LocksEventMap[K]>,
+    listener?: EventListener<LocksEventMap[K]>,
   ) {
     try {
       super.off(listenerOrEvents, listener);
