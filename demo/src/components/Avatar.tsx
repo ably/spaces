@@ -20,7 +20,7 @@ export const Avatar = ({
 }: AvatarProps) => {
   const initials = profileData.name
     .split(' ')
-    .map((n: string) => n[0])
+    .map((n: string) => n[0].toUpperCase())
     .join('');
 
   return (

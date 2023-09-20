@@ -50,7 +50,6 @@ export const useMembers: () => { self?: Member; others: Member[]; members: Membe
         setMembers(initMembers);
         setOthers(membersToOthers(initMembers, initSelf));
       }
-
       space.subscribe('update', handler);
     };
 
