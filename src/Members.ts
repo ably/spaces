@@ -10,7 +10,7 @@ import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 
-type MembersEventMap = {
+export type MembersEventMap = {
   leave: SpaceMember;
   enter: SpaceMember;
   update: SpaceMember;

@@ -29,7 +29,7 @@ const SPACE_OPTIONS_DEFAULTS = {
   },
 };
 
-type SpaceEventMap = {
+export type SpaceEventMap = {
   update: { members: SpaceMember[] };
 };
 
