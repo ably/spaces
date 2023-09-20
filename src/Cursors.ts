@@ -41,6 +41,10 @@ const CURSORS_CHANNEL_TAG = '::$cursors';
  *
  * The channel is only created when a member calls @space.cursors.set()@. The live cursors channel object can be accessed through @space.cursors.channel@. To monitor the "underlying state of the cursors channel":/channels#states, the channel object can be accessed through @space.cursors.channel@.
  * <!-- END WEBSITE DOCUMENTATION -->
+ *
+ * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+ * Handles tracking of member cursors within a space. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
@@ -127,6 +131,24 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * | position.y | The position of the member's cursor on the Y-axis. | Number |
    * | data | An optional arbitrary JSON-serializable object containing additional information about the cursor. | Object |
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Set the position of a cursor. If a member has not yet entered the space, this method will error.
+   *
+   * A event payload returned contains an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
+   *
+   * ```ts
+   * type set = (update: { position: CursorPosition, data?: CursorData }) => void;
+   * ```
+   *
+   * Example usage:
+   *
+   * ```ts
+   * window.addEventListener('mousemove', ({ clientX, clientY }) => {
+   *   space.cursors.set({ position: { x: clientX, y: clientY }, data: { color: "red" } });
+   * });
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async set(cursor: Pick<CursorUpdate, 'position' | 'data'>) {
     const self = await this.space.members.getSelf();
@@ -198,6 +220,20 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * });
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Listen to `CursorUpdate` events. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   *
+   * Available events:
+   *
+   * - ##### **update**
+   *
+   *   Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate).
+   *
+   *   ```ts
+   *   space.cursors.subscribe('update', (cursorUpdate: CursorUpdate) => {});
+   *   ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   subscribe<K extends keyof CursorsEventMap>(
     eventOrEvents: K | K[],
@@ -245,6 +281,14 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * space.cursors.unsubscribe();
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   *
+   * ```ts
+   * space.cursors.unsubscribe('update');
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   unsubscribe<K extends keyof CursorsEventMap>(
     eventOrEvents: K | K[],
@@ -278,6 +322,20 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get the last `CursorUpdate` object for self.
+   *
+   * ```ts
+   * type getSelf = () => Promise<CursorUpdate | null>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const selfPosition = await space.cursors.getSelf();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getSelf(): Promise<CursorUpdate | null> {
     const self = await this.space.members.getSelf();
@@ -290,6 +348,20 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get the last `CursorUpdate` object for everyone else but yourself.
+   *
+   * ```ts
+   * type getOthers = () => Promise<Record<string, CursorUpdate | null>>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const otherPositions = await space.cursors.getOthers();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getOthers(): Promise<Record<string, null | CursorUpdate>> {
     const self = await this.space.members.getSelf();
@@ -390,6 +462,20 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * }
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get the last `CursorUpdate` object for all the members.
+   *
+   * ```ts
+   * type getAll = () => Promise<Record<string, CursorUpdate | null>>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const allLatestPositions = await space.cursors.getAll();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getAll(): Promise<Record<string, null | CursorUpdate>> {
     const channel = this.getChannel();

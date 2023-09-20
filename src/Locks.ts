@@ -8,6 +8,15 @@ import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from 
 
 import SpaceUpdate from './SpaceUpdate.js';
 
+/**
+ * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+ * Additional attributes that can be set when acquiring a lock.
+ *
+ * ```ts
+ * type LockAttributes = Map<string, string>;
+ * ```
+ * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+ */
 export type LockAttributes = Record<string, unknown>;
 
 export interface LockOptions {
@@ -50,6 +59,10 @@ export interface LocksEventMap {
  *
  * Only transitions that result in a @locked@ or @unlocked@ status will emit a lock event that members can "@subscribe()@":#subscribe to.
  * <!-- END WEBSITE DOCUMENTATION -->
+ *
+ * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+ * Provides a mechanism to "lock" a component, reducing the chances of conflict in an application whilst being edited by multiple members. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export default class Locks extends EventEmitter<LocksEventMap> {
   // locks tracks the local state of locks, which is used to determine whether
@@ -91,6 +104,21 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *
    * If the lock is not currently held by a member, @get()@ will return @undefined@. Otherwise it will return the most recent lock event for the lock.
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get a lock by its id.
+   *
+   * ```ts
+   * type get = (lockId: string) => Lock | undefined
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const id = "/slide/1/element/3";
+   * const lock = space.locks.get(id);
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   get(id: string): Lock | undefined {
     const locks = this.locks.get(id);
@@ -159,6 +187,20 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * ]
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get all locks that have the `locked` status.
+   *
+   * ```ts
+   * type getAll = () => Promise<Lock[]>
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const locks = await space.locks.getAll();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getAll(): Promise<Lock[]> {
     const allLocks: Lock[] = [];
@@ -177,6 +219,20 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get all locks belonging to self that have the `locked` status.
+   *
+   * ```ts
+   * type getSelf = () => Promise<Lock[]>
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const locks = await space.locks.getSelf();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getSelf(): Promise<Lock[]> {
     const self = await this.space.members.getSelf();
@@ -189,6 +245,20 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   /**
    * <!-- This is to avoid duplication of the website documentation. -->
    * See the documentation for {@link getAll}.
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Get all locks belonging to all members except self that have the `locked` status.
+   *
+   * ```ts
+   * type getOthers = () => Promise<Lock[]>
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const locks = await space.locks.getOthers();
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getOthers(): Promise<Lock[]> {
     const self = await this.space.members.getSelf();
@@ -234,6 +304,23 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *
    * Once a member requests a lock by calling @acquire()@, the lock is temporarily in the "pending state":#states. An event will be emitted based on whether the lock request was successful (a status of @locked@) or invalidated (a status of @unlocked@). This can be "subscribed":#subscribe to in order for the client to know whether their lock request was successful or not.
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Send a request to acquire a lock. Returns a Promise which resolves once the request has been sent. A resolved Promise holds a `pending` [Lock](#lock). An error will be thrown if a lock request with a status of `pending` or `locked` already exists, returning a rejected promise.
+   *
+   * When a lock acquisition by a member is confirmed with the `locked` status, an `update` event will be emitted. Hence to handle lock acquisition, `acquire()` needs to always be used together with `subscribe()`.
+   *
+   * ```ts
+   * type acquire = (lockId: string) => Promise<Lock>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const id = "/slide/1/element/3";
+   * const lockRequest = await space.locks.acquire(id);
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async acquire(id: string, opts?: LockOptions): Promise<Lock> {
     const self = await this.space.members.getSelf();
@@ -284,6 +371,21 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * <p>When a member "leaves":/spaces/space#leave a space, their locks are automatically released.</p>
    * </aside>
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Releases a previously requested lock.
+   *
+   * ```ts
+   * type release = (lockId: string) => Promise<void>;
+   * ```
+   *
+   * Example:
+   *
+   * ```ts
+   * const id = "/slide/1/element/3";
+   * await space.locks.release(id);
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async release(id: string): Promise<void> {
     const self = await this.space.members.getSelf();
@@ -366,6 +468,22 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * | member.lastEvent.timestamp | The timestamp of the most recently emitted event. | Number |
    * | member.profileData | The optional "profile data":/spaces/avatar#profile-data associated with the member. | Object |
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Listen to lock events. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   *
+   * Available events:
+   *
+   * - ##### **update**
+   *
+   *   Listen to changes to locks.
+   *
+   *   ```ts
+   *   space.locks.subscribe('update', (lock: Lock) => {})
+   *   ```
+   *
+   *   The argument supplied to the callback is a [Lock](#lock), representing the lock request and it's status.
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   subscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
   subscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
@@ -402,6 +520,14 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * space.locks.unsubscribe();
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   *
+   * ```ts
+   * space.locks.unsubscribe('update');
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   unsubscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
   unsubscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;

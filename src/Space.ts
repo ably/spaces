@@ -59,6 +59,10 @@ export type UpdateProfileDataFunction = (profileData: ProfileData) => ProfileDat
  *
  * To subscribe to any events in a space, you first need to create or retrieve a space.
  * <!-- END WEBSITE DOCUMENTATION -->
+ *
+ * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+ * An instance of a Space created using [spaces.get](#get). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 class Space extends EventEmitter<SpaceEventMap> {
   /**
@@ -71,8 +75,35 @@ class Space extends EventEmitter<SpaceEventMap> {
    */
   readonly connectionId: string | undefined;
   readonly options: SpaceOptions;
+  /**
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * An instance of [Locations](#locations).
+   *
+   * ```ts
+   * type locations = instanceof Locations;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   */
   readonly locations: Locations;
+  /**
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * An instance of [Cursors](#cursors).
+   *
+   * ```ts
+   * type cursors = instanceof Cursors;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   */
   readonly cursors: Cursors;
+  /**
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * An instance of [Members](#members).
+   *
+   * ```ts
+   * type members = instanceof Members;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   */
   readonly members: Members;
   readonly channel: Types.RealtimeChannelPromise;
   readonly locks: Locks;
@@ -172,6 +203,14 @@ class Space extends EventEmitter<SpaceEventMap> {
    * });
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Enter the space. Can optionally take `profileData`. This data can be an arbitrary JSON-serializable object which will be attached to the [member object](#spacemember). Returns all current space members.
+   *
+   * ```ts
+   * type enter = (profileData?: Record<string, unknown>) => Promise<SpaceMember[]>;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async enter(profileData: ProfileData = null): Promise<SpaceMember[]> {
     return new Promise((resolve) => {
@@ -216,6 +255,24 @@ class Space extends EventEmitter<SpaceEventMap> {
    * });
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Update `profileData`. This data can be an arbitrary JSON-serializable object which is attached to the [member object](#spacemember). If the connection
+   * has not entered the space, calling `updateProfileData` will call `enter` instead.
+   *
+   * ```ts
+   * type updateProfileData = (profileDataOrUpdateFn?: unknown| (unknown) => unknown) => Promise<void>;
+   * ```
+   *
+   * A function can also be passed in. This function will receive the existing `profileData` and lets you update based on the existing value of `profileData`:
+   *
+   * ```ts
+   * await space.updateProfileData((oldProfileData) => {
+   *   const newProfileData = getNewProfileData();
+   *   return { ...oldProfileData, ...newProfileData };
+   * })
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async updateProfileData(profileData: ProfileData): Promise<void>;
   async updateProfileData(updateFn: UpdateProfileDataFunction): Promise<void>;
@@ -256,6 +313,14 @@ class Space extends EventEmitter<SpaceEventMap> {
    *
    * Members will implicitly leave a space after 15 seconds if they abruptly disconnect. If experiencing network disruption, and they reconnect within 15 seconds, then they will remain part of the space and no @leave@ event will be emitted.
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * Leave the space. Can optionally take `profileData`. This triggers the `leave` event, but does not immediately remove the member from the space. See [offlineTimeout](#spaceoptions).
+   *
+   * ```ts
+   * type leave = (profileData?: Record<string, unknown>) => Promise<void>;
+   * ```
+   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async leave(profileData: ProfileData = null) {
     const self = await this.members.getSelf();
