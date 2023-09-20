@@ -296,8 +296,11 @@ type SpaceMember = {
   connectionId: string;
   isConnected: boolean;
   profileData: Record<string, unknown>;
-  location: Location;
-  lastEvent: PresenceEvent;
+  location: unknown;
+  lastEvent: {
+    name: Types.PresenceAction;
+    timestamp: number;
+  };
 };
 ```
 
@@ -325,15 +328,6 @@ The current location of the user within the space.
 
 The most recent event emitted by [presence](https://ably.com/docs/presence-occupancy/presence?lang=javascript) and its timestamp. Events will be either `enter`, `leave`, `update` or `present`.
 
-#### PresenceEvent
-
-```ts
-type PresenceEvent = {
-  name: 'enter' | 'leave' | 'update' | 'present';
-  timestamp: number;
-};
-```
-
 ## Member Locations
 
 Handles the tracking of member locations within a space. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
@@ -348,18 +342,18 @@ Available events:
 
 - ##### **update**
 
-  Fires when a member updates their location. The argument supplied to the event listener is a [LocationUpdate](#locationupdate-1).
+  Fires when a member updates their location. The argument supplied to the event listener is an UpdateEvent.
 
   ```ts
-  space.locations.subscribe('update', (locationUpdate: LocationUpdate) => {});
+  space.locations.subscribe('update', (locationUpdate: LocationsEvents.UpdateEvent) => {});
   ```
 
 #### set()
 
-Set your current location. [Location](#location-1) can be any JSON-serializable object. Emits a [locationUpdate](#locationupdate) event to all connected clients in this space.
+Set your current location. The `location` argument can be any JSON-serializable object. Emits a `locationUpdate` event to all connected clients in this space.
 
 ```ts
-type set = (update: Location) => Promise<void>;
+type set = (location: unknown) => Promise<void>;
 ```
 
 #### unsubscribe()
@@ -375,7 +369,7 @@ space.locations.unsubscribe('update');
 Get location for self.
 
 ```ts
-type getSelf = () => Promise<Location>;
+type getSelf = () => Promise<unknown>;
 ```
 
 Example:
@@ -389,7 +383,7 @@ const myLocation = await space.locations.getSelf();
 Get location for all members.
 
 ```ts
-type getAll = () => Promise<Record<ConnectionId, Location>>;
+type getAll = () => Promise<Record<ConnectionId, unknown>>;
 ```
 
 Example:
@@ -403,7 +397,7 @@ const allLocations = await space.locations.getAll();
 Get location for other members
 
 ```ts
-type getOthers = () => Promise<Record<ConnectionId, Location>>;
+type getOthers = () => Promise<Record<ConnectionId, unknown>>;
 ```
 
 Example:
@@ -413,26 +407,6 @@ const otherLocations = await space.locations.getOthers()
 ```
 
 ### Related types
-
-#### Location
-
-Represents a location in an application.
-
-```ts
-type Location = string | Record<string, unknown> | null;
-```
-
-#### LocationUpdate
-
-Represents a change between locations for a given [`SpaceMember`](#spacemember).
-
-```ts
-type LocationUpdate = {
-  member: SpaceMember;
-  currentLocation: Location;
-  previousLocation: Location;
-};
-```
 
 ## Live Cursors
 
