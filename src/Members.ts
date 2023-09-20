@@ -10,7 +10,7 @@ import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 
-type MemberEventsMap = {
+type MembersEventMap = {
   leave: SpaceMember;
   enter: SpaceMember;
   update: SpaceMember;
@@ -18,7 +18,7 @@ type MemberEventsMap = {
   remove: SpaceMember;
 };
 
-class Members extends EventEmitter<MemberEventsMap> {
+class Members extends EventEmitter<MembersEventMap> {
   private lastMemberUpdate: Record<string, PresenceMember['data']['profileUpdate']['id']> = {};
   private leavers: Leavers;
 
@@ -69,9 +69,9 @@ class Members extends EventEmitter<MemberEventsMap> {
     return members.filter((m) => m.connectionId !== this.space.connectionId);
   }
 
-  subscribe<K extends EventKey<MemberEventsMap>>(
-    listenerOrEvents?: K | K[] | EventListener<MemberEventsMap[K]>,
-    listener?: EventListener<MemberEventsMap[K]>,
+  subscribe<K extends EventKey<MembersEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<MembersEventMap[K]>,
+    listener?: EventListener<MembersEventMap[K]>,
   ) {
     try {
       super.on(listenerOrEvents, listener);
@@ -86,9 +86,9 @@ class Members extends EventEmitter<MemberEventsMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<MemberEventsMap>>(
-    listenerOrEvents?: K | K[] | EventListener<MemberEventsMap[K]>,
-    listener?: EventListener<MemberEventsMap[K]>,
+  unsubscribe<K extends EventKey<MembersEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<MembersEventMap[K]>,
+    listener?: EventListener<MembersEventMap[K]>,
   ) {
     try {
       super.off(listenerOrEvents, listener);

@@ -29,11 +29,11 @@ const SPACE_OPTIONS_DEFAULTS = {
   },
 };
 
-type SpaceEventsMap = {
+type SpaceEventMap = {
   update: { members: SpaceMember[] };
 };
 
-class Space extends EventEmitter<SpaceEventsMap> {
+class Space extends EventEmitter<SpaceEventMap> {
   readonly channelName: string;
   readonly connectionId: string | undefined;
   readonly options: SpaceOptions;
@@ -177,9 +177,9 @@ class Space extends EventEmitter<SpaceEventsMap> {
     return { members };
   }
 
-  subscribe<K extends EventKey<SpaceEventsMap>>(
-    listenerOrEvents?: K | K[] | EventListener<SpaceEventsMap[K]>,
-    listener?: EventListener<SpaceEventsMap[K]>,
+  subscribe<K extends EventKey<SpaceEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
+    listener?: EventListener<SpaceEventMap[K]>,
   ) {
     try {
       super.on(listenerOrEvents, listener);
@@ -194,9 +194,9 @@ class Space extends EventEmitter<SpaceEventsMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<SpaceEventsMap>>(
-    listenerOrEvents?: K | K[] | EventListener<SpaceEventsMap[K]>,
-    listener?: EventListener<SpaceEventsMap[K]>,
+  unsubscribe<K extends EventKey<SpaceEventMap>>(
+    listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
+    listener?: EventListener<SpaceEventMap[K]>,
   ) {
     try {
       super.off(listenerOrEvents, listener);
