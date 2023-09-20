@@ -1,6 +1,11 @@
 import Spaces from './Spaces.js';
 
-export type Space = Awaited<ReturnType<Spaces['get']>>;
+export type { default as Space, SpaceEventMap } from './Space.js';
+
+export type { default as Cursors, CursorsEventMap } from './Cursors.js';
+export type { default as Locations, LocationsEventMap } from './Locations.js';
+export type { default as Locks, LocksEventMap, LockOptions } from './Locks.js';
+export type { default as Members, MembersEventMap } from './Members.js';
 
 // Can be changed to * when we update to TS5
 
@@ -19,3 +24,7 @@ export type {
 } from './types.js';
 
 export { LockAttributes } from './Locks.js';
+
+export type { default as EventEmitter, EventListener, EventKey, EventMap } from './utilities/EventEmitter.js';
+
+export type { Subset } from './utilities/types.js';

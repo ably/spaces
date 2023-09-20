@@ -19,11 +19,11 @@ export class LockAttributes extends Map<string, string> {
   }
 }
 
-interface LockOptions {
+export interface LockOptions {
   attributes: LockAttributes;
 }
 
-type LocksEventMap = {
+export type LocksEventMap = {
   update: Lock;
 };
 
