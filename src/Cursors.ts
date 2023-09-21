@@ -36,11 +36,11 @@ const CURSORS_CHANNEL_TAG = '::$cursors';
  *
  * The Spaces SDK is built upon existing Ably functionality available in Ably’s Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
  *
- * Live cursors build upon the functionality of the Pub/Sub Channels [presence](/presence-occupancy/presence) feature.
+ * Live cursors build upon the functionality of the Pub/Sub Channels [presence](https://ably.com/docs/presence-occupancy/presence) feature.
  *
- * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](/channels). The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the [space state](/spaces/space) and may only be subscribed to on the `cursors` namespace.
+ * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](https://ably.com/docs/channels). The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the [space state](/spaces/space) and may only be subscribed to on the `cursors` namespace.
  *
- * The channel is only created when a member calls `space.cursors.set()`. The live cursors channel object can be accessed through `space.cursors.channel`. To monitor the [underlying state of the cursors channel](/channels#states), the channel object can be accessed through `space.cursors.channel`.
+ * The channel is only created when a member calls `space.cursors.set()`. The live cursors channel object can be accessed through `space.cursors.channel`. To monitor the [underlying state of the cursors channel](https://ably.com/docs/channels#states), the channel object can be accessed through `space.cursors.channel`.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
@@ -98,7 +98,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * > - The ID of an element that a user may be dragging for drag and drop functionality.
    * > - Details of any cursor annotations.
    * >
-   * > Be aware that as live cursor updates are batched it is not advisable to publish data unrelated to cursor position in the `data` parameter. Use a [pub/sub channel](/channels) instead.
+   * > Be aware that as live cursor updates are batched it is not advisable to publish data unrelated to cursor position in the `data` parameter. Use a [pub/sub channel](https://ably.com/docs/channels) instead.
    *
    * The following is an example of a member setting their cursor position by adding an event listener to obtain their cursor coordinates and then publishing their position using the `set()` method:
    *
@@ -128,8 +128,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *
    * | Property     | Description                                                                                        | Type   |
    * |--------------|----------------------------------------------------------------------------------------------------|--------|
-   * | connectionId | The unique identifier of the member’s [connection](/connect).                                      | String |
-   * | clientId     | The [client identifier](/auth/identified-clients) for the member.                                  | String |
+   * | connectionId | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                      | String |
+   * | clientId     | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                  | String |
    * | position     | An object containing the position of a member’s cursor.                                            | Object |
    * | position.x   | The position of the member’s cursor on the X-axis.                                                 | Number |
    * | position.y   | The position of the member’s cursor on the Y-axis.                                                 | Number |
