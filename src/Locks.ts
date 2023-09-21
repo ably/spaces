@@ -18,9 +18,9 @@ export interface LockOptions {
   attributes: LockAttributes;
 }
 
-export type LocksEventMap = {
+export interface LocksEventMap {
   update: Lock;
-};
+}
 
 export default class Locks extends EventEmitter<LocksEventMap> {
   // locks tracks the local state of locks, which is used to determine whether

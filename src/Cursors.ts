@@ -11,9 +11,9 @@ import type { CursorsOptions, CursorUpdate } from './types.js';
 import type { RealtimeMessage } from './utilities/types.js';
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
 
-export type CursorsEventMap = {
+export interface CursorsEventMap {
   update: CursorUpdate;
-};
+}
 
 const CURSORS_CHANNEL_TAG = '::$cursors';
 

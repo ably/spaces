@@ -30,9 +30,9 @@ export namespace SpaceEvents {
   }
 }
 
-export type SpaceEventMap = {
+export interface SpaceEventMap {
   update: SpaceEvents.UpdateEvent;
-};
+}
 
 class Space extends EventEmitter<SpaceEventMap> {
   private readonly channelName: string;

@@ -14,9 +14,9 @@ export namespace LocationsEvents {
   }
 }
 
-export type LocationsEventMap = {
+export interface LocationsEventMap {
   update: LocationsEvents.UpdateEvent;
-};
+}
 
 export default class Locations extends EventEmitter<LocationsEventMap> {
   private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};

@@ -5,13 +5,13 @@ import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 
-export type MembersEventMap = {
+export interface MembersEventMap {
   leave: SpaceMember;
   enter: SpaceMember;
   update: SpaceMember;
   updateProfile: SpaceMember;
   remove: SpaceMember;
-};
+}
 
 class Members extends EventEmitter<MembersEventMap> {
   private lastMemberUpdate: Record<string, PresenceMember['data']['profileUpdate']['id']> = {};
