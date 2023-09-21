@@ -1,127 +1,93 @@
-import { useContext, useEffect, useReducer } from 'react';
-import assign from 'lodash.assign';
+import { useContext, useEffect, useState } from 'react';
+import type { CursorUpdate as _CursorUpdate } from '@ably/spaces';
+
 import cn from 'classnames';
-import find from 'lodash.find';
-import omit from 'lodash.omit';
 import { CursorSvg, SpacesContext } from '.';
 import { useMembers, CURSOR_ENTER, CURSOR_LEAVE, CURSOR_MOVE } from '../hooks';
-import { type Member } from '../utils/types';
 
-type ActionType = 'move' | 'enter' | 'leave';
-
-interface Action {
-  type: ActionType;
-  data: {
-    connectionId: string;
-    members?: Member[];
-    position?: {
-      x: number;
-      y: number;
-    };
-  };
-}
-
-interface State {
-  [connectionId: string]: Member & Action['data'];
-}
-
-const reducer = (state: State, action: Action): State => {
-  const { type, data } = action;
-  const { connectionId, members, position } = data;
-  switch (type) {
-    case CURSOR_ENTER:
-      return {
-        ...state,
-        [connectionId]: {
-          ...assign(find(members, { connectionId }), { connectionId, position }),
-        },
-      };
-    case CURSOR_LEAVE:
-      return {
-        ...omit(state, connectionId),
-      };
-    case CURSOR_MOVE:
-      return {
-        ...state,
-        [connectionId]: {
-          ...assign(find(members, { connectionId }), { connectionId, position }),
-        },
-      };
-    default:
-      throw new Error('Unknown dispatch type');
-  }
-};
+type state = typeof CURSOR_ENTER | typeof CURSOR_LEAVE | typeof CURSOR_MOVE;
+type CursorUpdate = Omit<_CursorUpdate, 'data'> & { data: { state: state } };
 
 export const Cursors = () => {
   const space = useContext(SpacesContext);
-  const { self, members } = useMembers();
-  const [activeCursors, dispatch] = useReducer(reducer, {});
+  const { self, others } = useMembers();
+  const [cursors, setCursors] = useState<{
+    [connectionId: string]: { position: CursorUpdate['position']; state: CursorUpdate['data']['state'] };
+  }>({});
 
   useEffect(() => {
-    if (!space || !members) return;
+    if (!space || !others) return;
 
     space.cursors.subscribe('update', (cursorUpdate) => {
-      const { connectionId } = cursorUpdate;
-      const member = find<Member>(members, { connectionId });
+      const { connectionId, position, data } = cursorUpdate as CursorUpdate;
 
-      if (
-        connectionId !== self?.connectionId &&
-        member?.location?.slide === self?.location?.slide &&
-        cursorUpdate.data
-      ) {
-        dispatch({
-          type: cursorUpdate.data.state as ActionType,
-          data: {
-            connectionId,
-            members,
-            position: cursorUpdate.position,
-          },
-        });
-      } else {
-        dispatch({
-          type: CURSOR_LEAVE,
-          data: {
-            connectionId,
-            members,
-          },
-        });
-      }
+      if (cursorUpdate.connectionId === self?.connectionId) return;
+
+      setCursors((currentCursors) => ({
+        ...currentCursors,
+        [connectionId]: { position, state: data.state },
+      }));
     });
 
     return () => {
       space.cursors.unsubscribe('update');
     };
-  }, [space, members]);
+  }, [space, others, self?.connectionId]);
+
+  useEffect(() => {
+    const handler = async (member: { connectionId: string }) => {
+      setCursors((currentCursors) => ({
+        ...currentCursors,
+        [member.connectionId]: { position: { x: 0, y: 0 }, state: CURSOR_LEAVE },
+      }));
+    };
+
+    space?.members.subscribe('leave', handler);
+
+    return () => {
+      space?.members.unsubscribe('leave', handler);
+    };
+  }, [space]);
+
+  const activeCursors = others
+    .filter(
+      (member) =>
+        member.isConnected && cursors[member.connectionId] && cursors[member.connectionId].state !== CURSOR_LEAVE,
+    )
+    .map((member) => ({
+      connectionId: member.connectionId,
+      profileData: member.profileData,
+      position: cursors[member.connectionId].position,
+    }));
 
   return (
     <div className="h-full w-full z-10 pointer-events-none top-0 left-0 absolute">
-      {Object.keys(activeCursors).map((cursor) => {
-        const { connectionId, profileData } = activeCursors[cursor];
+      {activeCursors.map((cursor) => {
+        const { connectionId, profileData } = cursor;
+
         return (
           <div
             key={connectionId}
             style={{
               position: 'absolute',
-              top: `${activeCursors[cursor].position?.y}px`,
-              left: `${activeCursors[cursor].position?.x}px`,
+              top: `${cursor.position.y}px`,
+              left: `${cursor.position.x}px`,
             }}
           >
             <CursorSvg
-              startColor={profileData?.color?.gradientStart?.hex}
-              endColor={profileData?.color?.gradientEnd?.hex}
+              startColor={profileData.color.gradientStart.hex}
+              endColor={profileData.color.gradientEnd.hex}
               id={connectionId}
             />
-            {profileData?.name ? (
-              <p
-                className={cn(
-                  profileData.color.gradientStart.tw,
-                  profileData.color.gradientEnd.tw,
-                  'py-2 px-4 bg-gradient-to-b rounded-full absolute text-white text-base truncate transition-all max-w-[120px]',
-                )}
-              >
-                {profileData.name.split(' ')[0]}
-              </p>
-            ) : null}
+            <p
+              className={cn(
+                profileData.color.gradientStart.tw,
+                profileData.color.gradientEnd.tw,
+                'py-2 px-4 bg-gradient-to-b rounded-full absolute text-white text-base truncate transition-all max-w-[120px]',
+              )}
+            >
+              {profileData.name.split(' ')[0]}
+            </p>
           </div>
         );
       })}
