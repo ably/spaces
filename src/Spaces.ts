@@ -120,7 +120,9 @@ class Spaces {
    * ```
    *
    * <aside data-type='note'>
-   * <p>Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own "channel":/channels.</p>
+   * <p>
+   * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own "channel":/channels.
+   * </p>
    * </aside>
    * <!-- END WEBSITE DOCUMENTATION -->
    *
