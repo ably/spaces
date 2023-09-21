@@ -153,10 +153,28 @@ describe('Space', () => {
         presenceMap,
         space,
       }) => {
-        presenceMap.set('1', createPresenceMessage('enter'));
+        presenceMap.set(
+          '1',
+          createPresenceMessage('enter', {
+            data: {
+              profileUpdate: {
+                id: 1,
+                current: { color: 'black' },
+              },
+              locationUpdate: {
+                id: null,
+                current: null,
+                previous: null,
+              },
+            },
+          }),
+        );
         const updateSpy = vi.spyOn(presence, 'update');
         await space.updateProfileData((profileData) => ({ ...profileData, name: 'Betty' }));
-        expect(updateSpy).toHaveBeenNthCalledWith(1, createProfileUpdate({ current: { name: 'Betty' } }));
+        expect(updateSpy).toHaveBeenNthCalledWith(
+          1,
+          createProfileUpdate({ current: { name: 'Betty', color: 'black' } }),
+        );
       });
     });
 

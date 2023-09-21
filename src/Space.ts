@@ -106,6 +106,35 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.emit('update', { members: await this.members.getAll() });
   }
 
+  private async createProfileUpdate(update: ProfileData) {
+    const self = await this.members.getSelf();
+
+    const profileUpdate = {
+      id: nanoid(),
+      current: update,
+    };
+
+    if (!self) {
+      return {
+        profileUpdate,
+        locationUpdate: {
+          id: null,
+          current: null,
+          previous: null,
+        },
+      };
+    } else {
+      return {
+        profileUpdate,
+        locationUpdate: {
+          id: null,
+          current: self.location ?? null,
+          previous: null,
+        },
+      };
+    }
+  }
+
   async enter(profileData: ProfileData = null): Promise<SpaceMember[]> {
     return new Promise((resolve) => {
       const presence = this.channel.presence;
@@ -137,11 +166,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     });
   }
 
-  async updateProfileData(
-    profileDataOrUpdateFn:
-      | Record<string, unknown>
-      | ((update: Record<string, unknown> | null) => Record<string, unknown>),
-  ): Promise<void> {
+  async updateProfileData(profileDataOrUpdateFn: ProfileData | ((update: ProfileData) => ProfileData)): Promise<void> {
     const self = await this.members.getSelf();
 
     if (!isObject(profileDataOrUpdateFn) && !isFunction(profileDataOrUpdateFn)) {
@@ -150,24 +175,19 @@ class Space extends EventEmitter<SpaceEventsMap> {
       );
     }
 
-    const update = {
-      profileUpdate: {
-        id: nanoid(),
-        current: isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(null) : profileDataOrUpdateFn,
-      },
-      locationUpdate: {
-        id: null,
-        current: self?.location ?? null,
-        previous: null,
-      },
-    };
-
     if (!self) {
+      const update = await this.createProfileUpdate(
+        isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(null) : profileDataOrUpdateFn,
+      );
       await this.presenceEnter(update);
       return;
     }
 
+    const update = await this.createProfileUpdate(
+      isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(self.profileData) : profileDataOrUpdateFn,
+    );
     const extras = this.locks.getLockExtras(self.connectionId);
+
     return this.presenceUpdate(update, extras);
   }
 
