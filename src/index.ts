@@ -1,9 +1,9 @@
 import Spaces from './Spaces.js';
 
-export type { default as Space, SpaceEventMap } from './Space.js';
+export type { default as Space, SpaceEventMap, SpaceEvents } from './Space.js';
 
 export type { default as Cursors, CursorsEventMap } from './Cursors.js';
-export type { default as Locations, LocationsEventMap } from './Locations.js';
+export type { default as Locations, LocationsEventMap, LocationsEvents } from './Locations.js';
 export type { default as Locks, LocksEventMap, LockOptions } from './Locks.js';
 export type { default as Members, MembersEventMap } from './Members.js';
 
