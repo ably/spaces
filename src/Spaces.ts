@@ -154,13 +154,10 @@ class Spaces {
    *   console.log(stateChange)
    * });
    * ```
-   * <aside data-type='note'>
-   * <p>
    *
-   * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](/channels).
-   *
-   * </p>
-   * </aside>
+   * > **Note**
+   * >
+   * > Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](/channels).
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *

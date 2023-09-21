@@ -45,13 +45,9 @@ export interface LocksEventMap {
  *
  * Each lock is identified by a unique string ID, and only a single member may hold a lock with a given string at any one time. A lock will exist in one of three [states](#states) and may only transition between states in specific circumstances.
  *
- * <aside data-type='important'>
- * <p>
- *
- * Optimistic locking means that there is a chance that two members may begin editing the same UI component before it is confirmed which member holds the lock. On average, the time taken to reconcile which member holds a lock is in the hundreds of milliseconds. Your application needs to handle the member that successfully obtained the lock, as well as the member that had their request invalidated.
- *
- * </p>
- * </aside>
+ * > **Important**
+ * >
+ * > Optimistic locking means that there is a chance that two members may begin editing the same UI component before it is confirmed which member holds the lock. On average, the time taken to reconcile which member holds a lock is in the hundreds of milliseconds. Your application needs to handle the member that successfully obtained the lock, as well as the member that had their request invalidated.
  *
  * ## Lock states
  *
@@ -411,13 +407,9 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * ```
    * Releasing a lock will emit a lock event with a [lock status](#states) of `unlocked`.
    *
-   * <aside data-type='note'>
-   * <p>
-   *
-   * When a member [leaves](/spaces/space#leave) a space, their locks are automatically released.
-   *
-   * </p>
-   * </aside>
+   * > **Note**
+   * >
+   * > When a member [leaves](/spaces/space#leave) a space, their locks are automatically released.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *

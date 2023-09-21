@@ -28,13 +28,9 @@ const CURSORS_CHANNEL_TAG = '::$cursors';
  *
  * Live cursor updates are not available as part of the [space state](/spaces/space#subscribe) and must be subscribed to using [`space.cursors.subscribe()`](#subscribe).
  *
- * <aside data-type='important'>
- * <p>
- *
- * Live cursors are a great way of providing contextual awareness as to what members are looking at within an application. However, too many cursors moving across a page can often be a distraction rather than an enhancement. As such, Ably recommends a maximum of 20 members simultaneously streaming their cursors in a space at any one time for an optimal end-user experience.
- *
- * </p>
- * </aside>
+ * > **Important**
+ * >
+ * > Live cursors are a great way of providing contextual awareness as to what members are looking at within an application. However, too many cursors moving across a page can often be a distraction rather than an enhancement. As such, Ably recommends a maximum of 20 members simultaneously streaming their cursors in a space at any one time for an optimal end-user experience.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
@@ -106,35 +102,15 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * | position.y | The position of the member’s cursor on the Y-axis.                                                                  | Number |
    * | data       | An optional arbitrary JSON-serializable object containing additional information about the cursor, such as a color. | Object |
    *
-   * <aside data-type='note'>
-   * <p>
-   *
-   * The `data` parameter can be used to stream additional information related to a cursor’s movement, such as:
-   *
-   * </p>
-   * <ul>
-   * <li>
-   *
-   * The color that other member’s should display a cursor as.
-   *
-   * </li>
-   * <li>
-   *
-   * The ID of an element that a user may be dragging for drag and drop functionality.
-   *
-   * </li>
-   * <li>
-   *
-   * Details of any cursor annotations.
-   *
-   * </li>
-   * </ul>
-   * <p>
-   *
-   * Be aware that as live cursor updates are batched it is not advisable to publish data unrelated to cursor position in the `data` parameter. Use a [pub/sub channel](/channels) instead.
-   *
-   * </p>
-   * </aside>
+   * > **Note**
+   * >
+   * > The `data` parameter can be used to stream additional information related to a cursor’s movement, such as:
+   * >
+   * > - The color that other member’s should display a cursor as.
+   * > - The ID of an element that a user may be dragging for drag and drop functionality.
+   * > - Details of any cursor annotations.
+   * >
+   * > Be aware that as live cursor updates are batched it is not advisable to publish data unrelated to cursor position in the `data` parameter. Use a [pub/sub channel](/channels) instead.
    *
    * The following is an example of a member setting their cursor position by adding an event listener to obtain their cursor coordinates and then publishing their position using the `set()` method:
    *
@@ -255,13 +231,9 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/cursors.textile?plain=1#L78-L90) -->
    * Subscribe to cursor events by registering a listener. Cursor events are emitted whenever a member moves their cursor by calling `set()`. Use the `subscribe()` method on the `cursors` object of a space to receive updates.
    *
-   * <aside data-type='note'>
-   * <p>
-   *
-   * The rate at which cursor events are published is controlled by the `outboundBatchInterval` property set in the [cursor options](#options) of a space.
-   *
-   * </p>
-   * </aside>
+   * > **Note**
+   * >
+   * > The rate at which cursor events are published is controlled by the `outboundBatchInterval` property set in the [cursor options](#options) of a space.
    *
    * The following is an example of subscribing to cursor events:
    *
