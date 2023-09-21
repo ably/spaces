@@ -48,21 +48,21 @@ export type UpdateProfileDataFunction = (profileData: ProfileData) => ProfileDat
  *
  * The following features can be implemented within a space:
  *
- * - [Avatar stack](/spaces/avatar)
- * - [Member location](/spaces/locations)
- * - [Live cursors](/spaces/cursors)
- * - [Component locking](/spaces/locking)
+ * - Avatar stack, via the {@link members | `members`} property
+ * - Member location, via the {@link locations | `locations`} property
+ * - Live cursors, via the {@link cursors | `cursors`} property
+ * - Component locking, via the {@link locks | `locks`} property
  *
  * The `space` namespace consists of a state object that represents the realtime status of all members in a given virtual space. This includes a list of which members are currently online or have recently left and each member’s location within the application. The position of members’ cursors are excluded from the space state due to their high frequency of updates. In the beta release, which UI components members have locked are also excluded from the space state.
  *
- * Space state can be [subscribed](#subscribe) to in the `space` namespace. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
+ * Space state can be {@link subscribe | subscribed} to in the `space` namespace. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
  *
  * To subscribe to any events in a space, you first need to create or retrieve a space.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * An instance of a Space created using [spaces.get](#get). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * An instance of a Space created using {@link default.get | spaces.get}. Inherits from {@link EventEmitter}.
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 class Space extends EventEmitter<SpaceEventMap> {
@@ -78,19 +78,19 @@ class Space extends EventEmitter<SpaceEventMap> {
   readonly options: SpaceOptions;
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * An instance of [Locations](#locations).
+   * An instance of {@link Locations}.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   readonly locations: Locations;
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * An instance of [Cursors](#cursors).
+   * An instance of {@link Cursors}.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   readonly cursors: Cursors;
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * An instance of [Members](#members).
+   * An instance of {@link Members}.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   readonly members: Members;
@@ -163,13 +163,13 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L43-L55) -->
-   * Entering a space will register a client as a member and emit an [`enter`](/spaces/members#events) event to all subscribers. Use the `enter()` method to enter a space.
+   * Entering a space will register a client as a member and emit an {@link MembersEventMap.enter | `enter` } event to all subscribers. Use the `enter()` method to enter a space.
    *
    * Being entered into a space is required for members to:
    *
-   * - Update their [profile data](#update-profile).
-   * - Set their [location](/spaces/locations).
-   * - Set their [cursor position](/spaces/cursors).
+   * - { @link updateProfileData | Update their profile data. }
+   * - { @link Locations.set | Set their location. }
+   * - { @link Cursors.set | Set their cursor position. }
    *
    * The following is an example of entering a space:
    *
@@ -179,7 +179,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L71-L82) -->
-   * Profile data can be set when [entering](#enter) a space. It is optional data that can be used to associate information with a member, such as a preferred username, or profile picture that can be subsequently displayed in their avatar. Profile data can be any arbitrary JSON-serializable object.
+   * Profile data can be set when {@link enter | entering} a space. It is optional data that can be used to associate information with a member, such as a preferred username, or profile picture that can be subsequently displayed in their avatar. Profile data can be any arbitrary JSON-serializable object.
    *
    * Profile data is returned in the payload of all space events.
    *
@@ -194,7 +194,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Enter the space. Can optionally take `profileData`. This data can be an arbitrary JSON-serializable object which will be attached to the [member object](#spacemember). Returns all current space members.
+   * Enter the space. Can optionally take `profileData`. This data can be an arbitrary JSON-serializable object which will be attached to the {@link SpaceMember | member object }. Returns all current space members.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async enter(profileData: ProfileData = null): Promise<SpaceMember[]> {
@@ -221,7 +221,7 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L86-L103) -->
-   * Profile data can be updated at any point after entering a space by calling `updateProfileData()`. This will emit an `update` event. If a client hasn’t yet entered the space, `updateProfileData()` will instead [enter the space](#enter), with the profile data, and emit an [`enter`](/spaces/members#events) event.
+   * Profile data can be updated at any point after entering a space by calling `updateProfileData()`. This will emit an `update` event. If a client hasn’t yet entered the space, `updateProfileData()` will instead {@link enter | enter the space }, with the profile data, and emit an { @link MembersEventMap.enter | `enter` } event.
    *
    * The following is an example of updating profile data:
    *
@@ -241,7 +241,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Update `profileData`. This data can be an arbitrary JSON-serializable object which is attached to the [member object](#spacemember). If the connection
+   * Update `profileData`. This data can be an arbitrary JSON-serializable object which is attached to the {@link SpaceMember | member object }. If the connection
    * has not entered the space, calling `updateProfileData` will call `enter` instead.
    *
    * A function can also be passed in. This function will receive the existing `profileData` and lets you update based on the existing value of `profileData`:
@@ -283,7 +283,7 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L59-L67) -->
-   * Leaving a space will emit a [`leave`](/spaces/members#events) event to all subscribers.
+   * Leaving a space will emit a { @link MembersEventMap.leave | `leave` } event to all subscribers.
    *
    * The following is an example of explicitly leaving a space:
    *
@@ -295,7 +295,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Leave the space. Can optionally take `profileData`. This triggers the `leave` event, but does not immediately remove the member from the space. See [offlineTimeout](#spaceoptions).
+   * Leave the space. Can optionally take `profileData`. This triggers the `leave` event, but does not immediately remove the member from the space. See {@link SpaceOptions.offlineTimeout | offlineTimeout }.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async leave(profileData: ProfileData = null) {
@@ -342,7 +342,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    *
    * - A member enters the space
    * - A member leaves the space
-   * - A member is removed from the space state [after the offlineTimeout period](#options) has elapsed
+   * - A member is removed from the space state { @link SpaceOptions.offlineTimeout | after the offlineTimeout period } has elapsed
    * - A member updates their profile data
    * - A member sets a new location
    *
@@ -350,7 +350,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    *
    * > **Note**
    * >
-   * > [Avatar stacks](/spaces/members) and [member location](/spaces/locations) events can be subscribed to on their individual namespaces; `space.members` and `space.locations`. These events are filtered versions of space state events. Only a single [message](https://ably.com/docs/channels/messages) is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.
+   * > Avatar stacks and member location events can be subscribed to on their individual namespaces; {@link Space.members | `space.members` } and {@link Space.locations | `space.locations`}. These events are filtered versions of space state events. Only a single [message](https://ably.com/docs/channels/messages) is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.
    * >
    * > The key difference between the subscribing to space state or to individual feature events, is that space state events return the current state of the space as an array of all members in each event payload. Individual member and location event payloads only include the relevant data for the member that triggered the event.
    *
@@ -403,8 +403,8 @@ class Space extends EventEmitter<SpaceEventMap> {
    * | clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.      | String  |
    * | connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).          | String  |
    * | isConnected         | Whether the member is connected to Ably or not.                        | Boolean |
-   * | profileData         | The optional [profile data](#profile-data) associated with the member. | Object  |
-   * | location            | The current [location](/spaces/locations) of the member.               | Object  |
+   * | profileData         | The optional {@link updateProfileData | profile data } associated with the member. | Object  |
+   * | location            | The current { @link Locations | location } of the member.               | Object  |
    * | lastEvent.name      | The most recent event emitted by the member.                           | String  |
    * | lastEvent.timestamp | The timestamp of the most recently emitted event.                      | Number  |
    *

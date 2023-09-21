@@ -53,7 +53,7 @@ export interface CursorUpdate {
 export interface SpaceOptions {
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Number of milliseconds after a user loses connection or closes their browser window to wait before their [SpaceMember](#spacemember) object is removed from the members list. The default is 120000ms (2 minutes).
+   * Number of milliseconds after a user loses connection or closes their browser window to wait before their {@link SpaceMember} object is removed from the members list. The default is 120000ms (2 minutes).
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   offlineTimeout: number;

@@ -23,7 +23,7 @@ const CURSORS_CHANNEL_TAG = '::$cursors';
  *
  * Cursor events are emitted whenever a member moves their mouse within a space. In order to optimize the efficiency and frequency of updates, cursor position events are automatically batched. The batching interval may be customized in order to further optimize for increased performance versus the number of events published.
  *
- * Live cursor updates are not available as part of the [space state](/spaces/space#subscribe) and must be subscribed to using [`space.cursors.subscribe()`](#subscribe).
+ * Live cursor updates are not available as part of the {@link Space.subscribe | space state} and must be subscribed to using {@link Cursors.subscribe | `space.cursors.subscribe()`}.
  *
  * > **Important**
  * >
@@ -38,14 +38,14 @@ const CURSORS_CHANNEL_TAG = '::$cursors';
  *
  * Live cursors build upon the functionality of the Pub/Sub Channels [presence](https://ably.com/docs/presence-occupancy/presence) feature.
  *
- * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](https://ably.com/docs/channels). The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the [space state](/spaces/space) and may only be subscribed to on the `cursors` namespace.
+ * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](https://ably.com/docs/channels). The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the {@link Space.subscribe | space state } and may only be subscribed to on the `cursors` namespace.
  *
  * The channel is only created when a member calls `space.cursors.set()`. The live cursors channel object can be accessed through `space.cursors.channel`. To monitor the [underlying state of the cursors channel](https://ably.com/docs/channels#states), the channel object can be accessed through `space.cursors.channel`.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Handles tracking of member cursors within a space. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * Handles tracking of member cursors within a space. Inherits from {@link EventEmitter}.
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export default class Cursors extends EventEmitter<CursorsEventMap> {
@@ -80,7 +80,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/cursors.textile?plain=1#L21-L74) -->
    * Set the position of a member’s cursor using the `set()` method. A position must contain an X-axis value and a Y-axis value to set the cursor position on a 2D plane. Calling `set()` will emit a cursor event so that other members are informed of the cursor movement in realtime.
    *
-   * A member must have been [entered](/spaces/space#enter) into the space to set their cursor position.
+   * A member must have been { @link Space.enter | entered } into the space to set their cursor position.
    *
    * The `set()` method takes the following parameters:
    *
@@ -211,7 +211,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *
    * > **Note**
    * >
-   * > The rate at which cursor events are published is controlled by the `outboundBatchInterval` property set in the [cursor options](#options) of a space.
+   * > The rate at which cursor events are published is controlled by the `outboundBatchInterval` property set in the {@link CursorsOptions | cursor options } of a space.
    *
    * The following is an example of subscribing to cursor events:
    *
@@ -223,13 +223,13 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Listen to `CursorUpdate` events. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   * Listen to `CursorUpdate` events. See {@link EventEmitter} for overloaded usage.
    *
    * Available events:
    *
    * - ##### **update**
    *
-   *   Emits an event when a new cursor position is set. The argument supplied to the event listener is a [CursorUpdate](#cursorupdate).
+   *   Emits an event when a new cursor position is set. The argument supplied to the event listener is a {@link CursorUpdate}.
    *
    *   ```ts
    *   space.cursors.subscribe('update', (cursorUpdate: CursorUpdate) => {});
@@ -283,7 +283,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   * Remove all event listeners, all event listeners for an event, or specific listeners. See {@link EventEmitter} for detailed usage.
    *
    * ```ts
    * space.cursors.unsubscribe('update');

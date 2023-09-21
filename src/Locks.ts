@@ -29,7 +29,7 @@ export interface LocksEventMap {
  *
  * Once a lock has been acquired by a member, the component that it relates to can be updated in the UI to visually indicate to other members that it is locked and and which member has the lock. The component can then be updated once the editing member has released the lock to indicate that it is now unlocked.
  *
- * Each lock is identified by a unique string ID, and only a single member may hold a lock with a given string at any one time. A lock will exist in one of three [states](#states) and may only transition between states in specific circumstances.
+ * Each lock is identified by a unique string ID, and only a single member may hold a lock with a given string at any one time. A lock will exist in one of three { @link LockStatus | states } and may only transition between states in specific circumstances.
  *
  * > **Important**
  * >
@@ -37,33 +37,33 @@ export interface LocksEventMap {
  *
  * ## Lock states
  *
- * Component locking is handled entirely client-side. Members may begin to optimistically edit a component as soon as they call [`acquire()`](#acquire) on the lock identifier related to it. Alternatively, you could wait until they receive a `locked` event and display a spinning symbol in the UI until this is received. In either case a subsequent `unlocked` event may invalidate that member’s lock request if another member acquired it earlier. The time for confirmation of whether a lock request was successful or rejected is, on average, in the hundreds of milliseconds, however your code should handle all possible lock state transitions.
+ * Component locking is handled entirely client-side. Members may begin to optimistically edit a component as soon as they call {@link acquire | `acquire()` } on the lock identifier related to it. Alternatively, you could wait until they receive a `locked` event and display a spinning symbol in the UI until this is received. In either case a subsequent `unlocked` event may invalidate that member’s lock request if another member acquired it earlier. The time for confirmation of whether a lock request was successful or rejected is, on average, in the hundreds of milliseconds, however your code should handle all possible lock state transitions.
  *
  * A lock will be in one of the following states:
  *
  * `pending`
- * A member has requested a lock by calling [`acquire()`](#acquire).
+ * A member has requested a lock by calling {@link acquire | `acquire()`}.
  *
  * `locked`
  * The lock is confirmed to be held by the requesting member.
  *
  * `unlocked`
- * The lock is confirmed to not be locked by the requesting member, or has been [released](#release) by a member previously holding the lock.
+ * The lock is confirmed to not be locked by the requesting member, or has been {@link release | released } by a member previously holding the lock.
  *
  * The following lock state transitions may occur:
  *
- * - None → `pending`: a member calls [`acquire()`](#acquire) to request a lock.
+ * - None → `pending`: a member calls {@link acquire | `acquire()` } to request a lock.
  * - `pending` → `locked`: the requesting member holds the lock.
  * - `pending` → `unlocked`: the requesting member does not hold the lock, since another member already holds it.
- * - `locked` → `unlocked`: the lock was either explicitly [released](#release) by the member, or their request was invalidated by a concurrent request which took precedence.
+ * - `locked` → `unlocked`: the lock was either explicitly {@link release | released} by the member, or their request was invalidated by a concurrent request which took precedence.
  * - `unlocked` → `locked`: the requesting member reacquired a lock they previously held.
  *
- * Only transitions that result in a `locked` or `unlocked` status will emit a lock event that members can [`subscribe()`](#subscribe) to.
+ * Only transitions that result in a `locked` or `unlocked` status will emit a lock event that members can {@link subscribe | `subscribe()` } to.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Provides a mechanism to "lock" a component, reducing the chances of conflict in an application whilst being edited by multiple members. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * Provides a mechanism to "lock" a component, reducing the chances of conflict in an application whilst being edited by multiple members. Inherits from {@link EventEmitter}.
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export default class Locks extends EventEmitter<LocksEventMap> {
@@ -256,7 +256,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L41-L72) -->
    * Use the `acquire()` method to attempt to acquire a lock with a given unique ID. Additional `attributes` may be passed when trying to acquire a lock that can contain a set of arbitrary key-value pairs. An example of using `attributes` is to store the component ID the lock relates to so that it can be easily updated in the UI with a visual indication of its lock status.
    *
-   * A member must have been [entered](/spaces/space#enter) into the space to acquire a lock.
+   * A member must have been {@link Space.enter | entered } into the space to acquire a lock.
    *
    * The following is an example of attempting to acquire a lock:
    *
@@ -282,12 +282,12 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *   }
    * }
    * ```
-   * Once a member requests a lock by calling `acquire()`, the lock is temporarily in the [pending state](#states). An event will be emitted based on whether the lock request was successful (a status of `locked`) or invalidated (a status of `unlocked`). This can be [subscribed](#subscribe) to in order for the client to know whether their lock request was successful or not.
+   * Once a member requests a lock by calling `acquire()`, the lock is temporarily in the {@link LockStatuses.Pending | pending state }. An event will be emitted based on whether the lock request was successful (a status of `locked`) or invalidated (a status of `unlocked`). This can be {@link subscribe | subscribed } to in order for the client to know whether their lock request was successful or not.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Send a request to acquire a lock. Returns a Promise which resolves once the request has been sent. A resolved Promise holds a `pending` [Lock](#lock). An error will be thrown if a lock request with a status of `pending` or `locked` already exists, returning a rejected promise.
+   * Send a request to acquire a lock. Returns a Promise which resolves once the request has been sent. A resolved Promise holds a `pending` {@link Lock}. An error will be thrown if a lock request with a status of `pending` or `locked` already exists, returning a rejected promise.
    *
    * When a lock acquisition by a member is confirmed with the `locked` status, an `update` event will be emitted. Hence to handle lock acquisition, `acquire()` needs to always be used together with `subscribe()`.
    *
@@ -341,11 +341,11 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * ```javascript
    * await space.locks.release(id);
    * ```
-   * Releasing a lock will emit a lock event with a [lock status](#states) of `unlocked`.
+   * Releasing a lock will emit a lock event with a {@link LockStatuses | lock status } of `unlocked`.
    *
    * > **Note**
    * >
-   * > When a member [leaves](/spaces/space#leave) a space, their locks are automatically released.
+   * > When a member {@link Space.leave | leaves } a space, their locks are automatically released.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
@@ -380,7 +380,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L92-L151) -->
-   * Subscribe to lock events by registering a listener. Lock events are emitted whenever the [lock state](#states) transitions into `locked` or `unlocked`. Use the `subscribe()` method on the `locks` namespace of the space to receive updates.
+   * Subscribe to lock events by registering a listener. Lock events are emitted whenever the {@link LockStatuses | lock state } transitions into `locked` or `unlocked`. Use the `subscribe()` method on the `locks` namespace of the space to receive updates.
    *
    * All lock events are `update` events. When a lock event is received, UI components can be updated to add and remove visual indications of which member is locking them, as well as enabling and disabling the ability for other members to edit them.
    *
@@ -429,21 +429,21 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * | Property                   | Description                                                                                                                  | Type      |
    * |----------------------------|------------------------------------------------------------------------------------------------------------------------------|-----------|
    * | id                         | The unique ID of the lock request.                                                                                           | String    |
-   * | status                     | The lock [status](#states) of the event. Will be one of `locked`, `unlocked` or `pending`.                                   | String    |
+   * | status                     | The lock {@link LockStatues | status } of the event. Will be one of `locked`, `unlocked` or `pending`.                                   | String    |
    * | timestamp                  | The timestamp of the lock event.                                                                                             | Number    |
    * | attributes                 | The optional attributes of the lock, such as the ID of the component it relates to.                                          | Object    |
    * | reason                     | The reason why the `request.status` is `unlocked`.                                                                           | ErrorInfo |
    * | member.clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                            | String    |
    * | member.connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                                | String    |
    * | member.isConnected         | Whether the member is connected to Ably or not.                                                                              | Boolean   |
-   * | member.lastEvent.name      | The most recent [event](/spaces/avatar#events) emitted by the member. Will be one of `enter`, `update`, `leave` or `remove`. | String    |
+   * | member.lastEvent.name      | The most recent { @link Members.subscribe | event } emitted by the member. Will be one of `enter`, `update`, `leave` or `remove`. | String    |
    * | member.lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                            | Number    |
-   * | member.profileData         | The optional [profile data](/spaces/avatar#profile-data) associated with the member.                                         | Object    |
+   * | member.profileData         | The optional {@link Space.updateProfileData | profile data } associated with the member.                                         | Object    |
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Listen to lock events. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   * Listen to lock events. See {@link EventEmitter} for overloaded usage.
    *
    * Available events:
    *
@@ -455,7 +455,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *   space.locks.subscribe('update', (lock: Lock) => {})
    *   ```
    *
-   *   The argument supplied to the callback is a [Lock](#lock), representing the lock request and it's status.
+   *   The argument supplied to the callback is a {@link Lock}, representing the lock request and it's status.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   subscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
@@ -494,7 +494,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   * Remove all event listeners, all event listeners for an event, or specific listeners. See {@link EventEmitter} for detailed usage.
    *
    * ```ts
    * space.locks.unsubscribe('update');

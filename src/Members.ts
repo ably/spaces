@@ -24,23 +24,23 @@ export interface MembersEventMap {
  * The following four event types are emitted by members:
  *
  * `enter`
- * A new member has entered the space. The member has either entered explicitly by calling [`space.enter()`](/spaces/space#enter), or has attempted to update their profile data before entering a space, which will instead emit an `enter` event.
+ * A new member has entered the space. The member has either entered explicitly by calling {@link Space.enter | `space.enter()`}, or has attempted to update their profile data before entering a space, which will instead emit an `enter` event.
  *
  * `updateProfile`
- * A member has updated their profile data by calling [`space.updateProfileData()`](/spaces/space#update-profile).
+ * A member has updated their profile data by calling {@link Space.updateProfileData | `space.updateProfileData()`.
  *
  * `leave`
- * A member has left the space. The member has either left explicitly by calling [`space.leave()`](/spaces/space#leave), or has abruptly disconnected and not re-established a connection within 15 seconds.
+ * A member has left the space. The member has either left explicitly by calling {@link Space.leave | `space.leave()` }, or has abruptly disconnected and not re-established a connection within 15 seconds.
  *
  * `remove`
- * A member has been removed from the members list after the [`offlineTimeout`](/spaces/space#options) period has elapsed. This enables members to appear greyed out in the avatar stack to indicate that they recently left for the period of time between their `leave` and `remove` events.
+ * A member has been removed from the members list after the {@link SpaceOptions.offlineTimeout | `offlineTimeout` } period has elapsed. This enables members to appear greyed out in the avatar stack to indicate that they recently left for the period of time between their `leave` and `remove` events.
  *
  * `update`
  * This event is emitted whenever any one of the above events is emitted.
  *
  * > **Note**
  * >
- * > Members [enter](/spaces/space#enter), [leave](/spaces/space#leave), and [update](/spaces/space#update-profile) a [space](/spaces/space) directly. The `members` namespace is used to subscribe to these updates.
+ * > Members {@link Space.enter | enter }, {@link Space.leave | leave }, and {@link Space.updateProfileData | update } a {@link Space | space } directly. The `members` namespace is used to subscribe to these updates.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
@@ -49,7 +49,7 @@ export interface MembersEventMap {
  *
  * The Spaces SDK is built upon existing Ably functionality available in Ably’s Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
  *
- * Avatar stacks build upon the functionality of the Pub/Sub Channels [presence](https://ably.com/docs/presence-occupancy/presence) feature. Members are entered into the presence set when they [enter the space](/spaces/space#enter).
+ * Avatar stacks build upon the functionality of the Pub/Sub Channels [presence](https://ably.com/docs/presence-occupancy/presence) feature. Members are entered into the presence set when they { @link Space.enter | enter the space }.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
@@ -100,7 +100,7 @@ class Members extends EventEmitter<MembersEventMap> {
    * See the documentation for {@link getAll}.
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Returns a Promise which resolves to the [SpaceMember](#spacemember) object relating to the local connection. Will resolve to `null` if the client hasn't entered the space yet.
+   * Returns a Promise which resolves to the {@link SpaceMember} object relating to the local connection. Will resolve to `null` if the client hasn't entered the space yet.
    *
    * Example:
    *
@@ -115,7 +115,7 @@ class Members extends EventEmitter<MembersEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/avatar.textile?plain=1#L129-L250) -->
-   * Space membership can be retrieved in one-off calls. These are local calls and retrieve the membership retained in memory by the SDK. One-off calls to retrieve membership can be used for operations such as displaying a member’s own profile data to them, or retrieving a list of all other members to use to [update their profile data](/spaces/space#update-profile).
+   * Space membership can be retrieved in one-off calls. These are local calls and retrieve the membership retained in memory by the SDK. One-off calls to retrieve membership can be used for operations such as displaying a member’s own profile data to them, or retrieving a list of all other members to use to {@link Space.updateProfileData | update their profile data }.
    *
    * The following is an example of retrieving a member’s own member object:
    *
@@ -235,7 +235,7 @@ class Members extends EventEmitter<MembersEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, including any who have left and not yet timed out. (_see: [offlineTimeout](#spaceoptions)_)
+   * Returns a Promise which resolves to an array of all {@link SpaceMember} objects (members) currently in the space, including any who have left and not yet timed out. (_see: {@link SpaceOptions.offlineTimeout | offlineTimeout}_)
    *
    * Example:
    *
@@ -255,7 +255,7 @@ class Members extends EventEmitter<MembersEventMap> {
    * See the documentation for {@link getAll}.
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, excluding your own member object.
+   * Returns a Promise which resolves to an array of all {@link SpaceMember} objects (members) currently in the space, excluding your own member object.
    *
    * Example:
    *
@@ -271,7 +271,7 @@ class Members extends EventEmitter<MembersEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/avatar.textile?plain=1#L29-L103) -->
-   * Subscribe to members’ online status and profile updates by registering a listener. Member events are emitted whenever a member [enters](/spaces/space#enter) or [leaves](/spaces/space#leave) the space, or updates their profile data. Use the `subscribe()` method on the `members` object of a space to receive updates.
+   * Subscribe to members’ online status and profile updates by registering a listener. Member events are emitted whenever a member {@link Space.enter | enters} or {@link Space.leave | leaves} the space, or updates their profile data. Use the `subscribe()` method on the `members` object of a space to receive updates.
    *
    * The following is an example of subscribing to the different member event types:
    *
@@ -310,7 +310,7 @@ class Members extends EventEmitter<MembersEventMap> {
    *   console.log(memberUpdate);
    * });
    * ```
-   * The following is an example payload of a member event. The `lastEvent.name` describes which [event type](#events) a payload relates to.
+   * The following is an example payload of a member event. The `lastEvent.name` describes which {@link SpaceEventMap | event type } a payload relates to.
    *
    * ```json
    *   {
@@ -335,21 +335,21 @@ class Members extends EventEmitter<MembersEventMap> {
    * | clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                 | String  |
    * | connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                     | String  |
    * | isConnected         | Whether the member is connected to Ably or not.                                                                   | Boolean |
-   * | profileData         | The optional [profile data](#profile-data) associated with the member.                                            | Object  |
-   * | location            | The current [location](/spaces/locations) of the member. Will be `null` for `enter`, `leave` and `remove` events. | Object  |
+   * | profileData         | The optional {@link Space.updateProfileData | profile data } associated with the member.                                            | Object  |
+   * | location            | The current {@link Locations | location} of the member. Will be `null` for `enter`, `leave` and `remove` events. | Object  |
    * | lastEvent.name      | The most recent event emitted by the member.                                                                      | String  |
    * | lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                 | Number  |
    *
    * > **Further reading**
    * >
-   * > Avatar stack subscription listeners only trigger on events related to members’ online status and profile updates. Each event only contains the payload of the member that triggered it. Alternatively, [space state](/spaces/space) can be subscribed to which returns an array of all members with their latest state every time any event is triggered.
+   * > Avatar stack subscription listeners only trigger on events related to members’ online status and profile updates. Each event only contains the payload of the member that triggered it. Alternatively, {@link Space.subscribe | space state } can be subscribed to which returns an array of all members with their latest state every time any event is triggered.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Listen to member events for the space. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   * Listen to member events for the space. See {@link EventEmitter} for overloaded usage.
    *
-   * The argument supplied to the callback is the [SpaceMember](#spacemember) object representing the member that triggered the event.
+   * The argument supplied to the callback is the {@link SpaceMember} object representing the member that triggered the event.
    *
    * Example:
    *
@@ -366,7 +366,7 @@ class Members extends EventEmitter<MembersEventMap> {
    *   ```ts
    *   space.members.subscribe('enter', (member: SpaceMember) => {})
    *   ```
-   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
+   *   The argument supplied to the callback is a {@link SpaceMember} object representing the member entering the space.
    *
    * - ##### **leave**
    *
@@ -376,17 +376,17 @@ class Members extends EventEmitter<MembersEventMap> {
    *   space.members.subscribe('leave', (member: SpaceMember) => {})
    *   ```
    *
-   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member leaving the space.
+   *   The argument supplied to the callback is a {@link SpaceMember} object representing the member leaving the space.
    *
    * - ##### **remove**
    *
-   *   Listen to remove events of members. The remove event will be triggered when the [offlineTimeout](#spaceoptions) has passed.
+   *   Listen to remove events of members. The remove event will be triggered when the {@link SpaceOptions.offlineTimeout | offlineTimeout } has passed.
    *
    *   ```ts
    *   space.members.subscribe('remove', (member: SpaceMember) => {})
    *   ```
    *
-   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member removed from the space.
+   *   The argument supplied to the callback is a {@link SpaceMember} object representing the member removed from the space.
    *
    * - ##### **updateProfile**
    *
@@ -395,7 +395,7 @@ class Members extends EventEmitter<MembersEventMap> {
    *   ```ts
    *   space.members.subscribe('updateProfile', (member: SpaceMember) => {})
    *   ```
-   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member entering the space.
+   *   The argument supplied to the callback is a {@link SpaceMember} object representing the member entering the space.
    *
    * - ##### **update**
    *
@@ -405,7 +405,7 @@ class Members extends EventEmitter<MembersEventMap> {
    *   space.members.subscribe('update', (member: SpaceMember) => {})
    *   ```
    *
-   *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member affected by the change.
+   *   The argument supplied to the callback is a {@link SpaceMember} object representing the member affected by the change.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   subscribe<K extends keyof MembersEventMap>(
@@ -452,7 +452,7 @@ class Members extends EventEmitter<MembersEventMap> {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Remove all the event listeners or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   * Remove all the event listeners or specific listeners. See {@link EventEmitter} for detailed usage.
    *
    * ```ts
    * // Unsubscribe from all events
