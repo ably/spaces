@@ -106,9 +106,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.emit('update', { members: await this.members.getAll() });
   }
 
-  private async createProfileUpdate(update: ProfileData) {
-    const self = await this.members.getSelf();
-
+  private createProfileUpdate(self, update: ProfileData) {
     const profileUpdate = {
       id: nanoid(),
       current: update,
@@ -177,6 +175,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
 
     if (!self) {
       const update = await this.createProfileUpdate(
+        self,
         isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(null) : profileDataOrUpdateFn,
       );
       await this.presenceEnter(update);
@@ -184,6 +183,7 @@ class Space extends EventEmitter<SpaceEventsMap> {
     }
 
     const update = await this.createProfileUpdate(
+      self,
       isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(self.profileData) : profileDataOrUpdateFn,
     );
     const extras = this.locks.getLockExtras(self.connectionId);
@@ -198,19 +198,27 @@ class Space extends EventEmitter<SpaceEventsMap> {
       throw ERR_NOT_ENTERED_SPACE();
     }
 
-    const update = {
-      profileUpdate: {
-        id: profileData ? nanoid() : null,
-        current: profileData ?? null,
-      },
-      locationUpdate: {
-        id: null,
-        current: self?.location ?? null,
-        previous: null,
-      },
-    };
+    let update;
 
-    await this.presenceLeave(update);
+    // Use arguments so it's possible to deliberately nullify profileData on leave
+    if (arguments.length > 0) {
+      update = this.createProfileUpdate(self, profileData);
+    } else {
+      update = {
+        profileUpdate: {
+          id: null,
+          current: self.profileData,
+        },
+        locationUpdate: {
+          id: null,
+          current: self.location,
+          previous: null,
+        },
+      };
+    }
+
+    const extras = this.locks.getLockExtras(self.connectionId);
+    await this.presenceLeave(update, extras);
   }
 
   async getState(): Promise<{ members: SpaceMember[] }> {
