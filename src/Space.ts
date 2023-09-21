@@ -53,9 +53,9 @@ export type UpdateProfileDataFunction = (profileData: ProfileData) => ProfileDat
  * - Live cursors, via the {@link cursors | `cursors`} property
  * - Component locking, via the {@link locks | `locks`} property
  *
- * The `space` namespace consists of a state object that represents the realtime status of all members in a given virtual space. This includes a list of which members are currently online or have recently left and each member’s location within the application. The position of members’ cursors are excluded from the space state due to their high frequency of updates. In the beta release, which UI components members have locked are also excluded from the space state.
+ * A `Space` instance consists of a state object that represents the realtime status of all members in a given virtual space. This includes a list of which members are currently online or have recently left and each member’s location within the application. The position of members’ cursors are excluded from the space state due to their high frequency of updates. In the beta release, which UI components members have locked are also excluded from the space state.
  *
- * Space state can be {@link subscribe | subscribed} to in the `space` namespace. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
+ * Space state can be {@link subscribe | subscribed} to by using a `Space` object. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
  *
  * To subscribe to any events in a space, you first need to create or retrieve a space.
  *
@@ -350,7 +350,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    *
    * > **Note**
    * >
-   * > Avatar stacks and member location events can be subscribed to on their individual namespaces; {@link Space.members | `space.members` } and {@link Space.locations | `space.locations`}. These events are filtered versions of space state events. Only a single [message](https://ably.com/docs/channels/messages) is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.
+   * > Avatar stacks and member location events can be subscribed to using the space’s {@link members | `members` } and {@link locations | `locations` } properties.0These events are filtered versions of space state events. Only a single [message](https://ably.com/docs/channels/messages) is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.
    * >
    * > The key difference between the subscribing to space state or to individual feature events, is that space state events return the current state of the space as an array of all members in each event payload. Individual member and location event payloads only include the relevant data for the member that triggered the event.
    *
