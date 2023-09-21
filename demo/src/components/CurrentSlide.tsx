@@ -12,7 +12,7 @@ export const CurrentSlide = ({ slides }: Props) => {
   const { self } = useMembers();
   const slide = parseInt(self?.location?.slide || '', 10) || 0;
 
-  useTrackCursor(containerRef);
+  useTrackCursor(containerRef, self?.connectionId);
 
   return (
     <section

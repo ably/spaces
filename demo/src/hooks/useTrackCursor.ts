@@ -5,7 +5,7 @@ export const CURSOR_MOVE = 'move';
 export const CURSOR_ENTER = 'enter';
 export const CURSOR_LEAVE = 'leave';
 
-export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>) => {
+export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>, selfConnectionId?: string) => {
   const space = useContext(SpacesContext);
 
   useEffect(() => {
@@ -15,6 +15,7 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>) => {
 
     const cursorHandlers = {
       enter: (event: MouseEvent) => {
+        if (!selfConnectionId) return;
         const { top, left } = cursorContainer.getBoundingClientRect();
         space.cursors.set({
           position: { x: event.clientX - left, y: event.clientY - top },
@@ -22,6 +23,7 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>) => {
         });
       },
       move: (event: MouseEvent) => {
+        if (!selfConnectionId) return;
         const { top, left } = cursorContainer.getBoundingClientRect();
         space.cursors.set({
           position: { x: event.clientX - left, y: event.clientY - top },
@@ -29,6 +31,7 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>) => {
         });
       },
       leave: (event: MouseEvent) => {
+        if (!selfConnectionId) return;
         const { top, left } = cursorContainer.getBoundingClientRect();
         space.cursors.set({
           position: { x: event.clientX - left, y: event.clientY - top },
@@ -47,5 +50,5 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>) => {
       cursorContainer.removeEventListener('mousemove', cursorHandlers.move);
       cursorContainer.removeEventListener('mouseleave', cursorHandlers.leave);
     };
-  }, [space, containerRef]);
+  }, [space, containerRef, selfConnectionId]);
 };
