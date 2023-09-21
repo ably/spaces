@@ -112,13 +112,9 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *
    * All location changes are `update` events. When a location update is received, clear the highlight from the UI component of the member’s `previousLocation` and add it to `currentLocation`.
    *
-   * <aside data-type='note'>
-   * <p>
-   *
-   * A location update is also emitted when a member [leaves](/spaces/space#leave) a space. The member’s `currentLocation` will be `null` for these events so that any UI component highlighting can be cleared.
-   *
-   * </p>
-   * </aside>
+   * > **Note**
+   * >
+   * > A location update is also emitted when a member [leaves](/spaces/space#leave) a space. The member’s `currentLocation` will be `null` for these events so that any UI component highlighting can be cleared.
    *
    * The following is an example of subscribing to location events:
    *
@@ -171,13 +167,9 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * | previousLocation           | The previous location of the member.                                                                                  | Object  |
    * | currentLocation            | The new location of the member.                                                                                       | Object  |
    *
-   * <aside data-type='further-reading'>
-   * <p>
-   *
-   * Member location subscription listeners only trigger on events related to members’ locations. Each event only contains the payload of the member that triggered it. Alternatively, [space state](/spaces/space) can be subscribed to which returns an array of all members with their latest state every time any event is triggered.
-   *
-   * </p>
-   * </aside>
+   * > **Further reading**
+   * >
+   * > Member location subscription listeners only trigger on events related to members’ locations. Each event only contains the payload of the member that triggered it. Alternatively, [space state](/spaces/space) can be subscribed to which returns an array of all members with their latest state every time any event is triggered.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *

@@ -38,13 +38,9 @@ export interface MembersEventMap {
  * `update`
  * This event is emitted whenever any one of the above events is emitted.
  *
- * <aside data-type='note'>
- * <p>
- *
- * Members [enter](/spaces/space#enter), [leave](/spaces/space#leave), and [update](/spaces/space#update-profile) a [space](/spaces/space) directly. The `members` namespace is used to subscribe to these updates.
- *
- * </p>
- * </aside>
+ * > **Note**
+ * >
+ * > Members [enter](/spaces/space#enter), [leave](/spaces/space#leave), and [update](/spaces/space#update-profile) a [space](/spaces/space) directly. The `members` namespace is used to subscribe to these updates.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
@@ -344,13 +340,9 @@ class Members extends EventEmitter<MembersEventMap> {
    * | lastEvent.name      | The most recent event emitted by the member.                                                                      | String  |
    * | lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                 | Number  |
    *
-   * <aside data-type='further-reading'>
-   * <p>
-   *
-   * Avatar stack subscription listeners only trigger on events related to members’ online status and profile updates. Each event only contains the payload of the member that triggered it. Alternatively, [space state](/spaces/space) can be subscribed to which returns an array of all members with their latest state every time any event is triggered.
-   *
-   * </p>
-   * </aside>
+   * > **Further reading**
+   * >
+   * > Avatar stack subscription listeners only trigger on events related to members’ online status and profile updates. Each event only contains the payload of the member that triggered it. Alternatively, [space state](/spaces/space) can be subscribed to which returns an array of all members with their latest state every time any event is triggered.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
