@@ -20,7 +20,7 @@ export interface MembersEventMap {
  * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/14acea6dee7bf3872a3d32d43732f934cbe93a7d/content/spaces/avatar.textile?plain=1#L9-L24) -->
  * Avatar stacks are the most common way of showing the online status of members in an application by displaying an avatar for each member. Events are emitted whenever a member enters or leaves a space, or updates their profile data. Additional information can also be provided, such as a profile picture and email address.
  *
- * Subscribe to the `space.members` namespace in order to keep your avatar stack updated in realtime.
+ * Subscribe to the space’s { @link Space.members | `members` } property in order to keep your avatar stack updated in realtime.
  *
  * ## Event types
  *
@@ -40,7 +40,7 @@ export interface MembersEventMap {
  *
  * > **Note**
  * >
- * > Members [enter](/spaces/space#enter), [leave](/spaces/space#leave), and [update](/spaces/space#update-profile) a [space](/spaces/space) directly. The `members` namespace is used to subscribe to these updates.
+ * > Members [enter](/spaces/space#enter), [leave](/spaces/space#leave), and [update](/spaces/space#update-profile) a [space](/spaces/space) directly. The space’s { @link Space.members | `members` } property is used to subscribe to these updates.
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *

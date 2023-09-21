@@ -44,7 +44,7 @@ const CURSORS_CHANNEL_TAG = '::$cursors';
  *
  * Live cursors build upon the functionality of the Pub/Sub Channels [presence](https://ably.com/docs/presence-occupancy/presence) feature.
  *
- * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](https://ably.com/docs/channels). The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the [space state](/spaces/space) and may only be subscribed to on the `cursors` namespace.
+ * Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](https://ably.com/docs/channels). The other features of the Spaces SDK, such as avatar stacks, member locations and component locking all share a single channel. For this same reason, cursor position updates are not included in the [space state](/spaces/space) and may only be subscribed to via the {@link Space.cursors | `cursors` } property.
  *
  * The channel is only created when a member calls `space.cursors.set()`. The live cursors channel object can be accessed through `space.cursors.channel`. To monitor the [underlying state of the cursors channel](https://ably.com/docs/channels#states), the channel object can be accessed through `space.cursors.channel`.
  *

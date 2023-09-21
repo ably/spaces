@@ -131,7 +131,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/locations.textile?plain=1#L29-L91) -->
-   * Subscribe to location events by registering a listener. Location events are emitted whenever a member changes location by calling {@link set}. Use the `subscribe()` method on the `locations` namespace of the space to receive updates.
+   * Subscribe to location events by registering a listener. Location events are emitted whenever a member changes location by calling {@link set}.
    *
    * All location changes are {@link LocationsEventMap.update | `update`} events. When a location update is received, clear the highlight from the UI component of the member’s {@link LocationsEvents.UpdateEvent.previousLocation | `previousLocation`} and add it to {@link LocationsEvents.UpdateEvent.currentLocation | `currentLocation`}.
    *
