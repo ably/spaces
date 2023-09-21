@@ -2,6 +2,7 @@ import { Avatar } from './Avatar';
 import { AvatarStack } from './AvatarStack';
 import { ExternalLinkSvg, InfoSvg } from './svg';
 import { type Member } from '../utils/types';
+import { getParamNameFromUrl } from '../utils';
 
 interface Props {
   self?: Member;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export const Header = ({ self, others }: Props) => {
+  const teamName = getParamNameFromUrl('team', 1, '')
+  
   return (
     <header
       id="main-header"
@@ -16,7 +19,7 @@ export const Header = ({ self, others }: Props) => {
     >
       <div className="mx-auto justify-between grid grid-rows-2 grid-cols-2 max-w-screen-2xl md:px-8 lg:px-16 md:flex md:items-center">
         <section className="py-4 shrink-0 mr-4">
-          <p className="font-semibold pl-8 md:text-2xl">Team Argo</p>
+          <p className="font-semibold pl-8 md:text-2xl capitalize">Team {teamName ?? 'Argo'}</p>
           <p className="leading-5 pl-8">Pitch deck</p>
         </section>
 
@@ -47,7 +50,7 @@ export const Header = ({ self, others }: Props) => {
           <a
             href="https://github.com/ably-labs/spaces"
             target="_blank"
-            className="flex items-center px-5 py-[14px] justify-start shrink-0 block"
+            className="flex items-center px-5 py-[14px] justify-start shrink-0"
             rel="noreferrer"
           >
             <p className="font-medium text-base">Space API</p>
@@ -56,7 +59,7 @@ export const Header = ({ self, others }: Props) => {
 
           <a
             href="https://docs.google.com/forms/d/e/1FAIpQLSer2ujLNw0rlrf2FvfIhLxyiWuuvTwYkDDqHmv30F8Cs00YWg/viewform"
-            className="block w-[100px] text-white bg-ably-black rounded-md py-[11px] px-5 leading-[1.125] md:text-xs lg:text-base lg:ml-[24px] shrink-0 hidden lg:block"
+            className="w-[100px] text-white bg-ably-black rounded-md py-[11px] px-5 leading-[1.125] md:text-xs lg:text-base lg:ml-[24px] shrink-0 hidden lg:block"
           >
             Sign Up
           </a>
