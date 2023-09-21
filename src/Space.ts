@@ -386,7 +386,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    *
    * > **Note**
    * >
-   * > [Avatar stacks](/spaces/members) and [member location](/spaces/locations) events can be subscribed to on their individual namespaces; `space.members` and `space.locations`. These events are filtered versions of space state events. Only a single [message](/channels/messages) is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.
+   * > [Avatar stacks](/spaces/members) and [member location](/spaces/locations) events can be subscribed to on their individual namespaces; `space.members` and `space.locations`. These events are filtered versions of space state events. Only a single [message](https://ably.com/docs/channels/messages) is published per event by Ably, irrespective of whether you register listeners for space state or individual namespaces. If you register listeners for both, it is still only a single message.
    * >
    * > The key difference between the subscribing to space state or to individual feature events, is that space state events return the current state of the space as an array of all members in each event payload. Individual member and location event payloads only include the relevant data for the member that triggered the event.
    *
@@ -436,8 +436,8 @@ class Space extends EventEmitter<SpaceEventMap> {
    *
    * | Property            | Description                                                            | Type    |
    * |---------------------|------------------------------------------------------------------------|---------|
-   * | clientId            | The [client identifier](/auth/identified-clients) for the member.      | String  |
-   * | connectionId        | The unique identifier of the member’s [connection](/connect).          | String  |
+   * | clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.      | String  |
+   * | connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).          | String  |
    * | isConnected         | Whether the member is connected to Ably or not.                        | Boolean |
    * | profileData         | The optional [profile data](#profile-data) associated with the member. | Object  |
    * | location            | The current [location](/spaces/locations) of the member.               | Object  |

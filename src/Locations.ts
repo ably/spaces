@@ -37,7 +37,7 @@ export interface LocationsEventMap {
  *
  * The Spaces SDK is built upon existing Ably functionality available in Ably’s Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
  *
- * Member locations build upon the functionality of the Pub/Sub Channels [presence](/presence-occupancy/presence) feature. Members are entered into the presence set when they [enter the space](/spaces/space#enter).
+ * Member locations build upon the functionality of the Pub/Sub Channels [presence](https://ably.com/docs/presence-occupancy/presence) feature. Members are entered into the presence set when they [enter the space](/spaces/space#enter).
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
@@ -180,8 +180,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *
    * | Property                   | Description                                                                                                           | Type    |
    * |----------------------------|-----------------------------------------------------------------------------------------------------------------------|---------|
-   * | member.clientId            | The [client identifier](/auth/identified-clients) for the member.                                                     | String  |
-   * | member.connectionId        | The unique identifier of the member’s [connection](/connect).                                                         | String  |
+   * | member.clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                     | String  |
+   * | member.connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                         | String  |
    * | member.isConnected         | Whether the member is connected to Ably or not.                                                                       | Boolean |
    * | member.lastEvent.name      | The most recent [event](/spaces/avatar) emitted by the member. Will be one of `enter`, `update`, `leave` or `remove`. | String  |
    * | member.lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                     | Number  |

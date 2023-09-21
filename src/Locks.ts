@@ -507,8 +507,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * | timestamp                  | The timestamp of the lock event.                                                                                             | Number    |
    * | attributes                 | The optional attributes of the lock, such as the ID of the component it relates to.                                          | Object    |
    * | reason                     | The reason why the `request.status` is `unlocked`.                                                                           | ErrorInfo |
-   * | member.clientId            | The [client identifier](/auth/identified-clients) for the member.                                                            | String    |
-   * | member.connectionId        | The unique identifier of the member’s [connection](/connect).                                                                | String    |
+   * | member.clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                            | String    |
+   * | member.connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                                | String    |
    * | member.isConnected         | Whether the member is connected to Ably or not.                                                                              | Boolean   |
    * | member.lastEvent.name      | The most recent [event](/spaces/avatar#events) emitted by the member. Will be one of `enter`, `update`, `leave` or `remove`. | String    |
    * | member.lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                            | Number    |

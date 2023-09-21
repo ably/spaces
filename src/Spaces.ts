@@ -143,9 +143,9 @@ class Spaces {
    *
    * The Spaces SDK is built upon existing Ably functionality available in Ably’s Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
    *
-   * A space is created as an Ably [channel](/channels). Members [attach](/channels#attach) to the channel and join its [presence set](/presence-occupancy/presence) when they [enter](#enter) the space. Avatar stacks, member locations and component locking are all handled on this channel.
+   * A space is created as an Ably [channel](/channels). Members [attach](https://ably.com/docs/channels#attach) to the channel and join its [presence set](https://ably.com/docs/presence-occupancy/presence) when they [enter](#enter) the space. Avatar stacks, member locations and component locking are all handled on this channel.
    *
-   * To manage the state of the space, you can monitor the [state of the underlying channel](/channels#states). The channel object can be accessed through `space.channel`.
+   * To manage the state of the space, you can monitor the [state of the underlying channel](https://ably.com/docs/channels#states). The channel object can be accessed through `space.channel`.
    *
    * The following is an example of registering a listener to wait for a channel to become attached:
    *
@@ -157,7 +157,7 @@ class Spaces {
    *
    * > **Note**
    * >
-   * > Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](/channels).
+   * > Due to the high frequency at which updates are streamed for cursor movements, live cursors utilizes its own [channel](https://ably.com/docs/channels).
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
@@ -179,7 +179,7 @@ class Spaces {
    *
    * ### paginationLimit
    *
-   * The volume of messages sent can be high when using live cursors. Because of this, the last known position of every members’ cursor is obtained from [history](/storage-history/history). The `paginationLimit` is the number of pages that should be searched to find the last position of each cursor. The default is 5.
+   * The volume of messages sent can be high when using live cursors. Because of this, the last known position of every members’ cursor is obtained from [history](https://ably.com/docs/storage-history/history). The `paginationLimit` is the number of pages that should be searched to find the last position of each cursor. The default is 5.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *

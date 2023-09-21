@@ -52,7 +52,7 @@ export interface MembersEventMap {
  *
  * The Spaces SDK is built upon existing Ably functionality available in Ably’s Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
  *
- * Avatar stacks build upon the functionality of the Pub/Sub Channels [presence](/presence-occupancy/presence) feature. Members are entered into the presence set when they [enter the space](/spaces/space#enter).
+ * Avatar stacks build upon the functionality of the Pub/Sub Channels [presence](https://ably.com/docs/presence-occupancy/presence) feature. Members are entered into the presence set when they [enter the space](/spaces/space#enter).
  *
  * <!-- END WEBSITE DOCUMENTATION -->
  *
@@ -365,8 +365,8 @@ class Members extends EventEmitter<MembersEventMap> {
    *
    * | Property            | Description                                                                                                       | Type    |
    * |---------------------|-------------------------------------------------------------------------------------------------------------------|---------|
-   * | clientId            | The [client identifier](/auth/identified-clients) for the member.                                                 | String  |
-   * | connectionId        | The unique identifier of the member’s [connection](/connect).                                                     | String  |
+   * | clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                 | String  |
+   * | connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                     | String  |
    * | isConnected         | Whether the member is connected to Ably or not.                                                                   | Boolean |
    * | profileData         | The optional [profile data](#profile-data) associated with the member.                                            | Object  |
    * | location            | The current [location](/spaces/locations) of the member. Will be `null` for `enter`, `leave` and `remove` events. | Object  |
