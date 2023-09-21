@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid';
-
 import EventEmitter, {
   InvalidArgumentError,
   inspect,
@@ -11,6 +9,7 @@ import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
+import SpaceUpdate from './SpaceUpdate.js';
 
 type LocationsEventMap = {
   update: { member: SpaceMember; currentLocation: unknown; previousLocation: unknown };
@@ -19,10 +18,7 @@ type LocationsEventMap = {
 export default class Locations extends EventEmitter<LocationsEventMap> {
   private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};
 
-  constructor(
-    private space: Space,
-    private presenceUpdate: (update: PresenceMember['data'], extras?: PresenceMember['extras']) => Promise<void>,
-  ) {
+  constructor(private space: Space, private presenceUpdate: Space['presenceUpdate']) {
     super();
   }
 
@@ -61,20 +57,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
       throw ERR_NOT_ENTERED_SPACE();
     }
 
-    const update: PresenceMember['data'] = {
-      profileUpdate: {
-        id: null,
-        current: self.profileData,
-      },
-      locationUpdate: {
-        id: nanoid(),
-        previous: self.location,
-        current: location,
-      },
-    };
-
-    const extras = this.space.locks.getLockExtras(self.connectionId);
-    await this.presenceUpdate(update, extras);
+    const update = new SpaceUpdate({ self, extras: this.space.locks.getLockExtras(self.connectionId) });
+    await this.presenceUpdate(update.updateLocation(location));
   }
 
   subscribe<K extends EventKey<LocationsEventMap>>(

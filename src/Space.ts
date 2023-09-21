@@ -1,5 +1,4 @@
 import Ably, { Types } from 'ably';
-import { nanoid } from 'nanoid';
 
 import EventEmitter, {
   InvalidArgumentError,
@@ -11,9 +10,9 @@ import Locations from './Locations.js';
 import Cursors from './Cursors.js';
 import Members from './Members.js';
 import Locks from './Locks.js';
+import SpaceUpdate, { type SpacePresenceData } from './SpaceUpdate.js';
 
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
-
 import { isFunction, isObject } from './utilities/is.js';
 
 import type { SpaceOptions, SpaceMember, ProfileData } from './types.js';
@@ -63,21 +62,21 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.locks = new Locks(this, this.presenceUpdate);
   }
 
-  private presenceUpdate = (data: PresenceMember['data'], extras?: PresenceMember['extras']) => {
+  private presenceUpdate = ({ data, extras }: SpacePresenceData) => {
     if (!extras) {
       return this.channel.presence.update(data);
     }
     return this.channel.presence.update(Ably.Realtime.PresenceMessage.fromValues({ data, extras }));
   };
 
-  private presenceEnter = (data: PresenceMember['data'], extras?: PresenceMember['extras']) => {
+  private presenceEnter = ({ data, extras }: SpacePresenceData) => {
     if (!extras) {
       return this.channel.presence.enter(data);
     }
     return this.channel.presence.enter(Ably.Realtime.PresenceMessage.fromValues({ data, extras }));
   };
 
-  private presenceLeave = (data: PresenceMember['data'], extras?: PresenceMember['extras']) => {
+  private presenceLeave = ({ data, extras }: SpacePresenceData) => {
     if (!extras) {
       return this.channel.presence.leave(data);
     }
@@ -106,33 +105,6 @@ class Space extends EventEmitter<SpaceEventsMap> {
     this.emit('update', { members: await this.members.getAll() });
   }
 
-  private createProfileUpdate(self, update: ProfileData) {
-    const profileUpdate = {
-      id: nanoid(),
-      current: update,
-    };
-
-    if (!self) {
-      return {
-        profileUpdate,
-        locationUpdate: {
-          id: null,
-          current: null,
-          previous: null,
-        },
-      };
-    } else {
-      return {
-        profileUpdate,
-        locationUpdate: {
-          id: null,
-          current: self.location ?? null,
-          previous: null,
-        },
-      };
-    }
-  }
-
   async enter(profileData: ProfileData = null): Promise<SpaceMember[]> {
     return new Promise((resolve) => {
       const presence = this.channel.presence;
@@ -150,17 +122,8 @@ class Space extends EventEmitter<SpaceEventsMap> {
         resolve(members);
       });
 
-      this.presenceEnter({
-        profileUpdate: {
-          id: nanoid(),
-          current: profileData,
-        },
-        locationUpdate: {
-          id: null,
-          current: null,
-          previous: null,
-        },
-      });
+      const update = new SpaceUpdate({ self: null, extras: null });
+      this.presenceEnter(update.updateProfileData(profileData));
     });
   }
 
@@ -173,22 +136,20 @@ class Space extends EventEmitter<SpaceEventsMap> {
       );
     }
 
+    let update = new SpaceUpdate({ self, extras: self ? this.locks.getLockExtras(self.connectionId) : null });
+
     if (!self) {
-      const update = await this.createProfileUpdate(
-        self,
+      const data = update.updateProfileData(
         isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(null) : profileDataOrUpdateFn,
       );
-      await this.presenceEnter(update);
+      await this.presenceEnter(data);
       return;
+    } else {
+      const data = update.updateProfileData(
+        isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(self.profileData) : profileDataOrUpdateFn,
+      );
+      return this.presenceUpdate(data);
     }
-
-    const update = await this.createProfileUpdate(
-      self,
-      isFunction(profileDataOrUpdateFn) ? profileDataOrUpdateFn(self.profileData) : profileDataOrUpdateFn,
-    );
-    const extras = this.locks.getLockExtras(self.connectionId);
-
-    return this.presenceUpdate(update, extras);
   }
 
   async leave(profileData: ProfileData = null) {
@@ -198,27 +159,17 @@ class Space extends EventEmitter<SpaceEventsMap> {
       throw ERR_NOT_ENTERED_SPACE();
     }
 
-    let update;
+    const update = new SpaceUpdate({ self, extras: this.locks.getLockExtras(self.connectionId) });
+    let data;
 
     // Use arguments so it's possible to deliberately nullify profileData on leave
     if (arguments.length > 0) {
-      update = this.createProfileUpdate(self, profileData);
+      data = update.updateProfileData(profileData);
     } else {
-      update = {
-        profileUpdate: {
-          id: null,
-          current: self.profileData,
-        },
-        locationUpdate: {
-          id: null,
-          current: self.location,
-          previous: null,
-        },
-      };
+      data = update.noop();
     }
 
-    const extras = this.locks.getLockExtras(self.connectionId);
-    await this.presenceLeave(update, extras);
+    await this.presenceLeave(data);
   }
 
   async getState(): Promise<{ members: SpaceMember[] }> {
