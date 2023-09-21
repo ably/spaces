@@ -11,6 +11,8 @@ import EventEmitter, {
   type EventListener,
 } from './utilities/EventEmitter.js';
 
+import SpaceUpdate from './SpaceUpdate.js';
+
 export class LockAttributes extends Map<string, string> {
   toJSON() {
     return Object.fromEntries(this);
@@ -34,10 +36,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
   // have requested.
   private locks: Map<string, Map<string, Lock>>;
 
-  constructor(
-    private space: Space,
-    private presenceUpdate: (update: PresenceMember['data'], extras?: any) => Promise<void>,
-  ) {
+  constructor(private space: Space, private presenceUpdate: Space['presenceUpdate']) {
     super();
     this.locks = new Map();
   }
@@ -267,19 +266,9 @@ export default class Locks extends EventEmitter<LockEventMap> {
     pendingLock.reason = ERR_LOCK_IS_LOCKED();
   }
 
-  updatePresence(member: SpaceMember) {
-    const update: PresenceMember['data'] = {
-      profileUpdate: {
-        id: null,
-        current: member.profileData,
-      },
-      locationUpdate: {
-        id: null,
-        current: member?.location ?? null,
-        previous: null,
-      },
-    };
-    return this.presenceUpdate(update, this.getLockExtras(member.connectionId));
+  updatePresence(self: SpaceMember) {
+    const update = new SpaceUpdate({ self, extras: this.getLockExtras(self.connectionId) });
+    return this.presenceUpdate(update.noop());
   }
 
   getLock(id: string, connectionId: string): Lock | undefined {
