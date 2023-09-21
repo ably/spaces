@@ -29,8 +29,14 @@ const SPACE_OPTIONS_DEFAULTS = {
   },
 };
 
+export namespace SpaceEvents {
+  export interface UpdateEvent {
+    members: SpaceMember[];
+  }
+}
+
 export type SpaceEventMap = {
-  update: { members: SpaceMember[] };
+  update: SpaceEvents.UpdateEvent;
 };
 
 class Space extends EventEmitter<SpaceEventMap> {

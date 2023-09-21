@@ -11,8 +11,16 @@ import type Space from './Space.js';
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
 import SpaceUpdate from './SpaceUpdate.js';
 
+export namespace LocationsEvents {
+  export interface UpdateEvent {
+    member: SpaceMember;
+    currentLocation: unknown;
+    previousLocation: unknown;
+  }
+}
+
 export type LocationsEventMap = {
-  update: { member: SpaceMember; currentLocation: unknown; previousLocation: unknown };
+  update: LocationsEvents.UpdateEvent;
 };
 
 export default class Locations extends EventEmitter<LocationsEventMap> {
