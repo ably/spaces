@@ -17,9 +17,6 @@
     "ably": "^1.2.43",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.9",
-    "lodash.assign": "^4.2.0",
-    "lodash.find": "^4.6.0",
-    "lodash.omit": "^4.5.0",
     "nanoid": "^4.0.2",
     "random-words": "^2.0.0",
     "react": "^18.2.0",
@@ -28,9 +25,6 @@
     "sanitize-html": "^2.11.0"
   },
   "devDependencies": {
-    "@types/lodash.assign": "^4.2.7",
-    "@types/lodash.find": "^4.6.7",
-    "@types/lodash.omit": "^4.5.7",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/react-helmet": "^6.1.6",
