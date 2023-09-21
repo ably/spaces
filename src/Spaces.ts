@@ -18,13 +18,13 @@ class Spaces {
   private spaces: Record<string, Space> = {};
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Instance of the [ably-js](https://github.com/ably/ably-js) client that was passed to the [constructor](#constructor).
+   * Instance of the [ably-js](https://github.com/ably/ably-js) client that was passed to the {@link constructor}.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   client: Types.RealtimePromise;
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Instance of the [ably-js](https://github.com/ably/ably-js) connection, belonging to the client that was passed to the [constructor](#constructor).
+   * Instance of the [ably-js](https://github.com/ably/ably-js) connection, belonging to the client that was passed to the {@link constructor}.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   connection: Types.ConnectionPromise;
@@ -61,7 +61,7 @@ class Spaces {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L26-L39) -->
-   * A `space` object is a reference to a single space and is uniquely identified by its unicode string name. A space is created, or an existing space is retrieved from the `spaces` collection using the `get()` method.
+   * A `space` object is a reference to a single space and is uniquely identified by its unicode string name. A space is created, or an existing space is retrieved from the `spaces` collection using the {@link get | `get()`} method.
    *
    * The following restrictions apply to space names:
    *
@@ -84,14 +84,14 @@ class Spaces {
    *
    * ### Space options
    *
-   * An additional set of optional properties may be passed when [creating or retrieving](#create) a space to customize the behavior of different features.
+   * An additional set of optional properties may be passed when {@link get | creating or retrieving } a space to customize the behavior of different features.
    *
    * The following properties can be customized:
    *
    * | Property                      | Description                                                                                                                                                                       | Type   |
    * |-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
    * | offlineTimeout                | Number of milliseconds after a member loses connection or closes their browser window to wait before they are removed from the member list. The default is 120,000ms (2 minutes). | Number |
-   * | cursors                       | A [cursor options](/spaces/cursors#options) object for customizing live cursor behavior.                                                                                          | Object |
+   * | cursors                       | A {@link CursorsOptions | cursor options} object for customizing live cursor behavior.                                                                                          | Object |
    * | cursors.outboundBatchInterval | The interval, in milliseconds, at which a batch of cursor positions are published. This is multiplied by the number of members in a space, minus 1. The default value is 100ms.   | Number |
    * | cursors.paginationLimit       | The number of pages searched from history for the last published cursor position. The default is 5.                                                                               | Number |
    *
@@ -107,9 +107,9 @@ class Spaces {
    *
    * The Spaces SDK is built upon existing Ably functionality available in Ably’s Core SDKs. Understanding which core features are used to provide the abstractions in the Spaces SDK enables you to manage space state and build additional functionality into your application.
    *
-   * A space is created as an Ably [channel](/channels). Members [attach](https://ably.com/docs/channels#attach) to the channel and join its [presence set](https://ably.com/docs/presence-occupancy/presence) when they [enter](#enter) the space. Avatar stacks, member locations and component locking are all handled on this channel.
+   * A space is created as an Ably [channel](/channels). Members [attach](https://ably.com/docs/channels#attach) to the channel and join its [presence set](https://ably.com/docs/presence-occupancy/presence) when they { @link Space.enter | enter } the space. Avatar stacks, member locations and component locking are all handled on this channel.
    *
-   * To manage the state of the space, you can monitor the [state of the underlying channel](https://ably.com/docs/channels#states). The channel object can be accessed through `space.channel`.
+   * To manage the state of the space, you can monitor the [state of the underlying channel](https://ably.com/docs/channels#states). The channel object can be accessed through {@link Space.channel | `space.channel`}.
    *
    * The following is an example of registering a listener to wait for a channel to become attached:
    *
@@ -128,7 +128,7 @@ class Spaces {
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/cursors.textile?plain=1#L108-L122) -->
    * ## Cursor options
    *
-   * Cursor options are set when creating or retrieving a `Space` instance. They are used to control the behavior of live cursors.
+   * Cursor options are set when creating or retrieving a {@link Space | `Space` } instance. They are used to control the behavior of live cursors.
    *
    * The following cursor options can be set:
    *
@@ -145,7 +145,7 @@ class Spaces {
    * <!-- END WEBSITE DOCUMENTATION -->
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Get or create a Space instance. Returns a [Space](#space) instance. Configure the space by passing [SpaceOptions](#spaceoptions) as the second argument.
+   * Get or create a Space instance. Returns a {@link Space} instance. Configure the space by passing {@link SpaceOptions} as the second argument.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
