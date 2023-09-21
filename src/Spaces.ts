@@ -19,7 +19,7 @@ class Spaces {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) client that was passed to the [constructor](#constructor).
+   * Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) client that was passed to the {@link constructor}.
    *
    * ```ts
    * type client = Ably.RealtimePromise;
@@ -32,7 +32,7 @@ class Spaces {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) connection, belonging to the client that was passed to the [constructor](#constructor).
+   * Instance of the [Ably-JS](https://github.com/ably/ably-js#introduction) connection, belonging to the client that was passed to the {@link constructor}.
    *
    * ```ts
    * type connection = Ably.ConnectionPromise;
@@ -94,7 +94,8 @@ class Spaces {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L26-L39) -->
-   * A `space` object is a reference to a single space and is uniquely identified by its unicode string name. A space is created, or an existing space is retrieved from the `spaces` collection using the `get()` method.
+   * <!-- TODO what is the "`spaces` collection"? -->
+   * A `space` object is a reference to a single space and is uniquely identified by its unicode string name. A space is created, or an existing space is retrieved from the `spaces` collection using the {@link get | `get()`} method.
    *
    * The following restrictions apply to space names:
    *
@@ -127,7 +128,7 @@ class Spaces {
    * | Property                      | Description                                                                                                                                                                       | Type   |
    * |-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
    * | offlineTimeout                | Number of milliseconds after a member loses connection or closes their browser window to wait before they are removed from the member list. The default is 120,000ms (2 minutes). | Number |
-   * | cursors                       | A [cursor options](/spaces/cursors#options) object for customizing live cursor behavior.                                                                                          | Object |
+   * | cursors                       | A {@link CursorsOptions | cursor options} object for customizing live cursor behavior.                                                                                          | Object |
    * | cursors.outboundBatchInterval | The interval, in milliseconds, at which a batch of cursor positions are published. This is multiplied by the number of members in a space, minus 1. The default value is 100ms.   | Number |
    * | cursors.paginationLimit       | The number of pages searched from history for the last published cursor position. The default is 5.                                                                               | Number |
    *
@@ -145,7 +146,7 @@ class Spaces {
    *
    * A space is created as an Ably [channel](/channels). Members [attach](https://ably.com/docs/channels#attach) to the channel and join its [presence set](https://ably.com/docs/presence-occupancy/presence) when they [enter](#enter) the space. Avatar stacks, member locations and component locking are all handled on this channel.
    *
-   * To manage the state of the space, you can monitor the [state of the underlying channel](https://ably.com/docs/channels#states). The channel object can be accessed through `space.channel`.
+   * To manage the state of the space, you can monitor the [state of the underlying channel](https://ably.com/docs/channels#states). The channel object can be accessed through {@link Space.channel | `space.channel`}.
    *
    * The following is an example of registering a listener to wait for a channel to become attached:
    *
@@ -167,7 +168,7 @@ class Spaces {
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/cursors.textile?plain=1#L108-L122) -->
    * ## Cursor options
    *
-   * Cursor options are set when creating or retrieving a `Space` instance. They are used to control the behavior of live cursors.
+   * Cursor options are set when creating or retrieving a {@link Space | `Space` } instance. They are used to control the behavior of live cursors.
    *
    * The following cursor options can be set:
    *
@@ -187,7 +188,7 @@ class Spaces {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Get or create a Space instance. Returns a [Space](#space) instance. Configure the space by passing [SpaceOptions](#spaceoptions) as the second argument.
+   * Get or create a Space instance. Returns a {@link Space} instance. Configure the space by passing {@link SpaceOptions} as the second argument.
    *
    * ```ts
    * type get = (name: string, options?: SpaceOptions) => Promise<Space>;

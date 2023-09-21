@@ -50,7 +50,7 @@ export interface SpaceEventMap {
  *
  * The `space` namespace consists of a state object that represents the realtime status of all members in a given virtual space. This includes a list of which members are currently online or have recently left and each member’s location within the application. The position of members’ cursors are excluded from the space state due to their high frequency of updates. In the beta release, which UI components members have locked are also excluded from the space state.
  *
- * Space state can be [subscribed](#subscribe) to in the `space` namespace. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
+ * Space state can be {@link subscribe | subscribed} to in the `space` namespace. Alternatively, subscription listeners can be registered for individual features, such as avatar stack events and member location updates. These individual subscription listeners are intended to provide flexibility when implementing collaborative features. Individual listeners are client-side filtered events, so irrespective of whether you choose to subscribe to the space state or individual listeners, each event only counts as a single message.
  *
  * To subscribe to any events in a space, you first need to create or retrieve a space.
  *
@@ -60,7 +60,7 @@ export interface SpaceEventMap {
  * >
  * > The following documentation is copied from `docs/class-definitions.md`.
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * An instance of a Space created using [spaces.get](#get). Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * An instance of a Space created using {@link default.get | spaces.get}. Inherits from {@link EventEmitter}.
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 class Space extends EventEmitter<SpaceEventMap> {
@@ -72,7 +72,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * An instance of [Locations](#locations).
+   * An instance of {@link Locations}.
    *
    * ```ts
    * type locations = instanceof Locations;
@@ -85,7 +85,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * An instance of [Cursors](#cursors).
+   * An instance of {@link Cursors}.
    *
    * ```ts
    * type cursors = instanceof Cursors;
@@ -98,7 +98,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * An instance of [Members](#members).
+   * An instance of {@link Members}.
    *
    * ```ts
    * type members = instanceof Members;
@@ -177,7 +177,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L43-L55) -->
-   * Entering a space will register a client as a member and emit an [`enter`](/spaces/members#events) event to all subscribers. Use the `enter()` method to enter a space.
+   * Entering a space will register a client as a member and emit an {@link MembersEventMap.enter | `enter` } event to all subscribers. Use the `enter()` method to enter a space.
    *
    * Being entered into a space is required for members to:
    *
@@ -214,6 +214,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * <!-- TODO what is the link here? -->
    * Enter the space. Can optionally take `profileData`. This data can be an arbitrary JSON-serializable object which will be attached to the [member object](#spacemember). Returns all current space members.
    *
    * ```ts
@@ -245,7 +246,8 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L86-L103) -->
-   * Profile data can be updated at any point after entering a space by calling `updateProfileData()`. This will emit an `update` event. If a client hasn’t yet entered the space, `updateProfileData()` will instead [enter the space](#enter), with the profile data, and emit an [`enter`](/spaces/members#events) event.
+   * <!-- TODO link `update` event — I'm not sure which one it's referring to -->
+   * Profile data can be updated at any point after entering a space by calling `updateProfileData()`. This will emit an `update` event. If a client hasn’t yet entered the space, `updateProfileData()` will instead {@link enter | enter the space}, with the profile data, and emit an { @link MembersEventMap.enter | `enter` } event.
    *
    * The following is an example of updating profile data:
    *
@@ -312,7 +314,7 @@ class Space extends EventEmitter<SpaceEventMap> {
 
   /*
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L59-L67) -->
-   * Leaving a space will emit a [`leave`](/spaces/members#events) event to all subscribers.
+   * Leaving a space will emit a { @link MembersEventMap.leave | `leave` } event to all subscribers.
    *
    * The following is an example of explicitly leaving a space:
    *

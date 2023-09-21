@@ -45,7 +45,7 @@ export interface LocationsEventMap {
  * >
  * > The following documentation is copied from `docs/class-definitions.md`.
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Handles the tracking of member locations within a space. Inherits from [EventEmitter](/docs/usage.md#event-emitters).
+ * Handles the tracking of member locations within a space. Inherits from {@link EventEmitter}.
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export default class Locations extends EventEmitter<LocationsEventMap> {
@@ -107,6 +107,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
+   * <!-- TODO what is locationUpdate event, what to link to? -->
    * Set your current location. [Location](#location-1) can be any JSON-serializable object. Emits a [locationUpdate](#locationupdate) event to all connected clients in this space.
    *
    * ```ts
@@ -130,13 +131,13 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/locations.textile?plain=1#L29-L91) -->
-   * Subscribe to location events by registering a listener. Location events are emitted whenever a member changes location by calling [`set()`](#set). Use the `subscribe()` method on the `locations` namespace of the space to receive updates.
+   * Subscribe to location events by registering a listener. Location events are emitted whenever a member changes location by calling {@link set}. Use the `subscribe()` method on the `locations` namespace of the space to receive updates.
    *
-   * All location changes are `update` events. When a location update is received, clear the highlight from the UI component of the member’s `previousLocation` and add it to `currentLocation`.
+   * All location changes are {@link LocationsEventMap.update | `update`} events. When a location update is received, clear the highlight from the UI component of the member’s {@link LocationsEvents.UpdateEvent.previousLocation | `previousLocation`} and add it to {@link LocationsEvents.UpdateEvent.currentLocation | `currentLocation`}.
    *
    * > **Note**
    * >
-   * > A location update is also emitted when a member [leaves](/spaces/space#leave) a space. The member’s `currentLocation` will be `null` for these events so that any UI component highlighting can be cleared.
+   * > A location update is also emitted when a member {@link Space.leave | leaves} a space. The member’s {@link LocationsEvents.UpdateEvent.currentLocation | `currentLocation` } will be `null` for these events so that any UI component highlighting can be cleared.
    *
    * The following is an example of subscribing to location events:
    *
@@ -145,7 +146,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *   console.log(locationUpdate);
    * });
    * ```
-   * The following is an example payload of a location event. Information about location is returned in `currentLocation` and `previousLocation`:
+   * The following is an example payload of a location event. Information about location is returned in {@link LocationsEvents.UpdateEvent.currentLocation | `currentLocation`} and {@link LocationsEvents.UpdateEvent.previousLocation | `previousLocation`}:
    *
    * ```json
    * {
@@ -183,7 +184,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * | member.clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                     | String  |
    * | member.connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                         | String  |
    * | member.isConnected         | Whether the member is connected to Ably or not.                                                                       | Boolean |
-   * | member.lastEvent.name      | The most recent [event](/spaces/avatar) emitted by the member. Will be one of `enter`, `update`, `leave` or `remove`. | String  |
+   * | member.lastEvent.name      | The most recent [event](/spaces/avatar) emitted by the member. Will be one of {@link MembersEventMap.enter | `enter`}, {@link MembersEventMap.update | `update`}, {@link MembersEventMap.leave | `leave`} or {@link MembersEventMap.remove | `remove`}. | String  |
    * | member.lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                     | Number  |
    * | member.profileData         | The optional [profile data](/spaces/avatar#profile-data) associated with the member.                                  | Object  |
    * | previousLocation           | The previous location of the member.                                                                                  | Object  |
@@ -199,7 +200,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Listen to events for locations. See [EventEmitter](/docs/usage.md#event-emitters) for overloaded usage.
+   * Listen to events for locations. See {@link EventEmitter} for overloaded usage.
    *
    * Available events:
    *
@@ -257,7 +258,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * >
    * > The following documentation is copied from `docs/class-definitions.md`.
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Remove all event listeners, all event listeners for an event, or specific listeners. See [EventEmitter](/docs/usage.md#event-emitters) for detailed usage.
+   * Remove all event listeners, all event listeners for an event, or specific listeners. See {@link EventEmitter} for detailed usage.
    *
    * ```ts
    * space.locations.unsubscribe('update');
