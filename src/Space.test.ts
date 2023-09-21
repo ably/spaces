@@ -192,13 +192,94 @@ describe('Space', () => {
   });
 
   describe('leave', () => {
-    it<SpaceTestContext>('leaves a space successfully', async ({ presence, presenceMap, space }) => {
-      presenceMap.set('1', createPresenceMessage('enter'));
+    it<SpaceTestContext>('leaves a space successfully and does not nullify presence data', async ({
+      presence,
+      presenceMap,
+      space,
+    }) => {
+      presenceMap.set(
+        '1',
+        createPresenceMessage('enter', {
+          data: {
+            profileUpdate: { id: 1, current: { name: 'Betty' } },
+            locationUpdate: { id: null, current: { slide: 1 }, previous: null },
+          },
+        }),
+      );
 
-      await space.enter();
       const spy = vi.spyOn(presence, 'leave');
       await space.leave();
-      expect(spy).toHaveBeenCalledOnce();
+      expect(spy).toHaveBeenNthCalledWith(1, {
+        profileUpdate: {
+          id: null,
+          current: { name: 'Betty' },
+        },
+        locationUpdate: {
+          id: null,
+          current: { slide: 1 },
+          previous: null,
+        },
+      });
+    });
+
+    it<SpaceTestContext>('leaves a space successfully and nullifies presence data', async ({
+      presence,
+      presenceMap,
+      space,
+    }) => {
+      presenceMap.set(
+        '1',
+        createPresenceMessage('enter', {
+          data: {
+            profileUpdate: { id: 1, current: { name: 'Betty' } },
+            locationUpdate: { id: null, current: { slide: 1 }, previous: null },
+          },
+        }),
+      );
+
+      const spy = vi.spyOn(presence, 'leave');
+      await space.leave(null);
+      expect(spy).toHaveBeenNthCalledWith(1, {
+        profileUpdate: {
+          id: 'NanoidID',
+          current: null,
+        },
+        locationUpdate: {
+          id: null,
+          current: { slide: 1 },
+          previous: null,
+        },
+      });
+    });
+
+    it<SpaceTestContext>('leaves a space successfully and updates presence data', async ({
+      presence,
+      presenceMap,
+      space,
+    }) => {
+      presenceMap.set(
+        '1',
+        createPresenceMessage('enter', {
+          data: {
+            profileUpdate: { id: 1, current: { name: 'Betty' } },
+            locationUpdate: { id: null, current: { slide: 1 }, previous: null },
+          },
+        }),
+      );
+
+      const spy = vi.spyOn(presence, 'leave');
+      await space.leave({ colorWhenLeft: 'blue' });
+      expect(spy).toHaveBeenNthCalledWith(1, {
+        profileUpdate: {
+          id: 'NanoidID',
+          current: { colorWhenLeft: 'blue' },
+        },
+        locationUpdate: {
+          id: null,
+          current: { slide: 1 },
+          previous: null,
+        },
+      });
     });
   });
 
