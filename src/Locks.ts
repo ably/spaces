@@ -380,7 +380,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
 
   /**
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L92-L151) -->
-   * Subscribe to lock events by registering a listener. Lock events are emitted whenever the {@link LockStatuses | lock state } transitions into `locked` or `unlocked`. Use the `subscribe()` method on the `locks` namespace of the space to receive updates.
+   * Subscribe to lock events by registering a listener. Lock events are emitted whenever the {@link LockStatuses | lock state } transitions into `locked` or `unlocked`.
    *
    * All lock events are `update` events. When a lock event is received, UI components can be updated to add and remove visual indications of which member is locking them, as well as enabling and disabling the ability for other members to edit them.
    *
