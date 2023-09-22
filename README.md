@@ -89,7 +89,7 @@ You can also use Spaces with a CDN, such as [unpkg](https://www.unpkg.com/):
 
 ```html
 <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-<script src="https://cdn.ably.com/spaces/0.0.13/iife/index.bundle.js"></script>
+<script src="https://cdn.ably.com/spaces/0.1.2/iife/index.bundle.js"></script>
 ```
 After this, instantiate the SDK in the same way as in the NPM option above.
 

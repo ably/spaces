@@ -34,7 +34,7 @@ You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
 
 ```html
 <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-<script src="https://unpkg.com/@ably/spaces@0.0.10/dist/iife/index.bundle.js"></script>
+<script src="https://unpkg.com/@ably/spaces@0.1.2/dist/iife/index.bundle.js"></script>
 ```
 
 ## Authentication and instantiation
