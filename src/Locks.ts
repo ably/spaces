@@ -292,7 +292,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
     return locks.delete(connectionId);
   }
 
-  getLocksForConnectionId(connectionId: string): Lock[] {
+  private getLocksForConnectionId(connectionId: string): Lock[] {
     const requests: Lock[] = [];
 
     for (const locks of this.locks.values()) {
