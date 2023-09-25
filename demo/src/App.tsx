@@ -13,12 +13,11 @@ const App = () => {
   useEffect(() => {
     if (!space || self?.profileData.name) return;
 
-    
     const enter = async () => {
       const name = getRandomName();
       await space.enter({ name, color: getRandomColor() });
       await space.locations.set({ slide: `${0}`, element: null });
-      setModalIsVisible(true)
+      setModalIsVisible(true);
     };
 
     enter();
@@ -50,7 +49,11 @@ const App = () => {
           <AblySvg className="ml-2" />
         </a>
       </div>
-      <Modal self={self} isVisible={isModalVisible} setIsVisible={setModalIsVisible} />
+      <Modal
+        self={self}
+        isVisible={isModalVisible}
+        setIsVisible={setModalIsVisible}
+      />
     </div>
   );
 };
