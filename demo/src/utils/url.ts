@@ -1,6 +1,6 @@
 import { generate } from 'random-words';
 
-const getParamNameFromUrl = (paramName = 'space', exactly = 3, join = '-' ) => {
+const getParamNameFromUrl = (paramName = 'space', exactly = 3, join = '-') => {
   const url = new URL(window.location.href);
   const spaceNameInParams = url.searchParams.get(paramName);
 

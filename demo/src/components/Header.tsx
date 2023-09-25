@@ -10,8 +10,8 @@ interface Props {
 }
 
 export const Header = ({ self, others }: Props) => {
-  const teamName = getParamNameFromUrl('team', 1, '')
-  
+  const teamName = getParamNameFromUrl('team', 1, '');
+
   return (
     <header
       id="main-header"
