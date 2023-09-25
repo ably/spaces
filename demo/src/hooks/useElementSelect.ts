@@ -42,7 +42,7 @@ export const useClickOutside = (ref: MutableRefObject<HTMLElement | null>, self?
         await space.locations.set({ slide: self.location?.slide, element: undefined });
         // TODO delete this workaround when spaces API is ready
         await delay(60);
-        await releaseMyLocks(space, self);
+        await releaseMyLocks(space);
       }
     };
 
