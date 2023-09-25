@@ -11,6 +11,7 @@ interface Props {
 
 export const Header = ({ self, others }: Props) => {
   const teamName = getParamNameFromUrl('team', 1, '');
+  const formattedTeamName = teamName?.replace(/-/g, ' ');
 
   return (
     <header
@@ -19,7 +20,7 @@ export const Header = ({ self, others }: Props) => {
     >
       <div className="mx-auto justify-between grid grid-rows-2 grid-cols-2 max-w-screen-2xl md:px-8 lg:px-16 md:flex md:items-center">
         <section className="py-4 shrink-0 mr-4">
-          <p className="font-semibold pl-8 md:text-2xl capitalize">Team {teamName ?? 'Argo'}</p>
+          <p className="font-semibold pl-8 md:text-2xl capitalize">Team {formattedTeamName ?? 'Argo'}</p>
           <p className="leading-5 pl-8">Pitch deck</p>
         </section>
 
