@@ -26,20 +26,47 @@ const SPACE_OPTIONS_DEFAULTS = {
   },
 };
 
+/**
+ * This namespace contains the types which represent the data attached to an event emitted by a {@link Space | `Space`} instance.
+ */
 export namespace SpaceEvents {
+  /**
+   * The data attached to an {@link SpaceEventMap | `update`} event.
+   */
   export interface UpdateEvent {
+    /**
+     * The members currently in the space.
+     */
     members: SpaceMember[];
   }
 }
 
+/**
+ * The property names of `SpaceEventMap` are the names of the events emitted by { @link Space }.
+ */
 export interface SpaceEventMap {
+  /**
+   * The space state was updated.
+   */
   update: SpaceEvents.UpdateEvent;
 }
 
+/**
+ * The current state of a {@link Space | `Space`}, as described by {@link Space.getState | `Space.getState()`}.
+ */
 export interface SpaceState {
+  /**
+   * <!-- Copied, with edits, from getState documentation -->
+   * The members currently in the space. This includes members that have recently left the space, but have not yet been removed.
+   */
   members: SpaceMember[];
 }
 
+/**
+ * A function that can be passed to {@link Space.updateProfileData | `Space.updateProfileData()`}. It receives the existing profile data and returns the new profile data.
+ *
+ * @param profileData The existing profile data.
+ */
 export type UpdateProfileDataFunction = (profileData: ProfileData) => ProfileData;
 
 /**
@@ -75,6 +102,9 @@ class Space extends EventEmitter<SpaceEventMap> {
    * @internal
    */
   readonly connectionId: string | undefined;
+  /**
+   * The options passed to {@link default.get | `Spaces.get()`}, with default values filled in.
+   */
   readonly options: SpaceOptions;
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
@@ -94,8 +124,17 @@ class Space extends EventEmitter<SpaceEventMap> {
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   readonly members: Members;
+  /**
+   * The [ably-js](https://github.com/ably/ably-js) realtime channel instance that this `Cursors` instance uses for transmitting and receiving data.
+   */
   readonly channel: Types.RealtimeChannelPromise;
+  /**
+   * Provides access to the component locking feature for this space.
+   */
   readonly locks: Locks;
+  /**
+   * The space name passed to {@link default.get | `Spaces.get()`}.
+   */
   readonly name: string;
 
   /** @internal */
@@ -198,6 +237,8 @@ class Space extends EventEmitter<SpaceEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Enter the space. Can optionally take `profileData`. This data can be an arbitrary JSON-serializable object which will be attached to the {@link SpaceMember | member object }. Returns all current space members.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param profileData Data to associate with the member who is entering the space.
    */
   async enter(profileData: ProfileData = null): Promise<SpaceMember[]> {
     return new Promise((resolve) => {
@@ -222,6 +263,8 @@ class Space extends EventEmitter<SpaceEventMap> {
   }
 
   /**
+   * {@label MAIN_OVERLOAD}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L86-L103) -->
    * Profile data can be updated at any point after entering a space by calling `updateProfileData()`. This will emit an `update` event. If a client hasn’t yet entered the space, `updateProfileData()` will instead {@link enter | enter the space }, with the profile data, and emit an { @link MembersEventMap.enter | `enter` } event.
    *
@@ -255,8 +298,15 @@ class Space extends EventEmitter<SpaceEventMap> {
    * })
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param profileData The new profile data.
    */
   async updateProfileData(profileData: ProfileData): Promise<void>;
+  /**
+   * See the documentation for { @link updateProfileData:MAIN_OVERLOAD | the main overload }.
+   *
+   * @param updateFn A function which receives the existing profile data and returns the new profile data.
+   */
   async updateProfileData(updateFn: UpdateProfileDataFunction): Promise<void>;
   async updateProfileData(profileDataOrUpdateFn: ProfileData | UpdateProfileDataFunction): Promise<void> {
     const self = await this.members.getSelf();
@@ -299,6 +349,8 @@ class Space extends EventEmitter<SpaceEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Leave the space. Can optionally take `profileData`. This triggers the `leave` event, but does not immediately remove the member from the space. See {@link SpaceOptions.offlineTimeout | offlineTimeout }.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param profileData If specified, this updated profile data will accompany the { @link MembersEventMap.leave | `leave` } event.
    */
   async leave(profileData: ProfileData = null) {
     const self = await this.members.getSelf();
@@ -337,6 +389,8 @@ class Space extends EventEmitter<SpaceEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L107-L177) -->
    * Subscribe to space state updates by registering a listener. Use the `subscribe()` method on the `space` object to receive updates.
    *
@@ -411,8 +465,17 @@ class Space extends EventEmitter<SpaceEventMap> {
    * | lastEvent.timestamp | The timestamp of the most recently emitted event.                      | Number  |
    *
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.  * @param listener The listener to add.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link SpaceEventMap} type.
    */
   subscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap, K>): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   *
+   * @param listener The listener to add.
+   */
   subscribe(listener?: EventListener<SpaceEventMap, keyof SpaceEventMap>): void;
   subscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap, K>,
@@ -432,6 +495,8 @@ class Space extends EventEmitter<SpaceEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/space.textile?plain=1#L181-L187) -->
    * Unsubscribe from space events to remove previously registered listeners.
    *
@@ -441,8 +506,18 @@ class Space extends EventEmitter<SpaceEventMap> {
    * space.unsubscribe('update', listener);
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to remove.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link SpaceEventMap} type.
    */
   unsubscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap, K>): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   *
+   * @param listener The listener to remove.
+   */
   unsubscribe(listener?: EventListener<SpaceEventMap, keyof SpaceEventMap>): void;
   unsubscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap, K>,

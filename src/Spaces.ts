@@ -14,6 +14,11 @@ export interface ClientWithOptions extends Types.RealtimePromise {
   };
 }
 
+/**
+ * The `Spaces` class is the entry point to the Spaces SDK. Use its {@link get | `get()`} method to access an individual {@link Space | `Space`}.
+ *
+ * To create an instance of `Spaces`, you first need to create an instance of the [ably-js](https://github.com/ably/ably-js) Realtime client.  You then pass this instance to the {@link constructor | `Spaces()` constructor}.
+ */
 class Spaces {
   private spaces: Record<string, Space> = {};
   /**
@@ -46,6 +51,8 @@ class Spaces {
    *
    * Refer to the [Ably docs for the JS SDK](https://ably.com/docs/getting-started/setup?lang=javascript) for information on setting up a realtime promise client.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param client An instance of the realtime, promise-based Ably client from [ably-js](https://github.com/ably/ably-js).
    */
   constructor(client: Types.RealtimePromise) {
     this.client = client;
@@ -147,6 +154,9 @@ class Spaces {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get or create a Space instance. Returns a {@link Space} instance. Configure the space by passing {@link SpaceOptions} as the second argument.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param name The name of the space to create or retrieve.
+   * @param options Additional options to customize the behaviour of the space.
    */
   async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {

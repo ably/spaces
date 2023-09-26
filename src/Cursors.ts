@@ -11,7 +11,13 @@ import type { CursorsOptions, CursorUpdate } from './types.js';
 import type { RealtimeMessage } from './utilities/types.js';
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
 
+/**
+ * The property names of `CursorsEventMap` are the names of the events emitted by { @link Cursors }.
+ */
 export interface CursorsEventMap {
+  /**
+   * A space member moved their cursor.
+   */
   update: CursorUpdate;
 }
 
@@ -52,9 +58,15 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorBatching: CursorBatching;
   private readonly cursorDispensing: CursorDispensing;
   private readonly cursorHistory: CursorHistory;
+  /**
+   * The {@link SpaceOptions.cursors | cursors options} passed to {@link default.get | `Spaces.get()`}, with default values filled in.
+   */
   readonly options: CursorsOptions;
   private readonly channelName: string;
 
+  /**
+   * The [ably-js](https://github.com/ably/ably-js) realtime channel instance that this `Cursors` instance uses for transmitting and receiving data.
+   */
   public channel?: Types.RealtimeChannelPromise;
 
   /** @internal */
@@ -74,7 +86,6 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   /**
    * Schedules a cursor update event to be sent that will cause the following events to fire
    *
-   * @param {CursorUpdate} cursor
    * @return {void}
    *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/cursors.textile?plain=1#L21-L74) -->
@@ -145,6 +156,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * });
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param cursor An object describing the cursor update that should be emitted.
    */
   async set(cursor: Pick<CursorUpdate, 'position' | 'data'>) {
     const self = await this.space.members.getSelf();
@@ -201,6 +214,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   };
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/cursors.textile?plain=1#L78-L90) -->
    * Subscribe to cursor events by registering a listener. Cursor events are emitted whenever a member moves their cursor by calling `set()`. Use the `subscribe()` method on the `cursors` object of a space to receive updates.
    *
@@ -230,11 +245,21 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *   space.cursors.subscribe('update', (cursorUpdate: CursorUpdate) => {});
    *   ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to add.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link CursorsEventMap} type.
    */
   subscribe<K extends keyof CursorsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<CursorsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   *
+   * @param listener The listener to add.
+   */
   subscribe(listener?: EventListener<CursorsEventMap, keyof CursorsEventMap>): void;
   subscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap, K>,
@@ -262,6 +287,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/cursors.textile?plain=1#L94-L106) -->
    * Unsubscribe from cursor events to remove previously registered listeners.
    *
@@ -284,11 +311,21 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * space.cursors.unsubscribe('update');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to remove.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link CursorsEventMap} type.
    */
   unsubscribe<K extends keyof CursorsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<CursorsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   *
+   * @param listener The listener to remove.
+   */
   unsubscribe(listener?: EventListener<CursorsEventMap, keyof CursorsEventMap>): void;
   unsubscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap, K>,

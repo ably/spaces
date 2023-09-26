@@ -19,6 +19,11 @@ export type PresenceMember = {
   };
 } & Omit<Types.PresenceMessage, 'data'>;
 
+/**
+ * Given an object type `T`, `Subset<T>` represents an object which has the same shape as `T`, but with some keys (at any level of nesting) potentially absent.
+ *
+ * @typeParam T The type from which `Subset` is derived.
+ */
 export type Subset<T> = {
   [attr in keyof T]?: T[attr] extends object ? Subset<T[attr]> : T[attr];
 };
