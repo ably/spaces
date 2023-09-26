@@ -5,13 +5,13 @@ import Spaces, { type Space } from '@ably/spaces';
 import { Realtime } from 'ably';
 import { nanoid } from 'nanoid';
 
-import { getParamNameFromUrl } from '../utils';
+import { getParamValueFromUrl, generateSpaceName } from '../utils';
 
 export const SpacesContext = React.createContext<Space | undefined>(undefined);
 
 const SpaceContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [space, setSpace] = React.useState<Space | undefined>(undefined);
-  const spaceName = getParamNameFromUrl();
+  const spaceName = getParamValueFromUrl('space', generateSpaceName);
 
   const [spaces, ably] = React.useMemo(() => {
     const clientId = nanoid();
@@ -28,7 +28,7 @@ const SpaceContextProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     let ignore = false;
 
     const init = async () => {
-      const spaceInstance = await spaces.get(getParamNameFromUrl(), {
+      const spaceInstance = await spaces.get(getParamValueFromUrl('space', generateSpaceName), {
         offlineTimeout: 10_000,
       });
 
