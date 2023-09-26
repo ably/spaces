@@ -6,10 +6,26 @@ import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 
 export interface MembersEventMap {
+  /**
+   * <!-- COPIED WITH EDITING FROM Members -->
+   * A member has left the space. The member has either left explicitly by calling { @link Space.leave | `space.leave()` }, or has abruptly disconnected and not re-established a connection within 15 seconds.
+   */
   leave: SpaceMember;
+  /**
+   * <!-- COPIED WITH EDITING FROM Members -->
+   * A new member has entered the space. The member has either entered explicitly by calling {@link Space.enter | `space.enter()` }, or has attempted to update their profile data before entering a space, which will instead emit an `enter` event.
+   */
   enter: SpaceMember;
+  /**
+   * <!-- MOVED WITH EDITING FROM Members -->
+   * A member has updated their profile data by calling { @link Space.updateProfileData | `space.updateProfileData()` }.
+   */
   update: SpaceMember;
   updateProfile: SpaceMember;
+  /**
+   * <!-- COPIED WITH EDITING FROM Members -->
+   * A member has been removed from the members list after the { @link SpaceOptions.offlineTimeout | `offlineTimeout` } period has elapsed. This enables members to appear greyed out in the avatar stack to indicate that they recently left for the period of time between their `leave` and `remove` events.
+   */
   remove: SpaceMember;
 }
 
@@ -26,17 +42,9 @@ export interface MembersEventMap {
  *
  * The following four event types are emitted by members:
  *
- * `enter`
- * A new member has entered the space. The member has either entered explicitly by calling [`space.enter()`](/spaces/space#enter), or has attempted to update their profile data before entering a space, which will instead emit an `enter` event.
- *
- * `update`
- * A member has updated their profile data by calling [`space.updateProfileData()`](/spaces/space#update-profile).
- *
- * `leave`
- * A member has left the space. The member has either left explicitly by calling [`space.leave()`](/spaces/space#leave), or has abruptly disconnected and not re-established a connection within 15 seconds.
- *
- * `remove`
- * A member has been removed from the members list after the [`offlineTimeout`](/spaces/space#options) period has elapsed. This enables members to appear greyed out in the avatar stack to indicate that they recently left for the period of time between their `leave` and `remove` events.
+ * > **Moved documentation**
+ * >
+ * > This documentation has been moved to { @link MembersEventMap }.
  *
  * > **Note**
  * >

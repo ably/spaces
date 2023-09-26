@@ -51,7 +51,15 @@ export interface CursorsOptions {
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export interface CursorPosition {
+  /**
+   * <!-- MOVED FROM Cursors.set -->
+   * The position of the member’s cursor on the X-axis.
+   */
   x: number;
+  /**
+   * <!-- MOVED FROM Cursors.set -->
+   * The position of the member’s cursor on the Y-axis.
+   */
   y: number;
 }
 
@@ -88,9 +96,25 @@ export type CursorData = Record<string, unknown>;
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export interface CursorUpdate {
+  /**
+   * <!-- MOVED FROM Cursors.set -->
+   * The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.
+   */
   clientId: string;
+  /**
+   * <!-- MOVED FROM Cursors.set -->
+   * The unique identifier of the member’s [connection](https://ably.com/docs/connect).
+   */
   connectionId: string;
+  /**
+   * <!-- MOVED FROM Cursors.set -->
+   * An object containing the position of a member’s cursor.
+   */
   position: CursorPosition;
+  /**
+   * <!-- MOVED FROM Cursors.set -->
+   * An optional arbitrary JSON-serializable object containing additional information about the cursor.
+   */
   data?: CursorData;
 }
 
@@ -130,6 +154,10 @@ export interface SpaceOptions {
   cursors: CursorsOptions;
 }
 
+/**
+ * <!-- MOVED WITH EDITING FROM Space.enter -->
+ * Profile data can be set when {@link Space.enter | entering } a space. It is optional data that can be used to associate information with a member, such as a preferred username, or profile picture that can be subsequently displayed in their avatar. Profile data can be any arbitrary JSON-serializable object.
+ */
 export type ProfileData = Record<string, unknown> | null;
 
 /**
@@ -212,8 +240,20 @@ export interface SpaceMember {
 }
 
 export namespace LockStatuses {
+  /**
+   * <!-- COPIED WITH EDITS FROM Locks -->
+   * A member has requested a lock by calling { @link Locks.acquire | `acquire()` }.
+   */
   export type Pending = 'pending';
+  /**
+   * <!-- MOVED FROM Locks -->
+   * The lock is confirmed to be held by the requesting member.
+   */
   export type Locked = 'locked';
+  /**
+   * <!-- COPIED WITH EDITS FROM Locks -->
+   * The lock is confirmed to not be locked by the requesting member, or has been { @link Locks.release | released } by a member previously holding the lock.
+   */
   export type Unlocked = 'unlocked';
 }
 
@@ -251,10 +291,30 @@ export type LockStatus = LockStatuses.Pending | LockStatuses.Locked | LockStatus
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export type Lock = {
+  /**
+   * <!-- MOVED FROM Locks.subscribe -->
+   * The unique ID of the lock request.
+   */
   id: string;
+  /**
+   * <!-- COPIED WITH EDITS FROM Locks.subscribe -->
+   * The lock status of the event.
+   */
   status: LockStatus;
   member: SpaceMember;
+  /**
+   * <!-- MOVED FROM Locks.subscribe -->
+   * The timestamp of the lock event.
+   */
   timestamp: number;
+  /**
+   * <!-- MOVED FROM Locks.subscribe -->
+   * The optional attributes of the lock, such as the ID of the component it relates to.
+   */
   attributes?: LockAttributes;
+  /**
+   * <!-- MOVED FROM Locks.subscribe -->
+   * The reason why the `request.status` is `unlocked`.
+   */
   reason?: Types.ErrorInfo;
 };

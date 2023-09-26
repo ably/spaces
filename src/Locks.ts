@@ -55,14 +55,9 @@ export interface LocksEventMap {
  *
  * A lock will be in one of the following states:
  *
- * `pending`
- * A member has requested a lock by calling [`acquire()`](#acquire).
- *
- * `locked`
- * The lock is confirmed to be held by the requesting member.
- *
- * `unlocked`
- * The lock is confirmed to not be locked by the requesting member, or has been [released](#release) by a member previously holding the lock.
+ * > **Moved documentation**
+ * >
+ * > This documentation has been moved to { @link LockStatuses }.
  *
  * The following lock state transitions may occur:
  *
@@ -500,19 +495,9 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * ```
    * The following are the properties of a lock event payload:
    *
-   * | Property                   | Description                                                                                                                  | Type      |
-   * |----------------------------|------------------------------------------------------------------------------------------------------------------------------|-----------|
-   * | id                         | The unique ID of the lock request.                                                                                           | String    |
-   * | status                     | The lock [status](#states) of the event. Will be one of `locked`, `unlocked` or `pending`.                                   | String    |
-   * | timestamp                  | The timestamp of the lock event.                                                                                             | Number    |
-   * | attributes                 | The optional attributes of the lock, such as the ID of the component it relates to.                                          | Object    |
-   * | reason                     | The reason why the `request.status` is `unlocked`.                                                                           | ErrorInfo |
-   * | member.clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                            | String    |
-   * | member.connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                                | String    |
-   * | member.isConnected         | Whether the member is connected to Ably or not.                                                                              | Boolean   |
-   * | member.lastEvent.name      | The most recent [event](/spaces/avatar#events) emitted by the member. Will be one of `enter`, `update`, `leave` or `remove`. | String    |
-   * | member.lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                            | Number    |
-   * | member.profileData         | The optional [profile data](/spaces/avatar#profile-data) associated with the member.                                         | Object    |
+   * > **Moved documentation**
+   * >
+   * > This documentation has been moved to { @link Lock }.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *

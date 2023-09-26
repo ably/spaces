@@ -196,7 +196,9 @@ class Space extends EventEmitter<SpaceEventMap> {
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L71-L82) -->
-   * Profile data can be set when [entering](#enter) a space. It is optional data that can be used to associate information with a member, such as a preferred username, or profile picture that can be subsequently displayed in their avatar. Profile data can be any arbitrary JSON-serializable object.
+   * > **Moved documentation**
+   * >
+   * > This documentation has been moved to { @link ProfileData }.
    *
    * Profile data is returned in the payload of all space events.
    *

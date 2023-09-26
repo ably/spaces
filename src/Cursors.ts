@@ -138,14 +138,9 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * ```
    * The following are the properties of a cursor event payload:
    *
-   * | Property     | Description                                                                                        | Type   |
-   * |--------------|----------------------------------------------------------------------------------------------------|--------|
-   * | connectionId | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                      | String |
-   * | clientId     | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                  | String |
-   * | position     | An object containing the position of a member’s cursor.                                            | Object |
-   * | position.x   | The position of the member’s cursor on the X-axis.                                                 | Number |
-   * | position.y   | The position of the member’s cursor on the Y-axis.                                                 | Number |
-   * | data         | An optional arbitrary JSON-serializable object containing additional information about the cursor. | Object |
+   * > **Moved documentation**
+   * >
+   * > This documentation has been moved to {@link CursorUpdate} and {@link CursorPosition}.
    *
    * <!-- END WEBSITE DOCUMENTATION -->
    *
