@@ -5,6 +5,9 @@ import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 
+/**
+ * The property names of `MembersEventMap` are the names of the events emitted by { @link Members }.
+ */
 export interface MembersEventMap {
   /**
    * <!-- MOVED WITH EDITING FROM Members -->
@@ -284,6 +287,8 @@ class Members extends EventEmitter<MembersEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/avatar.textile?plain=1#L29-L103) -->
    * Subscribe to members’ online status and profile updates by registering a listener. Member events are emitted whenever a member {@link Space.enter | enters} or {@link Space.leave | leaves} the space, or updates their profile data. Use the `subscribe()` method on the `members` object of a space to receive updates.
    *
@@ -421,11 +426,21 @@ class Members extends EventEmitter<MembersEventMap> {
    *
    *   The argument supplied to the callback is a {@link SpaceMember} object representing the member affected by the change.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to add.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link MembersEventMap} type.
    */
   subscribe<K extends keyof MembersEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<MembersEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   *
+   * @param listener The listener to add.
+   */
   subscribe(listener?: EventListener<MembersEventMap, keyof MembersEventMap>): void;
   subscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap, K>,
@@ -445,6 +460,8 @@ class Members extends EventEmitter<MembersEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/avatar.textile?plain=1#L107-L125) -->
    * Unsubscribe from member events to remove previously registered listeners.
    *
@@ -479,11 +496,21 @@ class Members extends EventEmitter<MembersEventMap> {
    * space.members.unsubscribe('leave');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to remove.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link MembersEventMap} type.
    */
   unsubscribe<K extends keyof MembersEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<MembersEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   *
+   * @param listener The listener to remove.
+   */
   unsubscribe(listener?: EventListener<MembersEventMap, keyof MembersEventMap>): void;
   unsubscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap, K>,

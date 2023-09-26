@@ -15,11 +15,23 @@ import SpaceUpdate from './SpaceUpdate.js';
  */
 export type LockAttributes = Record<string, unknown>;
 
+/**
+ * Options for customizing the behaviour of {@link Locks.get | `Locks.get()`}.
+ */
 export interface LockOptions {
+  /**
+   * Additional metadata to associate with the lock, such as the identifier of a UI component.
+   */
   attributes: LockAttributes;
 }
 
+/**
+ * The property names of `LocksEventMap` are the names of the events emitted by { @link Locks }.
+ */
 export interface LocksEventMap {
+  /**
+   * A lock’s state transitioned into {@link LockStatuses.Locked} or {@link LockStatuses.Unlocked}.
+   */
   update: Lock;
 }
 
@@ -110,6 +122,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * const lock = space.locks.get(id);
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param id A unique identifier which specifies the lock to query.
    */
   get(id: string): Lock | undefined {
     const locks = this.locks.get(id);
@@ -293,6 +307,9 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * const lockRequest = await space.locks.acquire(id);
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param id A unique identifier which specifies the lock to acquire.
+   * @param opts An object whose {@link LockOptions.attributes | `attributes`} property specifies additional metadata to associate with the lock.
    */
   async acquire(id: string, opts?: LockOptions): Promise<Lock> {
     const self = await this.space.members.getSelf();
@@ -354,6 +371,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * await space.locks.release(id);
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param id A unique identifier which specifies the lock to release.
    */
   async release(id: string): Promise<void> {
     const self = await this.space.members.getSelf();
@@ -374,6 +393,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L92-L151) -->
    * Subscribe to lock events by registering a listener. Lock events are emitted whenever the {@link LockStatuses | lock state } transitions into `locked` or `unlocked`.
    *
@@ -442,8 +463,18 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *
    *   The argument supplied to the callback is a {@link Lock}, representing the lock request and it's status.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to add.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocksEventMap} type.
    */
   subscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   *
+   * @param listener The listener to add.
+   */
   subscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   subscribe<K extends keyof LocksEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocksEventMap, K>,
@@ -463,6 +494,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L155-L166) -->
    * Unsubscribe from lock events to remove previously registered listeners.
    *
@@ -485,8 +518,18 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * space.locks.unsubscribe('update');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to remove.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocksEventMap} type.
    */
   unsubscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   *
+   * @param listener The listener to remove.
+   */
   unsubscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   unsubscribe<K extends keyof LocksEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocksEventMap, K>,

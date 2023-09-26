@@ -6,8 +6,17 @@ import type Space from './Space.js';
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
 import SpaceUpdate from './SpaceUpdate.js';
 
+/**
+ * This namespace contains the types which represent the data attached to an event emitted by a {@link Locations | `Locations`} instance.
+ */
 export namespace LocationsEvents {
+  /**
+   * The data attached to an {@link LocationsEventMap.update | `update`} event.
+   */
   export interface UpdateEvent {
+    /**
+     * The member whose location changed.
+     */
     member: SpaceMember;
     /**
      * <!-- MOVED FROM Locations.subscribe -->
@@ -22,7 +31,13 @@ export namespace LocationsEvents {
   }
 }
 
+/**
+ * The property names of `LocationsEventMap` are the names of the events emitted by { @link Locations }.
+ */
 export interface LocationsEventMap {
+  /**
+   * A space member changed their location.
+   */
   update: LocationsEvents.UpdateEvent;
 }
 
@@ -102,6 +117,9 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Set your current location. The `location` argument can be any JSON-serializable object. Emits a `locationUpdate` event to all connected clients in this space.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * <!-- Second sentence copied from above -->
+   * @param location The new location. Can be any JSON-serializable object, such as a slide number or element ID.
    */
   async set(location: unknown) {
     const self = await this.space.members.getSelf();
@@ -115,6 +133,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locations.textile?plain=1#L29-L91) -->
    * Subscribe to location events by registering a listener. Location events are emitted whenever a member changes location by calling {@link set}.
    *
@@ -187,11 +207,21 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *   space.locations.subscribe('update', (locationUpdate: LocationsEvents.UpdateEvent) => {});
    *   ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to add.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocationsEventMap} type.
    */
   subscribe<K extends keyof LocationsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<LocationsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   *
+   * @param listener The listener to add.
+   */
   subscribe(listener?: EventListener<LocationsEventMap, keyof LocationsEventMap>): void;
   subscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap, K>,
@@ -211,6 +241,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locations.textile?plain=1#L95-L107) -->
    * Unsubscribe from location events to remove previously registered listeners.
    *
@@ -233,11 +265,21 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * space.locations.unsubscribe('update');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param eventOrEvents The event name or an array of event names.
+   * @param listener The listener to remove.
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocationsEventMap} type.
    */
   unsubscribe<K extends keyof LocationsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<LocationsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   *
+   * @param listener The listener to remove.
+   */
   unsubscribe(listener?: EventListener<LocationsEventMap, keyof LocationsEventMap>): void;
   unsubscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap, K>,

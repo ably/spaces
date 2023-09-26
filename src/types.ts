@@ -1,6 +1,9 @@
 import { Types } from 'ably';
 import type { LockAttributes } from './Locks.js';
 
+/**
+ * Options to configure the behaviour of a {@link Cursors | `Cursors`} instance.
+ */
 export interface CursorsOptions {
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
@@ -150,6 +153,9 @@ export interface SpaceMember {
   };
 }
 
+/**
+ * The `LockStatuses` namespace describes the possible values of the {@link LockStatus} type.
+ */
 export namespace LockStatuses {
   /**
    * <!-- MOVED WITH EDITING FROM Locks -->
@@ -191,6 +197,9 @@ export type Lock = {
    * The lock status of the event.
    */
   status: LockStatus;
+  /**
+   * Information about the space member who requested the lock.
+   */
   member: SpaceMember;
   /**
    * <!-- MOVED FROM Locks.subscribe -->
