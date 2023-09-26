@@ -64,8 +64,15 @@ export class InvalidArgumentError extends Error {
   }
 }
 
+/**
+ * @typeParam T The type of event data that this listener will receive.
+ * @typeParam K The name of the event that this listener will listen for.
+ */
 export type EventListener<T, K extends keyof T> = (this: { event: K }, param: T[K]) => void;
 
+/**
+ * @typeParam T An object type, the names of whose properties are the names of the events that an instance of this class can emit.
+ */
 export default class EventEmitter<T> {
   /** @internal */
   any: Array<Function>;
@@ -78,6 +85,7 @@ export default class EventEmitter<T> {
 
   /**
    * @internal
+   * @typeParam T An object type, the names of whose properties are the names of the events that the constructed object can emit.
    */
   constructor() {
     this.any = [];
@@ -91,6 +99,8 @@ export default class EventEmitter<T> {
    * Add an event listener
    * @param eventOrEvents the name of the event to listen to or the listener to be called.
    * @param listener (optional) the listener to be called.
+   *
+   * @typeParam K A type which allows one or more names of the properties of {@link T}.
    */
   on<K extends keyof T>(eventOrEvents?: K | K[], listener?: EventListener<T, K>): void;
   /**
@@ -133,6 +143,8 @@ export default class EventEmitter<T> {
    * Remove one or more event listeners
    * @param eventOrEvents the name of the event whose listener is to be removed.
    * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
+   *
+   * @typeParam K A type which allows one or more names of the properties of {@link T}. TypeScript will infer this type based on the {@link eventOrEvents} argument.
    */
   off<K extends keyof T>(eventOrEvents?: K | K[], listener?: EventListener<T, K>): void;
   /**
@@ -199,6 +211,8 @@ export default class EventEmitter<T> {
    * Get the array of listeners for a given event; excludes once events
    * @param event (optional) the name of the event, or none for 'any'
    * @return array of events, or null if none
+   *
+   * @typeParam K A type which allows a name of the properties of {@link T}. TypeScript will infer this type based on the {@link event} argument.
    */
   listeners<K extends keyof T>(event: K): Function[] | null {
     if (event) {
@@ -255,6 +269,8 @@ export default class EventEmitter<T> {
    * Listen for a single occurrence of an event
    * @param event the name of the event to listen to
    * @param listener (optional) the listener to be called
+   *
+   * @typeParam K A type which allows a name of one of the properties of {@link T}. TypeScript will infer this type based on the {@link event} argument.
    */
   once<K extends keyof T>(event: K, listener?: EventListener<T, K>): void | Promise<any>;
   /**

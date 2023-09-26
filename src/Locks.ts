@@ -30,6 +30,9 @@ export interface LockOptions {
   attributes: LockAttributes;
 }
 
+/**
+ * The property names of `LocksEventMap` are the names of the events emitted by { @link Locks }.
+ */
 export interface LocksEventMap {
   update: Lock;
 }
@@ -445,6 +448,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
@@ -519,8 +524,13 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *
    *   The argument supplied to the callback is a [Lock](#lock), representing the lock request and it's status.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocksEventMap} type.
    */
   subscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   */
   subscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   subscribe<K extends keyof LocksEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocksEventMap, K>,
@@ -540,6 +550,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
@@ -568,8 +580,13 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * space.locks.unsubscribe('update');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocksEventMap} type.
    */
   unsubscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   */
   unsubscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   unsubscribe<K extends keyof LocksEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocksEventMap, K>,

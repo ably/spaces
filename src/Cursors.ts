@@ -11,6 +11,9 @@ import type { CursorsOptions, CursorUpdate } from './types.js';
 import type { RealtimeMessage } from './utilities/types.js';
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
 
+/**
+ * The property names of `CursorsEventMap` are the names of the events emitted by { @link Cursors }.
+ */
 export interface CursorsEventMap {
   update: CursorUpdate;
 }
@@ -220,6 +223,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   };
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
@@ -255,11 +260,16 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *   space.cursors.subscribe('update', (cursorUpdate: CursorUpdate) => {});
    *   ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link CursorsEventMap} type.
    */
   subscribe<K extends keyof CursorsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<CursorsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   */
   subscribe(listener?: EventListener<CursorsEventMap, keyof CursorsEventMap>): void;
   subscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap, K>,
@@ -287,6 +297,8 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
@@ -315,11 +327,16 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * space.cursors.unsubscribe('update');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link CursorsEventMap} type.
    */
   unsubscribe<K extends keyof CursorsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<CursorsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   */
   unsubscribe(listener?: EventListener<CursorsEventMap, keyof CursorsEventMap>): void;
   unsubscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap, K>,

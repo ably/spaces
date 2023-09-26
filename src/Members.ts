@@ -5,6 +5,9 @@ import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 
+/**
+ * The property names of `MembersEventMap` are the names of the events emitted by { @link Members }.
+ */
 export interface MembersEventMap {
   /**
    * <!-- COPIED WITH EDITING FROM Members -->
@@ -308,6 +311,8 @@ class Members extends EventEmitter<MembersEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the Spaces documentation website.
@@ -451,11 +456,16 @@ class Members extends EventEmitter<MembersEventMap> {
    *
    *   The argument supplied to the callback is a [SpaceMember](#spacemember) object representing the member affected by the change.
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link MembersEventMap} type.
    */
   subscribe<K extends keyof MembersEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<MembersEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   */
   subscribe(listener?: EventListener<MembersEventMap, keyof MembersEventMap>): void;
   subscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap, K>,
@@ -475,6 +485,8 @@ class Members extends EventEmitter<MembersEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the Spaces documentation website.
@@ -515,11 +527,16 @@ class Members extends EventEmitter<MembersEventMap> {
    * space.members.unsubscribe('leave');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link MembersEventMap} type.
    */
   unsubscribe<K extends keyof MembersEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<MembersEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   */
   unsubscribe(listener?: EventListener<MembersEventMap, keyof MembersEventMap>): void;
   unsubscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap, K>,

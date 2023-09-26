@@ -22,6 +22,9 @@ export namespace LocationsEvents {
   }
 }
 
+/**
+ * The property names of `LocationsEventMap` are the names of the events emitted by { @link Locations }.
+ */
 export interface LocationsEventMap {
   update: LocationsEvents.UpdateEvent;
 }
@@ -135,6 +138,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
@@ -213,11 +218,16 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *   space.locations.subscribe('update', (locationUpdate: LocationUpdate) => {});
    *   ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocationsEventMap} type.
    */
   subscribe<K extends keyof LocationsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<LocationsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   */
   subscribe(listener?: EventListener<LocationsEventMap, keyof LocationsEventMap>): void;
   subscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap, K>,
@@ -237,6 +247,8 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * > **Documentation source**
    * >
    * > The following documentation is copied from the [Spaces documentation website](https://ably.com/docs/spaces).
@@ -265,11 +277,16 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * space.locations.unsubscribe('update');
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link LocationsEventMap} type.
    */
   unsubscribe<K extends keyof LocationsEventMap>(
     eventOrEvents: K | K[],
     listener?: EventListener<LocationsEventMap, K>,
   ): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   */
   unsubscribe(listener?: EventListener<LocationsEventMap, keyof LocationsEventMap>): void;
   unsubscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap, K>,

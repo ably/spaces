@@ -19,6 +19,9 @@ export type PresenceMember = {
   };
 } & Omit<Types.PresenceMessage, 'data'>;
 
+/**
+ * @typeParam K The type from which `Subset` is derived.
+ */
 export type Subset<K> = {
   [attr in keyof K]?: K[attr] extends object ? Subset<K[attr]> : K[attr];
 };

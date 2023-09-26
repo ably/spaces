@@ -239,6 +239,9 @@ export interface SpaceMember {
   };
 }
 
+/**
+ * The `LockStatuses` namespace describes the possible values of the {@link LockStatus} type.
+ */
 export namespace LockStatuses {
   /**
    * <!-- COPIED WITH EDITS FROM Locks -->
@@ -301,6 +304,9 @@ export type Lock = {
    * The lock status of the event.
    */
   status: LockStatus;
+  /**
+   * Information about the space member who requested the lock.
+   */
   member: SpaceMember;
   /**
    * <!-- MOVED FROM Locks.subscribe -->

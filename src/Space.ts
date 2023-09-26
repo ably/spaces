@@ -31,6 +31,9 @@ export namespace SpaceEvents {
 }
 
 export interface SpaceEventMap {
+  /**
+   * The property names of `SpaceEventMap` are the names of the events emitted by { @link Space }.
+   */
   update: SpaceEvents.UpdateEvent;
 }
 
@@ -223,6 +226,8 @@ class Space extends EventEmitter<SpaceEventMap> {
    * type enter = (profileData?: Record<string, unknown>) => Promise<SpaceMember[]>;
    * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   *
+   * @param profileData Data to associate with the member who is entering the space.
    */
   async enter(profileData: ProfileData = null): Promise<SpaceMember[]> {
     return new Promise((resolve) => {
@@ -375,6 +380,8 @@ class Space extends EventEmitter<SpaceEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L107-L177) -->
    * Subscribe to space state updates by registering a listener. Use the `subscribe()` method on the `space` object to receive updates.
    *
@@ -449,8 +456,13 @@ class Space extends EventEmitter<SpaceEventMap> {
    * | lastEvent.timestamp | The timestamp of the most recently emitted event.                      | Number  |
    *
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link SpaceEventMap} type.
    */
   subscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap, K>): void;
+  /**
+   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   */
   subscribe(listener?: EventListener<SpaceEventMap, keyof SpaceEventMap>): void;
   subscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap, K>,
@@ -470,6 +482,8 @@ class Space extends EventEmitter<SpaceEventMap> {
   }
 
   /**
+   * {@label WITH_EVENTS}
+   *
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/space.textile?plain=1#L181-L187) -->
    * Unsubscribe from space events to remove previously registered listeners.
    *
@@ -479,8 +493,13 @@ class Space extends EventEmitter<SpaceEventMap> {
    * space.unsubscribe('update', listener);
    * ```
    * <!-- END WEBSITE DOCUMENTATION -->
+   *
+   * @typeParam K A type which allows one or more names of the properties of the {@link SpaceEventMap} type.
    */
   unsubscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap, K>): void;
+  /**
+   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   */
   unsubscribe(listener?: EventListener<SpaceEventMap, keyof SpaceEventMap>): void;
   unsubscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap, K>,
