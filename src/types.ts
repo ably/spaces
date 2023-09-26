@@ -39,7 +39,13 @@ export interface SpaceMember {
   };
 }
 
-export type LockStatus = 'pending' | 'locked' | 'unlocked';
+export namespace LockStatuses {
+  export type Pending = 'pending';
+  export type Locked = 'locked';
+  export type Unlocked = 'unlocked';
+}
+
+export type LockStatus = LockStatuses.Pending | LockStatuses.Locked | LockStatuses.Unlocked;
 
 export type Lock = {
   id: string;

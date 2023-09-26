@@ -21,6 +21,7 @@ export type {
   SpaceMember,
   Lock,
   LockStatus,
+  LockStatuses,
 } from './types.js';
 
 export type { LockAttributes } from './Locks.js';
