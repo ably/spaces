@@ -36,5 +36,5 @@ export default {
       variants: ['before'],
     },
   ],
-  plugins: [],
+  plugins: [require('tailwindcss-labeled-groups')(['inner', '1'])],
 };

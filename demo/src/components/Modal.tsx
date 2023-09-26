@@ -1,36 +1,36 @@
 import { FormEvent, useContext, useRef } from 'react';
 import cn from 'classnames';
 
-import { SpacesContext } from '.';
+import { NameModalContext, SpacesContext } from '.';
 import { Member } from '../utils/types';
 import { getRandomColor } from '../utils';
 
 interface Props {
   self?: Member;
-  isVisible?: boolean;
-  setIsVisible?: (isVisible: boolean) => void;
 }
 
-export const Modal = ({ isVisible = false, setIsVisible, self }: Props) => {
+export const Modal = ({ self }: Props) => {
   const space = useContext(SpacesContext);
+  const { isModalVisible, setIsModalVisible } = useContext(NameModalContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    if (!space || !setIsVisible) return;
+    if (!space || !isModalVisible) return;
 
     space.updateProfileData({ name: inputRef.current?.value, color: getRandomColor() });
-    setIsVisible(false);
+    setIsModalVisible(false);
   };
 
   return (
     <div
+      onClick={() => setIsModalVisible(false)}
       className={cn(
         'backdrop-blur-md bg-black/30 fixed top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-300',
         {
-          'opacity-0 pointer-events-none': !isVisible,
-          'opacity-100': isVisible,
+          'opacity-0 pointer-events-none': !isModalVisible,
+          'opacity-100': isModalVisible,
         },
       )}
     >

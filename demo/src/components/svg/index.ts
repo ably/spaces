@@ -6,4 +6,5 @@ export * from './ExternalLink';
 export * from './Info';
 export * from './Lightning';
 export * from './Lock';
+export * from './Pencil';
 export * from './ReplyStack';
