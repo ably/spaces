@@ -377,7 +377,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *
    * |_. Property |_. Description |_.  Type |
    * | id | The unique ID of the lock request. | String |
-   * | status | The lock "status":#states of the event. Will be either @locked@ or @unlocked@. | String |
+   * | status | The lock "status":#states of the event. Will be one of @locked@, @unlocked@ or @pending@. | String |
    * | timestamp | The timestamp of the lock event. | Number |
    * | attributes | The optional attributes of the lock, such as the ID of the component it relates to. | Object |
    * | reason | The reason why the @request.status@ is @unlocked@. | ErrorInfo |
