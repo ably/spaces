@@ -9,7 +9,15 @@ import SpaceUpdate from './SpaceUpdate.js';
 export namespace LocationsEvents {
   export interface UpdateEvent {
     member: SpaceMember;
+    /**
+     * <!-- MOVED FROM Locations.subscribe -->
+     * The new location of the member.
+     */
     currentLocation: unknown;
+    /**
+     * <!-- MOVED FROM Locations.subscribe -->
+     * The previous location of the member.
+     */
     previousLocation: unknown;
   }
 }
@@ -156,16 +164,9 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * ```
    * The following are the properties of a location event payload:
    *
-   * | Property                   | Description                                                                                                           | Type    |
-   * |----------------------------|-----------------------------------------------------------------------------------------------------------------------|---------|
-   * | member.clientId            | The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.                                                     | String  |
-   * | member.connectionId        | The unique identifier of the member’s [connection](https://ably.com/docs/connect).                                                         | String  |
-   * | member.isConnected         | Whether the member is connected to Ably or not.                                                                       | Boolean |
-   * | member.lastEvent.name      | The most recent { @link MembersEventMap | event } emitted by the member. Will be one of {@link MembersEventMap.enter | `enter`}, {@link MembersEventMap.update | `update`}, {@link MembersEventMap.leave | `leave`} or {@link MembersEventMap.remove | `remove`}. | String  |
-   * | member.lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                     | Number  |
-   * | member.profileData         | The optional {@link Space.updateProfileData | profile data } associated with the member.                                  | Object  |
-   * | previousLocation           | The previous location of the member.                                                                                  | Object  |
-   * | currentLocation            | The new location of the member.                                                                                       | Object  |
+   * > **Moved documentation**
+   * >
+   * > This documentation has been moved to { @link LocationsEvents.UpdateEvent }.
    *
    * > **Further reading**
    * >

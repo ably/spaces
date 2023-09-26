@@ -6,10 +6,35 @@ import type { PresenceMember } from './utilities/types.js';
 import type Space from './Space.js';
 
 export interface MembersEventMap {
+  /**
+   * <!-- MOVED WITH EDITING FROM Members -->
+   * A member has left the space. The member has either left explicitly by calling { @link Space.leave | `space.leave()` }, or has abruptly disconnected and not re-established a connection within 15 seconds.
+   */
   leave: SpaceMember;
+  /**
+   * <!-- MOVED WITH EDITING FROM Members -->
+   * A new member has entered the space. The member has either entered explicitly by calling {@link Space.enter | `space.enter()` }, or has attempted to update their profile data before entering a space, which will instead emit an `enter` event.
+   */
   enter: SpaceMember;
+  /**
+   * <!-- MOVED WITH EDITING FROM Members -->
+   * This event is emitted whenever any one of the following events is emitted:
+   *
+   * - {@link enter}
+   * - {@link leave}
+   * - {@link remove}
+   * - {@link updateProfile}
+   */
   update: SpaceMember;
+  /**
+   * <!-- MOVED WITH EDITING FROM Members -->
+   * A member has updated their profile data by calling { @link Space.updateProfileData | `space.updateProfileData()` }.
+   */
   updateProfile: SpaceMember;
+  /**
+   * <!-- MOVED WITH EDITING FROM Members -->
+   * A member has been removed from the members list after the { @link SpaceOptions.offlineTimeout | `offlineTimeout` } period has elapsed. This enables members to appear greyed out in the avatar stack to indicate that they recently left for the period of time between their `leave` and `remove` events.
+   */
   remove: SpaceMember;
 }
 
@@ -23,20 +48,9 @@ export interface MembersEventMap {
  *
  * The following four event types are emitted by members:
  *
- * `enter`
- * A new member has entered the space. The member has either entered explicitly by calling {@link Space.enter | `space.enter()`}, or has attempted to update their profile data before entering a space, which will instead emit an `enter` event.
- *
- * `updateProfile`
- * A member has updated their profile data by calling {@link Space.updateProfileData | `space.updateProfileData()`.
- *
- * `leave`
- * A member has left the space. The member has either left explicitly by calling {@link Space.leave | `space.leave()` }, or has abruptly disconnected and not re-established a connection within 15 seconds.
- *
- * `remove`
- * A member has been removed from the members list after the {@link SpaceOptions.offlineTimeout | `offlineTimeout` } period has elapsed. This enables members to appear greyed out in the avatar stack to indicate that they recently left for the period of time between their `leave` and `remove` events.
- *
- * `update`
- * This event is emitted whenever any one of the above events is emitted.
+ * > **Moved documentation**
+ * >
+ * > This documentation has been moved to { @link MembersEventMap }.
  *
  * > **Note**
  * >
@@ -337,8 +351,8 @@ class Members extends EventEmitter<MembersEventMap> {
    * | isConnected         | Whether the member is connected to Ably or not.                                                                   | Boolean |
    * | profileData         | The optional {@link Space.updateProfileData | profile data } associated with the member.                                            | Object  |
    * | location            | The current {@link Locations | location} of the member. Will be `null` for `enter`, `leave` and `remove` events. | Object  |
-   * | lastEvent.name      | The most recent event emitted by the member.                                                                      | String  |
-   * | lastEvent.timestamp | The timestamp of the most recently emitted event.                                                                 | Number  |
+   * | lastEvent.name      | This documentation has been moved to {@link SpaceMember}. | String  |
+   * | lastEvent.timestamp | This documentation has been moved to {@link SpaceMember}. | Number  |
    *
    * > **Further reading**
    * >
