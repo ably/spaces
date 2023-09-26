@@ -1,6 +1,6 @@
 import { MutableRefObject, useCallback } from 'react';
 import { useChannel } from '@ably-labs/react-hooks';
-import { findActiveMember, getParamNameFromUrl } from '../utils';
+import { findActiveMember, generateSpaceName, getParamValueFromUrl } from '../utils';
 import { buildLockId } from '../utils/locking.ts';
 import { usePreview } from '../components/PreviewContext.tsx';
 import { useMembers } from './useMembers.ts';
@@ -17,7 +17,7 @@ interface UseTextComponentLockArgs {
 }
 
 export const useTextComponentLock = ({ id, slide, defaultText, containerRef }: UseTextComponentLockArgs) => {
-  const spaceName = getParamNameFromUrl();
+  const spaceName = getParamValueFromUrl('space', generateSpaceName);
   const { members, self } = useMembers();
   const activeMember = findActiveMember(id, slide, members);
   const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
