@@ -67,6 +67,11 @@ class Members extends EventEmitter<MembersEventMap> {
   }
 
   subscribe<K extends keyof MembersEventMap>(
+    eventOrEvents: K | K[],
+    listener?: EventListener<MembersEventMap[K]>,
+  ): void;
+  subscribe(listener?: EventListener<MembersEventMap[keyof MembersEventMap]>): void;
+  subscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap[K]>,
     listener?: EventListener<MembersEventMap[K]>,
   ) {
@@ -83,6 +88,11 @@ class Members extends EventEmitter<MembersEventMap> {
     }
   }
 
+  unsubscribe<K extends keyof MembersEventMap>(
+    eventOrEvents: K | K[],
+    listener?: EventListener<MembersEventMap[K]>,
+  ): void;
+  unsubscribe(listener?: EventListener<MembersEventMap[keyof MembersEventMap]>): void;
   unsubscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap[K]>,
     listener?: EventListener<MembersEventMap[K]>,

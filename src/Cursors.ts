@@ -101,6 +101,11 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   };
 
   subscribe<K extends keyof CursorsEventMap>(
+    eventOrEvents: K | K[],
+    listener?: EventListener<CursorsEventMap[K]>,
+  ): void;
+  subscribe(listener?: EventListener<CursorsEventMap[keyof CursorsEventMap]>): void;
+  subscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap[K]>,
     listener?: EventListener<CursorsEventMap[K]>,
   ) {
@@ -125,6 +130,11 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     }
   }
 
+  unsubscribe<K extends keyof CursorsEventMap>(
+    eventOrEvents: K | K[],
+    listener?: EventListener<CursorsEventMap[K]>,
+  ): void;
+  unsubscribe(listener?: EventListener<CursorsEventMap[keyof CursorsEventMap]>): void;
   unsubscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap[K]>,
     listener?: EventListener<CursorsEventMap[K]>,
