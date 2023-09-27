@@ -108,7 +108,7 @@ class Spaces {
    * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/5f9e999399ebf284c0eeecff52a9d1e4d36ce8a8/content/spaces/cursors.textile?plain=1#L108-L122) -->
    * h2(#options). Cursor options
    *
-   * Cursor options are set when creating or retrieving a @space@ instance. They are used to control the behavior of live cursors.
+   * Cursor options are set when creating or retrieving a @Space@ instance. They are used to control the behavior of live cursors.
    *
    * The following cursor options can be set:
    *
