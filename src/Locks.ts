@@ -4,12 +4,7 @@ import Space from './Space.js';
 import type { Lock, SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
 import { ERR_LOCK_IS_LOCKED, ERR_LOCK_INVALIDATED, ERR_LOCK_REQUEST_EXISTS, ERR_NOT_ENTERED_SPACE } from './Errors.js';
-import EventEmitter, {
-  InvalidArgumentError,
-  inspect,
-  type EventKey,
-  type EventListener,
-} from './utilities/EventEmitter.js';
+import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from './utilities/EventEmitter.js';
 
 import SpaceUpdate from './SpaceUpdate.js';
 
@@ -136,7 +131,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     this.deleteLock(id, self.connectionId);
   }
 
-  subscribe<K extends EventKey<LocksEventMap>>(
+  subscribe<K extends keyof LocksEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocksEventMap[K]>,
     listener?: EventListener<LocksEventMap[K]>,
   ) {
@@ -153,7 +148,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<LocksEventMap>>(
+  unsubscribe<K extends keyof LocksEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocksEventMap[K]>,
     listener?: EventListener<LocksEventMap[K]>,
   ) {

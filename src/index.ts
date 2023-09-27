@@ -25,6 +25,6 @@ export type {
 
 export { LockAttributes } from './Locks.js';
 
-export type { default as EventEmitter, EventListener, EventKey, EventMap } from './utilities/EventEmitter.js';
+export type { default as EventEmitter, EventListener } from './utilities/EventEmitter.js';
 
 export type { Subset } from './utilities/types.js';

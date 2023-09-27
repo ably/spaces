@@ -3,12 +3,7 @@ import { Types } from 'ably';
 import Space from './Space.js';
 import CursorBatching from './CursorBatching.js';
 import CursorDispensing from './CursorDispensing.js';
-import EventEmitter, {
-  InvalidArgumentError,
-  inspect,
-  type EventKey,
-  type EventListener,
-} from './utilities/EventEmitter.js';
+import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from './utilities/EventEmitter.js';
 import CursorHistory from './CursorHistory.js';
 import { CURSOR_UPDATE } from './CursorConstants.js';
 
@@ -91,7 +86,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     return !this.emitterHasListeners(subscriptions);
   }
 
-  private emitterHasListeners = (emitter: EventEmitter<{}>) => {
+  private emitterHasListeners = <T>(emitter: EventEmitter<T>) => {
     const flattenEvents = (obj: Record<string, Function[]>) =>
       Object.entries(obj)
         .map((_, v) => v)
@@ -105,7 +100,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     );
   };
 
-  subscribe<K extends EventKey<CursorsEventMap>>(
+  subscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap[K]>,
     listener?: EventListener<CursorsEventMap[K]>,
   ) {
@@ -130,7 +125,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<CursorsEventMap>>(
+  unsubscribe<K extends keyof CursorsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<CursorsEventMap[K]>,
     listener?: EventListener<CursorsEventMap[K]>,
   ) {

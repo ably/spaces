@@ -1,6 +1,6 @@
 import { isArray, isFunction, isObject, isString } from './is.js';
 
-function callListener(eventThis: { event: string }, listener: Function, args: unknown[]) {
+function callListener<K>(eventThis: { event: K }, listener: Function, args: unknown[]) {
   try {
     listener.apply(eventThis, args);
   } catch (e) {
@@ -17,14 +17,14 @@ function callListener(eventThis: { event: string }, listener: Function, args: un
  * @param listener the listener callback to remove
  * @param eventFilter (optional) event name instructing the function to only remove listeners for the specified event
  */
-export function removeListener(
-  targetListeners: (Function[] | Record<string, Function[]>)[],
+export function removeListener<T>(
+  targetListeners: (Function[] | Record<keyof T, Function[]>)[],
   listener: Function,
-  eventFilter?: string,
+  eventFilter?: keyof T,
 ) {
-  let listeners: Function[] | Record<string, Function[]>;
+  let listeners: Function[] | Record<keyof T, Function[]>;
   let index: number;
-  let eventName: string;
+  let eventName: keyof T;
 
   for (let targetListenersIndex = 0; targetListenersIndex < targetListeners.length; targetListenersIndex++) {
     listeners = targetListeners[targetListenersIndex];
@@ -64,20 +64,17 @@ export class InvalidArgumentError extends Error {
   }
 }
 
-export type EventMap = Record<string, unknown>;
-// extract all the keys of an event map and use them as a type
-export type EventKey<T extends EventMap> = string & keyof T;
 export type EventListener<T> = (params: T) => void;
 
-export default class EventEmitter<T extends EventMap> {
+export default class EventEmitter<T> {
   /** @internal */
   any: Array<Function>;
   /** @internal */
-  events: Record<string, Function[]>;
+  events: Record<keyof T, Function[]>;
   /** @internal */
   anyOnce: Array<Function>;
   /** @internal */
-  eventsOnce: Record<string, Function[]>;
+  eventsOnce: Record<keyof T, Function[]>;
 
   /**
    * @internal
@@ -94,7 +91,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param listenerOrEvents (optional) the name of the event to listen to or the listener to be called.
    * @param listener (optional) the listener to be called.
    */
-  on<K extends EventKey<T>>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
+  on<K extends keyof T>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
     // .on(() => {})
     if (isFunction(listenerOrEvents)) {
       this.any.push(listenerOrEvents);
@@ -125,7 +122,7 @@ export default class EventEmitter<T extends EventMap> {
    * the listener is treated as an 'any' listener.
    * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
    */
-  off<K extends EventKey<T>>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
+  off<K extends keyof T>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
     // .off()
     // don't use arguments.length === 0 here as don't won't handle
     // cases like .off(undefined) which is a valid call
@@ -180,7 +177,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param event (optional) the name of the event, or none for 'any'
    * @return array of events, or null if none
    */
-  listeners<K extends EventKey<T>>(event: K): Function[] | null {
+  listeners<K extends keyof T>(event: K): Function[] | null {
     if (event) {
       const listeners = [...(this.events[event] ?? [])];
 
@@ -201,7 +198,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param event the event name
    * @param arg the arguments to pass to the listener
    */
-  emit<K extends EventKey<T>>(event: K, arg: T[K]) {
+  emit<K extends keyof T>(event: K, arg: T[K]) {
     const eventThis = { event };
     const listeners: Function[] = [];
 
@@ -235,7 +232,7 @@ export default class EventEmitter<T extends EventMap> {
    * @param listenerOrEvent (optional) the name of the event to listen to
    * @param listener (optional) the listener to be called
    */
-  once<K extends EventKey<T>>(
+  once<K extends keyof T>(
     listenerOrEvent: K | EventListener<T[K]>,
     listener?: EventListener<T[K]>,
   ): void | Promise<any> {
@@ -264,7 +261,12 @@ export default class EventEmitter<T extends EventMap> {
    * @param listener the listener to be called
    * @param listenerArgs
    */
-  whenState(targetState: string, currentState: string, listener: EventListener<T[string]>, ...listenerArgs: unknown[]) {
+  whenState(
+    targetState: keyof T,
+    currentState: keyof T,
+    listener: EventListener<T[keyof T]>,
+    ...listenerArgs: unknown[]
+  ) {
     const eventThis = { event: targetState };
 
     if (typeof targetState !== 'string' || typeof currentState !== 'string') {

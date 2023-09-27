@@ -1,9 +1,4 @@
-import EventEmitter, {
-  InvalidArgumentError,
-  inspect,
-  type EventKey,
-  type EventListener,
-} from './utilities/EventEmitter.js';
+import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from './utilities/EventEmitter.js';
 import Leavers from './Leavers.js';
 
 import type { SpaceMember } from './types.js';
@@ -71,7 +66,7 @@ class Members extends EventEmitter<MembersEventMap> {
     return members.filter((m) => m.connectionId !== this.space.connectionId);
   }
 
-  subscribe<K extends EventKey<MembersEventMap>>(
+  subscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap[K]>,
     listener?: EventListener<MembersEventMap[K]>,
   ) {
@@ -88,7 +83,7 @@ class Members extends EventEmitter<MembersEventMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<MembersEventMap>>(
+  unsubscribe<K extends keyof MembersEventMap>(
     listenerOrEvents?: K | K[] | EventListener<MembersEventMap[K]>,
     listener?: EventListener<MembersEventMap[K]>,
   ) {
