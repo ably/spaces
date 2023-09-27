@@ -67,6 +67,11 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
   }
 
   subscribe<K extends keyof LocationsEventMap>(
+    eventOrEvents: K | K[],
+    listener?: EventListener<LocationsEventMap[K]>,
+  ): void;
+  subscribe(listener?: EventListener<LocationsEventMap[keyof LocationsEventMap]>): void;
+  subscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap[K]>,
     listener?: EventListener<LocationsEventMap[K]>,
   ) {
@@ -83,6 +88,11 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     }
   }
 
+  unsubscribe<K extends keyof LocationsEventMap>(
+    eventOrEvents: K | K[],
+    listener?: EventListener<LocationsEventMap[K]>,
+  ): void;
+  unsubscribe(listener?: EventListener<LocationsEventMap[keyof LocationsEventMap]>): void;
   unsubscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap[K]>,
     listener?: EventListener<LocationsEventMap[K]>,
