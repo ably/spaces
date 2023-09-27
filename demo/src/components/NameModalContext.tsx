@@ -2,5 +2,6 @@ import { createContext } from 'react';
 
 export const NameModalContext = createContext({
   isModalVisible: false,
-  setIsModalVisible: (isVisible: boolean) => {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setIsModalVisible: (isVisible: boolean) => {}, // eslint-disable-line no-unused-vars
 });
