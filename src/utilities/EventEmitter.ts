@@ -1,8 +1,8 @@
 import { isArray, isFunction, isObject, isString } from './is.js';
 
-function callListener<K>(eventThis: { event: K }, listener: Function, args: unknown[]) {
+function callListener<T, K extends keyof T>(eventThis: { event: K }, listener: EventListener<T[K]>, arg: T[K]) {
   try {
-    listener.apply(eventThis, args);
+    listener.apply(eventThis, [arg]);
   } catch (e) {
     console.error(
       'EventEmitter.emit()',
@@ -64,7 +64,7 @@ export class InvalidArgumentError extends Error {
   }
 }
 
-export type EventListener<T> = (params: T) => void;
+export type EventListener<T> = (param: T) => void;
 
 export default class EventEmitter<T> {
   /** @internal */
@@ -200,7 +200,7 @@ export default class EventEmitter<T> {
    */
   emit<K extends keyof T>(event: K, arg: T[K]) {
     const eventThis = { event };
-    const listeners: Function[] = [];
+    const listeners: EventListener<T[K]>[] = [];
 
     if (this.anyOnce.length > 0) {
       Array.prototype.push.apply(listeners, this.anyOnce);
@@ -223,7 +223,7 @@ export default class EventEmitter<T> {
     }
 
     listeners.forEach(function (listener) {
-      callListener(eventThis, listener, [arg]);
+      callListener(eventThis, listener, arg);
     });
   }
 
@@ -259,13 +259,13 @@ export default class EventEmitter<T> {
    * @param targetState the name of the state event to listen to
    * @param currentState the name of the current state of this object
    * @param listener the listener to be called
-   * @param listenerArgs
+   * @param listenerArg the argument to pass to the listener
    */
-  whenState(
-    targetState: keyof T,
+  whenState<K extends keyof T>(
+    targetState: K,
     currentState: keyof T,
-    listener: EventListener<T[keyof T]>,
-    ...listenerArgs: unknown[]
+    listener: EventListener<T[K]>,
+    listenerArg: T[K],
   ) {
     const eventThis = { event: targetState };
 
@@ -274,14 +274,11 @@ export default class EventEmitter<T> {
     }
     if (typeof listener !== 'function' && Promise) {
       return new Promise((resolve) => {
-        EventEmitter.prototype.whenState.apply(
-          this,
-          [targetState, currentState, resolve].concat(listenerArgs as any[]) as any,
-        );
+        EventEmitter.prototype.whenState.apply(this, [targetState, currentState, resolve, listenerArg]);
       });
     }
     if (targetState === currentState) {
-      callListener(eventThis, listener, listenerArgs);
+      callListener(eventThis, listener, listenerArg);
     } else {
       this.once(targetState, listener);
     }
