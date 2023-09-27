@@ -87,10 +87,22 @@ export default class EventEmitter<T> {
   }
 
   /**
+   * {@label WITH_EVENTS}
    * Add an event listener
-   * @param listenerOrEvents (optional) the name of the event to listen to or the listener to be called.
+   * @param eventOrEvents the name of the event to listen to or the listener to be called.
    * @param listener (optional) the listener to be called.
    */
+  on<K extends keyof T>(eventOrEvents?: K | K[], listener?: EventListener<T[K]>): void;
+  /**
+   * Behaves the same as { @link on:WITH_EVENTS | the overload which accepts one or more event names }, but listens to _all_ events.
+   * @param listener (optional) the listener to be called.
+   */
+  on(listener?: EventListener<T[keyof T]>): void;
+  /**
+   * @internal
+   * We add the implementation signature as an overload signature (but mark it as internal so that it does not appear in documentation) so that it can be called by subclasses.
+   */
+  on<K extends keyof T>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void;
   on<K extends keyof T>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
     // .on(() => {})
     if (isFunction(listenerOrEvents)) {
@@ -117,11 +129,22 @@ export default class EventEmitter<T> {
   }
 
   /**
+   * {@label WITH_EVENTS}
    * Remove one or more event listeners
-   * @param listenerOrEvents (optional) the name of the event whose listener is to be removed. If not supplied,
-   * the listener is treated as an 'any' listener.
+   * @param eventOrEvents the name of the event whose listener is to be removed.
    * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
    */
+  off<K extends keyof T>(eventOrEvents?: K | K[], listener?: EventListener<T[K]>): void;
+  /**
+   * Behaves the same as { @link off:WITH_EVENTS | the overload which accepts one or more event names }, but removes the listener from _all_ events.
+   * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
+   */
+  off(listener?: EventListener<T[keyof T]>): void;
+  /**
+   * @internal
+   * We add the implementation signature as an overload signature (but mark it as internal so that it does not appear in documentation) so that it can be called by subclasses.
+   */
+  off<K extends keyof T>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void;
   off<K extends keyof T>(listenerOrEvents?: K | K[] | EventListener<T[K]>, listener?: EventListener<T[K]>): void {
     // .off()
     // don't use arguments.length === 0 here as don't won't handle
@@ -228,10 +251,25 @@ export default class EventEmitter<T> {
   }
 
   /**
+   * {@label WITH_EVENTS}
    * Listen for a single occurrence of an event
-   * @param listenerOrEvent (optional) the name of the event to listen to
+   * @param event the name of the event to listen to
    * @param listener (optional) the listener to be called
    */
+  once<K extends keyof T>(event: K, listener?: EventListener<T[K]>): void | Promise<any>;
+  /**
+   * Behaves the same as { @link once:WITH_EVENTS | the overload which accepts one or more event names }, but listens for _all_ events.
+   * @param listener (optional) the listener to be called
+   */
+  once(listener?: EventListener<T[keyof T]>): void | Promise<any>;
+  /**
+   * @internal
+   * We add the implementation signature as an overload signature (but mark it as internal so that it does not appear in documentation) so that it can be called by subclasses.
+   */
+  once<K extends keyof T>(
+    listenerOrEvent: K | EventListener<T[K]>,
+    listener?: EventListener<T[K]>,
+  ): void | Promise<any>;
   once<K extends keyof T>(
     listenerOrEvent: K | EventListener<T[K]>,
     listener?: EventListener<T[K]>,

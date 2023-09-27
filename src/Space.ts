@@ -179,6 +179,8 @@ class Space extends EventEmitter<SpaceEventMap> {
     return { members };
   }
 
+  subscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap[K]>): void;
+  subscribe(listener?: EventListener<SpaceEventMap[keyof SpaceEventMap]>): void;
   subscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
     listener?: EventListener<SpaceEventMap[K]>,
@@ -196,6 +198,8 @@ class Space extends EventEmitter<SpaceEventMap> {
     }
   }
 
+  unsubscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap[K]>): void;
+  unsubscribe(listener?: EventListener<SpaceEventMap[keyof SpaceEventMap]>): void;
   unsubscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
     listener?: EventListener<SpaceEventMap[K]>,
