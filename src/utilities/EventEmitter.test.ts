@@ -174,7 +174,7 @@ describe('EventEmitter', () => {
     });
 
     it('removes a specific listener from multiple events', () => {
-      const eventEmitter = new EventEmitter();
+      const eventEmitter = new EventEmitter<{ myEvent: unknown; myOtherEvent: unknown; myThirdEvent: unknown }>();
       const specificListener = vi.fn();
       eventEmitter['on'](['myEvent', 'myOtherEvent', 'myThirdEvent'], specificListener);
       eventEmitter['off'](['myEvent', 'myOtherEvent'], specificListener);
