@@ -11,7 +11,7 @@ function isFunction(arg: unknown): arg is Function {
   return ['Function', 'AsyncFunction', 'GeneratorFunction', 'Proxy'].includes(typeOf(arg));
 }
 
-function isString(arg: unknown): arg is String {
+function isString(arg: unknown): arg is string {
   return typeOf(arg) === 'String';
 }
 

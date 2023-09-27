@@ -1,11 +1,6 @@
 import Ably, { Types } from 'ably';
 
-import EventEmitter, {
-  InvalidArgumentError,
-  inspect,
-  type EventKey,
-  type EventListener,
-} from './utilities/EventEmitter.js';
+import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from './utilities/EventEmitter.js';
 import Locations from './Locations.js';
 import Cursors from './Cursors.js';
 import Members from './Members.js';
@@ -192,7 +187,7 @@ class Space extends EventEmitter<SpaceEventMap> {
     return { members };
   }
 
-  subscribe<K extends EventKey<SpaceEventMap>>(
+  subscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
     listener?: EventListener<SpaceEventMap[K]>,
   ) {
@@ -209,7 +204,7 @@ class Space extends EventEmitter<SpaceEventMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<SpaceEventMap>>(
+  unsubscribe<K extends keyof SpaceEventMap>(
     listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
     listener?: EventListener<SpaceEventMap[K]>,
   ) {

@@ -1,9 +1,4 @@
-import EventEmitter, {
-  InvalidArgumentError,
-  inspect,
-  type EventKey,
-  type EventListener,
-} from './utilities/EventEmitter.js';
+import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from './utilities/EventEmitter.js';
 
 import type { SpaceMember } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
@@ -71,7 +66,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     await this.presenceUpdate(update.updateLocation(location));
   }
 
-  subscribe<K extends EventKey<LocationsEventMap>>(
+  subscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap[K]>,
     listener?: EventListener<LocationsEventMap[K]>,
   ) {
@@ -88,7 +83,7 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     }
   }
 
-  unsubscribe<K extends EventKey<LocationsEventMap>>(
+  unsubscribe<K extends keyof LocationsEventMap>(
     listenerOrEvents?: K | K[] | EventListener<LocationsEventMap[K]>,
     listener?: EventListener<LocationsEventMap[K]>,
   ) {
