@@ -131,11 +131,11 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     this.deleteLock(id, self.connectionId);
   }
 
-  subscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap[K]>): void;
-  subscribe(listener?: EventListener<LocksEventMap[keyof LocksEventMap]>): void;
+  subscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
+  subscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   subscribe<K extends keyof LocksEventMap>(
-    listenerOrEvents?: K | K[] | EventListener<LocksEventMap[K]>,
-    listener?: EventListener<LocksEventMap[K]>,
+    listenerOrEvents?: K | K[] | EventListener<LocksEventMap, K>,
+    listener?: EventListener<LocksEventMap, K>,
   ) {
     try {
       super.on(listenerOrEvents, listener);
@@ -150,11 +150,11 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     }
   }
 
-  unsubscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap[K]>): void;
-  unsubscribe(listener?: EventListener<LocksEventMap[keyof LocksEventMap]>): void;
+  unsubscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
+  unsubscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   unsubscribe<K extends keyof LocksEventMap>(
-    listenerOrEvents?: K | K[] | EventListener<LocksEventMap[K]>,
-    listener?: EventListener<LocksEventMap[K]>,
+    listenerOrEvents?: K | K[] | EventListener<LocksEventMap, K>,
+    listener?: EventListener<LocksEventMap, K>,
   ) {
     try {
       super.off(listenerOrEvents, listener);

@@ -179,11 +179,11 @@ class Space extends EventEmitter<SpaceEventMap> {
     return { members };
   }
 
-  subscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap[K]>): void;
-  subscribe(listener?: EventListener<SpaceEventMap[keyof SpaceEventMap]>): void;
+  subscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap, K>): void;
+  subscribe(listener?: EventListener<SpaceEventMap, keyof SpaceEventMap>): void;
   subscribe<K extends keyof SpaceEventMap>(
-    listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
-    listener?: EventListener<SpaceEventMap[K]>,
+    listenerOrEvents?: K | K[] | EventListener<SpaceEventMap, K>,
+    listener?: EventListener<SpaceEventMap, K>,
   ) {
     try {
       super.on(listenerOrEvents, listener);
@@ -198,11 +198,11 @@ class Space extends EventEmitter<SpaceEventMap> {
     }
   }
 
-  unsubscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap[K]>): void;
-  unsubscribe(listener?: EventListener<SpaceEventMap[keyof SpaceEventMap]>): void;
+  unsubscribe<K extends keyof SpaceEventMap>(eventOrEvents: K | K[], listener?: EventListener<SpaceEventMap, K>): void;
+  unsubscribe(listener?: EventListener<SpaceEventMap, keyof SpaceEventMap>): void;
   unsubscribe<K extends keyof SpaceEventMap>(
-    listenerOrEvents?: K | K[] | EventListener<SpaceEventMap[K]>,
-    listener?: EventListener<SpaceEventMap[K]>,
+    listenerOrEvents?: K | K[] | EventListener<SpaceEventMap, K>,
+    listener?: EventListener<SpaceEventMap, K>,
   ) {
     try {
       super.off(listenerOrEvents, listener);
