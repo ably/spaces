@@ -164,7 +164,7 @@ export default class EventEmitter<T> {
     }
 
     // .off("eventName", () => {})
-    if (isString(listenerOrEvents) && isFunction(listener)) {
+    if (isString(listenerOrEvents) && listener) {
       removeListener([this.events, this.eventsOnce], listener, listenerOrEvents);
       return;
     }
@@ -177,7 +177,7 @@ export default class EventEmitter<T> {
     }
 
     // .off(["eventName"], () => {})
-    if (isArray(listenerOrEvents) && isFunction(listener)) {
+    if (isArray(listenerOrEvents) && listener) {
       listenerOrEvents.forEach((eventName) => {
         this.off(eventName, listener);
       });
@@ -275,7 +275,7 @@ export default class EventEmitter<T> {
     listener?: EventListener<T, K>,
   ): void | Promise<any> {
     // .once("eventName", () => {})
-    if (isString(listenerOrEvent) && isFunction(listener)) {
+    if (isString(listenerOrEvent) && listener) {
       const listeners = this.eventsOnce[listenerOrEvent] || (this.eventsOnce[listenerOrEvent] = []);
       listeners.push(listener);
       return;
