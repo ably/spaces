@@ -223,46 +223,27 @@ export default class EventEmitter<T extends EventMap> {
 
   /**
    * Listen for a single occurrence of an event
-   * @param listenerOrEvents (optional) the name of the event to listen to
+   * @param listenerOrEvent (optional) the name of the event to listen to
    * @param listener (optional) the listener to be called
    */
   once<K extends EventKey<T>>(
-    listenerOrEvents: K | K[] | EventListener<T[K]>,
+    listenerOrEvent: K | EventListener<T[K]>,
     listener?: EventListener<T[K]>,
   ): void | Promise<any> {
     // .once("eventName", () => {})
-    if (isString(listenerOrEvents) && isFunction(listener)) {
-      const listeners = this.eventsOnce[listenerOrEvents] || (this.eventsOnce[listenerOrEvents] = []);
+    if (isString(listenerOrEvent) && isFunction(listener)) {
+      const listeners = this.eventsOnce[listenerOrEvent] || (this.eventsOnce[listenerOrEvent] = []);
       listeners.push(listener);
       return;
     }
 
-    // .once(["eventName"], () => {})
-    if (isArray(listenerOrEvents) && isFunction(listener)) {
-      const self = this;
-
-      listenerOrEvents.forEach(function (eventName) {
-        const listenerWrapper: EventListener<T[K]> = function (this: EventListener<T[K]>, listenerThis) {
-          const innerArgs = Array.prototype.slice.call(arguments) as [params: T[K]];
-          listenerOrEvents.forEach((eventName) => {
-            self.off(eventName, this);
-          });
-
-          listener.apply(listenerThis, innerArgs);
-        };
-        self.once(eventName, listenerWrapper);
-      });
-
-      return;
-    }
-
     // .once(() => {})
-    if (isFunction(listenerOrEvents)) {
-      this.anyOnce.push(listenerOrEvents);
+    if (isFunction(listenerOrEvent)) {
+      this.anyOnce.push(listenerOrEvent);
       return;
     }
 
-    throw new InvalidArgumentError('EventEmitter.once(): invalid arguments:' + inspect([listenerOrEvents, listener]));
+    throw new InvalidArgumentError('EventEmitter.once(): invalid arguments:' + inspect([listenerOrEvent, listener]));
   }
 
   /**

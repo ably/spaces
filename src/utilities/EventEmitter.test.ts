@@ -138,7 +138,6 @@ describe('EventEmitter', () => {
       eventEmitter['once'](altListener);
       eventEmitter['once']('myEvent', context.spy);
       eventEmitter['once']('myEvent', altListener);
-      eventEmitter['once'](['myEvent', 'myOtherEvent', 'myThirdEvent'], altListener);
       context.eventEmitter = eventEmitter;
     });
 
@@ -171,7 +170,7 @@ describe('EventEmitter', () => {
       context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledTimes(2);
       context.eventEmitter['emit']('myOtherEvent', '');
-      expect(context.spy).toHaveBeenCalledTimes(3);
+      expect(context.spy).toHaveBeenCalledTimes(4);
     });
 
     it('removes a specific listener from multiple events', () => {
@@ -252,18 +251,6 @@ describe('EventEmitter', () => {
       context.eventEmitter['emit']('myEvent', '');
       expect(context.spy).toHaveBeenCalledOnce();
       context.eventEmitter['emit']('myEvent', '');
-      expect(context.spy).toHaveBeenCalledOnce();
-    });
-
-    it('adds a listener to multiple eventOnce fields on calling `once` with a listener and event name; and after emitting any of the events, all are removed', (context) => {
-      context.eventEmitter['once'](['myEvent', 'myOtherEvent', 'myThirdEvent'], context.spy);
-      expect(context.eventEmitter['eventsOnce']['myEvent']).toHaveLength(1);
-      expect(context.eventEmitter['eventsOnce']['myOtherEvent']).toHaveLength(1);
-      expect(context.eventEmitter['eventsOnce']['myThirdEvent']).toHaveLength(1);
-      expect(context.eventEmitter['emit']('myEvent', ''));
-      expect(context.eventEmitter['eventsOnce']['myEvent']).toBe(undefined);
-      expect(context.eventEmitter['eventsOnce']['myOtherEvent']).toBe(undefined);
-      expect(context.eventEmitter['eventsOnce']['myThirdEvent']).toBe(undefined);
       expect(context.spy).toHaveBeenCalledOnce();
     });
   });
