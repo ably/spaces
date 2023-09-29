@@ -1,0 +1,8 @@
+{
+  "name": "@ably/spaces/react",
+  "type": "module",
+  "main": "../dist/cjs/react/index.js",
+  "module": "../dist/mjs/react/index.js",
+  "types": "../dist/mjs/react/index.d.ts",
+  "sideEffects": false
+}
