@@ -64,7 +64,11 @@ export class InvalidArgumentError extends Error {
   }
 }
 
-export type EventListener<T, K extends keyof T> = (this: { event: K }, param: T[K]) => void;
+export interface EventListenerThis<K> {
+  event: K;
+}
+
+export type EventListener<T, K extends keyof T> = (this: EventListenerThis<K>, param: T[K]) => void;
 
 export default class EventEmitter<T> {
   /** @internal */
