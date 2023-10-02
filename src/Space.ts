@@ -34,6 +34,10 @@ export interface SpaceEventMap {
   update: SpaceEvents.UpdateEvent;
 }
 
+export interface SpaceState {
+  members: SpaceMember[];
+}
+
 class Space extends EventEmitter<SpaceEventMap> {
   /**
    * @internal
@@ -184,7 +188,7 @@ class Space extends EventEmitter<SpaceEventMap> {
     await this.presenceLeave(data);
   }
 
-  async getState(): Promise<{ members: SpaceMember[] }> {
+  async getState(): Promise<SpaceState> {
     const members = await this.members.getAll();
     return { members };
   }
