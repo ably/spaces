@@ -1,57 +1,12 @@
-interface ErrorInfoValues {
-  message: string;
-  code: number;
-  statusCode: number;
-}
+import { ErrorInfo } from 'ably';
 
-// TODO: export ErrorInfo from ably-js and use that instead.
-export class ErrorInfo extends Error {
-  code: number;
-  statusCode: number;
+export const ERR_SPACE_NAME_MISSING = () => new ErrorInfo('must have a non-empty name for the space', 101000, 400);
 
-  constructor({ message, code, statusCode }: ErrorInfoValues) {
-    super(message);
+export const ERR_NOT_ENTERED_SPACE = () => new ErrorInfo('must enter a space to perform this operation', 101001, 400);
 
-    if (typeof Object.setPrototypeOf !== 'undefined') {
-      Object.setPrototypeOf(this, ErrorInfo.prototype);
-    }
+export const ERR_LOCK_REQUEST_EXISTS = () => new ErrorInfo('lock request already exists', 101002, 400);
 
-    this.code = code;
-    this.statusCode = statusCode;
-  }
-}
-
-export const ERR_SPACE_NAME_MISSING = () =>
-  new ErrorInfo({
-    message: 'must have a non-empty name for the space',
-    code: 101000,
-    statusCode: 400,
-  });
-
-export const ERR_NOT_ENTERED_SPACE = () =>
-  new ErrorInfo({
-    message: 'must enter a space to perform this operation',
-    code: 101001,
-    statusCode: 400,
-  });
-
-export const ERR_LOCK_REQUEST_EXISTS = () =>
-  new ErrorInfo({
-    message: 'lock request already exists',
-    code: 101002,
-    statusCode: 400,
-  });
-
-export const ERR_LOCK_IS_LOCKED = () =>
-  new ErrorInfo({
-    message: 'lock is currently locked',
-    code: 101003,
-    statusCode: 400,
-  });
+export const ERR_LOCK_IS_LOCKED = () => new ErrorInfo('lock is currently locked', 101003, 400);
 
 export const ERR_LOCK_INVALIDATED = () =>
-  new ErrorInfo({
-    message: 'lock was invalidated by a concurrent lock request which now holds the lock',
-    code: 101004,
-    statusCode: 400,
-  });
+  new ErrorInfo('lock was invalidated by a concurrent lock request which now holds the lock', 101004, 400);
