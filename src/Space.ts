@@ -137,6 +137,8 @@ class Space extends EventEmitter<SpaceEventMap> {
     });
   }
 
+  async updateProfileData(profileData: ProfileData): Promise<void>;
+  async updateProfileData(updateFn: (update: ProfileData) => ProfileData): Promise<void>;
   async updateProfileData(profileDataOrUpdateFn: ProfileData | ((update: ProfileData) => ProfileData)): Promise<void> {
     const self = await this.members.getSelf();
 
