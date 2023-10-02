@@ -25,18 +25,18 @@ export const Modal = ({ self }: Props) => {
 
   return (
     <div
-      onClick={() => setIsModalVisible(false)}
-      className={cn(
-        'backdrop-blur-md bg-black/30 fixed top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-300',
-        {
-          'opacity-0 pointer-events-none': !isModalVisible,
-          'opacity-100': isModalVisible,
-        },
-      )}
+      className={cn('fixed top-0 left-0 w-full h-full transition-all duration-300 flex items-center justify-center', {
+        'opacity-0 pointer-events-none': !isModalVisible,
+        'opacity-100': isModalVisible,
+      })}
     >
+      <div
+        onClick={() => setIsModalVisible(false)}
+        className={cn('backdrop-blur-md bg-black/30 fixed top-0 left-0 w-full h-full')}
+      ></div>
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 shadow-lg rounded-[20px]"
+        className="bg-white p-8 shadow-lg rounded-[20px] fixed m-auto"
       >
         <h3 className="font-semibold text-xl text-center mb-8">Enter your name</h3>
         <input
