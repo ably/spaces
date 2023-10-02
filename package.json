@@ -18,7 +18,6 @@
     "build:mjs": "npx tsc --project tsconfig.mjs.json && cp res/package.mjs.json dist/mjs/package.json",
     "build:cjs": "npx tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
     "build:iife": "rm -rf dist/iife && npx tsc --project tsconfig.iife.json && rollup -c",
-    "prepare": "husky install",
     "examples:locks": "ts-node ./examples/locks.ts"
   },
   "exports": {
@@ -49,7 +48,6 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsdoc": "^46.7.0",
     "eslint-plugin-security": "^1.7.1",
-    "husky": "^8.0.0",
     "prettier": "^2.8.3",
     "rollup": "^3.28.0",
     "ts-node": "^10.9.1",
