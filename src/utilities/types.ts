@@ -19,8 +19,8 @@ export type PresenceMember = {
   };
 } & Omit<Types.PresenceMessage, 'data'>;
 
-export type Subset<K> = {
-  [attr in keyof K]?: K[attr] extends object ? Subset<K[attr]> : K[attr];
+export type Subset<T> = {
+  [attr in keyof T]?: T[attr] extends object ? Subset<T[attr]> : T[attr];
 };
 
 export type RealtimeMessage = Omit<Types.Message, 'connectionId'> & {
