@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.1.3
+
+Breaking changes in this release:
+* `space.locks.getLocksForConnectionId` is now private by @lawrence-forooghian https://github.com/ably/spaces/pull/188
+
+Other notable changes:
+* Refactor space updates by @dpiatek in https://github.com/ably/spaces/pull/180
+  * Fixes `space.updateProfileData` not passing the existing `ProfileData` if a function was passed in as an argument
+  * Fixes `space.leave` resetting `ProfileData` when no arguments are passed in
+
+**Full Changelog**: https://github.com/ably/spaces/compare/0.1.2...0.1.3
+
 ## v0.1.2
 
 No breaking changes were introduced in this release.

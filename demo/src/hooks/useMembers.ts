@@ -15,7 +15,7 @@ const areMembers = (arr: unknown): arr is Member[] => {
 const membersToOthers = (members: Member[] = [], self: SpaceMember | null): Member[] =>
   members.filter((m) => m.connectionId !== self?.connectionId);
 
-export const useMembers: () => Partial<{ self?: Member; others: Member[]; members: Member[] }> = () => {
+export const useMembers: () => { self?: Member; others: Member[]; members: Member[] } = () => {
   const space = useContext(SpacesContext);
   const [members, setMembers] = useState<Member[]>([]);
   const [others, setOthers] = useState<Member[]>([]);
