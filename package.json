@@ -23,10 +23,6 @@
     "examples:locks": "ts-node ./examples/locks.ts",
     "docs": "typedoc"
   },
-  "exports": {
-    "import": "./dist/mjs/index.js",
-    "require": "./dist/cjs/index.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ably/spaces.git"
@@ -46,6 +42,8 @@
     "@rollup/plugin-node-resolve": "^15.2.1",
     "@rollup/plugin-terser": "^0.4.3",
     "@types/express": "^4.17.18",
+    "@types/react": "^18.2.23",
+    "@types/react-dom": "^18.2.8",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "@vitest/coverage-c8": "^0.33.0",
@@ -66,6 +64,16 @@
     "nanoid": "^5.0.2"
   },
   "peerDependencies": {
-    "ably": "^1.2.45"
+    "ably": "^1.2.45",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   }
 }
