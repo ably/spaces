@@ -1,6 +1,6 @@
 import Spaces from './Spaces.js';
 
-export type { default as Space, SpaceEventMap, SpaceEvents, SpaceState } from './Space.js';
+export type { default as Space, SpaceEventMap, SpaceEvents, SpaceState, UpdateProfileDataFunction } from './Space.js';
 
 export type { default as Cursors, CursorsEventMap } from './Cursors.js';
 export type { default as Locations, LocationsEventMap, LocationsEvents } from './Locations.js';
