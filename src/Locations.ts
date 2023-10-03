@@ -91,10 +91,6 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Set your current location. The `location` argument can be any JSON-serializable object. Emits a `locationUpdate` event to all connected clients in this space.
-   *
-   * ```ts
-   * type set = (update: unknown) => Promise<void>;
-   * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async set(location: unknown) {
@@ -265,10 +261,6 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get location for self.
    *
-   * ```ts
-   * type getSelf = () => Promise<unknown>;
-   * ```
-   *
    * Example:
    *
    * ```ts
@@ -287,10 +279,6 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get location for other members
-   *
-   * ```ts
-   * type getOthers = () => Promise<Record<ConnectionId, unknown>>;
-   * ```
    *
    * Example:
    *
@@ -376,10 +364,6 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get location for all members.
-   *
-   * ```ts
-   * type getAll = () => Promise<Record<ConnectionId, unknown>>;
-   * ```
    *
    * Example:
    *

@@ -11,10 +11,6 @@ import SpaceUpdate from './SpaceUpdate.js';
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Additional attributes that can be set when acquiring a lock.
- *
- * ```ts
- * type LockAttributes = Map<string, string>;
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export type LockAttributes = Record<string, unknown>;
@@ -108,10 +104,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get a lock by its id.
    *
-   * ```ts
-   * type get = (lockId: string) => Lock | undefined
-   * ```
-   *
    * Example:
    *
    * ```ts
@@ -191,10 +183,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get all locks that have the `locked` status.
    *
-   * ```ts
-   * type getAll = () => Promise<Lock[]>
-   * ```
-   *
    * Example:
    *
    * ```ts
@@ -223,10 +211,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get all locks belonging to self that have the `locked` status.
    *
-   * ```ts
-   * type getSelf = () => Promise<Lock[]>
-   * ```
-   *
    * Example:
    *
    * ```ts
@@ -248,10 +232,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get all locks belonging to all members except self that have the `locked` status.
-   *
-   * ```ts
-   * type getOthers = () => Promise<Lock[]>
-   * ```
    *
    * Example:
    *
@@ -309,10 +289,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * Send a request to acquire a lock. Returns a Promise which resolves once the request has been sent. A resolved Promise holds a `pending` [Lock](#lock). An error will be thrown if a lock request with a status of `pending` or `locked` already exists, returning a rejected promise.
    *
    * When a lock acquisition by a member is confirmed with the `locked` status, an `update` event will be emitted. Hence to handle lock acquisition, `acquire()` needs to always be used together with `subscribe()`.
-   *
-   * ```ts
-   * type acquire = (lockId: string) => Promise<Lock>;
-   * ```
    *
    * Example:
    *
@@ -374,10 +350,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Releases a previously requested lock.
-   *
-   * ```ts
-   * type release = (lockId: string) => Promise<void>;
-   * ```
    *
    * Example:
    *

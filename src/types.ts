@@ -1,16 +1,6 @@
 import { Types } from 'ably';
 import type { LockAttributes } from './Locks.js';
 
-/**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * ```ts
- * type CursorsOptions = {
- *   outboundBatchInterval?: number;
- *   paginationLimit?: number;
- * };
- * ```
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
- */
 export interface CursorsOptions {
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
@@ -29,13 +19,6 @@ export interface CursorsOptions {
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Represents a cursors position.
- *
- * ```ts
- * type CursorPosition = {
- *   x: number;
- *   y: number;
- * };
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export interface CursorPosition {
@@ -46,10 +29,6 @@ export interface CursorPosition {
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Represent data that can be associated with a cursor update.
- *
- * ```ts
- * type CursorData = Record<string, unknown>;
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export type CursorData = Record<string, unknown>;
@@ -57,16 +36,6 @@ export type CursorData = Record<string, unknown>;
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Represents an update to a cursor.
- *
- * ```ts
- * type CursorUpdate = {
- *   name: string;
- *   clientId: string;
- *   connectionId: string;
- *   position: CursorPosition;
- *   data?: CursorData;
- * };
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export interface CursorUpdate {
@@ -79,13 +48,6 @@ export interface CursorUpdate {
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Used to configure a Space instance on creation.
- *
- * ```ts
- * type SpaceOptions = {
- *   offlineTimeout?: number;
- *   cursors?: CursorsOptions;
- * };
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export interface SpaceOptions {
@@ -108,17 +70,6 @@ export type ProfileData = Record<string, unknown> | null;
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * A SpaceMember represents a member within a Space instance. Each new connection that enters will create a new member, even if they have the same [`clientId`](https://ably.com/docs/auth/identified-clients?lang=javascript).
- *
- * ```ts
- * type SpaceMember = {
- *   clientId: string;
- *   connectionId: string;
- *   isConnected: boolean;
- *   profileData: Record<string, unknown>;
- *   location: Location;
- *   lastEvent: PresenceEvent;
- * };
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export interface SpaceMember {
@@ -172,10 +123,6 @@ export namespace LockStatuses {
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Represents a status of a lock.
- *
- * ```ts
- * type LockStatus = 'pending' | 'locked' | 'unlocked';
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export type LockStatus = LockStatuses.Pending | LockStatuses.Locked | LockStatuses.Unlocked;
@@ -183,17 +130,6 @@ export type LockStatus = LockStatuses.Pending | LockStatuses.Locked | LockStatus
 /**
  * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Represents a Lock.
- *
- * ```ts
- * type Lock = {
- *   id: string;
- *   status: LockStatus;
- *   member: SpaceMember;
- *   timestamp: number;
- *   attributes?: LockAttributes;
- *   reason?: Types.ErrorInfo;
- * };
- * ```
  * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export type Lock = {

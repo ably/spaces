@@ -91,10 +91,6 @@ class Members extends EventEmitter<MembersEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Returns a Promise which resolves to the [SpaceMember](#spacemember) object relating to the local connection. Will resolve to `null` if the client hasn't entered the space yet.
    *
-   * ```ts
-   * type getSelf = () => Promise<SpaceMember | null>;
-   * ```
-   *
    * Example:
    *
    * ```ts
@@ -235,10 +231,6 @@ class Members extends EventEmitter<MembersEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, including any who have left and not yet timed out. (_see: [offlineTimeout](#spaceoptions)_)
    *
-   * ```ts
-   * type getAll = () => Promise<SpaceMember[]>;
-   * ```
-   *
    * Example:
    *
    * ```ts
@@ -258,10 +250,6 @@ class Members extends EventEmitter<MembersEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Returns a Promise which resolves to an array of all [SpaceMember](#spacemember) objects (members) currently in the space, excluding your own member object.
-   *
-   * ```ts
-   * type getSelf = () => Promise<SpaceMember[]>;
-   * ```
    *
    * Example:
    *

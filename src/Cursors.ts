@@ -137,10 +137,6 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *
    * A event payload returned contains an object with 2 properties. `position` is an object with 2 required properties, `x` and `y`. These represent the position of the cursor on a 2D plane. A second optional property, `data` can also be passed. This is an object of any shape and is meant for data associated with the cursor movement (like drag or hover calculation results):
    *
-   * ```ts
-   * type set = (update: { position: CursorPosition, data?: CursorData }) => void;
-   * ```
-   *
    * Example usage:
    *
    * ```ts
@@ -326,10 +322,6 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get the last `CursorUpdate` object for self.
    *
-   * ```ts
-   * type getSelf = () => Promise<CursorUpdate | null>;
-   * ```
-   *
    * Example:
    *
    * ```ts
@@ -351,10 +343,6 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get the last `CursorUpdate` object for everyone else but yourself.
-   *
-   * ```ts
-   * type getOthers = () => Promise<Record<string, CursorUpdate | null>>;
-   * ```
    *
    * Example:
    *
@@ -465,10 +453,6 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get the last `CursorUpdate` object for all the members.
-   *
-   * ```ts
-   * type getAll = () => Promise<Record<string, CursorUpdate | null>>;
-   * ```
    *
    * Example:
    *
