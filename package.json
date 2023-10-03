@@ -58,6 +58,6 @@
     "nanoid": "^4.0.2"
   },
   "peerDependencies": {
-    "ably": "^1.2.43"
+    "ably": "^1.2.45"
   }
 }
