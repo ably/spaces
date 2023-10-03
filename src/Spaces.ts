@@ -19,20 +19,12 @@ class Spaces {
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Instance of the [ably-js](https://github.com/ably/ably-js) client that was passed to the [constructor](#constructor).
-   *
-   * ```ts
-   * type client = Ably.RealtimePromise;
-   * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   client: Types.RealtimePromise;
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Instance of the [ably-js](https://github.com/ably/ably-js) connection, belonging to the client that was passed to the [constructor](#constructor).
-   *
-   * ```ts
-   * type connection = Ably.ConnectionPromise;
-   * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   connection: Types.ConnectionPromise;
@@ -40,10 +32,6 @@ class Spaces {
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Version of the Spaces library.
-   *
-   * ```ts
-   * type version = string;
-   * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   readonly version = VERSION;
@@ -51,14 +39,6 @@ class Spaces {
   /**
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Create a new instance of the Space SDK by passing an instance of the realtime, promise-based [Ably client](https://github.com/ably/ably-js):
-   *
-   * ```ts
-   * import { Realtime } from 'ably/promise';
-   * import Spaces from '@ably/spaces';
-   *
-   * const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
-   * const spaces = new Spaces(client);
-   * ```
    *
    * Please note that a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascript) is required.
    *
@@ -164,10 +144,6 @@ class Spaces {
    *
    * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Get or create a Space instance. Returns a [Space](#space) instance. Configure the space by passing [SpaceOptions](#spaceoptions) as the second argument.
-   *
-   * ```ts
-   * type get = (name: string, options?: SpaceOptions) => Promise<Space>;
-   * ```
    * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
