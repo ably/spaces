@@ -65,7 +65,7 @@ const space = await spaces.get('demoSlideshow');
 
 ### Options
 
-A set of `spaceOptions` can be passed to space when creating or retrieving it. See the [class definitions](/docs/class-definitions.md#spaceoptions) for details on what options are available.
+A set of `spaceOptions` can be passed to space when creating or retrieving it. See the [class definitions](https://sdk.ably.com/builds/ably/spaces/main/typedoc/interfaces/SpaceOptions.html) for details on what options are available.
 
 The following is an example of setting `offlineTimeout` to 3 minutes and a `paginationLimit` of 10:
 
@@ -161,7 +161,7 @@ When you enter a space, you become a `member`. On the client, your own membershi
 }
 ```
 
-See [SpaceMember](/docs/class-definitions.md#spacemember) for details on properties.
+See [SpaceMember](https://sdk.ably.com/builds/ably/spaces/main/typedoc/interfaces/SpaceMember.html) for details on properties.
 
 ### Member events
 

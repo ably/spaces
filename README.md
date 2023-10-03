@@ -44,7 +44,7 @@ Changes to the app state made by users not only need to be synced with your back
 The Spaces SDK is currently under development. If you are interested in being an early adopter and providing feedback then you can [sign up](https://go.ably.com/spaces-early-access) for early access and are welcome to [provide us with feedback](https://go.ably.com/spaces-feedback).
 
 The next section gives you an overview of how to use the SDK. Alternatively, you can jump to:
-* [Class definitions](/docs/class-definitions.md)
+* [TypeDoc documentation](https://sdk.ably.com/builds/ably/spaces/main/typedoc/index.html)
 * [Usage instructions](/docs/usage.md)
 * [Channel behaviors](/docs/channel-behaviors.md)
 
