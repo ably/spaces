@@ -38,6 +38,8 @@ export interface SpaceState {
   members: SpaceMember[];
 }
 
+export type UpdateProfileDataFunction = (profileData: ProfileData) => ProfileData;
+
 class Space extends EventEmitter<SpaceEventMap> {
   /**
    * @internal
@@ -142,8 +144,8 @@ class Space extends EventEmitter<SpaceEventMap> {
   }
 
   async updateProfileData(profileData: ProfileData): Promise<void>;
-  async updateProfileData(updateFn: (update: ProfileData) => ProfileData): Promise<void>;
-  async updateProfileData(profileDataOrUpdateFn: ProfileData | ((update: ProfileData) => ProfileData)): Promise<void> {
+  async updateProfileData(updateFn: UpdateProfileDataFunction): Promise<void>;
+  async updateProfileData(profileDataOrUpdateFn: ProfileData | UpdateProfileDataFunction): Promise<void> {
     const self = await this.members.getSelf();
 
     if (!isObject(profileDataOrUpdateFn) && !isFunction(profileDataOrUpdateFn)) {
