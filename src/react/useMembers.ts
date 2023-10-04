@@ -1,0 +1,71 @@
+import { useEffect, useState } from 'react';
+import { useSpace } from './useSpace.js';
+
+import type { ErrorInfo } from 'ably';
+import type { Space, SpaceMember } from '..';
+import type { UseSpaceOptions, UseSpaceCallback } from './types.js';
+
+interface UseMembersResult {
+  space?: Space;
+  /**
+   * All members present in the space
+   */
+  members: SpaceMember[];
+  /**
+   * All members present in the space excluding the member associated with the spaces client
+   */
+  others: SpaceMember[];
+  /**
+   * The member associated with the spaces client
+   */
+  self: SpaceMember | null;
+  channelError: ErrorInfo | null;
+  connectionError: ErrorInfo | null;
+}
+
+export const useMembers = (callback?: UseSpaceCallback, options?: UseSpaceOptions): UseMembersResult => {
+  const { space, connectionError, channelError } = useSpace(callback, options);
+  const [members, setMembers] = useState<SpaceMember[]>([]);
+  const [others, setOthers] = useState<SpaceMember[]>([]);
+  const [self, setSelf] = useState<SpaceMember | null>(null);
+
+  useEffect(() => {
+    if (!space) return;
+    let ignore: boolean = false;
+
+    const updateState = (updatedSelf: SpaceMember | null, updatedMembers: SpaceMember[]) => {
+      if (ignore) return;
+      setSelf(updatedSelf);
+      setMembers([...updatedMembers]);
+      setOthers(updatedMembers.filter((member) => member.connectionId !== updatedSelf?.connectionId));
+    };
+
+    const handler = async ({ members: updatedMembers }: { members: SpaceMember[] }) => {
+      const updatedSelf = await space.members.getSelf();
+      updateState(updatedSelf, updatedMembers);
+    };
+
+    const init = async () => {
+      const initSelf = await space.members.getSelf();
+      const initMembers = await space.members.getAll();
+      updateState(initSelf, initMembers);
+      space.subscribe('update', handler);
+    };
+
+    init();
+
+    return () => {
+      ignore = true;
+      space.unsubscribe('update', handler);
+    };
+  }, [space]);
+
+  return {
+    space,
+    members,
+    others,
+    self,
+    connectionError,
+    channelError,
+  };
+};
