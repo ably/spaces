@@ -7,7 +7,7 @@ import type { ErrorInfo } from 'ably';
 import type { Space } from '..';
 import type { UseSpaceCallback, UseSpaceOptions } from './types.js';
 
-interface UseSpaceResult {
+export interface UseSpaceResult {
   space?: Space;
   enter?: Space['enter'];
   leave?: Space['leave'];

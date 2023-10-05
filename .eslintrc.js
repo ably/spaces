@@ -16,6 +16,8 @@ module.exports = {
     // security/detect-object-injection just gives a lot of false positives
     // see https://github.com/nodesecurity/eslint-plugin-security/issues/21
     'security/detect-object-injection': 'off',
+    // the code problem checked by this ESLint rule is automatically checked by the TypeScript compiler
+    'no-redeclare': 'off',
   },
   overrides: [
     {

@@ -23,7 +23,7 @@ interface LockOptions {
   attributes: LockAttributes;
 }
 
-type LockEventMap = {
+export type LockEventMap = {
   update: Lock;
 };
 
