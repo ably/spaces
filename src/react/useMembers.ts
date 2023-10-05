@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSpace } from './useSpace.js';
+import { isArray, isFunction, isString } from '../utilities/is.js';
 
 import type { ErrorInfo } from 'ably';
 import type { Space, SpaceMember } from '..';
-import type { UseSpaceOptions, UseSpaceCallback } from './types.js';
+import type { UseSpaceOptions } from './types.js';
 
 interface UseMembersResult {
   space?: Space;
@@ -23,11 +24,58 @@ interface UseMembersResult {
   connectionError: ErrorInfo | null;
 }
 
-export const useMembers = (callback?: UseSpaceCallback, options?: UseSpaceOptions): UseMembersResult => {
-  const { space, connectionError, channelError } = useSpace(callback, options);
+type UseMembersCallback = (params: SpaceMember) => void;
+
+type MembersEvent = 'leave' | 'enter' | 'update' | 'updateProfile' | 'remove';
+
+function useMembers(callback?: UseMembersCallback, options?: UseSpaceOptions): UseMembersResult;
+function useMembers(
+  event: MembersEvent | MembersEvent[],
+  callback: UseMembersCallback,
+  options?: UseSpaceOptions,
+): UseMembersResult;
+
+function useMembers(
+  eventOrCallback?: MembersEvent | MembersEvent[] | UseMembersCallback,
+  callbackOrOptions?: UseMembersCallback | UseSpaceOptions,
+  optionsOrNothing?: UseSpaceOptions,
+): UseMembersResult {
+  const { space, connectionError, channelError } = useSpace();
   const [members, setMembers] = useState<SpaceMember[]>([]);
   const [others, setOthers] = useState<SpaceMember[]>([]);
   const [self, setSelf] = useState<SpaceMember | null>(null);
+
+  const callback =
+    isString(eventOrCallback) || isArray(eventOrCallback) ? (callbackOrOptions as UseMembersCallback) : eventOrCallback;
+
+  const options = isFunction(callbackOrOptions) ? optionsOrNothing : callbackOrOptions;
+
+  const callbackRef = useRef<UseMembersCallback | undefined>(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    if (callbackRef.current && members && !options?.skip) {
+      const listener: UseMembersCallback = (params) => {
+        callbackRef.current?.(params);
+      };
+      if (isString(eventOrCallback)) {
+        space?.members.subscribe(eventOrCallback, listener);
+      } else {
+        space?.members.subscribe<MembersEvent>(listener);
+      }
+
+      return () => {
+        if (isString(eventOrCallback)) {
+          space?.members.unsubscribe(eventOrCallback, listener);
+        } else {
+          space?.members.unsubscribe<MembersEvent>(listener);
+        }
+      };
+    }
+  }, [space?.members, options?.skip]);
 
   useEffect(() => {
     if (!space) return;
@@ -68,4 +116,6 @@ export const useMembers = (callback?: UseSpaceCallback, options?: UseSpaceOption
     connectionError,
     channelError,
   };
-};
+}
+
+export { useMembers };
