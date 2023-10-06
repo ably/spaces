@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useSpaces } from '../useSpaces.js';
 
 import type { Space, SpaceOptions } from '../../';
@@ -23,7 +23,12 @@ export const SpaceProvider: React.FC<SpaceProviderProps> = ({ name, options, chi
     let ignore: boolean = false;
 
     const init = async () => {
-      if (!spaces) return;
+      if (!spaces) {
+        throw new Error(
+          'Could not find spaces client in context. ' +
+            'Make sure your spaces hooks are called inside an <SpacesProvider>',
+        );
+      }
 
       const spaceInstance = await spaces.get(name, optionsRef.current);
 

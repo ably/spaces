@@ -21,7 +21,7 @@ export const useSpace = (callback?: UseSpaceCallback, options?: UseSpaceOptions)
   const callbackRef = useRef(callback);
 
   const channelError = useChannelState(space?.channel);
-  const connectionError = useConnectionState(space?.client.connection);
+  const connectionError = useConnectionState();
 
   useEffect(() => {
     callbackRef.current = callback;
