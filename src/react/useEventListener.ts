@@ -4,6 +4,9 @@ import type { Types } from 'ably';
 
 type EventListener<T> = (stateChange: T) => void;
 
+/**
+ * todo use `ably/react` hooks instead
+ */
 export const useEventListener = <
   S extends Types.ConnectionState | Types.ChannelState,
   C extends Types.ConnectionStateChange | Types.ChannelStateChange,

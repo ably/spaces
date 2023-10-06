@@ -8,6 +8,9 @@ type ChannelStateListener = (stateChange: Types.ChannelStateChange) => void;
 const failedStateEvents: Types.ChannelState[] = ['suspended', 'failed', 'detached'];
 const successStateEvents: Types.ChannelState[] = ['attached'];
 
+/**
+ * todo use `ably/react` hooks instead
+ */
 export const useChannelState = <S extends Types.ChannelState, C extends Types.ChannelStateChange>(
   emitter?: Types.EventEmitter<ChannelStateListener, C, S>,
 ) => {
