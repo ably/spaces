@@ -52,3 +52,16 @@ jobs:
           node-version: 18
       - run: npm ci
       - run: npm run build
+  test-cdn-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run build
+      - run: npm run test:cdn_bundle
