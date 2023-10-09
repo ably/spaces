@@ -6,6 +6,7 @@ node_modules/
 coverage
 .env
 docs/typedoc/generated/
+test-results/
 
 # Local Netlify folder
 .netlify

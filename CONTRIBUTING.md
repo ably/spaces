@@ -34,3 +34,12 @@ To run the Jest tests, simply run the following command:
 ```bash
 npm test
 ```
+
+### CDN bundle test
+
+To test the bundle that we upload to the CDN:
+
+1. Initialize submodules: `git submodule update --init`
+2. Install browser for Playwright to use: `npx run playwright install chromium`
+3. Build the bundle: `npm run build`
+4. Run the test: `npm run test:cdn-bundle`
