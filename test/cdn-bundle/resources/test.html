@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Spaces CDN build test</title>
+  </head>
+  <body>
+    <script
+      type="text/javascript"
+      src="node_modules/ably/build/ably.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="fake-cdn/ably-spaces-cdn-bundle.js"
+    ></script>
+    <script type="text/javascript">
+      (async () => {
+        try {
+          const key = await createSandboxAblyAPIKey();
+
+          // The next two statements are based on the example given in the "Using a CDN" section of the README.
+          const client = new Ably.Realtime.Promise({
+            key,
+            environment: 'sandbox',
+            clientId: 'myClientId',
+          });
+          const spaces = new Spaces(client);
+
+          const space = await spaces.get('mySpace');
+          console.log('Entering space');
+          await space.enter();
+          console.log('Entered space');
+
+          onResult(null);
+        } catch (error) {
+          console.log('Caught error', error);
+          onResult(error);
+        }
+      })();
+    </script>
+  </body>
+</html>
