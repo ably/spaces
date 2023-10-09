@@ -18,4 +18,4 @@ export type {
   LockStatus,
 } from './types.js';
 
-export { LockAttributes } from './Locks.js';
+export type { LockAttributes } from './Locks.js';

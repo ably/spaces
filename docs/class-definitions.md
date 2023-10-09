@@ -706,5 +706,5 @@ type LockStatus = 'pending' | 'locked' | 'unlocked';
 Additional attributes that can be set when acquiring a lock.
 
 ```ts
-type LockAttributes = Map<string, string>;
+type LockAttributes = Record<string, unknown>;
 ```

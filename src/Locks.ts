@@ -13,11 +13,7 @@ import EventEmitter, {
 
 import SpaceUpdate from './SpaceUpdate.js';
 
-export class LockAttributes extends Map<string, string> {
-  toJSON() {
-    return Object.fromEntries(this);
-  }
-}
+export type LockAttributes = Record<string, unknown>;
 
 interface LockOptions {
   attributes: LockAttributes;
@@ -203,6 +199,7 @@ export default class Locks extends EventEmitter<LockEventMap> {
         this.emit('update', { ...lock, member });
       }
 
+      // TODO this lock that comes from the PresenceMessage has no type checking
       this.setLock({ ...lock, member });
     });
 
