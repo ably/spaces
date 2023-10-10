@@ -18,7 +18,10 @@ type LocationsEventMap = {
 export default class Locations extends EventEmitter<LocationsEventMap> {
   private lastLocationUpdate: Record<string, PresenceMember['data']['locationUpdate']['id']> = {};
 
-  constructor(private space: Space, private presenceUpdate: Space['presenceUpdate']) {
+  constructor(
+    private space: Space,
+    private presenceUpdate: Space['presenceUpdate'],
+  ) {
     super();
   }
 

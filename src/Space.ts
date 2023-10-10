@@ -44,7 +44,11 @@ class Space extends EventEmitter<SpaceEventsMap> {
   readonly locks: Locks;
   readonly name: string;
 
-  constructor(name: string, readonly client: Types.RealtimePromise, options?: Subset<SpaceOptions>) {
+  constructor(
+    name: string,
+    readonly client: Types.RealtimePromise,
+    options?: Subset<SpaceOptions>,
+  ) {
     super();
 
     this.options = this.setOptions(options);
