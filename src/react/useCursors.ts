@@ -36,7 +36,7 @@ export function useCursors(callback?: UseCursorsCallback, options?: UseCursorsOp
   const [cursors, setCursors] = useState<Record<string, { member: SpaceMember; cursorUpdate: CursorUpdate }>>({});
   const { members } = useMembers();
   const channelError = useChannelState(space?.cursors.channel);
-  const connectionError = useConnectionState(space?.client.connection);
+  const connectionError = useConnectionState();
 
   const connectionIdToMember: Record<string, SpaceMember> = useMemo(() => {
     return members.reduce((acc, member) => {
