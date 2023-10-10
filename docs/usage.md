@@ -37,6 +37,10 @@ You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
 <script src="https://unpkg.com/@ably/spaces@0.1.2/dist/iife/index.bundle.js"></script>
 ```
 
+> **Note**
+>
+> If you do this, then replace the call to `new Realtime.Promise` in the next section with `new Ably.Realtime.Promise`.
+
 ## Authentication and instantiation
 
 Spaces use an [Ably promise-based realtime client](https://github.com/ably/ably-js#using-the-async-api-style). You can pass an Ably client directly to the spaces constructor.
