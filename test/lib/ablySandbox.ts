@@ -1,5 +1,5 @@
 import https from 'node:https';
-import testAppSetup from '../../ably-common/test-resources/test-app-setup.json';
+import testAppSetup from '../ably-common/test-resources/test-app-setup.json';
 
 export interface TestApp {
   keys: TestAppKey[];

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createSandboxAblyAPIKey } from '../lib/ablySandbox.js';
+import { createSandboxAblyAPIKey } from '../../lib/ablySandbox.js';
 
 test.describe('CDN bundle', () => {
   /**
