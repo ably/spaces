@@ -83,7 +83,10 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   private locks: Map<string, Map<string, Lock>>;
 
   /** @internal */
-  constructor(private space: Space, private presenceUpdate: Space['presenceUpdate']) {
+  constructor(
+    private space: Space,
+    private presenceUpdate: Space['presenceUpdate'],
+  ) {
     super();
     this.locks = new Map();
   }
