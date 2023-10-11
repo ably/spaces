@@ -40,6 +40,9 @@ const mockChannel = {
   subscribe: () => {},
   publish: () => {},
   subscriptions: mockEmitter,
+  unsubscribe: () => {},
+  on: () => {},
+  off: () => {},
 };
 
 class MockRealtime {
