@@ -6,6 +6,6 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'json', 'html'],
     },
-    exclude: [...configDefaults.exclude, 'test/ably-common']
+    exclude: [...configDefaults.exclude, 'test/ably-common', 'test']
   },
 });

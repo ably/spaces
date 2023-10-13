@@ -64,4 +64,4 @@ jobs:
       - run: npm ci
       - run: npx playwright install chromium
       - run: npm run build
-      - run: npm run test:cdn_bundle
+      - run: npm run test:cdn-bundle
