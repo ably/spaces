@@ -1,15 +1,15 @@
-import { useContext, RefObject, useEffect } from 'react';
-import { SpacesContext } from '../components';
+import { RefObject, useEffect } from 'react';
+import { useCursors, useSpace } from '@ably/spaces/react';
 
 export const CURSOR_MOVE = 'move';
 export const CURSOR_ENTER = 'enter';
 export const CURSOR_LEAVE = 'leave';
 
 export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>, selfConnectionId?: string) => {
-  const space = useContext(SpacesContext);
+  const { set } = useCursors();
 
   useEffect(() => {
-    if (!containerRef.current || !space) return;
+    if (!containerRef.current || !set) return;
 
     const { current: cursorContainer } = containerRef;
 
@@ -17,7 +17,7 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>, selfConn
       enter: (event: MouseEvent) => {
         if (!selfConnectionId) return;
         const { top, left } = cursorContainer.getBoundingClientRect();
-        space.cursors.set({
+        set({
           position: { x: event.clientX - left, y: event.clientY - top },
           data: { state: CURSOR_ENTER },
         });
@@ -25,7 +25,7 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>, selfConn
       move: (event: MouseEvent) => {
         if (!selfConnectionId) return;
         const { top, left } = cursorContainer.getBoundingClientRect();
-        space.cursors.set({
+        set({
           position: { x: event.clientX - left, y: event.clientY - top },
           data: { state: CURSOR_MOVE },
         });
@@ -33,7 +33,7 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>, selfConn
       leave: (event: MouseEvent) => {
         if (!selfConnectionId) return;
         const { top, left } = cursorContainer.getBoundingClientRect();
-        space.cursors.set({
+        set({
           position: { x: event.clientX - left, y: event.clientY - top },
           data: { state: CURSOR_LEAVE },
         });
@@ -45,10 +45,9 @@ export const useTrackCursor = (containerRef: RefObject<HTMLDivElement>, selfConn
     cursorContainer.addEventListener('mouseleave', cursorHandlers.leave);
 
     return () => {
-      space.cursors.unsubscribe();
       cursorContainer.removeEventListener('mouseenter', cursorHandlers.enter);
       cursorContainer.removeEventListener('mousemove', cursorHandlers.move);
       cursorContainer.removeEventListener('mouseleave', cursorHandlers.leave);
     };
-  }, [space, containerRef, selfConnectionId]);
+  }, [set, containerRef, selfConnectionId]);
 };

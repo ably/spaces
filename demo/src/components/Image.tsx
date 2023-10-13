@@ -1,7 +1,8 @@
 import cn from 'classnames';
-import { useClickOutside, useElementSelect, useMembers } from '../hooks';
+import { useClickOutside, useElementSelect } from '../hooks';
 import { findActiveMembers, getMemberFirstName, getOutlineClasses } from '../utils';
 import { useRef } from 'react';
+import { useMembers } from '@ably/spaces/react';
 import { usePreview } from './PreviewContext.tsx';
 
 interface Props extends React.HTMLAttributes<HTMLImageElement> {

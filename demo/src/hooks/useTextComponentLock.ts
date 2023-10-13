@@ -1,13 +1,12 @@
 import { MutableRefObject, useCallback } from 'react';
-import { useChannel } from '@ably-labs/react-hooks';
+import { useChannel } from 'ably/react';
+import { useMembers, useLock } from '@ably/spaces/react';
+import sanitize from 'sanitize-html';
 import { findActiveMember, generateSpaceName, getParamValueFromUrl } from '../utils';
 import { buildLockId } from '../utils/locking.ts';
 import { usePreview } from '../components/PreviewContext.tsx';
-import { useMembers } from './useMembers.ts';
 import { useClearOnFailedLock, useClickOutside, useElementSelect } from './useElementSelect.ts';
-import { useLockStatus } from './useLock.ts';
 import { useSlideElementContent } from './useSlideElementContent.ts';
-import sanitize from 'sanitize-html';
 
 interface UseTextComponentLockArgs {
   id: string;
@@ -20,8 +19,10 @@ export const useTextComponentLock = ({ id, slide, defaultText, containerRef }: U
   const spaceName = getParamValueFromUrl('space', generateSpaceName);
   const { members, self } = useMembers();
   const activeMember = findActiveMember(id, slide, members);
-  const { locked, lockedByYou } = useLockStatus(slide, id, self?.connectionId);
   const lockId = buildLockId(slide, id);
+  const { status, member } = useLock(lockId);
+  const locked = status === 'locked';
+  const lockedByYou = locked && self?.connectionId === member?.connectionId;
   const channelName = `[?rewind=1]${spaceName}${lockId}`;
   const [content, updateContent] = useSlideElementContent(lockId, defaultText);
   const preview = usePreview();
