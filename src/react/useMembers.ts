@@ -59,7 +59,7 @@ function useMembers(
   }, [callback]);
 
   useEffect(() => {
-    if (callbackRef.current && members && !options?.skip) {
+    if (callbackRef.current && space?.members && !options?.skip) {
       const listener: UseMembersCallback = (params) => {
         callbackRef.current?.(params);
       };

@@ -8,6 +8,7 @@ import type { CursorUpdate, SpaceMember } from '../types.js';
 import type { ErrorInfo } from 'ably';
 import type Cursors from '../Cursors.js';
 import type { UseSpaceOptions } from './types.js';
+import type { Space } from '..';
 
 interface UseCursorsOptions extends UseSpaceOptions {
   /**
@@ -17,6 +18,7 @@ interface UseCursorsOptions extends UseSpaceOptions {
 }
 
 interface UseCursorsResult {
+  space?: Space;
   connectionError: ErrorInfo | null;
   channelError: ErrorInfo | null;
   set?: Cursors['set'];
@@ -77,6 +79,7 @@ export function useCursors(callback?: UseCursorsCallback, options?: UseCursorsOp
   }, [space, connectionIdToMember]);
 
   return {
+    space,
     connectionError,
     channelError,
     set: space?.cursors.set.bind(space?.cursors),

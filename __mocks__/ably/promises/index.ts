@@ -53,6 +53,9 @@ function createMockChannel() {
     publish: () => {},
     subscriptions: createMockEmitter(),
   };
+  unsubscribe: () => {},
+  on: () => {},
+  off: () => {},
 }
 
 class MockRealtime {
