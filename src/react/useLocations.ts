@@ -5,8 +5,10 @@ import { isArray, isFunction, isString } from '../utilities/is.js';
 import type Locations from '../Locations.js';
 import type { SpaceMember } from '../types.js';
 import type { UseSpaceOptions } from './types.js';
+import type { Space } from '../';
 
 interface UseLocationsResult {
+  space?: Space;
   update?: Locations['set'];
 }
 
@@ -67,6 +69,7 @@ function useLocations(
   }, [locations, options?.skip]);
 
   return {
+    space,
     update: locations?.set.bind(locations),
   };
 }
