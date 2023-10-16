@@ -6,6 +6,8 @@ import Space from './Space.js';
 import type { SpaceOptions } from './types.js';
 import type { Subset } from './utilities/types.js';
 
+import { VERSION } from './version.js';
+
 export interface ClientWithOptions extends Types.RealtimePromise {
   options: {
     agents?: Record<string, string | boolean>;
@@ -17,7 +19,7 @@ class Spaces {
   client: Types.RealtimePromise;
   connection: Types.ConnectionPromise;
 
-  readonly version = '0.1.3';
+  readonly version = VERSION;
 
   constructor(client: Types.RealtimePromise) {
     this.client = client;

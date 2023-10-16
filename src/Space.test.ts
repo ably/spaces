@@ -46,7 +46,15 @@ describe('Space', () => {
       const channelSpy = vi.spyOn(channels, 'get');
       const space = new Space('test', client);
 
-      expect(channelSpy).toHaveBeenNthCalledWith(1, 'test-space');
+      expect(channelSpy).toHaveBeenNthCalledWith(
+        1, 
+        'test-space', 
+        expect.objectContaining({
+          params: expect.objectContaining({
+            agent: expect.stringContaining('spaces')
+          })
+        })
+      );
       expectTypeOf(space).toMatchTypeOf<Space>();
     });
   });

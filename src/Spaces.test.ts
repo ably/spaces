@@ -27,7 +27,15 @@ describe('Spaces', () => {
     await spaces.get('test');
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith('test-space');
+    expect(spy).toHaveBeenNthCalledWith(
+      1, 
+      'test-space', 
+      expect.objectContaining({
+        params: expect.objectContaining({
+          agent: expect.stringContaining('spaces')
+        })
+      })
+    );
   });
 
   it<SpacesTestContext>('applies the agent header to an existing SDK instance', ({ client }) => {
