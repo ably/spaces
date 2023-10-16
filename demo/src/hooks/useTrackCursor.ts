@@ -1,5 +1,5 @@
 import { RefObject, useEffect } from 'react';
-import { useCursors, useSpace } from '@ably/spaces/react';
+import { useCursors } from '@ably/spaces/react';
 
 export const CURSOR_MOVE = 'move';
 export const CURSOR_ENTER = 'enter';
