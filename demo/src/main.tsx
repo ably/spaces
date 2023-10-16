@@ -25,17 +25,17 @@ const spaceName = getParamValueFromUrl('space', generateSpaceName);
 
 root.render(
   <React.StrictMode>
-    <SpacesProvider client={spaces}>
-      <AblyProvider client={client}>
+    <AblyProvider client={client}>
+      <SpacesProvider client={spaces}>
         <SpaceProvider
           name={spaceName}
-          options={{ offlineTimeout: 10_000, cursors: { outboundBatchInterval: 25, paginationLimit: 5 } }}
+          options={{ offlineTimeout: 10_000 }}
         >
           <SlidesStateContextProvider>
             <App />
           </SlidesStateContextProvider>
         </SpaceProvider>
-      </AblyProvider>
-    </SpacesProvider>
+      </SpacesProvider>
+    </AblyProvider>
   </React.StrictMode>,
 );
