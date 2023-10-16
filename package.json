@@ -56,7 +56,7 @@
     "vitest": "^0.34.3"
   },
   "dependencies": {
-    "nanoid": "^4.0.2"
+    "nanoid": "^5.0.2"
   },
   "peerDependencies": {
     "ably": "^1.2.45"
