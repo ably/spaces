@@ -28,13 +28,13 @@ describe('Spaces', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenNthCalledWith(
-      1, 
-      'test-space', 
+      1,
+      'test-space',
       expect.objectContaining({
         params: expect.objectContaining({
-          agent: expect.stringContaining('spaces')
-        })
-      })
+          agent: expect.stringContaining('spaces'),
+        }),
+      }),
     );
   });
 

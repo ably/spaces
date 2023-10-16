@@ -47,13 +47,13 @@ describe('Space', () => {
       const space = new Space('test', client);
 
       expect(channelSpy).toHaveBeenNthCalledWith(
-        1, 
-        'test-space', 
+        1,
+        'test-space',
         expect.objectContaining({
           params: expect.objectContaining({
-            agent: expect.stringContaining('spaces')
-          })
-        })
+            agent: expect.stringContaining('spaces'),
+          }),
+        }),
       );
       expectTypeOf(space).toMatchTypeOf<Space>();
     });
