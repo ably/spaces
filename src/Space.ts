@@ -13,6 +13,8 @@ import { isFunction, isObject } from './utilities/is.js';
 import type { SpaceOptions, SpaceMember, ProfileData } from './types.js';
 import type { Subset, PresenceMember } from './utilities/types.js';
 
+import { VERSION } from './version.js';
+
 // Replace by ::$space when that channel tag will be available
 const SPACE_CHANNEL_TAG = '-space';
 
@@ -68,7 +70,7 @@ class Space extends EventEmitter<SpaceEventMap> {
     this.name = name;
     this.channelName = `${name}${SPACE_CHANNEL_TAG}`;
 
-    this.channel = this.client.channels.get(this.channelName);
+    this.channel = this.client.channels.get(this.channelName, { params: { agent: `spaces/${VERSION}` } });
     this.onPresenceUpdate = this.onPresenceUpdate.bind(this);
     this.channel.presence.subscribe(this.onPresenceUpdate);
 
