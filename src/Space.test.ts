@@ -60,6 +60,14 @@ describe('Space', () => {
   });
 
   describe('enter', () => {
+    beforeEach<SpaceTestContext>(({ presence }) => {
+      vi.spyOn(presence, 'subscribe').mockImplementation(
+        async (_, listener?: (presenceMessage: Types.PresenceMessage) => void) => {
+          listener!(createPresenceMessage('enter' /* arbitrarily chosen */));
+        },
+      );
+    });
+
     it<SpaceTestContext>('enter a space successfully', async ({ space, presence }) => {
       const spy = vi.spyOn(presence, 'enter');
       await space.enter({ name: 'Betty' });
