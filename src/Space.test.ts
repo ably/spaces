@@ -71,9 +71,11 @@ describe('Space', () => {
     });
 
     it<SpaceTestContext>('enter a space successfully', async ({ space, presence }) => {
-      const spy = vi.spyOn(presence, 'enter');
+      const presenceEnterSpy = vi.spyOn(presence, 'enter');
+      const presenceSubscribeSpy = vi.spyOn(presence, 'subscribe');
       await space.enter({ name: 'Betty' });
-      expect(spy).toHaveBeenNthCalledWith(1, createProfileUpdate({ current: { name: 'Betty' } }));
+      expect(presenceEnterSpy).toHaveBeenNthCalledWith(1, createProfileUpdate({ current: { name: 'Betty' } }));
+      expect(presenceSubscribeSpy).toHaveBeenCalledWith(['enter', 'present'], expect.any(Function));
     });
 
     describe.each([

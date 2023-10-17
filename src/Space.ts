@@ -264,7 +264,7 @@ class Space extends EventEmitter<SpaceEventMap> {
         resolve(members);
       };
 
-      presence.subscribe('enter', presenceListener);
+      presence.subscribe(['enter', 'present'], presenceListener);
 
       const update = new SpaceUpdate({ self: null, extras: null });
       this.presenceEnter(update.updateProfileData(profileData));
