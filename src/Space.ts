@@ -244,18 +244,18 @@ class Space extends EventEmitter<SpaceEventMap> {
     return new Promise((resolve) => {
       const presence = this.channel.presence;
 
-      interface PresenceWithSubscriptions extends Types.RealtimePresencePromise {
-        subscriptions: EventEmitter<{ enter: [unknown] }>;
-      }
+      const presenceListener = async () => {
+        presence.unsubscribe(presenceListener);
 
-      (presence as PresenceWithSubscriptions).subscriptions.once('enter', async () => {
         const presenceMessages = await presence.get();
 
         presenceMessages.forEach((msg) => this.locks.processPresenceMessage(msg));
 
         const members = await this.members.getAll();
         resolve(members);
-      });
+      };
+
+      presence.subscribe('enter', presenceListener);
 
       const update = new SpaceUpdate({ self: null, extras: null });
       this.presenceEnter(update.updateProfileData(profileData));
