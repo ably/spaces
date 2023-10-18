@@ -244,7 +244,16 @@ class Space extends EventEmitter<SpaceEventMap> {
     return new Promise((resolve) => {
       const presence = this.channel.presence;
 
-      const presenceListener = async () => {
+      const presenceListener = async (presenceMessage: Types.PresenceMessage) => {
+        if (
+          !(
+            presenceMessage.clientId == this.client.auth.clientId &&
+            presenceMessage.connectionId == this.client.connection.id
+          )
+        ) {
+          return;
+        }
+
         presence.unsubscribe(presenceListener);
 
         const presenceMessages = await presence.get();

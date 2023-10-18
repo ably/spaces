@@ -63,7 +63,9 @@ describe('Space', () => {
     beforeEach<SpaceTestContext>(({ presence }) => {
       vi.spyOn(presence, 'subscribe').mockImplementation(
         async (_, listener?: (presenceMessage: Types.PresenceMessage) => void) => {
-          listener!(createPresenceMessage('enter' /* arbitrarily chosen */));
+          listener!(
+            createPresenceMessage('enter' /* arbitrarily chosen */, { clientId: 'MOCK_CLIENT_ID', connectionId: '1' }),
+          );
         },
       );
     });
@@ -72,6 +74,43 @@ describe('Space', () => {
       const spy = vi.spyOn(presence, 'enter');
       await space.enter({ name: 'Betty' });
       expect(spy).toHaveBeenNthCalledWith(1, createProfileUpdate({ current: { name: 'Betty' } }));
+    });
+
+    describe.each([
+      {
+        scenario: 'when it receives a presence message from a client ID and connection ID that matches ours',
+        presenceMessageData: { clientId: 'MOCK_CLIENT_ID', connectionId: '1' },
+        shouldComplete: true,
+      },
+      {
+        scenario: 'when it receives a presence message from a client ID that isn’t ours',
+        presenceMessageData: { clientId: 'OTHER_MOCK_CLIENT_ID', connectionId: '1' },
+        shouldComplete: false,
+      },
+      {
+        scenario: 'when it receives a presence message from a connection ID that isn’t ours',
+        presenceMessageData: { clientId: 'MOCK_CLIENT_ID', connectionId: '2' },
+        shouldComplete: false,
+      },
+    ])('$scenario', ({ presenceMessageData, shouldComplete }) => {
+      it<SpaceTestContext>(shouldComplete ? 'completes' : 'does not complete', async ({ space, presence }) => {
+        const unsubscribeSpy = vi.spyOn(presence, 'unsubscribe');
+
+        vi.spyOn(presence, 'subscribe').mockImplementation(
+          async (_, listener?: (presenceMessage: Types.PresenceMessage) => void) => {
+            listener!(createPresenceMessage('enter' /* arbitrarily chosen */, presenceMessageData));
+          },
+        );
+
+        space.enter();
+
+        // Note: There’s no nice way (i.e. without timeouts) to actually check that space.enter() didn’t complete, so we use "did it remove its presence listener?" as a proxy for "did it complete?"
+        if (shouldComplete) {
+          expect(unsubscribeSpy).toHaveBeenCalled();
+        } else {
+          expect(unsubscribeSpy).not.toHaveBeenCalled();
+        }
+      });
     });
 
     it<SpaceTestContext>('returns current space members', async ({ presenceMap, space }) => {
