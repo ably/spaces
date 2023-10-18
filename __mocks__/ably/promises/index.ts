@@ -5,46 +5,58 @@ const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 const mockPromisify = <T>(expectedReturnValue): Promise<T> => new Promise((resolve) => resolve(expectedReturnValue));
 const methodReturningVoidPromise = () => mockPromisify<void>((() => {})());
 
-const mockPresence = {
-  get: () => mockPromisify<Types.PresenceMessage[]>([]),
-  update: () => mockPromisify<void>(undefined),
-  enter: methodReturningVoidPromise,
-  leave: methodReturningVoidPromise,
-  subscriptions: {
-    once: (_: unknown, fn: Function) => {
-      fn();
+function createMockPresence() {
+  return {
+    get: () => mockPromisify<Types.PresenceMessage[]>([]),
+    update: () => mockPromisify<void>(undefined),
+    enter: methodReturningVoidPromise,
+    leave: methodReturningVoidPromise,
+    subscriptions: {
+      once: (_: unknown, fn: Function) => {
+        fn();
+      },
     },
-  },
-  subscribe: () => {},
-};
+    subscribe: () => {},
+  };
+}
 
-const mockHistory = {
-  items: [],
-  first: () => mockPromisify(mockHistory),
-  next: () => mockPromisify(mockHistory),
-  current: () => mockPromisify(mockHistory),
-  hasNext: () => false,
-  isLast: () => true,
-};
+function createMockHistory() {
+  const mockHistory = {
+    items: [],
+    first: () => mockPromisify(mockHistory),
+    next: () => mockPromisify(mockHistory),
+    current: () => mockPromisify(mockHistory),
+    hasNext: () => false,
+    isLast: () => true,
+  };
+  return mockHistory;
+}
 
-const mockEmitter = {
-  any: [],
-  events: {},
-  anyOnce: [],
-  eventsOnce: {},
-};
+function createMockEmitter() {
+  return {
+    any: [],
+    events: {},
+    anyOnce: [],
+    eventsOnce: {},
+  };
+}
 
-const mockChannel = {
-  presence: mockPresence,
-  history: () => mockHistory,
-  subscribe: () => {},
-  publish: () => {},
-  subscriptions: mockEmitter,
-};
+function createMockChannel() {
+  return {
+    presence: createMockPresence(),
+    history: (() => {
+      const mockHistory = createMockHistory();
+      return () => mockHistory;
+    })(),
+    subscribe: () => {},
+    publish: () => {},
+    subscriptions: createMockEmitter(),
+  };
+}
 
 class MockRealtime {
   public channels: {
-    get: () => typeof mockChannel;
+    get: () => ReturnType<typeof createMockChannel>;
   };
   public auth: {
     clientId: string;
@@ -58,7 +70,10 @@ class MockRealtime {
 
   constructor() {
     this.channels = {
-      get: () => mockChannel,
+      get: (() => {
+        const mockChannel = createMockChannel();
+        return () => mockChannel;
+      })(),
     };
     this.auth = {
       clientId: MOCK_CLIENT_ID,
