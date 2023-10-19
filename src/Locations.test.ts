@@ -49,7 +49,6 @@ describe('Locations', () => {
 
     it<SpaceTestContext>('sends a presence update on location set', async ({ space, presence }) => {
       const spy = vi.spyOn(presence, 'update');
-      await space.enter();
       await space.locations.set('location1');
       expect(spy).toHaveBeenCalledWith(createLocationUpdate({ current: 'location1' }));
     });

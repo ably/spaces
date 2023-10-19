@@ -49,8 +49,6 @@ describe('Locks', () => {
       space,
       presence,
     }) => {
-      await space.enter();
-
       const presenceUpdate = vi.spyOn(presence, 'update');
 
       const lockID = 'test';
@@ -71,8 +69,6 @@ describe('Locks', () => {
     });
 
     it<SpaceTestContext>('includes attributes in the lock request when provided', async ({ space, presence }) => {
-      await space.enter();
-
       const presenceUpdate = vi.spyOn(presence, 'update');
 
       const lockID = 'test';
@@ -89,8 +85,6 @@ describe('Locks', () => {
     });
 
     it<SpaceTestContext>('errors if a PENDING request already exists', async ({ space }) => {
-      await space.enter();
-
       const lockID = 'test';
       await space.locks.acquire(lockID);
       expect(space.locks.acquire(lockID)).rejects.toThrowError();
@@ -108,7 +102,6 @@ describe('Locks', () => {
       });
 
     it<SpaceTestContext>('sets a PENDING request to LOCKED', async ({ space }) => {
-      await space.enter();
       const member = (await space.members.getSelf())!;
 
       const emitSpy = vi.spyOn(space.locks, 'emit');
@@ -173,8 +166,6 @@ describe('Locks', () => {
       },
     ])('$name', ({ desc, otherConnId, otherTimestamp, expectedSelfStatus, expectedOtherStatus }) => {
       it<SpaceTestContext>(desc, async ({ client, space }) => {
-        await space.enter();
-
         // process a PENDING request for the other member, which should
         // transition to LOCKED
         let msg = Realtime.PresenceMessage.fromValues({
@@ -230,7 +221,6 @@ describe('Locks', () => {
     });
 
     it<SpaceTestContext>('sets a released request to UNLOCKED', async ({ space }) => {
-      await space.enter();
       const member = (await space.members.getSelf())!;
 
       let msg = Realtime.PresenceMessage.fromValues({
@@ -263,7 +253,6 @@ describe('Locks', () => {
     });
 
     it<SpaceTestContext>('sets all locks to UNLOCKED when a member leaves', async ({ space }) => {
-      await space.enter();
       const member = (await space.members.getSelf())!;
 
       let msg = Realtime.PresenceMessage.fromValues({
@@ -311,7 +300,6 @@ describe('Locks', () => {
     });
 
     it<SpaceTestContext>('removes the identified lock request from presence extras', async ({ space, presence }) => {
-      await space.enter();
       const member = (await space.members.getSelf())!;
 
       const lockID = 'test';
