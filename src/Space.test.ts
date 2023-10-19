@@ -61,7 +61,7 @@ describe('Space', () => {
 
   describe('enter', () => {
     it<SpaceTestContext>('enter a space successfully', async ({ space, presence }) => {
-      const spy = vi.spyOn(presence, 'enter').mockResolvedValueOnce();
+      const spy = vi.spyOn(presence, 'enter');
       await space.enter({ name: 'Betty' });
       expect(spy).toHaveBeenNthCalledWith(1, createProfileUpdate({ current: { name: 'Betty' } }));
     });
