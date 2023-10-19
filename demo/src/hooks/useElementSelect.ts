@@ -1,13 +1,11 @@
-import { MutableRefObject, useContext, useEffect } from 'react';
-import { SpacesContext } from '../components';
-import { useMembers } from './useMembers';
+import { MutableRefObject, useEffect } from 'react';
 
 import { buildLockId, releaseMyLocks } from '../utils/locking';
 import { Member } from '../utils/types';
+import { useMembers, useSpace } from '@ably/spaces/react';
 
 export const useElementSelect = (element?: string, lockable: boolean = true) => {
-  const space = useContext(SpacesContext);
-  const { self } = useMembers();
+  const { space, self } = useMembers();
 
   const handleSelect = async () => {
     if (!space || !self) return;
@@ -32,7 +30,7 @@ export const useElementSelect = (element?: string, lockable: boolean = true) => 
 };
 
 export const useClickOutside = (ref: MutableRefObject<HTMLElement | null>, self?: Member, enabled?: boolean) => {
-  const space = useContext(SpacesContext);
+  const { space } = useSpace();
 
   useEffect(() => {
     if (!enabled) return;
@@ -55,7 +53,7 @@ export const useClickOutside = (ref: MutableRefObject<HTMLElement | null>, self?
 };
 
 export const useClearOnFailedLock = (lockConflict: boolean, self?: Member) => {
-  const space = useContext(SpacesContext);
+  const { space } = useSpace();
 
   useEffect(() => {
     if (lockConflict) {

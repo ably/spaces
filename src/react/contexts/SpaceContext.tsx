@@ -7,7 +7,7 @@ export const SpaceContext = React.createContext<Space | undefined>(undefined);
 
 interface SpaceProviderProps {
   name: string;
-  options?: SpaceOptions;
+  options?: Partial<SpaceOptions>;
   children?: React.ReactNode | React.ReactNode[] | null;
 }
 export const SpaceProvider: React.FC<SpaceProviderProps> = ({ name, options, children }) => {
