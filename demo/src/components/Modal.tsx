@@ -1,7 +1,6 @@
-import { FormEvent, useContext, useRef } from 'react';
+import { FormEvent, useRef } from 'react';
 import cn from 'classnames';
-
-import { SpacesContext } from '.';
+import { useSpace } from '@ably/spaces/react';
 import { Member } from '../utils/types';
 
 interface Props {
@@ -11,7 +10,7 @@ interface Props {
 }
 
 export const Modal = ({ isVisible = false, setIsVisible, self }: Props) => {
-  const space = useContext(SpacesContext);
+  const { space, updateProfileData } = useSpace();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: FormEvent) => {
@@ -19,7 +18,7 @@ export const Modal = ({ isVisible = false, setIsVisible, self }: Props) => {
 
     if (!space || !setIsVisible) return;
 
-    space.updateProfileData((profileData) => ({ ...profileData, name: inputRef.current?.value }));
+    updateProfileData((profileData) => ({ ...profileData, name: inputRef.current?.value }));
     setIsVisible(false);
   };
 

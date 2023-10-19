@@ -1,33 +1,36 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useMembers, useSpace, useLocations } from '@ably/spaces/react';
 
-import { Header, SlideMenu, SpacesContext, CurrentSlide, AblySvg, slides, Modal } from './components';
+import { Header, SlideMenu, CurrentSlide, AblySvg, slides, Modal } from './components';
 import { getRandomName, getRandomColor } from './utils';
-import { useMembers } from './hooks';
 import { PreviewProvider } from './components/PreviewContext.tsx';
 
+import { type Member } from './utils/types';
+
 const App = () => {
-  const space = useContext(SpacesContext);
+  const { space, enter } = useSpace();
   const { self, others } = useMembers();
+  const { update } = useLocations();
   const [isModalVisible, setModalIsVisible] = useState(false);
 
   useEffect(() => {
     if (!space || self?.profileData.name) return;
 
-    const enter = async () => {
+    const init = async () => {
       const name = getRandomName();
-      await space.enter({ name, color: getRandomColor() });
-      await space.locations.set({ slide: `${0}`, element: null });
+      await enter({ name, color: getRandomColor() });
+      await update({ slide: `${0}`, element: null });
       setModalIsVisible(true);
     };
 
-    enter();
+    init();
   }, [space, self?.profileData.name]);
 
   return (
     <div className="min-w-[375px]">
       <Header
-        self={self}
-        others={others}
+        self={self as Member}
+        others={others as Member[]}
       />
       <div className="text-ably-charcoal-grey bg-slate-500">
         <main>
@@ -50,7 +53,7 @@ const App = () => {
         </a>
       </div>
       <Modal
-        self={self}
+        self={self as Member}
         isVisible={isModalVisible}
         setIsVisible={setModalIsVisible}
       />

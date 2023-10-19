@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 import { Cursors } from '.';
-import { useMembers, useTrackCursor } from '../hooks';
+import { useTrackCursor } from '../hooks';
 import { SlidePreviewProps } from './SlidePreview';
+import { useMembers } from '@ably/spaces/react';
 
 interface Props {
   slides: Omit<SlidePreviewProps, 'index'>[];
