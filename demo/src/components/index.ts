@@ -6,6 +6,7 @@ export * from './Cursors';
 export * from './Header';
 export * from './Image';
 export * from './Modal';
+export * from './NameModalContext';
 export * from './Paragraph';
 export * from './SlideMenu';
 export * from './SlidePreview';

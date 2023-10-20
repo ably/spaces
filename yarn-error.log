@@ -1,0 +1,98 @@
+Arguments: 
+  /Users/n.kakuev/.nvm/versions/node/v16.18.1/bin/node /Users/n.kakuev/.nvm/versions/node/v16.18.1/bin/yarn lint:fix
+
+PATH: 
+  /Users/n.kakuev/Library/pnpm:/Users/n.kakuev/.nvm/versions/node/v16.18.1/bin:/Users/n.kakuev/go:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Apple/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Users/n.kakuev/.cargo/bin:/usr/local/mysql/bin/
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.18.1
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: Failed to replace env in config: ${NPM_TOKEN}
+      at /Users/n.kakuev/.nvm/versions/node/v16.18.1/lib/node_modules/yarn/lib/cli.js:94933:13
+      at String.replace (<anonymous>)
+      at envReplace (/Users/n.kakuev/.nvm/versions/node/v16.18.1/lib/node_modules/yarn/lib/cli.js:94928:16)
+      at Function.normalizeConfig (/Users/n.kakuev/.nvm/versions/node/v16.18.1/lib/node_modules/yarn/lib/cli.js:31938:69)
+      at NpmRegistry.<anonymous> (/Users/n.kakuev/.nvm/versions/node/v16.18.1/lib/node_modules/yarn/lib/cli.js:31968:34)
+      at Generator.next (<anonymous>)
+      at step (/Users/n.kakuev/.nvm/versions/node/v16.18.1/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /Users/n.kakuev/.nvm/versions/node/v16.18.1/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "@ably/spaces",
+    "version": "0.1.3",
+    "description": "",
+    "main": "dist/cjs/index.js",
+    "module": "dist/mjs/index.js",
+    "types": "dist/mjs/index.d.ts",
+    "unpkg": "dist/iife/index.bundle.js",
+    "scripts": {
+      "lint": "eslint .",
+      "lint:fix": "eslint --fix .",
+      "format": "prettier --write --ignore-path .gitignore src demo",
+      "format:check": "prettier --check --ignore-path .gitignore src demo",
+      "test": "vitest run",
+      "test:watch": "vitest watch",
+      "coverage": "vitest run --coverage",
+      "build": "npm run build:mjs && npm run build:cjs && npm run build:iife",
+      "build:mjs": "npx tsc --project tsconfig.mjs.json && cp res/package.mjs.json dist/mjs/package.json",
+      "build:cjs": "npx tsc --project tsconfig.cjs.json && cp res/package.cjs.json dist/cjs/package.json",
+      "build:iife": "rm -rf dist/iife && npx tsc --project tsconfig.iife.json && rollup -c",
+      "prepare": "husky install",
+      "examples:locks": "ts-node ./examples/locks.ts"
+    },
+    "exports": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/ably/spaces.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+      "url": ""
+    },
+    "homepage": "https://github.com/ably/spaces",
+    "publishConfig": {
+      "access": "public"
+    },
+    "keywords": [],
+    "devDependencies": {
+      "@rollup/plugin-node-resolve": "^15.2.1",
+      "@rollup/plugin-terser": "^0.4.3",
+      "@typescript-eslint/eslint-plugin": "^5.51.0",
+      "@typescript-eslint/parser": "^5.51.0",
+      "@vitest/coverage-c8": "^0.33.0",
+      "eslint": "^8.33.0",
+      "eslint-plugin-import": "^2.27.5",
+      "eslint-plugin-jsdoc": "^46.7.0",
+      "eslint-plugin-security": "^1.7.1",
+      "husky": "^8.0.0",
+      "prettier": "^2.8.3",
+      "rollup": "^3.28.0",
+      "ts-node": "^10.9.1",
+      "typescript": "^4.9.5",
+      "vitest": "^0.34.3"
+    },
+    "dependencies": {
+      "nanoid": "^4.0.2"
+    },
+    "peerDependencies": {
+      "ably": "^1.2.43"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
