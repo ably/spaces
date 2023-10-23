@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from 'react';
 import { SpaceContext } from './contexts/SpaceContext.js';
-import { isArray, isFunction, isString } from '../utilities/is.js';
+import { isFunction } from '../utilities/is.js';
 
 import type Locations from '../Locations.js';
 import type { SpaceMember } from '../types.js';
@@ -14,30 +14,20 @@ interface UseLocationsResult {
 
 type UseLocationCallback = (locationUpdate: { member: SpaceMember }) => void;
 
-export type LocationsEvent = 'update';
-
-function useLocations(callback?: UseLocationCallback, options?: UseSpaceOptions): UseLocationsResult;
-function useLocations(
-  event: LocationsEvent | LocationsEvent[],
-  callback: UseLocationCallback,
-  options?: UseSpaceOptions,
-): UseLocationsResult;
+function useLocations(options?: UseSpaceOptions): UseLocationsResult;
+function useLocations(callback: UseLocationCallback, options?: UseSpaceOptions): UseLocationsResult;
 
 /*
  * Registers a subscription on the `Space.locations` object
  */
 function useLocations(
-  eventOrCallback?: LocationsEvent | LocationsEvent[] | UseLocationCallback,
   callbackOrOptions?: UseLocationCallback | UseSpaceOptions,
   optionsOrNothing?: UseSpaceOptions,
 ): UseLocationsResult {
   const space = useContext(SpaceContext);
   const locations = space?.locations;
 
-  const callback =
-    isString(eventOrCallback) || isArray(eventOrCallback)
-      ? (callbackOrOptions as UseLocationCallback)
-      : eventOrCallback;
+  const callback = isFunction(callbackOrOptions) ? (callbackOrOptions as UseLocationCallback) : undefined;
 
   const options = isFunction(callbackOrOptions) ? optionsOrNothing : callbackOrOptions;
 
@@ -52,18 +42,10 @@ function useLocations(
       const listener: UseLocationCallback = (params) => {
         callbackRef.current?.(params);
       };
-      if (isString(eventOrCallback)) {
-        locations.subscribe(eventOrCallback, listener);
-      } else {
-        locations.subscribe(listener);
-      }
+      locations.subscribe(listener);
 
       return () => {
-        if (isString(eventOrCallback)) {
-          locations.unsubscribe(eventOrCallback, listener);
-        } else {
-          locations.unsubscribe(listener);
-        }
+        locations.unsubscribe(listener);
       };
     }
   }, [locations, options?.skip]);

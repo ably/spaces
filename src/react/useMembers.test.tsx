@@ -48,7 +48,7 @@ describe('useMembers', () => {
   }) => {
     const callbackSpy = vi.fn();
     // @ts-ignore
-    const { result } = renderHook(() => useMembers(['enter', 'update'], callbackSpy), {
+    const { result } = renderHook(() => useMembers(callbackSpy, { events: ['enter', 'update'] }), {
       wrapper: ({ children }) => (
         <SpacesProvider client={spaces}>
           <SpaceProvider name="spaces-test">{children}</SpaceProvider>

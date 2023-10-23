@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSpace } from './useSpace.js';
-import { isArray, isFunction, isString } from '../utilities/is.js';
+import { isFunction } from '../utilities/is.js';
 
 import type { ErrorInfo } from 'ably';
 import type { Space, SpaceMember } from '..';
-import type { UseSpaceOptions } from './types.js';
 import type { EventKey } from '../utilities/EventEmitter.js';
 import type { MemberEventsMap } from '../Members.js';
 
@@ -30,25 +29,32 @@ type UseMembersCallback = (params: SpaceMember) => void;
 
 type MembersEvent = EventKey<MemberEventsMap>;
 
-function useMembers(callback?: UseMembersCallback, options?: UseSpaceOptions): UseMembersResult;
-function useMembers(
-  event: MembersEvent | MembersEvent[],
-  callback: UseMembersCallback,
-  options?: UseSpaceOptions,
-): UseMembersResult;
+export interface UseMembersOptions {
+  /**
+   * If specified, callback will be invoked only for this events
+   */
+  events?: MembersEvent | MembersEvent[];
+  /**
+   * Skip parameter makes the hook skip execution -
+   * this is useful in order to conditionally register a subscription to
+   * an EventListener (needed because it's not possible to conditionally call a hook in react)
+   */
+  skip?: boolean;
+}
+
+function useMembers(options?: UseMembersOptions): UseMembersResult;
+function useMembers(callback: UseMembersCallback, options?: UseMembersOptions): UseMembersResult;
 
 function useMembers(
-  eventOrCallback?: MembersEvent | MembersEvent[] | UseMembersCallback,
-  callbackOrOptions?: UseMembersCallback | UseSpaceOptions,
-  optionsOrNothing?: UseSpaceOptions,
+  callbackOrOptions?: UseMembersCallback | UseMembersOptions,
+  optionsOrNothing?: UseMembersOptions,
 ): UseMembersResult {
   const { space, connectionError, channelError } = useSpace();
   const [members, setMembers] = useState<SpaceMember[]>([]);
   const [others, setOthers] = useState<SpaceMember[]>([]);
   const [self, setSelf] = useState<SpaceMember | null>(null);
 
-  const callback =
-    isString(eventOrCallback) || isArray(eventOrCallback) ? (callbackOrOptions as UseMembersCallback) : eventOrCallback;
+  const callback = isFunction(callbackOrOptions) ? callbackOrOptions : undefined;
 
   const options = isFunction(callbackOrOptions) ? optionsOrNothing : callbackOrOptions;
 
@@ -63,21 +69,21 @@ function useMembers(
       const listener: UseMembersCallback = (params) => {
         callbackRef.current?.(params);
       };
-      if (isString(eventOrCallback)) {
-        space?.members.subscribe(eventOrCallback, listener);
+      if (options?.events) {
+        space?.members.subscribe(options?.events, listener);
       } else {
         space?.members.subscribe<any>(listener);
       }
 
       return () => {
-        if (isString(eventOrCallback)) {
-          space?.members.unsubscribe(eventOrCallback, listener);
+        if (options?.events) {
+          space?.members.unsubscribe(options.events, listener);
         } else {
           space?.members.unsubscribe<any>(listener);
         }
       };
     }
-  }, [space?.members, options?.skip]);
+  }, [space?.members, options?.skip, options?.events]);
 
   useEffect(() => {
     if (!space) return;

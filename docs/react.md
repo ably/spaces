@@ -81,29 +81,19 @@ useMembers((memberUpdate) => {
 });
 
 // Subscribe to member enter events only
-useMembers('enter', (memberJoined) => {
+useMembers((memberJoined) => {
   console.log(memberJoined);
-});
+}, { events: 'enter' });
 
 // Subscribe to member leave events only
-useMembers('leave', (memberLeft) => {
+useMembers((memberLeft) => {
   console.log(memberLeft);
-});
+}, { events: 'leave' });
 
-// Subscribe to member remove events only
-useMembers('remove', (memberRemoved) => {
+// Subscribe to updateProfile and remove events only
+useMembers((memberRemoved) => {
   console.log(memberRemoved);
-});
-
-// Subscribe to profile updates on members only
-useMembers('updateProfile', (memberProfileUpdated) => {
-  console.log(memberProfileUpdated);
-});
-
-// Subscribe to all updates to members
-useMembers('update', (memberUpdate) => {
-  console.log(memberUpdate);
-});
+}, { events: ['remove', 'updateProfile'] });
 ```
 
 ### useLocation
