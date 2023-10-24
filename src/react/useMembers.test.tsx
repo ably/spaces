@@ -11,7 +11,7 @@ import { SpaceProvider } from './contexts/SpaceContext.js';
 import type { Types } from 'ably';
 import Spaces from '../index.js';
 import { useMembers } from './useMembers.js';
-import { createPresenceEvent } from '../utilities/test/fakes.js';
+import { createLocationUpdate, createPresenceEvent } from '../utilities/test/fakes.js';
 import Space from '../Space.js';
 
 interface SpaceTestContext {
@@ -48,7 +48,7 @@ describe('useMembers', () => {
   }) => {
     const callbackSpy = vi.fn();
     // @ts-ignore
-    const { result } = renderHook(() => useMembers(['enter', 'update'], callbackSpy), {
+    const { result } = renderHook(() => useMembers(['enter', 'leave'], callbackSpy), {
       wrapper: ({ children }) => (
         <SpacesProvider client={spaces}>
           <SpaceProvider name="spaces-test">{children}</SpaceProvider>
@@ -64,11 +64,27 @@ describe('useMembers', () => {
     const member = await space.members.getSelf();
 
     await waitFor(() => {
-      // one for update, one for enter
-      expect(callbackSpy).toHaveBeenCalledTimes(2);
+      expect(callbackSpy).toHaveBeenCalledTimes(1);
       expect(result.current.members).toEqual([member]);
       expect(result.current.others).toEqual([]);
       expect(result.current.self).toEqual(member);
+      expect(result.current.self.location).toBe(null);
+    });
+
+    await createPresenceEvent(space, presenceMap, 'update', {
+      data: createLocationUpdate({ current: 'location1' }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.self.location).toBe('location1');
+      // callback hasn't been invoked
+      expect(callbackSpy).toHaveBeenCalledTimes(1);
+    });
+
+    await createPresenceEvent(space, presenceMap, 'leave');
+    await waitFor(() => {
+      // callback has invoked
+      expect(callbackSpy).toHaveBeenCalledTimes(2);
     });
   });
 

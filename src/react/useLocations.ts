@@ -52,14 +52,14 @@ function useLocations(
       const listener: UseLocationCallback = (params) => {
         callbackRef.current?.(params);
       };
-      if (isString(eventOrCallback)) {
+      if (!isFunction(eventOrCallback)) {
         locations.subscribe(eventOrCallback, listener);
       } else {
         locations.subscribe(listener);
       }
 
       return () => {
-        if (isString(eventOrCallback)) {
+        if (!isFunction(eventOrCallback)) {
           locations.unsubscribe(eventOrCallback, listener);
         } else {
           locations.unsubscribe(listener);
