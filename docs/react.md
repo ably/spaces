@@ -8,11 +8,11 @@ Incorporate Spaces into your React application with idiomatic and user-friendly 
 Using this module you can:
 
 - Interact with [Ably Spaces](https://ably.com/docs/spaces) using a React Hook.
-- Subscribe to Spaces events
-- Retrieve Spaces members
-- Set member location
-- Acquire component lock
-- Set cursor position
+- Subscribe to events in a space
+- Retrieve the membership of a space
+- Set the location of space members
+- Acquire locks on components within a space
+- Set the position of members' cursors in a space
 
 ---
 
