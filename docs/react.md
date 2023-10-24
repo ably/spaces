@@ -36,7 +36,7 @@ The hooks are compatible with all versions of React above 16.8.0
 
 Start by connecting your app to Ably using the `SpacesProvider` component.
 
-The `SpacesProvider` should be high in your component tree, wrapping every component which needs to access Spaces.
+The `SpacesProvider` should wrap every component that needs to access Spaces.
 
 ```jsx
 import { Realtime } from "ably";
