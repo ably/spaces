@@ -2,12 +2,11 @@ import { useEffect, useRef } from 'react';
 import { isArray, isFunction, isString } from '../utilities/is.js';
 import { useSpace, type UseSpaceResult } from './useSpace.js';
 
-import type { EventKey } from '../utilities/EventEmitter.js';
 import type { UseSpaceOptions } from './types.js';
-import type { LockEventMap } from '../Locks.js';
+import type { LocksEventMap } from '../Locks.js';
 import type { Lock } from '../types.js';
 
-type LocksEvent = EventKey<LockEventMap>;
+type LocksEvent = keyof LocksEventMap;
 
 type UseLocksCallback = (params: Lock) => void;
 
@@ -44,14 +43,14 @@ function useLocks(
       const listener: UseLocksCallback = (params) => {
         callbackRef.current?.(params);
       };
-      if (!isFunction(eventOrCallback)) {
+      if (!isFunction(eventOrCallback) && eventOrCallback) {
         space?.locks.subscribe(eventOrCallback, listener);
       } else {
         space?.locks.subscribe<any>(listener);
       }
 
       return () => {
-        if (!isFunction(eventOrCallback)) {
+        if (!isFunction(eventOrCallback) && eventOrCallback) {
           space?.locks.unsubscribe(eventOrCallback, listener);
         } else {
           space?.locks.unsubscribe<any>(listener);

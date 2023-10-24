@@ -47,10 +47,13 @@ function useCursors(
   const connectionError = useConnectionState();
 
   const connectionIdToMember: Record<string, SpaceMember> = useMemo(() => {
-    return members.reduce((acc, member) => {
-      acc[member.connectionId] = member;
-      return acc;
-    }, {} as Record<string, SpaceMember>);
+    return members.reduce(
+      (acc, member) => {
+        acc[member.connectionId] = member;
+        return acc;
+      },
+      {} as Record<string, SpaceMember>,
+    );
   }, [members]);
 
   const callback = isFunction(callbackOrOptions) ? callbackOrOptions : undefined;

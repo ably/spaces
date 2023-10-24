@@ -5,8 +5,7 @@ import { isArray, isFunction, isString } from '../utilities/is.js';
 import type { ErrorInfo } from 'ably';
 import type { Space, SpaceMember } from '..';
 import type { UseSpaceOptions } from './types.js';
-import type { EventKey } from '../utilities/EventEmitter.js';
-import type { MemberEventsMap } from '../Members.js';
+import type { MembersEventMap } from '../Members.js';
 
 interface UseMembersResult {
   space?: Space;
@@ -28,7 +27,7 @@ interface UseMembersResult {
 
 type UseMembersCallback = (params: SpaceMember) => void;
 
-type MembersEvent = EventKey<MemberEventsMap>;
+type MembersEvent = keyof MembersEventMap;
 
 function useMembers(callback?: UseMembersCallback, options?: UseSpaceOptions): UseMembersResult;
 function useMembers(
@@ -63,14 +62,14 @@ function useMembers(
       const listener: UseMembersCallback = (params) => {
         callbackRef.current?.(params);
       };
-      if (!isFunction(eventOrCallback)) {
+      if (!isFunction(eventOrCallback) && eventOrCallback) {
         space?.members.subscribe(eventOrCallback, listener);
       } else {
         space?.members.subscribe<any>(listener);
       }
 
       return () => {
-        if (!isFunction(eventOrCallback)) {
+        if (!isFunction(eventOrCallback) && eventOrCallback) {
           space?.members.unsubscribe(eventOrCallback, listener);
         } else {
           space?.members.unsubscribe<any>(listener);

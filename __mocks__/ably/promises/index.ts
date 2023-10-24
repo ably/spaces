@@ -50,12 +50,12 @@ function createMockChannel() {
       return () => mockHistory;
     })(),
     subscribe: () => {},
+    unsubscribe: () => {},
+    on: () => {},
+    off: () => {},
     publish: () => {},
     subscriptions: createMockEmitter(),
   };
-  unsubscribe: () => {},
-  on: () => {},
-  off: () => {},
 }
 
 class MockRealtime {
