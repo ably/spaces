@@ -134,7 +134,7 @@ useLocation((locationUpdate) => {
 });
 ```
 
-it also lets you update current member location by using `update` method provided by hook:
+`useLocation` also enables you to update current member location by using `update` method provided by hook. For example:
 
 ```javascript
 const { update } = useLocation((locationUpdate) => {
