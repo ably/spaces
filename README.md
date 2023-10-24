@@ -93,6 +93,10 @@ You can also use Spaces with a CDN, such as [unpkg](https://www.unpkg.com/):
 ```
 After this, instantiate the SDK in the same way as in the NPM option above.
 
+## Spaces for React Developers
+
+We offer a set of React Hooks which make it seamless to use Spaces in your React application. See the [React Hooks documentation](/docs/react.md) for more details.
+
 ## Creating a new Space
 
 A space is the virtual area of your application where you want to enable synchronous collaboration. A space can be anything from a web page, a sheet within a spreadsheet, an individual slide in a slideshow, or the slideshow itself. A space has a participant state containing online and recently left members, their profile details, their locations and any locks they have acquired for the UI components.

@@ -1,5 +1,8 @@
 # React Hooks
 
+> [!NOTE]
+> For more information about React Hooks for Spaces, please see the official [Spaces documentation](https://ably.com/docs/spaces/react).
+
 Incorporate Spaces into your React application using idiomatic and user-friendly React Hooks!
 
 Using this module you can:
@@ -10,6 +13,20 @@ Using this module you can:
 - Set member location
 - Acquire component lock
 - Set cursor position
+
+---
+
+- [Compatible React Versions](#compatible-react-versions)
+- [Usage](#usage)
+    + [useSpace](#usespace)
+    + [useMembers](#usemembers)
+    + [useLocation](#uselocation)
+    + [useLocks](#uselocks)
+    + [useLock](#uselock)
+    + [useCursors](#usecursors)
+    + [Error Handling](#error-handling)
+
+---
 
 ### Compatible React Versions
 
@@ -50,7 +67,7 @@ Our react hooks are designed to run on the client-side, so if you are using serv
 
 ### useSpace
 
-The `useSpace` hook lets you subscribe to the current Space and receive Space state events and get current Space instance.
+The `useSpace` hook lets you subscribe to the current Space and receive Space state events and get the current Space instance.
 
 ```javascript
 const { space } = useSpace((update) => {
@@ -60,7 +77,7 @@ const { space } = useSpace((update) => {
 
 ### useMembers
 
-The `useMembers` hook useful in building avatar stacks. Using `useMembers` hook you can retrieve spaces members.
+The `useMembers` hook is useful in building avatar stacks. By using the `useMembers` hook you can retrieve members of the space.
 This includes members that have recently left the space, but have not yet been removed.
 
 ```javascript
@@ -120,7 +137,7 @@ useLocation((locationUpdate) => {
 it also lets you update current member location by using `update` method provided by hook:
 
 ```javascript
-const { usdate } = useLocation((locationUpdate) => {
+const { update } = useLocation((locationUpdate) => {
   console.log(locationUpdate);
 });
 ```
@@ -146,7 +163,7 @@ const { status, member } = useLock('my-lock');
 
 ### useCursors
 
-The `useCursors` allows you to track a member's pointer position updates across an application:
+The `useCursors` hook allows you to track a member's pointer position and provide an updated view for all members across an application:
 
 ```javascript
 // Subscribe to events published on "mousemove" by all members
