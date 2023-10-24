@@ -155,7 +155,7 @@ useLocks((lockUpdate) => {
 
 ### useLock
 
-The `useLock` returns the status of a lock and, if it has been acquired, the member holding the lock
+`useLock` returns the status of a lock and, if the lock has been acquired, the member holding that lock.
 
 ```javascript
 const { status, member } = useLock('my-lock');
