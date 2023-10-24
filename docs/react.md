@@ -197,9 +197,7 @@ const { cursors } =  useCursors((cursorUpdate) => {
 
 ### Error Handling
 
-When using the Spaces react hooks, your Ably client may encounter a variety of errors, for example if it doesn't have permissions to attach to a channel it may encounter a channel error, or if it loses connection from the Ably network it may encounter a connection error.
-
-To allow you to handle these errors, the `useSpace`, `useMembers`, `useLocks`, `useCursors` hooks return connection and channel errors so that you can react to them in your components:
+`useSpace`, `useMembers`, `useLocks` and `useCursors` return connection and channel errors you may encounter, so that you can handle then within your components. This may include when a client doesn't have permission to attach to a channel, or if it loses its connection to Ably.
 
 ```jsx
 const { connectionError, channelError } = useMembers();
