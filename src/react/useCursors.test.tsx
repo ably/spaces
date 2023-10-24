@@ -82,4 +82,44 @@ describe('useCursors', () => {
       });
     });
   });
+
+  it<SpaceTestContext>('returns cursors', async ({ space, spaces, presenceMap }) => {
+    // @ts-ignore
+    const { result } = renderHook(() => useCursors({ returnCursors: true }), {
+      wrapper: ({ children }) => (
+        <SpacesProvider client={spaces}>
+          <SpaceProvider name="spaces-test">{children}</SpaceProvider>
+        </SpacesProvider>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(result.current.space).toBe(space);
+    });
+
+    await createPresenceEvent(space, presenceMap, 'enter');
+    await createPresenceEvent(space, presenceMap, 'enter', { clientId: '2', connectionId: '2' });
+    const [member] = await space.members.getOthers();
+
+    const dispensing = space.cursors.cursorDispensing;
+
+    const fakeMessage = {
+      connectionId: '2',
+      clientId: '2',
+      encoding: 'encoding',
+      extras: null,
+      id: '1',
+      name: 'fake',
+      timestamp: 1,
+      data: [{ cursor: { position: { x: 1, y: 1 } } }],
+    };
+
+    dispensing.processBatch(fakeMessage);
+
+    await waitFor(() => {
+      expect(result.current.cursors).toEqual({
+        '2': { member, cursorUpdate: { clientId: '2', connectionId: '2', position: { x: 1, y: 1 } } },
+      });
+    });
+  });
 });
