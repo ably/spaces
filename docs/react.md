@@ -163,7 +163,7 @@ const { status, member } = useLock('my-lock');
 
 ### useCursors
 
-The `useCursors` hook allows you to track a member's pointer position and provide an updated view for all members across an application:
+`useCursors` enables you to track a member's cursor position and provide a view of all members' cursors within a space. For example:
 
 ```javascript
 // Subscribe to events published on "mousemove" by all members
