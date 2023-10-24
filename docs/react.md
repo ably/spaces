@@ -144,8 +144,7 @@ const { update } = useLocation((locationUpdate) => {
 
 ### useLocks
 
-The `useLocks` hook lets you subscribe to lock events by registering a listener.
-Lock events are emitted whenever the lock state transitions into `locked` or `unlocked`.
+`useLocks` enables you to subscribe to lock events by registering a listener. Lock events are emitted whenever a lock transitions into the `locked` or `unlocked` state.
 
 ```javascript
 useLocks((lockUpdate) => {
