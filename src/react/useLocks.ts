@@ -44,14 +44,14 @@ function useLocks(
       const listener: UseLocksCallback = (params) => {
         callbackRef.current?.(params);
       };
-      if (isString(eventOrCallback)) {
+      if (!isFunction(eventOrCallback)) {
         space?.locks.subscribe(eventOrCallback, listener);
       } else {
         space?.locks.subscribe<any>(listener);
       }
 
       return () => {
-        if (isString(eventOrCallback)) {
+        if (!isFunction(eventOrCallback)) {
           space?.locks.unsubscribe(eventOrCallback, listener);
         } else {
           space?.locks.unsubscribe<any>(listener);

@@ -4,7 +4,7 @@ import { CursorSvg } from '.';
 import { CURSOR_LEAVE } from '../hooks';
 
 export const Cursors = () => {
-  const { space, cursors } = useCursors(undefined, { returnCursors: true });
+  const { space, cursors } = useCursors({ returnCursors: true });
 
   const activeCursors = Object.keys(cursors)
     .filter((connectionId) => {

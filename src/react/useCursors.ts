@@ -3,6 +3,7 @@ import { SpaceContext } from './contexts/SpaceContext.js';
 import { useMembers } from './useMembers.js';
 import { useChannelState } from './useChannelState.js';
 import { useConnectionState } from './useConnectionState.js';
+import { isFunction } from '../utilities/is.js';
 
 import type { CursorUpdate, SpaceMember } from '../types.js';
 import type { ErrorInfo } from 'ably';
@@ -33,7 +34,12 @@ type UseCursorsCallback = (params: CursorUpdate) => void;
 /**
  * Registers a subscription on the `Space.cursors` object
  */
-export function useCursors(callback?: UseCursorsCallback, options?: UseCursorsOptions): UseCursorsResult {
+function useCursors(options?: UseCursorsOptions): UseCursorsResult;
+function useCursors(callback: UseCursorsCallback, options?: UseCursorsOptions): UseCursorsResult;
+function useCursors(
+  callbackOrOptions?: UseCursorsCallback | UseCursorsOptions,
+  optionsOrNothing?: UseCursorsOptions,
+): UseCursorsResult {
   const space = useContext(SpaceContext);
   const [cursors, setCursors] = useState<Record<string, { member: SpaceMember; cursorUpdate: CursorUpdate }>>({});
   const { members } = useMembers();
@@ -46,6 +52,9 @@ export function useCursors(callback?: UseCursorsCallback, options?: UseCursorsOp
       return acc;
     }, {} as Record<string, SpaceMember>);
   }, [members]);
+
+  const callback = isFunction(callbackOrOptions) ? callbackOrOptions : undefined;
+  const options = isFunction(callbackOrOptions) ? optionsOrNothing : callbackOrOptions;
 
   const callbackRef = useRef<UseCursorsCallback | undefined>(callback);
   const optionsRef = useRef<UseCursorsOptions | undefined>(options);
@@ -86,3 +95,5 @@ export function useCursors(callback?: UseCursorsCallback, options?: UseCursorsOp
     cursors,
   };
 }
+
+export { useCursors };

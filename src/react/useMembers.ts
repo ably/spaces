@@ -63,14 +63,14 @@ function useMembers(
       const listener: UseMembersCallback = (params) => {
         callbackRef.current?.(params);
       };
-      if (isString(eventOrCallback)) {
+      if (!isFunction(eventOrCallback)) {
         space?.members.subscribe(eventOrCallback, listener);
       } else {
         space?.members.subscribe<any>(listener);
       }
 
       return () => {
-        if (isString(eventOrCallback)) {
+        if (!isFunction(eventOrCallback)) {
           space?.members.unsubscribe(eventOrCallback, listener);
         } else {
           space?.members.unsubscribe<any>(listener);
