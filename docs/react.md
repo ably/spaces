@@ -3,7 +3,7 @@
 > [!NOTE]
 > For more information about React Hooks for Spaces, please see the official [Spaces documentation](https://ably.com/docs/spaces/react).
 
-Incorporate Spaces into your React application using idiomatic and user-friendly React Hooks!
+Incorporate Spaces into your React application with idiomatic and user-friendly React Hooks.
 
 Using this module you can:
 
