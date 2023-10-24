@@ -95,7 +95,7 @@ After this, instantiate the SDK in the same way as in the NPM option above.
 
 ## Spaces for React Developers
 
-We offer a set of React Hooks which make it seamless to use Spaces in your React application. See the [React Hooks documentation](/docs/react.md) for more details.
+A set of React Hooks are available which make it seamless to use Spaces in any React application. See the [React Hooks documentation](/docs/react.md) for further details.
 
 ## Creating a new Space
 
