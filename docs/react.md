@@ -28,7 +28,7 @@ Using this module you can:
 
 ---
 
-### Compatible React Versions
+## Compatible React Versions
 
 The hooks are compatible with all versions of React above 16.8.0
 
