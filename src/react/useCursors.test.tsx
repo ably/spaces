@@ -5,7 +5,7 @@
 import React from 'react';
 import { Realtime } from 'ably/promises';
 import { it, beforeEach, describe, expect, vi } from 'vitest';
-import { waitFor, renderHook } from '@testing-library/react';
+import { waitFor, renderHook, act } from '@testing-library/react';
 import { SpacesProvider } from './contexts/SpacesContext.js';
 import { SpaceProvider } from './contexts/SpaceContext.js';
 import Spaces from '../index.js';
@@ -114,7 +114,9 @@ describe('useCursors', () => {
       data: [{ cursor: { position: { x: 1, y: 1 } } }],
     };
 
-    dispensing.processBatch(fakeMessage);
+    await act(() => {
+      dispensing.processBatch(fakeMessage);
+    });
 
     await waitFor(() => {
       expect(result.current.cursors).toEqual({
