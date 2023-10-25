@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v0.2.0
+
+In this release, we introduce React hooks for Spaces [\#233](https://github.com/ably/spaces/pull/233). See the [React Hooks documentation](/docs/react.md) for further details.
+
+Breaking changes in this release:
+
+* \[MMB-317\], \[MMB-318\] — Remove the `LockAttributes` type [\#214](https://github.com/ably/spaces/pull/214) ([lawrence-forooghian](https://github.com/lawrence-forooghian))
+* Remove ability to pass array of event names to `EventEmitter.prototype.once` [\#196](https://github.com/ably/spaces/pull/196) ([lawrence-forooghian](https://github.com/lawrence-forooghian))
+
+Other notable changes:
+
+* \[COL-335\] Fix bug where `space.enter()` sometimes hangs. [\#227](https://github.com/ably/spaces/pull/227) ([lawrence-forooghian](https://github.com/lawrence-forooghian))
+* Add agent param [\#220](https://github.com/ably/spaces/pull/220) ([dpiatek](https://github.com/dpiatek))
+* Add script to test CDN bundle [\#216](https://github.com/ably/spaces/pull/216) ([lawrence-forooghian](https://github.com/lawrence-forooghian))
+* Publish to new CDN bucket only [\#205](https://github.com/ably/spaces/pull/205) ([surminus](https://github.com/surminus))
+* \[MMB-156\] Add documentation comments and generate HTML documentation [\#204](https://github.com/ably/spaces/pull/204) ([lawrence-forooghian](https://github.com/lawrence-forooghian))
+* Demo updates [\#195](https://github.com/ably/spaces/pull/195) ([dpiatek](https://github.com/dpiatek))
+
+**Full Changelog**: https://github.com/ably/spaces/compare/0.1.3...0.2.0
+
 ## v0.1.3
 
 Breaking changes in this release:
@@ -32,7 +52,7 @@ No breaking changes were introduced in this release.
 
 ## v0.1.0
 
-In this release, we're advancing Spaces from alpha to beta. Along with introducing this library to a wider audience, we've decided to move it to the `ably` organisation as Spaces is no longer an experiment, it's something we see as an excellent supplement to our core SDKs to help developers build collaborative environments in their apps. We are committed to grow and officially maintain it. 
+In this release, we're advancing Spaces from alpha to beta. Along with introducing this library to a wider audience, we've decided to move it to the `ably` organisation as Spaces is no longer an experiment, it's something we see as an excellent supplement to our core SDKs to help developers build collaborative environments in their apps. We are committed to grow and officially maintain it.
 
 If you are one of our early adopters, this means you need to update your `package.json` from `@ably-labs/spaces` to `@ably/spaces`.
 
