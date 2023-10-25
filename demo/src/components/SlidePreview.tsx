@@ -1,8 +1,7 @@
 import cn from 'classnames';
 import { AvatarStack, CurrentSelectorSvg } from '.';
-import { useContext } from 'react';
-import { SpacesContext } from '.';
-import { useMembers } from '../hooks';
+import { useLocations, useMembers } from '@ably/spaces/react';
+import { Member } from '../utils/types';
 
 export interface SlidePreviewProps {
   children: React.ReactNode;
@@ -10,14 +9,14 @@ export interface SlidePreviewProps {
 }
 
 export const SlidePreview = ({ children, index }: SlidePreviewProps) => {
-  const space = useContext(SpacesContext);
-  const { self, members } = useMembers();
+  const { space, self, members } = useMembers();
+  const { update } = useLocations();
   const membersOnASlide = (members || []).filter(({ location }) => location?.slide === `${index}`);
   const isActive = self?.location?.slide === `${index}`;
 
   const handleSlideClick = async () => {
     if (!space || !self) return;
-    space.locations.set({ slide: `${index}`, element: null });
+    update({ slide: `${index}`, element: null });
   };
 
   return (
@@ -49,7 +48,7 @@ export const SlidePreview = ({ children, index }: SlidePreviewProps) => {
       </div>
       <AvatarStack
         isInContent
-        avatars={membersOnASlide}
+        avatars={membersOnASlide as Member[]}
       />
     </li>
   );

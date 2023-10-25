@@ -1,64 +1,26 @@
-import { useContext, useEffect, useState } from 'react';
-import type { CursorUpdate as _CursorUpdate } from '@ably/spaces';
-
+import { useCursors } from '@ably/spaces/react';
 import cn from 'classnames';
-import { CursorSvg, SpacesContext } from '.';
-import { useMembers, CURSOR_ENTER, CURSOR_LEAVE, CURSOR_MOVE } from '../hooks';
-
-type state = typeof CURSOR_ENTER | typeof CURSOR_LEAVE | typeof CURSOR_MOVE;
-type CursorUpdate = Omit<_CursorUpdate, 'data'> & { data: { state: state } };
+import { CursorSvg } from '.';
+import { CURSOR_LEAVE } from '../hooks';
 
 export const Cursors = () => {
-  const space = useContext(SpacesContext);
-  const { self, others } = useMembers();
-  const [cursors, setCursors] = useState<{
-    [connectionId: string]: { position: CursorUpdate['position']; state: CursorUpdate['data']['state'] };
-  }>({});
+  const { space, cursors } = useCursors({ returnCursors: true });
 
-  useEffect(() => {
-    if (!space || !others) return;
-
-    space.cursors.subscribe('update', (cursorUpdate) => {
-      const { connectionId, position, data } = cursorUpdate as CursorUpdate;
-
-      if (cursorUpdate.connectionId === self?.connectionId) return;
-
-      setCursors((currentCursors) => ({
-        ...currentCursors,
-        [connectionId]: { position, state: data.state },
-      }));
+  const activeCursors = Object.keys(cursors)
+    .filter((connectionId) => {
+      const { member, cursorUpdate } = cursors[connectionId]!!;
+      return (
+        member.connectionId !== space.connectionId && member.isConnected && cursorUpdate.data.state !== CURSOR_LEAVE
+      );
+    })
+    .map((connectionId) => {
+      const { member, cursorUpdate } = cursors[connectionId]!!;
+      return {
+        connectionId: member.connectionId,
+        profileData: member.profileData,
+        position: cursorUpdate.position,
+      };
     });
-
-    return () => {
-      space.cursors.unsubscribe('update');
-    };
-  }, [space, others, self?.connectionId]);
-
-  useEffect(() => {
-    const handler = async (member: { connectionId: string }) => {
-      setCursors((currentCursors) => ({
-        ...currentCursors,
-        [member.connectionId]: { position: { x: 0, y: 0 }, state: CURSOR_LEAVE },
-      }));
-    };
-
-    space?.members.subscribe('leave', handler);
-
-    return () => {
-      space?.members.unsubscribe('leave', handler);
-    };
-  }, [space]);
-
-  const activeCursors = others
-    .filter(
-      (member) =>
-        member.isConnected && cursors[member.connectionId] && cursors[member.connectionId].state !== CURSOR_LEAVE,
-    )
-    .map((member) => ({
-      connectionId: member.connectionId,
-      profileData: member.profileData,
-      position: cursors[member.connectionId].position,
-    }));
 
   return (
     <div className="h-full w-full z-10 pointer-events-none top-0 left-0 absolute">

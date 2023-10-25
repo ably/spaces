@@ -50,6 +50,9 @@ function createMockChannel() {
       return () => mockHistory;
     })(),
     subscribe: () => {},
+    unsubscribe: () => {},
+    on: () => {},
+    off: () => {},
     publish: () => {},
     subscriptions: createMockEmitter(),
   };

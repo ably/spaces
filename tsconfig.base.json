@@ -2,6 +2,7 @@
   "include": ["./src/**/*.ts"],
   "exclude": ["./src/**/*.test.tsx", "./src/**/*.test.ts", "./src/fakes/**/*.ts"],
   "compilerOptions": {
+    "jsx": "react",
     "target": "es6",
     "rootDir": "./src",
     "sourceMap": true,
@@ -13,6 +14,7 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "types": []
   }
