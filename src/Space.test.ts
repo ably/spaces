@@ -48,7 +48,7 @@ describe('Space', () => {
 
       expect(channelSpy).toHaveBeenNthCalledWith(
         1,
-        'test-space',
+        'test::$space',
         expect.objectContaining({
           params: expect.objectContaining({
             agent: expect.stringContaining('spaces'),
