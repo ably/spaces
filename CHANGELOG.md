@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## v0.3.0
+
+Breaking changes in this release:
+
+* [COL-577] Use ::$space as space channel suffix [\#244](https://github.com/ably/spaces/pull/244)
+
+This change updates the name of the channel [used by spaces internally](./docs/channel-usage.md).
+
+Previously, if you create a space with `spaces.get('example')`, this would create an Ably channel named `example-space`. This will now become `example::$space`.
+
+When deploying this change, it's important to note that there will be no continuty between the channel used so far and the channel used after the update. If you have customer applications that are running spaces, sessions using the old channel should end before this update is implemented.
+
+Other notable changes:
+
+* [COL-533] Upgrade Ably to 1.2.46 by @lawrence-forooghian in https://github.com/ably/spaces/pull/235
+* [COL-56] Add integration tests by @lawrence-forooghian in https://github.com/ably/spaces/pull/229
+
+**Full Changelog**: https://github.com/ably/spaces/compare/0.2.0...0.3.0
+
 ## v0.2.0
 
 In this release, we introduce React hooks for Spaces [\#233](https://github.com/ably/spaces/pull/233). See the [React Hooks documentation](/docs/react.md) for further details.
