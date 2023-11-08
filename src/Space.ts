@@ -15,8 +15,7 @@ import type { Subset, PresenceMember } from './utilities/types.js';
 
 import { VERSION } from './version.js';
 
-// Replace by ::$space when that channel tag will be available
-const SPACE_CHANNEL_TAG = '-space';
+const SPACE_CHANNEL_TAG = '::$space';
 
 const SPACE_OPTIONS_DEFAULTS = {
   offlineTimeout: 120_000,
