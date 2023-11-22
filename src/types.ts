@@ -2,151 +2,149 @@ import { Types } from 'ably';
 import type { LockAttributes } from './Locks.js';
 
 /**
- * Options to configure the behaviour of a {@link Cursors | `Cursors`} instance.
+ * Options to configure the behavior of a {@link Cursors | `Cursors`} instance.
  */
 export interface CursorsOptions {
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * The interval in milliseconds at which a batch of cursor positions are published. This is multiplied by the number of members in the space minus 1. The default value is 25ms.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * The interval, in milliseconds, at which a batch of cursor positions are published. This is multiplied by the number of members in a space, minus 1. The default value is 25ms. Decreasing the value will improve performance by further ‘smoothing’ the movement of cursors at the cost of increasing the number of events sent.
    */
   outboundBatchInterval: number;
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * The number of pages searched from [history](https://ably.com/docs/storage-history/history) for the last published cursor position. The default is 5.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   paginationLimit: number;
 }
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Represents a cursors position.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export interface CursorPosition {
   /**
-   * <!-- MOVED FROM Cursors.set -->
    * The position of the member’s cursor on the X-axis.
    */
   x: number;
   /**
-   * <!-- MOVED FROM Cursors.set -->
    * The position of the member’s cursor on the Y-axis.
    */
   y: number;
 }
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Represent data that can be associated with a cursor update.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+ * Represents data that can be associated with a cursor update. A JSON-serializable object containing additional information about the cursor, such as a color or the ID of an element the cursor is dragging.
  */
 export type CursorData = Record<string, unknown>;
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Represents an update to a cursor.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+ * Represents a cursor update event.
+ *
+ * The following is an example payload of a cursor event. Cursor events are uniquely identifiable by the {@link CursorUpdate.connectionId | `connectionId`} of a cursor.
+ *
+ * ```json
+ * {
+ *   "hd9743gjDc": {
+ *     "connectionId": "hd9743gjDc",
+ *     "clientId": "clemons#142",
+ *     "position": {
+ *       "x": 864,
+ *       "y": 32
+ *     },
+ *     "data": {
+ *       "color": "red"
+ *     }
+ *   }
+ * }
+ * ```
  */
 export interface CursorUpdate {
   /**
-   * <!-- MOVED FROM Cursors.set -->
    * The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.
    */
   clientId: string;
   /**
-   * <!-- MOVED FROM Cursors.set -->
    * The unique identifier of the member’s [connection](https://ably.com/docs/connect).
    */
   connectionId: string;
   /**
-   * <!-- MOVED FROM Cursors.set -->
    * An object containing the position of a member’s cursor.
    */
   position: CursorPosition;
   /**
-   * <!-- MOVED FROM Cursors.set -->
    * An optional arbitrary JSON-serializable object containing additional information about the cursor.
    */
   data?: CursorData;
 }
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Used to configure a Space instance on creation.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+ * Options to configure a {@link Space | Space} instance on its creation.
  */
 export interface SpaceOptions {
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * Number of milliseconds after a user loses connection or closes their browser window to wait before their {@link SpaceMember} object is removed from the members list. The default is 120000ms (2 minutes).
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   offlineTimeout: number;
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Options relating to configuring the cursors API (see below).
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * Options to configure live cursors behavior.
    */
   cursors: CursorsOptions;
 }
 
 /**
- * <!-- MOVED WITH EDITING FROM Space.enter -->
- * Profile data can be set when {@link Space.enter | entering } a space. It is optional data that can be used to associate information with a member, such as a preferred username, or profile picture that can be subsequently displayed in their avatar. Profile data can be any arbitrary JSON-serializable object.
+ * Optional data that is associated with a member. Examples include a preferred username, or a profile picture that can be subsequently displayed in their avatar. Can be any arbitrary JSON-serializable object.
  */
 export type ProfileData = Record<string, unknown> | null;
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * A SpaceMember represents a member within a Space instance. Each new connection that enters will create a new member, even if they have the same [`clientId`](https://ably.com/docs/auth/identified-clients?lang=javascript).
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+ * Represents a member within a Space instance. Each new connection that enters will create a new member, even if they have the same [`clientId`](https://ably.com/docs/auth/identified-clients).
+ *
+ * The following is an example payload of a `SpaceMember`:
+ *
+ * ```json
+ * {
+ *  "clientId": "clemons#142",
+ *  "connectionId": "hd9743gjDc",
+ *  "isConnected": false,
+ *  "lastEvent": {
+ *    "name": "leave",
+ *    "timestamp": 1677595689759
+ *  },
+ *  "location": null,
+ *  "profileData": {
+ *    "username": "Claire Lemons",
+ *    "avatar": "https://slides-internal.com/users/clemons.png"
+ *    }
+ * }
+ * ```
  */
 export interface SpaceMember {
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * The client identifier for the user, provided to the ably client instance.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * The [client identifier](https://ably.com/docs/auth/identified-clients) for the member.
    */
   clientId: string;
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Identifier for the connection used by the user. This is a unique identifier.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * The unique identifier of the member’s [connection](https://ably.com/docs/connect).
    */
   connectionId: string;
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Whether the user is connected to Ably.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * Whether the user is connected to Ably or not.
    */
   isConnected: boolean;
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Optional user data that can be attached to a user, such as a username or image to display in an avatar stack.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * Optional data that is associated with a member, such as a preferred username or profile picture to display in an avatar stack.
    */
   profileData: ProfileData;
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
    * The current location of the user within the space.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   location: unknown;
   /**
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * The most recent event emitted by [presence](https://ably.com/docs/presence-occupancy/presence?lang=javascript) and its timestamp. Events will be either `enter`, `leave`, `update` or `present`.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * The most recent event emitted by [presence](https://ably.com/docs/presence-occupancy/presence) and its timestamp. Events will be either `enter`, `leave`, `update` or `present`.
    */
   lastEvent: {
     /**
-     * <!-- MOVED FROM Locations.subscribe -->
      * The most recent event emitted by the member.
      */
     name: Types.PresenceAction;
     /**
-     * <!-- MOVED FROM Locations.subscribe -->
      * The timestamp of the most recently emitted event.
      */
     timestamp: number;
@@ -154,66 +152,54 @@ export interface SpaceMember {
 }
 
 /**
- * The `LockStatuses` namespace describes the possible values of the {@link LockStatus} type.
+ * Describes the possible values of the {@link LockStatus} type.
  */
 export namespace LockStatuses {
   /**
-   * <!-- MOVED WITH EDITING FROM Locks -->
-   * A member has requested a lock by calling { @link Locks.acquire | `acquire()` }.
+   * A member has requested a lock by calling {@link Locks.acquire | `acquire()`}.
    */
   export type Pending = 'pending';
   /**
-   * <!-- MOVED FROM Locks -->
-   * The lock is confirmed to be held by the requesting member.
+   * A lock is confirmed to be held by the requesting member.
    */
   export type Locked = 'locked';
   /**
-   * <!-- MOVED WITH EDITING FROM Locks -->
-   * The lock is confirmed to not be locked by the requesting member, or has been { @link Locks.release | released } by a member previously holding the lock.
+   * A lock is confirmed to not be locked by the requesting member, or has been {@link Locks.release | released} by a member previously holding the lock.
    */
   export type Unlocked = 'unlocked';
 }
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Represents a status of a lock.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+ * Represents the status of a lock.
  */
 export type LockStatus = LockStatuses.Pending | LockStatuses.Locked | LockStatuses.Unlocked;
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Represents a Lock.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export type Lock = {
   /**
-   * <!-- MOVED FROM Locks.subscribe -->
    * The unique ID of the lock request.
    */
   id: string;
   /**
-   * <!-- MOVED WITH EDITING FROM Locks.subscribe -->
-   * The lock status of the event.
+   * The status of the lock event.
    */
   status: LockStatus;
   /**
-   * Information about the space member who requested the lock.
+   * Information about the member who requested the lock.
    */
   member: SpaceMember;
   /**
-   * <!-- MOVED FROM Locks.subscribe -->
    * The timestamp of the lock event.
    */
   timestamp: number;
   /**
-   * <!-- MOVED FROM Locks.subscribe -->
    * The optional attributes of the lock, such as the ID of the component it relates to.
    */
   attributes?: LockAttributes;
   /**
-   * <!-- MOVED FROM Locks.subscribe -->
-   * The reason why the `request.status` is `unlocked`.
+   * The reason why the lock status is {@link LockStatuses.Unlocked | `unlocked`}.
    */
   reason?: Types.ErrorInfo;
 };
