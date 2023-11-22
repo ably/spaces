@@ -115,16 +115,16 @@ export default class EventEmitter<T> {
 
   /**
    * {@label WITH_EVENTS}
-   * Add an event listener
-   * @param eventOrEvents the name of the event to listen to or the listener to be called.
-   * @param listener (optional) the listener to be called.
+   * Add an event listener.
+   * @param eventOrEvents An event name, or an array of event names.
+   * @param listener An event listener.
    *
    * @typeParam K A type which allows one or more names of the properties of {@link T}.
    */
   on<K extends keyof T>(eventOrEvents?: K | K[], listener?: EventListener<T, K>): void;
   /**
-   * Behaves the same as { @link on:WITH_EVENTS | the overload which accepts one or more event names }, but listens to _all_ events.
-   * @param listener (optional) the listener to be called.
+   * Add an event listener for all event types.
+   * @param listener An event listener.
    */
   on(listener?: EventListener<T, keyof T>): void;
   /**
@@ -159,16 +159,16 @@ export default class EventEmitter<T> {
 
   /**
    * {@label WITH_EVENTS}
-   * Remove one or more event listeners
-   * @param eventOrEvents the name of the event whose listener is to be removed.
-   * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
+   * Remove one or more event listeners.
+   * @param eventOrEvents An event name, or an array of event names.
+   * @param listener An event listener. If not supplied, all listeners are removed.
    *
    * @typeParam K A type which allows one or more names of the properties of {@link T}. TypeScript will infer this type based on the {@link eventOrEvents} argument.
    */
   off<K extends keyof T>(eventOrEvents?: K | K[], listener?: EventListener<T, K>): void;
   /**
-   * Behaves the same as { @link off:WITH_EVENTS | the overload which accepts one or more event names }, but removes the listener from _all_ events.
-   * @param listener (optional) the listener to remove. If not supplied, all listeners are removed.
+   * Remove one or more event listeners for all event types.
+   * @param listener An event listener. If not supplied, all listeners are removed.
    */
   off(listener?: EventListener<T, keyof T>): void;
   /**
@@ -227,9 +227,9 @@ export default class EventEmitter<T> {
   }
 
   /**
-   * Get the array of listeners for a given event; excludes once events
-   * @param event (optional) the name of the event, or none for 'any'
-   * @return array of events, or null if none
+   * Get the array of listeners for a given event. Excludes `once` events.
+   * @param event An event name.
+   * @return An array of events, or `null` if there are none.
    *
    * @typeParam K A type which allows a name of the properties of {@link T}. TypeScript will infer this type based on the {@link event} argument.
    */
@@ -251,8 +251,8 @@ export default class EventEmitter<T> {
    * @internal
    *
    * Emit an event
-   * @param event the event name
-   * @param arg the arguments to pass to the listener
+   * @param event An event name.
+   * @param arg The arguments to pass to the listener.
    */
   emit<K extends keyof T>(event: K, arg: T[K]) {
     const eventThis = { event };
@@ -285,16 +285,16 @@ export default class EventEmitter<T> {
 
   /**
    * {@label WITH_EVENTS}
-   * Listen for a single occurrence of an event
-   * @param event the name of the event to listen to
-   * @param listener (optional) the listener to be called
+   * Listen for a single occurrence of an event.
+   * @param event An event name.
+   * @param listener An event listener.
    *
    * @typeParam K A type which allows a name of one of the properties of {@link T}. TypeScript will infer this type based on the {@link event} argument.
    */
   once<K extends keyof T>(event: K, listener?: EventListener<T, K>): void | Promise<any>;
   /**
-   * Behaves the same as { @link once:WITH_EVENTS | the overload which accepts one or more event names }, but listens for _all_ events.
-   * @param listener (optional) the listener to be called
+   * Listen for a single occurrence of an event of any event type.
+   * @param listener An event listener.
    */
   once(listener?: EventListener<T, keyof T>): void | Promise<any>;
   /**
