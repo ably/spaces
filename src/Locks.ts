@@ -9,14 +9,12 @@ import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from 
 import SpaceUpdate from './SpaceUpdate.js';
 
 /**
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
  * Additional attributes that can be set when acquiring a lock.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export type LockAttributes = Record<string, unknown>;
 
 /**
- * Options for customizing the behaviour of {@link Locks.get | `Locks.get()`}.
+ * Options for customizing the behavior of {@link Locks.get | `Locks.get()`}.
  */
 export interface LockOptions {
   /**
@@ -26,7 +24,7 @@ export interface LockOptions {
 }
 
 /**
- * The property names of `LocksEventMap` are the names of the events emitted by { @link Locks }.
+ * The property names of `LocksEventMap` are the names of the events emitted by {@link Locks}.
  */
 export interface LocksEventMap {
   /**
@@ -36,26 +34,11 @@ export interface LocksEventMap {
 }
 
 /**
- * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L9-L37) -->
- * The component locking feature enables members to optimistically lock stateful UI components before editing them. This reduces the chances of conflicting changes being made to the same component by different members. A component could be a cell in a spreadsheet that a member is updating, or an input field on a form they’re filling in.
+ * [Component locking](https://ably.com/docs/spaces/locking) enables members to optimistically lock stateful UI components before editing them. This reduces the chances of conflicting changes being made to the same component by different members. A component could be a cell in a spreadsheet that a member is updating, or an input field on a form they’re filling in.
  *
  * Once a lock has been acquired by a member, the component that it relates to can be updated in the UI to visually indicate to other members that it is locked and and which member has the lock. The component can then be updated once the editing member has released the lock to indicate that it is now unlocked.
  *
- * Each lock is identified by a unique string ID, and only a single member may hold a lock with a given string at any one time. A lock will exist in one of three { @link LockStatus | states } and may only transition between states in specific circumstances.
- *
- * > **Important**
- * >
- * > Optimistic locking means that there is a chance that two members may begin editing the same UI component before it is confirmed which member holds the lock. On average, the time taken to reconcile which member holds a lock is in the hundreds of milliseconds. Your application needs to handle the member that successfully obtained the lock, as well as the member that had their request invalidated.
- *
- * ## Lock states
- *
- * Component locking is handled entirely client-side. Members may begin to optimistically edit a component as soon as they call {@link acquire | `acquire()` } on the lock identifier related to it. Alternatively, you could wait until they receive a `locked` event and display a spinning symbol in the UI until this is received. In either case a subsequent `unlocked` event may invalidate that member’s lock request if another member acquired it earlier. The time for confirmation of whether a lock request was successful or rejected is, on average, in the hundreds of milliseconds, however your code should handle all possible lock state transitions.
- *
- * A lock will be in one of the following states:
- *
- * > **Moved documentation**
- * >
- * > This documentation has been moved to { @link LockStatuses }.
+ * Each lock is identified by a unique string ID, and only a single member may hold a lock with a given string at any one time. A lock will exist in one of three {@link LockStatus | states} and may only transition between states in specific circumstances.
  *
  * The following lock state transitions may occur:
  *
@@ -65,13 +48,12 @@ export interface LocksEventMap {
  * - `locked` → `unlocked`: the lock was either explicitly {@link release | released} by the member, or their request was invalidated by a concurrent request which took precedence.
  * - `unlocked` → `locked`: the requesting member reacquired a lock they previously held.
  *
- * Only transitions that result in a `locked` or `unlocked` status will emit a lock event that members can {@link subscribe | `subscribe()` } to.
+ * Only lock transitions that result in a `locked` or `unlocked` status will emit a lock {@link LocksEventMap.update | update} event.
  *
- * <!-- END WEBSITE DOCUMENTATION -->
+ * > **Note**
+ * >
+ * > Optimistic locking means that there is a chance that two members may begin editing the same UI component before it is confirmed which member holds the lock. On average, the time taken to reconcile which member holds a lock is in the hundreds of milliseconds. Your application needs to handle the member that successfully obtained the lock, as well as the member that had their request invalidated.
  *
- * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
- * Provides a mechanism to "lock" a component, reducing the chances of conflict in an application whilst being edited by multiple members. Inherits from {@link EventEmitter}.
- * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
  */
 export default class Locks extends EventEmitter<LocksEventMap> {
   // locks tracks the local state of locks, which is used to determine whether
@@ -92,8 +74,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
-   * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L171-L192) -->
-   * Use the `get()` method to query whether a lock is currently locked, and by which member if it is. The lock is identifiable by its unique string ID.
+   * Query whether a lock is currently locked, and if locked, return which member holds the lock. A lock is identifiable by its unique string ID.
    *
    * The following is an example of checking whether a lock identifier is currently locked:
    *
@@ -111,20 +92,8 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * const { request } = space.locks.get(id);
    * const viewLock = request.attributes.get(key);
    * ```
-   * If the lock is not currently held by a member, `get()` will return `undefined`. Otherwise it will return the most recent lock event for the lock.
    *
-   * <!-- END WEBSITE DOCUMENTATION -->
-   *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Get a lock by its id.
-   *
-   * Example:
-   *
-   * ```ts
-   * const id = "/slide/1/element/3";
-   * const lock = space.locks.get(id);
-   * ```
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * If the lock is not currently held by a member, `get()` will return `undefined`.
    *
    * @param id A unique identifier which specifies the lock to query.
    */
@@ -142,69 +111,13 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   // This will be async in the future, when pending requests are no longer processed
   // in the library.
   /**
-   * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L196-L247) -->
-   * Locks can also be retrieved in one-off calls. These are local calls and retrieve the locks retained in memory by the SDK.
+   * Retrieve all locks that are currently held in a one-off call. This is a local call that retrieves the latest locks retained in memory by the SDK.
    *
-   * The following is an example of retrieving an array of all currently held locks in a space:
+   * The following is an example of retrieving an array of all currently held locks:
    *
    * ```javascript
    * const allLocks = await space.locks.getAll();
    * ```
-   * The following is an example payload returned by `space.locks.getAll()`:
-   *
-   * ```json
-   * [
-   *   {
-   *     "id": "s1-c2",
-   *     "status": "locked",
-   *     "timestamp": 1247525627533,
-   *     "member": {
-   *       "clientId": "amint#5",
-   *       "connectionId": "hg35a4fgjAs",
-   *       "isConnected": true,
-   *         "lastEvent": {
-   *         "name": "update",
-   *       "timestamp": 173459567340
-   *       },
-   *       "location": null,
-   *       "profileData": {
-   *         "username": "Arit Mint",
-   *         "avatar": "https://slides-internal.com/users/amint.png"
-   *       }
-   *     }
-   *   },
-   *   {
-   *     "id": "s3-c4",
-   *     "status": "locked",
-   *     "timestamp": 1247115627423,
-   *     "member": {
-   *       "clientId": "torange#1",
-   *       "connectionId": "tt7233ghUa",
-   *       "isConnected": true,
-   *       "lastEvent": {
-   *         "name": "update",
-   *         "timestamp": 167759566354
-   *       },
-   *       "location": null,
-   *       "profileData": {
-   *         "username": "Tara Orange",
-   *         "avatar": "https://slides-internal.com/users/torange.png"
-   *       }
-   *     }
-   *   }
-   * ]
-   * ```
-   * <!-- END WEBSITE DOCUMENTATION -->
-   *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Get all locks that have the `locked` status.
-   *
-   * Example:
-   *
-   * ```ts
-   * const locks = await space.locks.getAll();
-   * ```
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getAll(): Promise<Lock[]> {
     const allLocks: Lock[] = [];
@@ -222,18 +135,13 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
-   * <!-- This is to avoid duplication of the website documentation. -->
-   * See the documentation for {@link getAll}.
+   * Retrieve all locks that are currently held by the current member in a one-off call. This is a local call that retrieves the latest locks retained in memory by the SDK.
    *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Get all locks belonging to self that have the `locked` status.
+   * The following is an example of retrieving all locks held by the member:
    *
-   * Example:
-   *
-   * ```ts
+   * ```javascript
    * const locks = await space.locks.getSelf();
    * ```
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getSelf(): Promise<Lock[]> {
     const self = await this.space.members.getSelf();
@@ -244,18 +152,13 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
-   * <!-- This is to avoid duplication of the website documentation. -->
-   * See the documentation for {@link getAll}.
+   * Retrieve all locks that are currently held by members except the member itself, in a one-off call. This is a local call that retrieves the latest locks retained in memory by the SDK.
    *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Get all locks belonging to all members except self that have the `locked` status.
+   * The following is an example of retrieving all locks held by other members:
    *
-   * Example:
-   *
-   * ```ts
+   * ```javascript
    * const locks = await space.locks.getOthers();
    * ```
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
    */
   async getOthers(): Promise<Lock[]> {
     const self = await this.space.members.getSelf();
@@ -267,8 +170,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
-   * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L41-L72) -->
-   * Use the `acquire()` method to attempt to acquire a lock with a given unique ID. Additional `attributes` may be passed when trying to acquire a lock that can contain a set of arbitrary key-value pairs. An example of using `attributes` is to store the component ID the lock relates to so that it can be easily updated in the UI with a visual indication of its lock status.
+   * Attempt to acquire a lock with a given unique ID. Additional `attributes` may be passed when trying to acquire a lock that can contain a set of arbitrary key-value pairs. An example of using `attributes` is to store the component ID the lock relates to so that it can be easily updated in the UI with a visual indication of its lock status.
    *
    * A member must have been {@link Space.enter | entered } into the space to acquire a lock.
    *
@@ -277,41 +179,17 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * ```javascript
    * const acquireLock = await space.locks.acquire(id);
    * ```
+   *
    * The following is an example of passing a set of `attributes` when trying to acquire a lock:
    *
    * ```javascript
-   * const lockAttributes = new Map();
-   * lockAttributes.set('component', 'cell-d3');
+   * const lockAttributes = { 'component': 'cell-d3' };
    * const acquireLock = await space.locks.acquire(id, { lockAttributes });
    * ```
-   * The following is an example payload returned by `space.locks.acquire()`. The promise will resolve to a lock request with the `pending` status:
    *
-   * ```json
-   * {
-   *   "id": "s2-d14",
-   *   "status": "pending",
-   *   "timestamp": 1247525689781,
-   *   "attributes": {
-   *     "componentId": "cell-d14"
-   *   }
-   * }
-   * ```
-   * Once a member requests a lock by calling `acquire()`, the lock is temporarily in the {@link LockStatuses.Pending | pending state }. An event will be emitted based on whether the lock request was successful (a status of `locked`) or invalidated (a status of `unlocked`). This can be {@link subscribe | subscribed } to in order for the client to know whether their lock request was successful or not.
+   * Once a member requests a lock by calling `acquire()`, the lock is temporarily in the {@link LockStatuses.Pending | pending state }. An event will be emitted based on whether the lock request was successful (a status of {@link LockStatuses.Locked | `locked`}), or invalidated (a status of {@link LockStatuses.Unlocked | `unlocked`}).
    *
-   * <!-- END WEBSITE DOCUMENTATION -->
-   *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Send a request to acquire a lock. Returns a Promise which resolves once the request has been sent. A resolved Promise holds a `pending` {@link Lock}. An error will be thrown if a lock request with a status of `pending` or `locked` already exists, returning a rejected promise.
-   *
-   * When a lock acquisition by a member is confirmed with the `locked` status, an `update` event will be emitted. Hence to handle lock acquisition, `acquire()` needs to always be used together with `subscribe()`.
-   *
-   * Example:
-   *
-   * ```ts
-   * const id = "/slide/1/element/3";
-   * const lockRequest = await space.locks.acquire(id);
-   * ```
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * An error will be thrown if a lock request with a status of {@link LockStatuses.Pending | `pending`} or {@link LockStatuses.Locked | `locked`} already exists, returning a rejected promise.
    *
    * @param id A unique identifier which specifies the lock to acquire.
    * @param opts An object whose {@link LockOptions.attributes | `attributes`} property specifies additional metadata to associate with the lock.
@@ -350,32 +228,18 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /**
-   * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L76-L88) -->
-   * Use the `release()` method to explicitly release a lock once a member has finished editing the related component. For example, the `release()` method can be called once a user clicks outside of the component, such as clicking on another cell within a spreadsheet. Any UI indications that the previous cell was locked can then be cleared.
+   * Release a lock once a member has finished editing the related component. For example, call `release()` once a user clicks outside of the component, such as clicking on another cell within a spreadsheet. Any UI indications that the previous cell was locked can then be cleared.
    *
    * The following is an example of releasing a lock:
    *
    * ```javascript
    * await space.locks.release(id);
    * ```
-   * Releasing a lock will emit a lock event with a {@link LockStatuses | lock status } of `unlocked`.
+   * Releasing a lock will emit a lock event with an {@link LockStatuses.Unlocked | `unlocked `} status.
    *
    * > **Note**
    * >
-   * > When a member {@link Space.leave | leaves } a space, their locks are automatically released.
-   *
-   * <!-- END WEBSITE DOCUMENTATION -->
-   *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Releases a previously requested lock.
-   *
-   * Example:
-   *
-   * ```ts
-   * const id = "/slide/1/element/3";
-   * await space.locks.release(id);
-   * ```
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
+   * > When a member is {@link MembersEventMap.remove | removed } from a space, their locks are automatically released.
    *
    * @param id A unique identifier which specifies the lock to release.
    */
@@ -398,8 +262,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
 
   /**
    * {@label WITH_EVENTS}
-   *
-   * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L92-L151) -->
    * Subscribe to lock events by registering a listener. Lock events are emitted whenever the {@link LockStatuses | lock state } transitions into `locked` or `unlocked`.
    *
    * All lock events are `update` events. When a lock event is received, UI components can be updated to add and remove visual indications of which member is locking them, as well as enabling and disabling the ability for other members to edit them.
@@ -411,73 +273,17 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    *   console.log(lock);
    * });
    * ```
-   * The following is an example payload of a lock event:
    *
-   * ```json
-   * {
-   *   "id": "s2-d14",
-   *   "status": "unlocked",
-   *   "timestamp": 1247525689781,
-   *   "attributes": {
-   *     "componentId": "cell-d14"
-   *   },
-   *   "reason": {
-   *     "message": "lock is currently locked",
-   *     "code": 101003,
-   *     "statusCode": 400
-   *   },
-   *   "member": {
-   *     "clientId": "smango",
-   *     "connectionId": "hs343gjsdc",
-   *     "isConnected": true,
-   *     "profileData": {
-   *       "username": "Saiorse Mango"
-   *     },
-   *     "location": {
-   *       "slide": "sheet-2",
-   *       "component": "d-14"
-   *     },
-   *     "lastEvent": {
-   *       "name": "update",
-   *       "timestamp": 1247525689781
-   *     }
-   *   }
-   * }
-   * ```
-   * The following are the properties of a lock event payload:
-   *
-   * > **Moved documentation**
-   * >
-   * > This documentation has been moved to { @link Lock }.
-   *
-   * <!-- END WEBSITE DOCUMENTATION -->
-   *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Listen to lock events. See {@link EventEmitter} for overloaded usage.
-   *
-   * Available events:
-   *
-   * - ##### **update**
-   *
-   *   Listen to changes to locks.
-   *
-   *   ```ts
-   *   space.locks.subscribe('update', (lock: Lock) => {})
-   *   ```
-   *
-   *   The argument supplied to the callback is a {@link Lock}, representing the lock request and it's status.
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
-   *
-   * @param eventOrEvents The event name or an array of event names.
-   * @param listener The listener to add.
+   * @param eventOrEvents An event name, or an array of event names.
+   * @param listener An event listener.
    *
    * @typeParam K A type which allows one or more names of the properties of the {@link LocksEventMap} type.
    */
   subscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
   /**
-   * Behaves the same as { @link subscribe:WITH_EVENTS | the overload which accepts one or more event names }, but subscribes to _all_ events.
+   *  Subscribe to lock updates by registering a listener for all events.
    *
-   * @param listener The listener to add.
+   * @param listener An event listener.
    */
   subscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   subscribe<K extends keyof LocksEventMap>(
@@ -500,7 +306,6 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   /**
    * {@label WITH_EVENTS}
    *
-   * <!-- BEGIN WEBSITE DOCUMENTATION (https://github.com/ably/docs/blob/cb5de6a6a40abdcb0d9d5af825928dd62dc1ca64/content/spaces/locking.textile?plain=1#L155-L166) -->
    * Unsubscribe from lock events to remove previously registered listeners.
    *
    * The following is an example of removing a listener for lock update events:
@@ -508,31 +313,23 @@ export default class Locks extends EventEmitter<LocksEventMap> {
    * ```javascript
    * space.locks.unsubscribe('update', listener);
    * ```
-   * Or remove all listeners:
    *
-   * ```javascript
-   * space.locks.unsubscribe();
-   * ```
-   * <!-- END WEBSITE DOCUMENTATION -->
-   *
-   * <!-- BEGIN CLASS-DEFINITIONS DOCUMENTATION -->
-   * Remove all event listeners, all event listeners for an event, or specific listeners. See {@link EventEmitter} for detailed usage.
-   *
-   * ```ts
-   * space.locks.unsubscribe('update');
-   * ```
-   * <!-- END CLASS-DEFINITIONS DOCUMENTATION -->
-   *
-   * @param eventOrEvents The event name or an array of event names.
-   * @param listener The listener to remove.
+   * @param eventOrEvents An event name, or an array of event names.
+   * @param listener An event listener.
    *
    * @typeParam K A type which allows one or more names of the properties of the {@link LocksEventMap} type.
    */
   unsubscribe<K extends keyof LocksEventMap>(eventOrEvents: K | K[], listener?: EventListener<LocksEventMap, K>): void;
   /**
-   * Behaves the same as { @link unsubscribe:WITH_EVENTS | the overload which accepts one or more event names }, but unsubscribes from _all_ events.
+   * Unsubscribe from all events to remove previously registered listeners.
    *
-   * @param listener The listener to remove.
+   * The following is an example of removing a listener for all events:
+   *
+   * ```javascript
+   * space.locks.unsubscribe(listener);
+   * ```
+   *
+   * @param listener An event listener.
    */
   unsubscribe(listener?: EventListener<LocksEventMap, keyof LocksEventMap>): void;
   unsubscribe<K extends keyof LocksEventMap>(
