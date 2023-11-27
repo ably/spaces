@@ -54,7 +54,7 @@
     "eslint-plugin-jsdoc": "^46.7.0",
     "eslint-plugin-security": "^1.7.1",
     "express": "^4.18.2",
-    "jsdom": "^22.1.0",
+    "jsdom": "^23.0.0",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
