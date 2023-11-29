@@ -35,10 +35,10 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ABLY_AWS_ACCOUNT_ID_SDK }}:role/${{ github.event.inputs.role-to-assume }}
           aws-region: us-east-1
-      - name: Use Node.js 14.x
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 18
       - name: Install dependencies and build
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
