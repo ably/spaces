@@ -50,7 +50,7 @@ class Spaces {
   }
 
   private addAgent(options: { agents?: Record<string, string | boolean> }) {
-    const agent = { 'ably-spaces': this.version, 'space-custom-client': true };
+    const agent = { spaces: this.version, 'space-custom-client': true };
     options.agents = { ...(options.agents ?? options.agents), ...agent };
   }
 
