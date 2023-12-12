@@ -41,7 +41,7 @@ describe('Spaces', () => {
   it<SpacesTestContext>('applies the agent header to an existing SDK instance', ({ client }) => {
     const spaces = new Spaces(client);
     expect(client.options.agents).toEqual({
-      'ably-spaces': spaces.version,
+      spaces: spaces.version,
       'space-custom-client': true,
     });
   });
@@ -53,7 +53,7 @@ describe('Spaces', () => {
 
     expect(ablyClient.options.agents).toEqual({
       'some-client': '1.2.3',
-      'ably-spaces': spaces.version,
+      spaces: spaces.version,
       'space-custom-client': true,
     });
   });
