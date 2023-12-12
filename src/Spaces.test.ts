@@ -42,7 +42,6 @@ describe('Spaces', () => {
     const spaces = new Spaces(client);
     expect(client.options.agents).toEqual({
       spaces: spaces.version,
-      'space-custom-client': true,
     });
   });
 
@@ -54,7 +53,6 @@ describe('Spaces', () => {
     expect(ablyClient.options.agents).toEqual({
       'some-client': '1.2.3',
       spaces: spaces.version,
-      'space-custom-client': true,
     });
   });
 });
