@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.3.1
+
+No breaking changes were introduced in this release.
+
+* Fix not being able to import CJS Spaces bundle due to `ERR_REQUIRE_ESM` error [\#307](https://github.com/ably/spaces/pull/307)
+
 ## v0.3.0
 
 Breaking changes in this release:
