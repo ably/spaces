@@ -36,7 +36,7 @@ export default class CursorDispensing {
     const updates: { cursor: CursorUpdate; offset: number }[] = message.data || [];
 
     updates.forEach((update: { cursor: CursorUpdate; offset: number }) => {
-      const enhancedMsg = {
+      const enhancedMsg: { cursor: CursorUpdate; offset: number } = {
         cursor: {
           clientId: message.clientId,
           connectionId: message.connectionId,
