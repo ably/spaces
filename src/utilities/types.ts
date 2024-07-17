@@ -28,6 +28,7 @@ export type Subset<T> = {
   [attr in keyof T]?: T[attr] extends object ? Subset<T[attr]> : T[attr];
 };
 
-export type RealtimeInboundMessage = Omit<InboundMessage, 'connectionId'> & {
+export type RealtimeInboundMessage = Omit<InboundMessage, 'clientId' | 'connectionId'> & {
+  clientId: string;
   connectionId: string;
 };
