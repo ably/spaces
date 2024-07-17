@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.4.0
+
+Breaking changes in this release:
+
+* Upgrade to using Ably JavaScript SDK v2 [\#325](https://github.com/ably/spaces/pull/325)
+
+With this release the Spaces SDK now requires Ably JavaScript SDK v2 to be installed and used with the Spaces client. Please refer to [Ably JavaScript SDK v2](https://github.com/ably/ably-js/releases/tag/2.0.0) GitHub release notes for the list of breaking changes and the corresponding migration guide.
+
+**Full Changelog**: https://github.com/ably/spaces/compare/0.3.1...0.4.0
+
 ## v0.3.1
 
 No breaking changes were introduced in this release.
