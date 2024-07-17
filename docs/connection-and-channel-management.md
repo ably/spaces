@@ -9,7 +9,7 @@ This document describes how to access a connection and channels on Spaces, and w
 When initializing the Spaces SDK, an Ably client is passed as a required argument:
 
 ```ts
-const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
+const client = new Realtime({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);
 ```
 

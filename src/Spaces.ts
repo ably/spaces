@@ -36,7 +36,7 @@ class Spaces {
   readonly version = VERSION;
 
   /**
-   * Create a new instance of the Spaces SDK by passing an instance of the [Ably promise-based realtime client](https://ably.com/docs/getting-started/setup). A [`clientId`](https://ably.com/docs/auth/identified-clients) is required.
+   * Create a new instance of the Spaces SDK by passing an instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup). A [`clientId`](https://ably.com/docs/auth/identified-clients) is required.
    *
    * An Ably API key is needed to authenticate. [Basic authentication](https://ably.com/docs/auth/basic) may be used for convenience, however Ably strongly recommends you use [token authentication](https://ably.com/docs/auth/token) in a production environment.
    *

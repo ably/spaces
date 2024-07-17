@@ -43,7 +43,7 @@ import { Realtime } from "ably";
 import Spaces from "@ably/spaces";
 import { SpacesProvider, SpaceProvider } from "@ably/spaces/react";
 
-const ably = new Realtime.Promise({ key: "your-ably-api-key", clientId: 'me' });
+const ably = new Realtime({ key: "your-ably-api-key", clientId: 'me' });
 const spaces = new Spaces(ably);
 
 root.render(
