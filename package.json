@@ -68,7 +68,7 @@
     "nanoid": "^3.3.7"
   },
   "peerDependencies": {
-    "ably": "^1.2.46",
+    "ably": "^2.3.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },
