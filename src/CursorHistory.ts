@@ -36,7 +36,7 @@ export default class CursorHistory {
         const lastMessage = page.items.find((item) => item.connectionId === connectionId);
         if (!lastMessage) return [connectionId, cursors];
 
-        const { data = [], clientId }: { data: OutgoingBuffer[] } & Pick<InboundMessage, 'clientId'> = lastMessage;
+        const { data = [], clientId }: { data?: OutgoingBuffer[] } & Pick<InboundMessage, 'clientId'> = lastMessage;
 
         const lastPositionSet = data[data.length - 1]?.cursor;
         const lastUpdate = lastPositionSet
