@@ -1,4 +1,4 @@
-import { Types } from 'ably';
+import { InboundMessage, PaginatedResult, RealtimeChannel } from 'ably';
 
 import type { CursorUpdate } from './types.js';
 import type { CursorsOptions } from './types.js';
@@ -29,14 +29,14 @@ export default class CursorHistory {
 
   private allCursorUpdates(
     connections: ConnectionsLastPosition,
-    page: Types.PaginatedResult<Types.Message>,
+    page: PaginatedResult<InboundMessage>,
   ): ConnectionsLastPosition {
     return Object.fromEntries(
       Object.entries(connections).map(([connectionId, cursors]) => {
         const lastMessage = page.items.find((item) => item.connectionId === connectionId);
         if (!lastMessage) return [connectionId, cursors];
 
-        const { data = [], clientId }: { data: OutgoingBuffer[] } & Pick<Types.Message, 'clientId'> = lastMessage;
+        const { data = [], clientId }: { data: OutgoingBuffer[] } & Pick<InboundMessage, 'clientId'> = lastMessage;
 
         const lastPositionSet = data[data.length - 1]?.cursor;
         const lastUpdate = lastPositionSet
@@ -54,7 +54,7 @@ export default class CursorHistory {
   }
 
   async getLastCursorUpdate(
-    channel: Types.RealtimeChannelPromise,
+    channel: RealtimeChannel,
     paginationLimit: CursorsOptions['paginationLimit'],
   ): Promise<ConnectionsLastPosition> {
     const members = await channel.presence.get();

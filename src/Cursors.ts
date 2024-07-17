@@ -1,4 +1,4 @@
-import { Types } from 'ably';
+import { RealtimeChannel } from 'ably';
 
 import Space from './Space.js';
 import CursorBatching from './CursorBatching.js';
@@ -8,7 +8,7 @@ import CursorHistory from './CursorHistory.js';
 import { CURSOR_UPDATE } from './CursorConstants.js';
 
 import type { CursorsOptions, CursorUpdate } from './types.js';
-import type { RealtimeMessage } from './utilities/types.js';
+import type { RealtimeInboundMessage } from './utilities/types.js';
 import { ERR_NOT_ENTERED_SPACE } from './Errors.js';
 
 /**
@@ -44,7 +44,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   /**
    * The [realtime channel](https://ably.com/docs/channels) instance that this `Cursors` instance uses for transmitting and receiving data.
    */
-  public channel?: Types.RealtimeChannelPromise;
+  public channel?: RealtimeChannel;
 
   /** @internal */
   constructor(private space: Space) {
@@ -90,11 +90,11 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     this.cursorBatching.pushCursorPosition(channel, cursor);
   }
 
-  private getChannel(): Types.RealtimeChannelPromise {
+  private getChannel(): RealtimeChannel {
     return this.channel ?? (this.channel = this.initializeCursorsChannel());
   }
 
-  private initializeCursorsChannel(): Types.RealtimeChannelPromise {
+  private initializeCursorsChannel(): RealtimeChannel {
     const channel = this.space.client.channels.get(this.channelName);
     channel.presence.subscribe(this.onPresenceUpdate.bind(this));
     channel.presence.enter();
@@ -111,7 +111,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private isUnsubscribed() {
     const channel = this.getChannel();
 
-    interface ChannelWithSubscriptions extends Types.RealtimeChannelPromise {
+    interface ChannelWithSubscriptions extends RealtimeChannel {
       subscriptions: EventEmitter<{}>;
     }
 
@@ -185,7 +185,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
       const channel = this.getChannel();
 
       channel.subscribe(CURSOR_UPDATE, (message) => {
-        this.cursorDispensing.processBatch(message as RealtimeMessage);
+        this.cursorDispensing.processBatch(message as RealtimeInboundMessage);
       });
     }
   }

@@ -24,7 +24,7 @@ export async function createClients({ count }: { count: number }) {
 
   return Array.from({ length: count }, () => {
     const clientId = nanoid();
-    const realtime = new Realtime.Promise({
+    const realtime = new Realtime({
       environment: 'sandbox',
       key: sandboxKey,
       clientId: clientId,

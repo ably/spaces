@@ -4,7 +4,7 @@ import { Realtime } from 'ably';
 import { renderAvatars, renderNotification } from './my-application';
 
 // Create Ably client
-const client = new Realtime.Promise({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
+const client = new Realtime({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
 
 // Initialize the Spaces SDK with an Ably client
 const spaces = new Spaces(client);

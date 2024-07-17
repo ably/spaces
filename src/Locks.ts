@@ -1,4 +1,4 @@
-import { Types } from 'ably';
+import { PresenceMessage } from 'ably';
 
 import Space from './Space.js';
 import type { Lock, SpaceMember } from './types.js';
@@ -350,7 +350,7 @@ export default class Locks extends EventEmitter<LocksEventMap> {
   }
 
   /** @internal */
-  async processPresenceMessage(message: Types.PresenceMessage) {
+  async processPresenceMessage(message: PresenceMessage) {
     const member = await this.space.members.getByConnectionId(message.connectionId);
     if (!member) return;
 

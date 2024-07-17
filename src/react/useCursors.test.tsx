@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Realtime } from 'ably/promises';
+import { Realtime } from 'ably';
 import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { waitFor, renderHook, act } from '@testing-library/react';
 import { SpacesProvider } from './contexts/SpacesContext.js';
@@ -12,15 +12,15 @@ import Spaces from '../index.js';
 import Space from '../Space.js';
 import { createPresenceEvent } from '../utilities/test/fakes.js';
 import { useCursors } from './useCursors.js';
-import type { Types } from 'ably';
+import type { PresenceMessage } from 'ably';
 
 interface SpaceTestContext {
   spaces: Spaces;
   space: Space;
-  presenceMap: Map<string, Types.PresenceMessage>;
+  presenceMap: Map<string, PresenceMessage>;
 }
 
-vi.mock('ably/promises');
+vi.mock('ably');
 vi.mock('nanoid');
 
 describe('useCursors', () => {

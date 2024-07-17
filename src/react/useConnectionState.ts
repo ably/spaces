@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { useEventListener } from './useEventListener.js';
 
-import type { Types } from 'ably';
+import type { ConnectionState, ConnectionStateChange, ErrorInfo, EventEmitter } from 'ably';
 
-type ConnectionStateListener = (stateChange: Types.ConnectionStateChange) => void;
+type ConnectionStateListener = (stateChange: ConnectionStateChange) => void;
 
-const failedStateEvents: Types.ConnectionState[] = ['suspended', 'failed', 'disconnected'];
-const successStateEvents: Types.ConnectionState[] = ['connected', 'closed'];
+const failedStateEvents: ConnectionState[] = ['suspended', 'failed', 'disconnected'];
+const successStateEvents: ConnectionState[] = ['connected', 'closed'];
 
-export const useConnectionState = <S extends Types.ConnectionState, C extends Types.ConnectionStateChange>(
-  emitter?: Types.EventEmitter<ConnectionStateListener, C, S>,
+export const useConnectionState = <S extends ConnectionState, C extends ConnectionStateChange>(
+  emitter?: EventEmitter<ConnectionStateListener, C, S>,
 ) => {
-  const [connectionError, setConnectionError] = useState<Types.ErrorInfo | null>(null);
+  const [connectionError, setConnectionError] = useState<ErrorInfo | null>(null);
 
-  useEventListener<Types.ConnectionState, Types.ConnectionStateChange>(
+  useEventListener<ConnectionState, ConnectionStateChange>(
     emitter,
     (stateChange) => {
       if (stateChange.reason) {
@@ -23,7 +23,7 @@ export const useConnectionState = <S extends Types.ConnectionState, C extends Ty
     failedStateEvents,
   );
 
-  useEventListener<Types.ConnectionState, Types.ConnectionStateChange>(
+  useEventListener<ConnectionState, ConnectionStateChange>(
     emitter,
     () => {
       setConnectionError(null);

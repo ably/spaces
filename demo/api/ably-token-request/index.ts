@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import * as Ably from 'ably/promises';
+import * as Ably from 'ably';
 import { HandlerEvent } from '@netlify/functions';
 
 dotenv.config();

@@ -15,7 +15,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 const clientId = nanoid();
 
-const client = new Realtime.Promise({
+const client = new Realtime({
   authUrl: `/api/ably-token-request?clientId=${clientId}`,
   clientId,
 });

@@ -1,5 +1,5 @@
 import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest';
-import { Realtime, Types } from 'ably/promises';
+import { Realtime, RealtimeClient, RealtimeChannel } from 'ably';
 
 import Space from './Space.js';
 import Cursors from './Cursors.js';
@@ -10,22 +10,22 @@ import CursorDispensing from './CursorDispensing.js';
 import CursorHistory from './CursorHistory.js';
 import type { CursorUpdate, SpaceMember } from './types.js';
 
-import type { RealtimeMessage } from './utilities/types.js';
+import type { RealtimeInboundMessage } from './utilities/types.js';
 
 interface CursorsTestContext {
-  client: Types.RealtimePromise;
+  client: RealtimeClient;
   space: Space;
   cursors: Cursors;
-  channel: Types.RealtimeChannelPromise;
+  channel: RealtimeChannel;
   batching: CursorBatching;
   dispensing: CursorDispensing;
   history: CursorHistory;
   selfStub: SpaceMember;
   lastCursorPositionsStub: Record<string, CursorUpdate>;
-  fakeMessageStub: RealtimeMessage;
+  fakeMessageStub: RealtimeInboundMessage;
 }
 
-vi.mock('ably/promises');
+vi.mock('ably');
 
 function createPresenceCount(length: number) {
   return async () => Array.from({ length }, (_, i) => createPresenceMessage('enter', { clientId: '' + i }));
@@ -39,7 +39,7 @@ describe('Cursors', () => {
     context.cursors = context.space.cursors;
     // This will set the channel
     context.cursors.subscribe('update', () => {});
-    context.channel = context.cursors['channel'] as Types.RealtimeChannelPromise;
+    context.channel = context.cursors.channel!;
     context.batching = context.space.cursors['cursorBatching'];
     context.dispensing = context.space.cursors['cursorDispensing'];
     context.history = context.space.cursors['cursorHistory'];

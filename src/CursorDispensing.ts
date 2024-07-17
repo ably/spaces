@@ -1,5 +1,5 @@
 import { type CursorUpdate } from './types.js';
-import { type RealtimeMessage } from './utilities/types.js';
+import { type RealtimeInboundMessage } from './utilities/types.js';
 
 export default class CursorDispensing {
   private buffer: Record<string, { cursor: CursorUpdate; offset: number }[]> = {};
@@ -32,7 +32,7 @@ export default class CursorDispensing {
     );
   }
 
-  processBatch(message: RealtimeMessage) {
+  processBatch(message: RealtimeInboundMessage) {
     const updates: { cursor: CursorUpdate; offset: number }[] = message.data || [];
 
     updates.forEach((update: { cursor: CursorUpdate; offset: number }) => {
