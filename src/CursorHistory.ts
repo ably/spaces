@@ -76,7 +76,8 @@ export default class CursorHistory {
     pageNo++;
 
     while (pageNo <= paginationLimit && this.positionsMissing(connections) && history.hasNext()) {
-      page = await history.next();
+      // assert result of .next() is non null as we've checked .hasNext() before
+      page = (await history.next())!;
       connections = this.allCursorUpdates(connections, page);
       pageNo++;
     }
