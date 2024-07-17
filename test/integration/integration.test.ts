@@ -1,11 +1,12 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { createClients } from './utilities/setup.js';
 import { LocationsEventMap } from '../../src/Locations.js';
-import { SpaceEventMap } from '../../src/Space.js';
+import Space, { SpaceEventMap } from '../../src/Space.js';
 import { MembersEventMap } from '../../src/Members.js';
 import { CursorsEventMap } from '../../src/Cursors.js';
 import { nanoid } from 'nanoid';
 import { LocksEventMap } from '../../src/Locks.js';
+import Spaces from '../../src/Spaces.js';
 
 /*
  * These tests have one `describe` for each area of functionality, each of these `describe`s then containing multiple `it`s.
@@ -146,11 +147,11 @@ describe(
     });
 
     describe('cursors', () => {
-      let performerSpaces;
-      let observerSpaces;
-      let performerClientId;
-      let performerSpace;
-      let observerSpace;
+      let performerSpaces: Spaces;
+      let observerSpaces: Spaces;
+      let performerClientId: string;
+      let performerSpace: Space;
+      let observerSpace: Space;
 
       beforeAll(async () => {
         [{ spaces: performerSpaces, clientId: performerClientId }, { spaces: observerSpaces }] = await createClients({
