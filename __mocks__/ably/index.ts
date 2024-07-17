@@ -91,8 +91,10 @@ class MockRealtime {
   }
 }
 
+class MockErrorInfo extends ErrorInfo {}
+
 // maintain the PresenceMessage class so tests can initialise it directly using
 // PresenceMessage.fromValues.
 MockRealtime.PresenceMessage = Rest.PresenceMessage;
 
-export { MockRealtime as Realtime };
+export { MockRealtime as Realtime, MockErrorInfo as ErrorInfo };
