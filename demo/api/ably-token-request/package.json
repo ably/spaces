@@ -16,7 +16,7 @@
   "dependencies": {
     "@netlify/functions": "^1.4.0",
     "@types/node": "^18.3.0",
-    "ably": "^1.2.36",
+    "ably": "^2.3.0",
     "dotenv": "^16.0.3",
     "typescript": "^4.9.5"
   }
