@@ -1,5 +1,5 @@
 import { it, describe, expect, expectTypeOf, vi, beforeEach } from 'vitest';
-import { Realtime, Types } from 'ably/promises';
+import { Realtime, RealtimeClient } from 'ably';
 
 import Spaces, { type ClientWithOptions } from './Spaces.js';
 
@@ -7,16 +7,16 @@ interface SpacesTestContext {
   client: ClientWithOptions;
 }
 
-vi.mock('ably/promises');
+vi.mock('ably');
 
 describe('Spaces', () => {
   beforeEach<SpacesTestContext>((context) => {
     context.client = new Realtime({ key: 'asd' }) as ClientWithOptions;
   });
 
-  it<SpacesTestContext>('expects the injected client to be of the type RealtimePromise', ({ client }) => {
+  it<SpacesTestContext>('expects the injected client to be of the type RealtimeClient', ({ client }) => {
     const spaces = new Spaces(client);
-    expectTypeOf(spaces.client).toMatchTypeOf<Types.RealtimePromise>();
+    expectTypeOf(spaces.client).toMatchTypeOf<RealtimeClient>();
   });
 
   it<SpacesTestContext>('creates and retrieves spaces successfully', async ({ client }) => {

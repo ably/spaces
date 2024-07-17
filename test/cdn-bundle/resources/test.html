@@ -19,7 +19,7 @@
           const key = await createSandboxAblyAPIKey();
 
           // The next two statements are based on the example given in the "Using a CDN" section of the README.
-          const client = new Ably.Realtime.Promise({
+          const client = new Ably.Realtime({
             key,
             environment: 'sandbox',
             clientId: 'myClientId',

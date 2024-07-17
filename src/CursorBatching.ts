@@ -1,4 +1,4 @@
-import { Types } from 'ably';
+import { RealtimeChannel } from 'ably';
 
 import { CURSOR_UPDATE } from './CursorConstants.js';
 import type { CursorUpdate } from './types.js';
@@ -27,7 +27,7 @@ export default class CursorBatching {
     this.batchTime = outboundBatchInterval;
   }
 
-  pushCursorPosition(channel: Types.RealtimeChannelPromise, cursor: Pick<CursorUpdate, 'position' | 'data'>) {
+  pushCursorPosition(channel: RealtimeChannel, cursor: Pick<CursorUpdate, 'position' | 'data'>) {
     // Ignore the cursor update if there is no one listening
     if (!this.shouldSend) return;
 
@@ -60,14 +60,14 @@ export default class CursorBatching {
     this.outgoingBuffer.push(value);
   }
 
-  private async publishFromBuffer(channel: Types.RealtimeChannelPromise, eventName: string) {
+  private async publishFromBuffer(channel: RealtimeChannel, eventName: string) {
     if (!this.isRunning) {
       this.isRunning = true;
       await this.batchToChannel(channel, eventName);
     }
   }
 
-  private async batchToChannel(channel: Types.RealtimeChannelPromise, eventName: string) {
+  private async batchToChannel(channel: RealtimeChannel, eventName: string) {
     if (!this.hasMovement) {
       this.isRunning = false;
       return;

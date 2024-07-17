@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { Types } from 'ably';
+import { PresenceMessage } from 'ably';
 
 import type { SpaceMember, ProfileData } from './types.js';
 import type { PresenceMember } from './utilities/types.js';
@@ -11,9 +11,9 @@ export interface SpacePresenceData {
 
 class SpaceUpdate {
   private self: SpaceMember | null;
-  private extras: Types.PresenceMessage['extras'];
+  private extras: PresenceMessage['extras'];
 
-  constructor({ self, extras }: { self: SpaceMember | null; extras?: Types.PresenceMessage['extras'] }) {
+  constructor({ self, extras }: { self: SpaceMember | null; extras?: PresenceMessage['extras'] }) {
     this.self = self;
     this.extras = extras;
   }

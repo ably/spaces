@@ -1,5 +1,5 @@
 import { it, describe, expect, vi, beforeEach, expectTypeOf } from 'vitest';
-import { Realtime, Types } from 'ably/promises';
+import { PresenceMessage, Realtime, RealtimeClient, RealtimePresence } from 'ably';
 
 import Space from './Space.js';
 import Locations from './Locations.js';
@@ -14,13 +14,13 @@ import {
 } from './utilities/test/fakes.js';
 
 interface SpaceTestContext {
-  client: Types.RealtimePromise;
+  client: RealtimeClient;
   space: Space;
-  presence: Types.RealtimePresencePromise;
-  presenceMap: Map<string, Types.PresenceMessage>;
+  presence: RealtimePresence;
+  presenceMap: Map<string, PresenceMessage>;
 }
 
-vi.mock('ably/promises');
+vi.mock('ably');
 vi.mock('nanoid');
 
 describe('Space', () => {
@@ -62,7 +62,7 @@ describe('Space', () => {
   describe('enter', () => {
     beforeEach<SpaceTestContext>(({ presence }) => {
       vi.spyOn(presence, 'subscribe').mockImplementation(
-        async (_, listener?: (presenceMessage: Types.PresenceMessage) => void) => {
+        async (_, listener?: (presenceMessage: PresenceMessage) => void) => {
           listener!(
             createPresenceMessage('enter' /* arbitrarily chosen */, { clientId: 'MOCK_CLIENT_ID', connectionId: '1' }),
           );
@@ -99,7 +99,7 @@ describe('Space', () => {
         const unsubscribeSpy = vi.spyOn(presence, 'unsubscribe');
 
         vi.spyOn(presence, 'subscribe').mockImplementation(
-          async (_, listener?: (presenceMessage: Types.PresenceMessage) => void) => {
+          async (_, listener?: (presenceMessage: PresenceMessage) => void) => {
             listener!(createPresenceMessage('enter' /* arbitrarily chosen */, presenceMessageData));
           },
         );

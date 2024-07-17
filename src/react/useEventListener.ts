@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import type { Types } from 'ably';
+import type { ChannelState, ChannelStateChange, ConnectionState, ConnectionStateChange, EventEmitter } from 'ably';
 
 type EventListener<T> = (stateChange: T) => void;
 
@@ -8,10 +8,10 @@ type EventListener<T> = (stateChange: T) => void;
  * todo use `ably/react` hooks instead
  */
 export const useEventListener = <
-  S extends Types.ConnectionState | Types.ChannelState,
-  C extends Types.ConnectionStateChange | Types.ChannelStateChange,
+  S extends ConnectionState | ChannelState,
+  C extends ConnectionStateChange | ChannelStateChange,
 >(
-  emitter?: Types.EventEmitter<EventListener<C>, C, S>,
+  emitter?: EventEmitter<EventListener<C>, C, S>,
   listener?: EventListener<C>,
   event?: S | S[],
 ) => {

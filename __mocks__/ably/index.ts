@@ -1,4 +1,4 @@
-import Ably, { Types } from 'ably/promises';
+import { PresenceMessage, Rest, ErrorInfo } from 'ably';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
@@ -7,7 +7,7 @@ const methodReturningVoidPromise = () => mockPromisify<void>((() => {})());
 
 function createMockPresence() {
   return {
-    get: () => mockPromisify<Types.PresenceMessage[]>([]),
+    get: () => mockPromisify<PresenceMessage[]>([]),
     update: () => mockPromisify<void>(undefined),
     enter: methodReturningVoidPromise,
     leave: methodReturningVoidPromise,
@@ -93,6 +93,6 @@ class MockRealtime {
 
 // maintain the PresenceMessage class so tests can initialise it directly using
 // PresenceMessage.fromValues.
-MockRealtime.PresenceMessage = Ably.Rest.PresenceMessage;
+MockRealtime.PresenceMessage = Rest.PresenceMessage;
 
 export { MockRealtime as Realtime };

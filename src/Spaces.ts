@@ -1,4 +1,4 @@
-import { Types } from 'ably';
+import { RealtimeClient, Connection } from 'ably';
 import { ERR_SPACE_NAME_MISSING } from './Errors.js';
 
 import Space from './Space.js';
@@ -8,7 +8,7 @@ import type { Subset } from './utilities/types.js';
 
 import { VERSION } from './version.js';
 
-export interface ClientWithOptions extends Types.RealtimePromise {
+export interface ClientWithOptions extends RealtimeClient {
   options: {
     agents?: Record<string, string | boolean>;
   };
@@ -24,11 +24,11 @@ class Spaces {
   /**
    * Instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup) client that was passed to the {@link constructor}.
    */
-  client: Types.RealtimePromise;
+  client: RealtimeClient;
   /**
    * Instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup) connection, belonging to the client that was passed to the {@link constructor}.
    */
-  connection: Types.ConnectionPromise;
+  connection: Connection;
 
   /**
    * Version of the Spaces library.
@@ -42,7 +42,7 @@ class Spaces {
    *
    * @param client An instance of the Ably prmise-based realtime client.
    */
-  constructor(client: Types.RealtimePromise) {
+  constructor(client: RealtimeClient) {
     this.client = client;
     this.connection = client.connection;
     this.addAgent((this.client as ClientWithOptions)['options']);

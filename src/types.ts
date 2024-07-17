@@ -1,4 +1,4 @@
-import { Types } from 'ably';
+import { ErrorInfo, PresenceAction } from 'ably';
 import type { LockAttributes } from './Locks.js';
 
 /**
@@ -143,7 +143,7 @@ export interface SpaceMember {
     /**
      * The most recent event emitted by the member.
      */
-    name: Types.PresenceAction;
+    name: PresenceAction;
     /**
      * The timestamp of the most recently emitted event.
      */
@@ -201,5 +201,5 @@ export type Lock = {
   /**
    * The reason why the lock status is {@link LockStatuses.Unlocked | `unlocked`}.
    */
-  reason?: Types.ErrorInfo;
+  reason?: ErrorInfo;
 };
