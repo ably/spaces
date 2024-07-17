@@ -39,19 +39,19 @@ You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
 
 > **Note**
 >
-> If you do this, then replace the call to `new Realtime.Promise` in the next section with `new Ably.Realtime.Promise`.
+> If you do this, then replace the call to `new Realtime` in the next section with `new Ably.Realtime`.
 
 ## Authentication and instantiation
 
-Spaces use an [Ably promise-based realtime client](https://github.com/ably/ably-js#using-the-async-api-style). You can pass an Ably client directly to the spaces constructor.
+You can pass an Ably client directly to the spaces constructor.
 
 The Ably client instantiation accepts client options. You will need at minimum an [Ably API key](#ably-api-key) and a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascripts). A clientId represents an identity of an connection. In most cases this will something like the id of a user:
 
 ```ts
-import { Realtime } from 'ably/promise';
+import { Realtime } from 'ably';
 import Spaces from '@ably/spaces';
 
-const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
+const client = new Realtime({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);
 ```
 

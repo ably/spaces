@@ -76,7 +76,7 @@ To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/get
 import Spaces from '@ably/spaces';
 import { Realtime } from 'ably';
 
-const client = new Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
+const client = new Realtime({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);
 ```
 You can use [basic authentication](https://ably.com/docs/auth/basic) i.e. the API Key directly for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/auth/token) in production environments.
@@ -95,7 +95,7 @@ You can also use Spaces with a CDN, such as [unpkg](https://www.unpkg.com/):
 After this, instantiate the SDK in the same way as in the NPM option above:
 
 ```ts
-const client = new Ably.Realtime.Promise({ key: "<API-key>", clientId: "<client-ID>" });
+const client = new Ably.Realtime({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);
 ```
 
