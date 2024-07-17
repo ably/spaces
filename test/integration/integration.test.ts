@@ -187,7 +187,7 @@ describe(
       it('scenario 2.2: set cursor position', async () => {
         // Before calling `performerSpace.cursors.set()` below, we want to be sure that `performerSpace.cursors` has found out about the presence enter operations triggered by calling `performerSpace.cursors.set()` in scenario 2.1, and by calling `observerSpace.cursors.subscribe()` below, so that it doesn’t drop the cursor updates that we pass to `set()`. So here we set up a promise which will resolve once `performerSpace.cursors.channel` sees two clients (i.e. `performerSpaces` and `observerSpaces`) as present.
         const performerCursorsChannelObserverPresentPromise = new Promise<void>((resolve) => {
-          const presence = performerSpace.cursors.channel.presence;
+          const presence = performerSpace.cursors.channel!.presence;
           const listener = async () => {
             const members = await presence.get();
             if (members.length === 2) {
@@ -215,9 +215,7 @@ describe(
         // To be sure that the `observerSpace.cursors.subscribe()` listener will receive the cursor positions sent by the calls to `performerSpace.cursors.set()` below, we need to know that the cursors channel attach operation triggered by calling `observerSpace.cursors.subscribe()` has completed. The `cursors.subscribe()` API does not currently provide any direct way for the user to know that this attach operation has completed, so here we do so by directly observing the channel.
         //
         // We should consider exposing the completion of the attach operation via the `cursors.subscribe()` API, the same way as ably-js exposes it through `presence.subscribe()`. I’m not convinced of the necessity though — not sure how useful it’d be for an average user, and we can work around it in tests (as I have here).
-        const observerCursorsChannelAttachedPromise = new Promise((resolve) => {
-          observerSpace.cursors.channel.whenState('attached', resolve);
-        });
+        const observerCursorsChannelAttachedPromise = observerSpace.cursors.channel!.whenState('attached');
 
         await Promise.all([performerCursorsChannelObserverPresentPromise, observerCursorsChannelAttachedPromise]);
 
