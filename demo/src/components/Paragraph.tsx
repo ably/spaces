@@ -1,10 +1,13 @@
 import React, { useRef } from 'react';
 import cn from 'classnames';
-import { getMemberFirstName, getOutlineClasses } from '../utils';
+import { ChannelProvider } from 'ably/react';
+
+import { generateSpaceName, getMemberFirstName, getOutlineClasses, getParamValueFromUrl } from '../utils';
 import { StickyLabel } from './StickyLabel';
 import { LockFilledSvg } from './svg/LockedFilled.tsx';
 import { EditableText } from './EditableText.tsx';
 import { useTextComponentLock } from '../hooks/useTextComponentLock.ts';
+import { buildLockId } from '../utils/locking.ts';
 
 interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
   id: string;
@@ -14,18 +17,38 @@ interface Props extends React.HTMLAttributes<HTMLParagraphElement> {
   maxlength?: number;
 }
 
-export const Paragraph = ({
+export const Paragraph = (props: Props) => {
+  const spaceName = getParamValueFromUrl('space', generateSpaceName);
+  const lockId = buildLockId(props.slide, props.id);
+  const channelName = `${spaceName}${lockId}`;
+
+  return (
+    <ChannelProvider
+      channelName={channelName}
+      options={{ params: { rewind: '1' } }}
+    >
+      <ParagraphChild
+        {...props}
+        channelName={channelName}
+      ></ParagraphChild>
+    </ChannelProvider>
+  );
+};
+
+const ParagraphChild = ({
   variant = 'regular',
   id,
   slide,
   className,
   children,
   maxlength = 300,
+  channelName,
   ...props
-}: Props) => {
+}: Props & { channelName: string }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { content, activeMember, locked, lockedByYou, editIsNotAllowed, handleSelect, handleContentUpdate } =
     useTextComponentLock({
+      channelName,
       id,
       slide,
       defaultText: children,

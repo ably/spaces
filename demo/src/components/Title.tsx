@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
 import cn from 'classnames';
+import { ChannelProvider } from 'ably/react';
 
-import { getMemberFirstName, getOutlineClasses } from '../utils';
+import { generateSpaceName, getMemberFirstName, getOutlineClasses, getParamValueFromUrl } from '../utils';
 import { LockFilledSvg } from './svg/LockedFilled.tsx';
 import { StickyLabel } from './StickyLabel.tsx';
 import { EditableText } from './EditableText.tsx';
 import { useTextComponentLock } from '../hooks/useTextComponentLock.ts';
+import { buildLockId } from '../utils/locking.ts';
 
 interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   id: string;
@@ -15,10 +17,38 @@ interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   maxlength?: number;
 }
 
-export const Title = ({ variant = 'h1', className, id, slide, children, maxlength = 70, ...props }: Props) => {
+export const Title = (props: Props) => {
+  const spaceName = getParamValueFromUrl('space', generateSpaceName);
+  const lockId = buildLockId(props.slide, props.id);
+  const channelName = `${spaceName}${lockId}`;
+
+  return (
+    <ChannelProvider
+      channelName={channelName}
+      options={{ params: { rewind: '1' } }}
+    >
+      <TitleChild
+        {...props}
+        channelName={channelName}
+      ></TitleChild>
+    </ChannelProvider>
+  );
+};
+
+const TitleChild = ({
+  variant = 'h1',
+  className,
+  id,
+  slide,
+  children,
+  maxlength = 70,
+  channelName,
+  ...props
+}: Props & { channelName: string }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { content, activeMember, locked, lockedByYou, editIsNotAllowed, handleSelect, handleContentUpdate } =
     useTextComponentLock({
+      channelName,
       id,
       slide,
       defaultText: children,
