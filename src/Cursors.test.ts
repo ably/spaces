@@ -116,7 +116,7 @@ describe('Cursors', () => {
       vi.spyOn(channel.presence, 'get').mockImplementation(createPresenceCount(2));
       await cursors['onPresenceUpdate']();
       expect(batching.shouldSend).toBeTruthy();
-      expect(batching.batchTime).toEqual(50);
+      expect(batching.batchTime).toEqual(25);
     });
 
     it<CursorsTestContext>('batchTime is updated when multiple people are present', async ({
@@ -126,7 +126,7 @@ describe('Cursors', () => {
     }) => {
       vi.spyOn(channel.presence, 'get').mockImplementation(createPresenceCount(2));
       await cursors['onPresenceUpdate']();
-      expect(batching.batchTime).toEqual(50);
+      expect(batching.batchTime).toEqual(25);
     });
 
     describe('pushCursorPosition', () => {
