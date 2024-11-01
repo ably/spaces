@@ -105,7 +105,11 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
     const channel = this.getChannel();
     const cursorsMembers = await channel.presence.get();
     this.cursorBatching.setShouldSend(cursorsMembers.length > 1);
-    this.cursorBatching.setBatchTime(cursorsMembers.length * this.options.outboundBatchInterval);
+    /**
+     * Since server-side batching is automically enabled for cursors channels, we can now adjust the client-side batching interval more granularly.
+     * E.g. multiply the configured outboundBatchInterval by groups of 100 members instead of the total number of members.
+     */
+    this.cursorBatching.setBatchTime(Math.ceil(cursorsMembers.length / 100) * this.options.outboundBatchInterval);
   }
 
   private isUnsubscribed() {
