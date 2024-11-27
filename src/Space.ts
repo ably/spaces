@@ -87,10 +87,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    */
   readonly client: RealtimeClient;
   private readonly channelName: string;
-  /**
-   * @internal
-   */
-  readonly connectionId: string | undefined;
+
   /**
    * The options passed to {@link default.get | `Spaces.get()`}.
    */
@@ -126,7 +123,6 @@ class Space extends EventEmitter<SpaceEventMap> {
 
     this.client = client;
     this.options = this.setOptions(options);
-    this.connectionId = this.client.connection.id;
     this.name = name;
     this.channelName = `${name}${SPACE_CHANNEL_TAG}`;
 
@@ -138,6 +134,13 @@ class Space extends EventEmitter<SpaceEventMap> {
     this.cursors = new Cursors(this);
     this.members = new Members(this);
     this.locks = new Locks(this, this.presenceUpdate);
+  }
+
+  /**
+   * @internal
+   */
+  get connectionId(): string | undefined {
+    return this.client.connection.id;
   }
 
   private presenceUpdate = ({ data, extras }: SpacePresenceData) => {
