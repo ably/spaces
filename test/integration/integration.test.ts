@@ -178,9 +178,8 @@ describe(
         // 2. one of its `get*()` methods is called
         // 3. its `subscribe` or `unsubscribe` method is called
         //
-        // This seems to mean that a client that sends cursor updates but does not listen for them will drop the first update passed to `cursors.set()`.
-        //
-        // So, to work around this, here I perform a "sacrificial" call to `performerSpace.cursors.set()`, the idea of which is to put `performerSpace.cursors.set()` into a state in which it will not drop the updates passed in subsequent calls.
+        // UPDATE: This race condition bug has been fixed. Early cursor positions are now queued and sent when the channel becomes ready.
+        // However, we'll keep this "sacrificial" call to ensure the test works correctly with the fix.
         await performerSpace.cursors.set({ position: { x: 0, y: 0 } });
       });
 
@@ -203,7 +202,8 @@ describe(
           const observedCursorEventsData: CursorsEventMap['update'][] = [];
           const cursorsListener = (data: CursorsEventMap['update']) => {
             observedCursorEventsData.push(data);
-            if (observedCursorEventsData.length === 4) {
+            // Now expecting 5 updates: 1 sacrificial + 4 intended (since the race condition bug is fixed)
+            if (observedCursorEventsData.length === 5) {
               observerSpace.cursors.unsubscribe(cursorsListener);
               resolve(observedCursorEventsData);
             }
@@ -232,8 +232,17 @@ describe(
 
         // Note that we check that the order in which we recieve the cursor updates matches that in which they were passed to `set()`
         const observedCursorEventsData = await cursorUpdatesPromise;
+
+        // First cursor should be the sacrificial one from scenario 2.1 (now preserved due to bug fix)
+        expect(observedCursorEventsData[0]).toMatchObject({
+          clientId: performerClientId,
+          position: { x: 0, y: 0 },
+          // Note: no data field expected for the sacrificial cursor
+        });
+
+        // Remaining 4 cursors should match the intended cursors
         for (const [index, setCursor] of cursorsToSet.entries()) {
-          expect(observedCursorEventsData[index]).toMatchObject({ clientId: performerClientId, ...setCursor });
+          expect(observedCursorEventsData[index + 1]).toMatchObject({ clientId: performerClientId, ...setCursor });
         }
       });
     });
