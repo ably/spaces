@@ -30,5 +30,11 @@
     "Variable",
   ],
   "treatWarningsAsErrors": true,
-  "validation": true
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "rewrittenLink": false,
+    "notDocumented": false,
+    "unusedMergeModuleWith": true
+  }
 }
