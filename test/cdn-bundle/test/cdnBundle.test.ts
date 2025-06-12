@@ -8,17 +8,23 @@ test.describe('CDN bundle', () => {
    * It does this by checking that a webpage which imports this bundle is able to create and use a Spaces client.
    */
   test('browser can import and use the CDN bundle', async ({ page }) => {
-    const pageResultPromise = new Promise<string>((resolve, reject) => {
-      page.exposeFunction('onResult', (error: Error | null) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve('Success');
-        }
-      });
+    let resolvePageResult: (value: PromiseLike<string> | string) => void;
+    let rejectPageResult: (reason: any) => void;
 
-      page.exposeFunction('createSandboxAblyAPIKey', createSandboxAblyAPIKey);
+    const pageResultPromise = new Promise<string>((resolve, reject) => {
+      resolvePageResult = resolve;
+      rejectPageResult = reject;
     });
+
+    await page.exposeFunction('onResult', (error: Error | null) => {
+      if (error) {
+        rejectPageResult(error);
+      } else {
+        resolvePageResult('Success');
+      }
+    });
+
+    await page.exposeFunction('createSandboxAblyAPIKey', createSandboxAblyAPIKey);
 
     await page.goto('/');
 
