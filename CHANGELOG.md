@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.5.2
+
+No breaking changes were introduced in this release.
+
+This is a patch release to fix the release process.
+
 ## v0.5.1
 
 No breaking changes were introduced in this release.
