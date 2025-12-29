@@ -8,6 +8,7 @@ export type OutgoingBuffer = { cursor: Pick<CursorUpdate, 'position' | 'data'>; 
 
 export default class CursorBatching {
   outgoingBuffer: OutgoingBuffer[] = [];
+  pendingBuffer: OutgoingBuffer[] = [];
 
   batchTime: number;
 
@@ -28,14 +29,11 @@ export default class CursorBatching {
   }
 
   pushCursorPosition(channel: RealtimeChannel, cursor: Pick<CursorUpdate, 'position' | 'data'>) {
-    // Ignore the cursor update if there is no one listening
-    if (!this.shouldSend) return;
-
     const timestamp = new Date().getTime();
 
     let offset: number;
     // First update in the buffer is always 0
-    if (this.outgoingBuffer.length === 0) {
+    if (this.outgoingBuffer.length === 0 && this.pendingBuffer.length === 0) {
       offset = 0;
       this.bufferStartTimestamp = timestamp;
     } else {
@@ -43,13 +41,27 @@ export default class CursorBatching {
       offset = timestamp - this.bufferStartTimestamp;
     }
 
+    const bufferItem = { cursor, offset };
+
+    if (!this.shouldSend) {
+      // Queue cursor positions when channel is not ready (no one listening yet)
+      this.pushToPendingBuffer(bufferItem);
+      return;
+    }
+
     this.hasMovement = true;
-    this.pushToBuffer({ cursor, offset });
+    this.pushToBuffer(bufferItem);
     this.publishFromBuffer(channel, CURSOR_UPDATE);
   }
 
   setShouldSend(shouldSend: boolean) {
+    const wasSending = this.shouldSend;
     this.shouldSend = shouldSend;
+
+    // If we just became ready to send and have pending cursor positions, process them
+    if (!wasSending && this.shouldSend && this.pendingBuffer.length > 0) {
+      this.processPendingBuffer();
+    }
   }
 
   setBatchTime(batchTime: number) {
@@ -58,6 +70,35 @@ export default class CursorBatching {
 
   private pushToBuffer(value: OutgoingBuffer) {
     this.outgoingBuffer.push(value);
+  }
+
+  private pushToPendingBuffer(value: OutgoingBuffer) {
+    this.pendingBuffer.push(value);
+  }
+
+  private processPendingBuffer() {
+    // Move all pending cursor positions to outgoing buffer
+    for (const item of this.pendingBuffer) {
+      this.pushToBuffer(item);
+    }
+
+    // Clear pending buffer
+    this.pendingBuffer = [];
+
+    // Start publishing if we have cursor movements
+    if (this.outgoingBuffer.length > 0) {
+      this.hasMovement = true;
+      // Note: We need the channel to publish, but since setShouldSend doesn't have it,
+      // we'll need to trigger this from the caller that has access to the channel
+    }
+  }
+
+  // Method to manually trigger publishing when pending items are processed
+  triggerPublishFromPending(channel: RealtimeChannel) {
+    if (this.outgoingBuffer.length > 0) {
+      this.hasMovement = true;
+      this.publishFromBuffer(channel, CURSOR_UPDATE);
+    }
   }
 
   private async publishFromBuffer(channel: RealtimeChannel, eventName: string) {
