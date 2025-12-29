@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.5.1
+
+No breaking changes were introduced in this release.
+
+This is a patch release to update the npm release process to use OIDC rather than tokens, see https://github.com/ably/spaces/pull/355.
+
 ## v0.5.0
 
 No breaking changes were introduced in this release.
