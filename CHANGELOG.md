@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.5.0
+
+No breaking changes were introduced in this release.
+
+* Change cursors batch time formula on presence update [\#333](https://github.com/ably/spaces/pull/333)
+
+* Adjust cursors default outboundBatchInterval [\#337](https://github.com/ably/spaces/pull/337)
+
+* Fix stale connectionId [\#336](https://github.com/ably/spaces/pull/336)
+
 ## v0.4.0
 
 Breaking changes in this release:
