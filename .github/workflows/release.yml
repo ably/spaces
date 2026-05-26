@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+          # v4 does not enable caching by default; this is a no-op on v4 and
+          # explicitly opts out once v5 (which caches by default) is adopted.
+          package-manager-cache: false
       - name: Install dependencies and publish
         run: |
           npm ci
