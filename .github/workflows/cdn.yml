@@ -20,6 +20,8 @@ on:
           - "prod-ably-sdk-cdn"
           - "nonprod-ably-sdk-cdn"
 
+permissions: {}
+
 jobs:
   publish:
     runs-on: ubuntu-latest

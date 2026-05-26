@@ -5,6 +5,9 @@ on:
   # Run every week on Monday 9:00:
   - cron: '0 9 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   renovate:
     name: Renovate
