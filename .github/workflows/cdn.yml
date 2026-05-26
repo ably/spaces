@@ -49,5 +49,8 @@ jobs:
           npm ci
           npm run build
         # Note: If you modify what we upload to the CDN, you must make sure you keep the `test:cdn-bundle` NPM script in sync with your changes.
-      - run: |
-          aws s3 cp ./dist/iife/index.bundle.js s3://${{ github.event.inputs.bucket }}/spaces/${{ github.event.inputs.version }}/iife/index.bundle.js
+      - env:
+          BUCKET: ${{ github.event.inputs.bucket }}
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          aws s3 cp ./dist/iife/index.bundle.js "s3://${BUCKET}/spaces/${VERSION}/iife/index.bundle.js"
