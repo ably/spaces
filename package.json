@@ -40,7 +40,7 @@
   "devDependencies": {
     "@playwright/test": "^1.53.0",
     "@rollup/plugin-node-resolve": "^15.3.1",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@testing-library/react": "^14.3.1",
     "@types/express": "^4.17.23",
     "@types/react": "^18.3.23",

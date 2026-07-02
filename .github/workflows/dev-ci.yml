@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
       - run: npm ci
       - run: npm audit --production
   format-check:
@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
       - run: npm ci
       - run: npm run format:check
   lint:
@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
       - run: npm ci
       - run: npm run lint
   test:
@@ -42,7 +42,7 @@ jobs:
           submodules: true
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
       - run: npm ci
       - run: npm run test
   build:
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
       - run: npm ci
       - run: npm run build
   docs:
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
       - name: Install Package Dependencies
         run: npm ci
       - name: Build SDK
@@ -75,7 +75,7 @@ jobs:
         env:
           ably_aws_account_id_sdk: ${{ secrets.ABLY_AWS_ACCOUNT_ID_SDK }}
         # do not run if these variables are not available; they will not be available for anybody outside the Ably org
-        if: ${{ env.ably_aws_account_id_sdk != '' }} 
+        if: ${{ env.ably_aws_account_id_sdk != '' }}
         with:
           aws-region: eu-west-2
           role-to-assume: arn:aws:iam::${{ secrets.ABLY_AWS_ACCOUNT_ID_SDK }}:role/ably-sdk-builds-spaces
@@ -98,7 +98,7 @@ jobs:
           submodules: true
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
       - run: npm ci
       - run: npx playwright install chromium
       - run: npm run build
