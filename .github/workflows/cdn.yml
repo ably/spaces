@@ -41,7 +41,7 @@ jobs:
       - name: Use Node.js 18
         uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
-          node-version: 18
+          node-version: 22
       - name: Install dependencies and build
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
