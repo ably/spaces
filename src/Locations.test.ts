@@ -1,5 +1,10 @@
 import { it, describe, expect, vi, beforeEach } from 'vitest';
-import { PresenceMessage, Realtime, RealtimeClient, RealtimePresence } from 'ably';
+import {
+  PresenceMessage,
+  DefaultPubSubRealtimeClient,
+  PubSubRealtimeClient,
+  RealtimePresence,
+} from '@ably/pubsub-core';
 
 import Space from './Space.js';
 
@@ -11,18 +16,18 @@ import {
 } from './utilities/test/fakes.js';
 
 interface SpaceTestContext {
-  client: RealtimeClient;
+  client: PubSubRealtimeClient;
   space: Space;
   presence: RealtimePresence;
   presenceMap: Map<string, PresenceMessage>;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 vi.mock('nanoid');
 
 describe('Locations', () => {
   beforeEach<SpaceTestContext>((context) => {
-    const client = new Realtime({});
+    const client = new DefaultPubSubRealtimeClient({});
     const presence = client.channels.get('').presence;
     const presenceMap = new Map();
 

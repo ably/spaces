@@ -1,4 +1,4 @@
-import { ErrorInfo, PresenceAction } from 'ably';
+import { ErrorInfo, PresenceAction } from '@ably/pubsub-core';
 import type { LockAttributes } from './Locks.js';
 
 /**

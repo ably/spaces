@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useEventListener } from './useEventListener.js';
 
-import type { ConnectionState, ConnectionStateChange, ErrorInfo, EventEmitter } from 'ably';
+import type { ConnectionState, ConnectionStateChange, ErrorInfo } from '@ably/pubsub-core';
+import type { EventEmitter } from '@ably/pubsub-core/api';
 
 type ConnectionStateListener = (stateChange: ConnectionStateChange) => void;
 

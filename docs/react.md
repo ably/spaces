@@ -39,11 +39,11 @@ Start by connecting your app to Ably using the `SpacesProvider` component.
 The `SpacesProvider` should wrap every component that needs to access Spaces.
 
 ```jsx
-import { Realtime } from "ably";
+import { createClient } from "@ably/pubsub-device";
 import Spaces from "@ably/spaces";
 import { SpacesProvider, SpaceProvider } from "@ably/spaces/react";
 
-const ably = new Realtime({ key: "your-ably-api-key", clientId: 'me' });
+const ably = createClient({ key: "your-ably-api-key", clientId: 'me' });
 const spaces = new Spaces(ably);
 
 root.render(

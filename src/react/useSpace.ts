@@ -3,7 +3,7 @@ import { SpaceContext } from './contexts/SpaceContext.js';
 import { useChannelState } from './useChannelState.js';
 import { useConnectionState } from './useConnectionState.js';
 
-import type { ErrorInfo } from 'ably';
+import type { ErrorInfo } from '@ably/pubsub-core';
 import type { Space } from '..';
 import type { UseSpaceCallback, UseSpaceOptions } from './types.js';
 
