@@ -1,10 +1,10 @@
 import Spaces from '@ably/spaces';
-import { Realtime } from 'ably';
+import { createClient } from '@ably/pubsub-device';
 
 import renderCursor from './my-application';
 
 // Create Ably client
-const client = new Realtime({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
+const client = createClient({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
 
 // Initialize the Spaces SDK with an Ably client
 const spaces = new Spaces(client);

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Realtime } from 'ably';
+import { Realtime } from '@ably/pubsub-core';
 import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { waitFor, renderHook } from '@testing-library/react';
 import { SpacesProvider } from './contexts/SpacesContext.js';
@@ -15,7 +15,7 @@ interface SpaceTestContext {
   spaces: Spaces;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 vi.mock('nanoid');
 
 describe('useSpace', () => {

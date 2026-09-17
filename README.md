@@ -64,19 +64,19 @@ To start using this SDK, you will need the following:
 
 #### Option 1: Using NPM
 
-Install the Ably JavaScript SDK and the Spaces SDK:
+Install the Ably Pub/Sub SDK and the Spaces SDK:
 
 ```sh
-npm install ably @ably/spaces
+npm install @ably/pubsub-device @ably/spaces
 ```
 
 To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/getting-started/setup) and pass it into the Spaces constructor:
 
 ```ts
 import Spaces from '@ably/spaces';
-import { Realtime } from 'ably';
+import { createClient } from '@ably/pubsub-device';
 
-const client = new Realtime({ key: "<API-key>", clientId: "<client-ID>" });
+const client = createClient({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);
 ```
 You can use [basic authentication](https://ably.com/docs/auth/basic) i.e. the API Key directly for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/auth/token) in production environments.

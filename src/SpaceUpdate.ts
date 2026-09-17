@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { PresenceMessage } from 'ably';
+import { PresenceMessage } from '@ably/pubsub-core';
 
 import type { SpaceMember, ProfileData } from './types.js';
 import type { PresenceMember } from './utilities/types.js';

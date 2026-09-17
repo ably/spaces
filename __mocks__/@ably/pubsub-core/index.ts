@@ -1,4 +1,4 @@
-import { PresenceMessage, Rest, ErrorInfo } from 'ably';
+import { PresenceMessage, Http, ErrorInfo } from '@ably/pubsub-core';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
@@ -95,6 +95,6 @@ class MockErrorInfo extends ErrorInfo {}
 
 // maintain the PresenceMessage class so tests can initialise it directly using
 // PresenceMessage.fromValues.
-MockRealtime.PresenceMessage = Rest.PresenceMessage;
+MockRealtime.PresenceMessage = Http.PresenceMessage;
 
 export { MockRealtime as Realtime, MockErrorInfo as ErrorInfo };

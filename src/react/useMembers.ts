@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSpace } from './useSpace.js';
 import { isArray, isFunction, isString } from '../utilities/is.js';
 
-import type { ErrorInfo } from 'ably';
+import type { ErrorInfo } from '@ably/pubsub-core';
 import type { Space, SpaceMember } from '..';
 import type { UseSpaceOptions } from './types.js';
 import type { MembersEventMap } from '../Members.js';

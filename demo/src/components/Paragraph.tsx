@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import cn from 'classnames';
-import { ChannelProvider } from 'ably/react';
+import { ChannelProvider } from '@ably/pubsub-device/react';
 
 import { generateSpaceName, getMemberFirstName, getOutlineClasses, getParamValueFromUrl } from '../utils';
 import { StickyLabel } from './StickyLabel';

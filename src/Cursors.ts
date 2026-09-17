@@ -1,4 +1,4 @@
-import { RealtimeChannel } from 'ably';
+import { RealtimeChannel } from '@ably/pubsub-core';
 
 import Space from './Space.js';
 import CursorBatching from './CursorBatching.js';

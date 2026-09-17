@@ -1,5 +1,5 @@
 import { it, describe, expect, vi, beforeEach } from 'vitest';
-import { PresenceMessage, Realtime, RealtimeClient, RealtimePresence } from 'ably';
+import { PresenceMessage, Realtime, RealtimeClient, RealtimePresence } from '@ably/pubsub-core';
 
 import Space from './Space.js';
 import type { SpaceMember, LockStatus } from './types.js';
@@ -12,7 +12,7 @@ interface SpaceTestContext {
   presenceMap: Map<string, PresenceMessage>;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 
 describe('Locks', () => {
   beforeEach<SpaceTestContext>((context) => {
