@@ -3,12 +3,12 @@
  */
 
 import React from 'react';
-import { Realtime } from 'ably';
+import { DefaultPubSubRealtimeClient } from '@ably/pubsub-core';
 import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { waitFor, renderHook } from '@testing-library/react';
 import { SpacesProvider } from './contexts/SpacesContext.js';
 import { SpaceProvider } from './contexts/SpaceContext.js';
-import type { PresenceMessage } from 'ably';
+import type { PresenceMessage } from '@ably/pubsub-core';
 import Spaces from '../index.js';
 import { createLocationUpdate, createPresenceEvent } from '../utilities/test/fakes.js';
 import Space from '../Space.js';
@@ -20,12 +20,12 @@ interface SpaceTestContext {
   presenceMap: Map<string, PresenceMessage>;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 vi.mock('nanoid');
 
 describe('useLocations', () => {
   beforeEach<SpaceTestContext>((context) => {
-    const client = new Realtime({ key: 'spaces-test' });
+    const client = new DefaultPubSubRealtimeClient({ key: 'spaces-test' });
     context.spaces = new Spaces(client);
     context.presenceMap = new Map();
 

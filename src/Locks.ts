@@ -1,4 +1,4 @@
-import { PresenceMessage } from 'ably';
+import { PresenceMessage } from '@ably/pubsub-core';
 
 import Space from './Space.js';
 import type { Lock, SpaceMember } from './types.js';

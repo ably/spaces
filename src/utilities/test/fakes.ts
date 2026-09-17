@@ -1,4 +1,4 @@
-import { PresenceMessage } from 'ably';
+import { PresenceMessage } from '@ably/pubsub-core';
 
 import Space from '../../Space.js';
 
@@ -24,6 +24,7 @@ const enterPresenceMessage: PresenceMessage = {
   extras: {},
   action: 'enter',
   connectionId: '1',
+  memberKey: '1:1',
   id: '1',
   encoding: 'json',
   timestamp: 1,

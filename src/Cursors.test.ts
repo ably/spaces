@@ -1,5 +1,5 @@
 import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest';
-import { Realtime, RealtimeClient, RealtimeChannel } from 'ably';
+import { DefaultPubSubRealtimeClient, PubSubRealtimeClient, RealtimeChannel } from '@ably/pubsub-core';
 
 import Space from './Space.js';
 import Cursors from './Cursors.js';
@@ -13,7 +13,7 @@ import type { CursorUpdate, SpaceMember } from './types.js';
 import type { RealtimeInboundMessage } from './utilities/types.js';
 
 interface CursorsTestContext {
-  client: RealtimeClient;
+  client: PubSubRealtimeClient;
   space: Space;
   cursors: Cursors;
   channel: RealtimeChannel;
@@ -25,7 +25,7 @@ interface CursorsTestContext {
   fakeMessageStub: RealtimeInboundMessage;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 
 function createPresenceCount(length: number) {
   return async () => Array.from({ length }, (_, i) => createPresenceMessage('enter', { clientId: '' + i }));
@@ -33,7 +33,7 @@ function createPresenceCount(length: number) {
 
 describe('Cursors', () => {
   beforeEach<CursorsTestContext>((context) => {
-    const client = new Realtime({});
+    const client = new DefaultPubSubRealtimeClient({});
     context.client = client;
     context.space = new Space('test', client);
     context.cursors = context.space.cursors;

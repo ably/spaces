@@ -19,7 +19,7 @@ export async function createSandboxAblyAPIKey() {
   const data = await new Promise<Buffer>((resolve, reject) => {
     const request = https.request(
       {
-        hostname: 'sandbox-rest.ably.io',
+        hostname: 'sandbox.realtime.ably-nonprod.net',
         path: '/apps',
         port: 443,
         method: 'POST',

@@ -1,4 +1,4 @@
-import { PresenceMessage, Realtime, RealtimeClient, RealtimeChannel } from 'ably';
+import type { PresenceMessage, PubSubRealtimeClient, RealtimeChannel } from '@ably/pubsub-core';
 
 import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from './utilities/EventEmitter.js';
 import Locations from './Locations.js';
@@ -85,7 +85,7 @@ class Space extends EventEmitter<SpaceEventMap> {
   /**
    * @internal
    */
-  readonly client: RealtimeClient;
+  readonly client: PubSubRealtimeClient;
   private readonly channelName: string;
 
   /**
@@ -118,7 +118,7 @@ class Space extends EventEmitter<SpaceEventMap> {
   readonly name: string;
 
   /** @internal */
-  constructor(name: string, client: RealtimeClient, options?: Subset<SpaceOptions>) {
+  constructor(name: string, client: PubSubRealtimeClient, options?: Subset<SpaceOptions>) {
     super();
 
     this.client = client;
@@ -143,25 +143,35 @@ class Space extends EventEmitter<SpaceEventMap> {
     return this.client.connection.id;
   }
 
+  private presenceMessage({ data, extras }: SpacePresenceData): PresenceMessage {
+    // `@ably/pubsub-core` exports `PresenceMessage` as a type only, and presence reads `extras` only
+    // from an instance of the client's own `PresenceMessage` class, which both the device and the
+    // server clients expose as a static on their constructor.
+    const { PresenceMessage: PresenceMessageClass } = this.client.constructor as unknown as {
+      PresenceMessage: typeof PresenceMessage;
+    };
+    return PresenceMessageClass.fromValues({ data, extras });
+  }
+
   private presenceUpdate = ({ data, extras }: SpacePresenceData) => {
     if (!extras) {
       return this.channel.presence.update(data);
     }
-    return this.channel.presence.update(Realtime.PresenceMessage.fromValues({ data, extras }));
+    return this.channel.presence.update(this.presenceMessage({ data, extras }));
   };
 
   private presenceEnter = ({ data, extras }: SpacePresenceData) => {
     if (!extras) {
       return this.channel.presence.enter(data);
     }
-    return this.channel.presence.enter(Realtime.PresenceMessage.fromValues({ data, extras }));
+    return this.channel.presence.enter(this.presenceMessage({ data, extras }));
   };
 
   private presenceLeave = ({ data, extras }: SpacePresenceData) => {
     if (!extras) {
       return this.channel.presence.leave(data);
     }
-    return this.channel.presence.leave(Realtime.PresenceMessage.fromValues({ data, extras }));
+    return this.channel.presence.leave(this.presenceMessage({ data, extras }));
   };
 
   private setOptions(options?: Subset<SpaceOptions>): SpaceOptions {

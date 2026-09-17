@@ -1,4 +1,5 @@
-import { PresenceMessage, Rest, ErrorInfo } from 'ably';
+import { ErrorInfo } from '@ably/pubsub-core';
+import { PresenceMessage } from '@ably/pubsub-device';
 
 const MOCK_CLIENT_ID = 'MOCK_CLIENT_ID';
 
@@ -59,6 +60,8 @@ function createMockChannel() {
 }
 
 class MockRealtime {
+  static PresenceMessage = PresenceMessage;
+
   public channels: {
     get: () => ReturnType<typeof createMockChannel>;
   };
@@ -93,8 +96,6 @@ class MockRealtime {
 
 class MockErrorInfo extends ErrorInfo {}
 
-// maintain the PresenceMessage class so tests can initialise it directly using
-// PresenceMessage.fromValues.
-MockRealtime.PresenceMessage = Rest.PresenceMessage;
-
-export { MockRealtime as Realtime, MockErrorInfo as ErrorInfo };
+// re-export the real PresenceMessage (which `@ably/pubsub-core` exports as a type only) so tests
+// can initialise it directly using PresenceMessage.fromValues.
+export { MockRealtime as DefaultPubSubRealtimeClient, MockErrorInfo as ErrorInfo, PresenceMessage };

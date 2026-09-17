@@ -1,22 +1,27 @@
 import { it, describe, expect, vi, beforeEach } from 'vitest';
-import { PresenceMessage, Realtime, RealtimeClient, RealtimePresence } from 'ably';
+import {
+  PresenceMessage,
+  DefaultPubSubRealtimeClient,
+  PubSubRealtimeClient,
+  RealtimePresence,
+} from '@ably/pubsub-core';
 
 import Space from './Space.js';
 import type { SpaceMember, LockStatus } from './types.js';
 import { createPresenceMessage } from './utilities/test/fakes.js';
 
 interface SpaceTestContext {
-  client: RealtimeClient;
+  client: PubSubRealtimeClient;
   space: Space;
   presence: RealtimePresence;
   presenceMap: Map<string, PresenceMessage>;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 
 describe('Locks', () => {
   beforeEach<SpaceTestContext>((context) => {
-    const client = new Realtime({});
+    const client = new DefaultPubSubRealtimeClient({});
     const presence = client.channels.get('').presence;
     const presenceMap = new Map();
 
@@ -106,7 +111,7 @@ describe('Locks', () => {
 
       const emitSpy = vi.spyOn(space.locks, 'emit');
 
-      const msg = Realtime.PresenceMessage.fromValues({
+      const msg = PresenceMessage.fromValues({
         action: 'update',
         connectionId: member.connectionId,
         extras: {
@@ -168,7 +173,7 @@ describe('Locks', () => {
       it<SpaceTestContext>(desc, async ({ client, space }) => {
         // process a PENDING request for the other member, which should
         // transition to LOCKED
-        let msg = Realtime.PresenceMessage.fromValues({
+        let msg = PresenceMessage.fromValues({
           action: 'update',
           connectionId: otherConnId,
           extras: {
@@ -188,7 +193,7 @@ describe('Locks', () => {
         // process a PENDING request for the current member and check the
         // result matches what is expected
         const emitSpy = vi.spyOn(space.locks, 'emit');
-        msg = Realtime.PresenceMessage.fromValues({
+        msg = PresenceMessage.fromValues({
           action: 'update',
           connectionId: client.connection.id,
           extras: {
@@ -223,7 +228,7 @@ describe('Locks', () => {
     it<SpaceTestContext>('sets a released request to UNLOCKED', async ({ space }) => {
       const member = (await space.members.getSelf())!;
 
-      let msg = Realtime.PresenceMessage.fromValues({
+      let msg = PresenceMessage.fromValues({
         action: 'update',
         connectionId: member.connectionId,
         extras: {
@@ -240,7 +245,7 @@ describe('Locks', () => {
 
       const emitSpy = vi.spyOn(space.locks, 'emit');
 
-      msg = Realtime.PresenceMessage.fromValues({
+      msg = PresenceMessage.fromValues({
         action: 'update',
         connectionId: member.connectionId,
         extras: undefined,
@@ -255,7 +260,7 @@ describe('Locks', () => {
     it<SpaceTestContext>('sets all locks to UNLOCKED when a member leaves', async ({ space }) => {
       const member = (await space.members.getSelf())!;
 
-      let msg = Realtime.PresenceMessage.fromValues({
+      let msg = PresenceMessage.fromValues({
         action: 'update',
         connectionId: member.connectionId,
         extras: {
@@ -304,7 +309,7 @@ describe('Locks', () => {
 
       const lockID = 'test';
       const timestamp = Date.now();
-      const msg = Realtime.PresenceMessage.fromValues({
+      const msg = PresenceMessage.fromValues({
         connectionId: member.connectionId,
         extras: {
           locks: [
@@ -332,7 +337,7 @@ describe('Locks', () => {
   describe('get*', () => {
     beforeEach<SpaceTestContext>(async ({ space }) => {
       await space.locks.processPresenceMessage(
-        Realtime.PresenceMessage.fromValues({
+        PresenceMessage.fromValues({
           action: 'update',
           connectionId: '1',
           extras: {
@@ -353,7 +358,7 @@ describe('Locks', () => {
       );
 
       await space.locks.processPresenceMessage(
-        Realtime.PresenceMessage.fromValues({
+        PresenceMessage.fromValues({
           action: 'update',
           connectionId: '2',
           extras: {

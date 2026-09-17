@@ -1,4 +1,4 @@
-import type { InboundMessage, PresenceMessage } from 'ably';
+import type { InboundMessage, PresenceMessage } from '@ably/pubsub-core';
 
 import type { ProfileData, Lock } from '../types.js';
 
