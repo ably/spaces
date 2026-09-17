@@ -1,5 +1,5 @@
 import { MutableRefObject, useCallback } from 'react';
-import { useChannel } from 'ably/react';
+import { useChannel } from '@ably/pubsub-device/react';
 import { useMembers, useLock } from '@ably/spaces/react';
 import sanitize from 'sanitize-html';
 import { findActiveMember } from '../utils';

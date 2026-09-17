@@ -1,6 +1,6 @@
 // An example of members locating at and locking elements in a slides
 // application.
-import Ably from 'ably';
+import { createClient } from '@ably/pubsub-device';
 import Spaces from '../dist/cjs/Spaces.js';
 import { Lock, LockAttributes } from '../dist/cjs/index.js';
 
@@ -32,7 +32,7 @@ class SlideElement {
 // define a main async function since we can't use await at the top-level.
 const main = async () => {
   info('initialising Ably client');
-  const client = new Ably.Realtime({
+  const client = createClient({
     key: process.env.ABLY_API_KEY,
     clientId: 'Alice',
   });

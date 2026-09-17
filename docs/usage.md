@@ -22,10 +22,10 @@ Spaces is built on top of the [Ably JavaScript SDK](https://github.com/ably/ably
 
 ### NPM
 
-You'll need to install both the ably client and the spaces client:
+You'll need to install both the Ably Pub/Sub client and the spaces client:
 
 ```sh
-npm install ably @ably/spaces
+npm install @ably/pubsub-device @ably/spaces
 ```
 
 ### CDN
@@ -39,7 +39,7 @@ You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
 
 > **Note**
 >
-> If you do this, then replace the call to `new Realtime` in the next section with `new Ably.Realtime`.
+> If you do this, then replace the call to `createClient` in the next section with `new Ably.Realtime`.
 
 ## Authentication and instantiation
 
@@ -48,10 +48,10 @@ You can pass an Ably client directly to the spaces constructor.
 The Ably client instantiation accepts client options. You will need at minimum an [Ably API key](#ably-api-key) and a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascripts). A clientId represents an identity of an connection. In most cases this will something like the id of a user:
 
 ```ts
-import { Realtime } from 'ably';
+import { createClient } from '@ably/pubsub-device';
 import Spaces from '@ably/spaces';
 
-const client = new Realtime({ key: "<API-key>", clientId: "<client-ID>" });
+const client = createClient({ key: "<API-key>", clientId: "<client-ID>" });
 const spaces = new Spaces(client);
 ```
 
