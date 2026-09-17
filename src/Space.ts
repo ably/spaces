@@ -1,4 +1,4 @@
-import { PresenceMessage, Realtime, RealtimeClient, RealtimeChannel } from 'ably';
+import { PresenceMessage, Realtime, RealtimeClient, RealtimeChannel } from '@ably/pubsub-core';
 
 import EventEmitter, { InvalidArgumentError, inspect, type EventListener } from './utilities/EventEmitter.js';
 import Locations from './Locations.js';

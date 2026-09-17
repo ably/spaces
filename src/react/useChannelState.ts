@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEventListener } from './useEventListener.js';
 
-import type { ChannelState, ChannelStateChange, ErrorInfo, EventEmitter } from 'ably';
+import type { ChannelState, ChannelStateChange, ErrorInfo, EventEmitter } from '@ably/pubsub-core';
 
 type ChannelStateListener = (stateChange: ChannelStateChange) => void;
 
@@ -9,7 +9,7 @@ const failedStateEvents: ChannelState[] = ['suspended', 'failed', 'detached'];
 const successStateEvents: ChannelState[] = ['attached'];
 
 /**
- * todo use `ably/react` hooks instead
+ * todo use `@ably/pubsub-core/react` hooks instead
  */
 export const useChannelState = <S extends ChannelState, C extends ChannelStateChange>(
   emitter?: EventEmitter<ChannelStateListener, C, S>,

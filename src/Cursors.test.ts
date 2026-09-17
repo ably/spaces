@@ -1,5 +1,5 @@
 import { it, describe, expect, vi, beforeEach, vitest, afterEach } from 'vitest';
-import { Realtime, RealtimeClient, RealtimeChannel } from 'ably';
+import { Realtime, RealtimeClient, RealtimeChannel } from '@ably/pubsub-core';
 
 import Space from './Space.js';
 import Cursors from './Cursors.js';
@@ -25,7 +25,7 @@ interface CursorsTestContext {
   fakeMessageStub: RealtimeInboundMessage;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 
 function createPresenceCount(length: number) {
   return async () => Array.from({ length }, (_, i) => createPresenceMessage('enter', { clientId: '' + i }));

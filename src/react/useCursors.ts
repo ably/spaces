@@ -6,7 +6,7 @@ import { useConnectionState } from './useConnectionState.js';
 import { isFunction } from '../utilities/is.js';
 
 import type { CursorUpdate, SpaceMember } from '../types.js';
-import type { ErrorInfo } from 'ably';
+import type { ErrorInfo } from '@ably/pubsub-core';
 import type Cursors from '../Cursors.js';
 import type { UseSpaceOptions } from './types.js';
 import type { Space } from '..';

@@ -1,4 +1,4 @@
-import { RealtimeChannel } from 'ably';
+import { RealtimeChannel } from '@ably/pubsub-core';
 
 import { CURSOR_UPDATE } from './CursorConstants.js';
 import type { CursorUpdate } from './types.js';

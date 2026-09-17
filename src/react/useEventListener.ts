@@ -1,11 +1,17 @@
 import { useEffect, useRef } from 'react';
 
-import type { ChannelState, ChannelStateChange, ConnectionState, ConnectionStateChange, EventEmitter } from 'ably';
+import type {
+  ChannelState,
+  ChannelStateChange,
+  ConnectionState,
+  ConnectionStateChange,
+  EventEmitter,
+} from '@ably/pubsub-core';
 
 type EventListener<T> = (stateChange: T) => void;
 
 /**
- * todo use `ably/react` hooks instead
+ * todo use `@ably/pubsub-core/react` hooks instead
  */
 export const useEventListener = <
   S extends ConnectionState | ChannelState,

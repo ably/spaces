@@ -1,4 +1,4 @@
-import { RealtimeClient, Connection } from 'ably';
+import { RealtimeClient, Connection } from '@ably/pubsub-core';
 import { ERR_SPACE_NAME_MISSING } from './Errors.js';
 
 import Space from './Space.js';

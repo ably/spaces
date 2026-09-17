@@ -1,5 +1,5 @@
 import { it, describe, expect, vi, beforeEach } from 'vitest';
-import { PresenceMessage, Realtime, RealtimeClient, RealtimePresence } from 'ably';
+import { PresenceMessage, Realtime, RealtimeClient, RealtimePresence } from '@ably/pubsub-core';
 
 import Space from './Space.js';
 
@@ -17,7 +17,7 @@ interface SpaceTestContext {
   presenceMap: Map<string, PresenceMessage>;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 vi.mock('nanoid');
 
 describe('Locations', () => {

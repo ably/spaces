@@ -7,7 +7,7 @@
   <body>
     <script
       type="text/javascript"
-      src="node_modules/ably/build/ably.js"
+      src="node_modules/@ably/pubsub-core/build/ably.js"
     ></script>
     <script
       type="text/javascript"
@@ -21,7 +21,7 @@
           // The next two statements are based on the example given in the "Using a CDN" section of the README.
           const client = new Ably.Realtime({
             key,
-            environment: 'sandbox',
+            endpoint: 'nonprod:sandbox',
             clientId: 'myClientId',
           });
           const spaces = new Spaces(client);

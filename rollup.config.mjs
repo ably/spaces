@@ -8,11 +8,11 @@ export default {
     name: 'Spaces',
     file: 'dist/iife/index.bundle.js',
     globals: {
-      ably: 'Ably',
+      '@ably/pubsub-core': 'Ably',
     },
     compact: true,
     plugins: [terser()],
   },
-  external: ['ably'],
+  external: ['@ably/pubsub-core'],
   plugins: [nodeResolve({ browser: true })],
 };

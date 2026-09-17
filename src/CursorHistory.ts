@@ -1,4 +1,4 @@
-import { InboundMessage, PaginatedResult, RealtimeChannel } from 'ably';
+import { InboundMessage, PaginatedResult, RealtimeChannel } from '@ably/pubsub-core';
 
 import type { CursorUpdate } from './types.js';
 import type { CursorsOptions } from './types.js';

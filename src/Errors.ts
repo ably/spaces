@@ -1,4 +1,4 @@
-import { ErrorInfo } from 'ably';
+import { ErrorInfo } from '@ably/pubsub-core';
 
 export const ERR_SPACE_NAME_MISSING = () => new ErrorInfo('must have a non-empty name for the space', 101000, 400);
 

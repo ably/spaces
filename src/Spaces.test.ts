@@ -1,5 +1,5 @@
 import { it, describe, expect, expectTypeOf, vi, beforeEach } from 'vitest';
-import { Realtime, RealtimeClient } from 'ably';
+import { Realtime, RealtimeClient } from '@ably/pubsub-core';
 
 import Spaces, { type ClientWithOptions } from './Spaces.js';
 
@@ -7,7 +7,7 @@ interface SpacesTestContext {
   client: ClientWithOptions;
 }
 
-vi.mock('ably');
+vi.mock('@ably/pubsub-core');
 
 describe('Spaces', () => {
   beforeEach<SpacesTestContext>((context) => {
