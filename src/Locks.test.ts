@@ -126,6 +126,35 @@ describe('Locks', () => {
       expect(emitSpy).toHaveBeenCalledWith('update', lockEvent(member, 'locked'));
     });
 
+    it<SpaceTestContext>('keeps a resolved lock when a later presence message still lists it as PENDING', async ({
+      space,
+    }) => {
+      const member = (await space.members.getSelf())!;
+      const timestamp = Date.now();
+      const pendingA = { id: 'a', status: 'pending', timestamp };
+      const pendingB = { id: 'b', status: 'pending', timestamp: timestamp + 1 };
+
+      // Acquiring two locks concurrently publishes one presence message per lock,
+      // and the second message repeats the first lock as PENDING.
+      await space.locks.processPresenceMessage(
+        Realtime.PresenceMessage.fromValues({
+          action: 'update',
+          connectionId: member.connectionId,
+          extras: { locks: [{ ...pendingA }] },
+        }),
+      );
+      await space.locks.processPresenceMessage(
+        Realtime.PresenceMessage.fromValues({
+          action: 'update',
+          connectionId: member.connectionId,
+          extras: { locks: [{ ...pendingA }, { ...pendingB }] },
+        }),
+      );
+
+      expect(space.locks.getLock('a', member.connectionId)!.status).toBe('locked');
+      expect(space.locks.getLock('b', member.connectionId)!.status).toBe('locked');
+    });
+
     // use table driven tests to check whether a PENDING request for "self"
     // (i.e. the current member) transitions to LOCKED or UNLOCKED when the
     // referenced lock is already held by some other member with timestamp
