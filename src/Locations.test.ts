@@ -81,6 +81,37 @@ describe('Locations', () => {
       });
     });
 
+    it<SpaceTestContext>('reports the location from each update, not the latest one in presence', async ({
+      space,
+      presenceMap,
+    }) => {
+      const spy = vi.fn();
+      space.locations.subscribe('update', spy);
+
+      // presence already holds the second location by the time the first update is processed
+      const first = createPresenceMessage('update', {
+        data: createLocationUpdate({ current: 'location1', id: 'id1' }),
+      });
+      const second = createPresenceMessage('update', {
+        data: createLocationUpdate({ current: 'location2', previous: 'location1', id: 'id2' }),
+      });
+      presenceMap.set(second.connectionId, second);
+
+      await space['onPresenceUpdate'](first);
+      await space['onPresenceUpdate'](second);
+
+      expect(spy).toHaveBeenNthCalledWith(1, {
+        member: createSpaceMember({ location: 'location1' }),
+        currentLocation: 'location1',
+        previousLocation: null,
+      });
+      expect(spy).toHaveBeenNthCalledWith(2, {
+        member: createSpaceMember({ location: 'location2' }),
+        currentLocation: 'location2',
+        previousLocation: 'location1',
+      });
+    });
+
     it<SpaceTestContext>('maintains lock state in presence', async ({ space, presence, presenceMap }) => {
       presenceMap.set('1', createPresenceMessage('enter'));
 

@@ -107,9 +107,10 @@ export default class Locations extends EventEmitter<LocationsEventMap> {
     const member = await this.space.members.getByConnectionId(message.connectionId);
 
     if (member) {
+      // use the location carried by this message, since the member from presence may already hold a later one
       this.emit('update', {
-        member,
-        currentLocation: member.location,
+        member: { ...member, location: update.current },
+        currentLocation: update.current,
         previousLocation: previous,
       });
 
