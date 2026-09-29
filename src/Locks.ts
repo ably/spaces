@@ -374,6 +374,18 @@ export default class Locks extends EventEmitter<LocksEventMap> {
     message.extras.locks.forEach((lock: Lock) => {
       const existing = this.getLock(lock.id, member.connectionId);
 
+      // a presence message published before this request was resolved still lists
+      // it as PENDING (for example when several locks are acquired concurrently),
+      // so do not move an already resolved request back to PENDING
+      if (
+        lock.status === 'pending' &&
+        existing &&
+        existing.status !== 'pending' &&
+        existing.timestamp === lock.timestamp
+      ) {
+        return;
+      }
+
       // special-case the handling of PENDING requests, which will eventually
       // be done by the Ably system, at which point this can be removed
       if (lock.status === 'pending' && (!existing || existing.status === 'pending')) {
