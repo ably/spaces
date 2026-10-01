@@ -1,4 +1,4 @@
-import Spaces from './Spaces.js';
+export { createSpacesClient, type SpacesClient } from './Spaces.js';
 
 export type { default as Space, SpaceEventMap, SpaceEvents, SpaceState, UpdateProfileDataFunction } from './Space.js';
 
@@ -6,10 +6,6 @@ export type { default as Cursors, CursorsEventMap } from './Cursors.js';
 export type { default as Locations, LocationsEventMap, LocationsEvents } from './Locations.js';
 export type { default as Locks, LocksEventMap, LockOptions } from './Locks.js';
 export type { default as Members, MembersEventMap } from './Members.js';
-
-// Can be changed to * when we update to TS5
-
-export default Spaces;
 
 export type {
   CursorsOptions,

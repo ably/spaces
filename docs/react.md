@@ -40,11 +40,11 @@ The `SpacesProvider` should wrap every component that needs to access Spaces.
 
 ```jsx
 import { createClient } from "@ably/pubsub-device";
-import Spaces from "@ably/spaces";
+import { createSpacesClient } from "@ably/spaces";
 import { SpacesProvider, SpaceProvider } from "@ably/spaces/react";
 
-const ably = createClient({ key: "your-ably-api-key", clientId: 'me' });
-const spaces = new Spaces(ably);
+const pubsubDeviceClient = createClient({ key: "your-ably-api-key", clientId: 'me' });
+const spaces = createSpacesClient(pubsubDeviceClient);
 
 root.render(
   <SpacesProvider client={spaces}>

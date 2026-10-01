@@ -1,7 +1,7 @@
 import { it, describe, expect, expectTypeOf, vi, beforeEach } from 'vitest';
 import { DefaultPubSubRealtimeClient, PubSubRealtimeClient } from '@ably/pubsub-core';
 
-import Spaces, { type ClientWithOptions } from './Spaces.js';
+import { createSpacesClient, type ClientWithOptions } from './Spaces.js';
 
 interface SpacesTestContext {
   client: ClientWithOptions;
@@ -9,13 +9,13 @@ interface SpacesTestContext {
 
 vi.mock('@ably/pubsub-core');
 
-describe('Spaces', () => {
+describe('createSpacesClient', () => {
   beforeEach<SpacesTestContext>((context) => {
     context.client = new DefaultPubSubRealtimeClient({ key: 'asd' }) as ClientWithOptions;
   });
 
   it<SpacesTestContext>('expects the injected client to be of the type PubSubRealtimeClient', ({ client }) => {
-    const spaces = new Spaces(client);
+    const spaces = createSpacesClient(client);
     expectTypeOf(spaces.client).toMatchTypeOf<PubSubRealtimeClient>();
   });
 
@@ -23,7 +23,7 @@ describe('Spaces', () => {
     const channels = client.channels;
     const spy = vi.spyOn(channels, 'get');
 
-    const spaces = new Spaces(client);
+    const spaces = createSpacesClient(client);
     await spaces.get('test');
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -39,7 +39,7 @@ describe('Spaces', () => {
   });
 
   it<SpacesTestContext>('applies the agent header to an existing SDK instance', ({ client }) => {
-    const spaces = new Spaces(client);
+    const spaces = createSpacesClient(client);
     expect(client.options.agents).toEqual({
       spaces: spaces.version,
     });
@@ -47,7 +47,7 @@ describe('Spaces', () => {
 
   it<SpacesTestContext>('extend the agents array when it already exists', ({ client }) => {
     (client as ClientWithOptions).options.agents = { 'some-client': '1.2.3' };
-    const spaces = new Spaces(client);
+    const spaces = createSpacesClient(client);
     const ablyClient = spaces.client as ClientWithOptions;
 
     expect(ablyClient.options.agents).toEqual({

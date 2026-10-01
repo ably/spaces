@@ -10,7 +10,7 @@ When initializing the Spaces SDK, an Ably client is passed as a required argumen
 
 ```ts
 const client = createClient({ key: "<API-key>", clientId: "<client-ID>" });
-const spaces = new Spaces(client);
+const spaces = createSpacesClient(client);
 ```
 
 The Spaces instance exposes the underlying connection which is an event emitter. It can be used to listen for changes in connection state. The client and connection are both available on the Spaces instance:

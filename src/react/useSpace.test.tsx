@@ -8,11 +8,11 @@ import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { waitFor, renderHook } from '@testing-library/react';
 import { SpacesProvider } from './contexts/SpacesContext.js';
 import { SpaceProvider } from './contexts/SpaceContext.js';
-import Spaces from '../index.js';
+import { createSpacesClient, type SpacesClient } from '../index.js';
 import { useSpace } from './useSpace.js';
 
 interface SpaceTestContext {
-  spaces: Spaces;
+  spaces: SpacesClient;
 }
 
 vi.mock('@ably/pubsub-core');
@@ -21,7 +21,7 @@ vi.mock('nanoid');
 describe('useSpace', () => {
   beforeEach<SpaceTestContext>((context) => {
     const client = new DefaultPubSubRealtimeClient({ key: 'spaces-test' });
-    context.spaces = new Spaces(client);
+    context.spaces = createSpacesClient(client);
   });
 
   it<SpaceTestContext>('creates and retrieves space successfully', async ({ spaces }) => {

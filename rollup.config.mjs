@@ -5,10 +5,10 @@ export default {
   input: 'dist/iife/index.js',
   output: {
     format: 'iife',
-    name: 'Spaces',
+    name: 'AblySpaces',
     file: 'dist/iife/index.bundle.js',
     globals: {
-      '@ably/pubsub-core': 'Ably',
+      '@ably/pubsub-core': 'AblyPubSub',
     },
     compact: true,
     plugins: [terser()],

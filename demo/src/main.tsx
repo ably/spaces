@@ -4,7 +4,7 @@ import App from './App';
 import './index.css';
 
 import { SlidesStateContextProvider } from './components/SlidesStateContext.tsx';
-import Spaces from '@ably/spaces';
+import { createSpacesClient } from '@ably/spaces';
 import { SpacesProvider, SpaceProvider } from '@ably/spaces/react';
 import { createClient } from '@ably/pubsub-device';
 import { nanoid } from 'nanoid';
@@ -20,7 +20,7 @@ const client = createClient({
   clientId,
 });
 
-const spaces = new Spaces(client);
+const spaces = createSpacesClient(client);
 const spaceName = getParamValueFromUrl('space', generateSpaceName);
 
 root.render(

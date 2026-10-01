@@ -33,26 +33,26 @@ npm install @ably/pubsub-device @ably/spaces
 You can also use Spaces with a CDN like [unpkg](https://www.unpkg.com/):
 
 ```html
-<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-<script src="https://unpkg.com/@ably/spaces@0.1.2/dist/iife/index.bundle.js"></script>
+<script src="https://cdn.ably.com/lib/ably.min-3.js"></script>
+<script src="https://unpkg.com/@ably/spaces@0.6.0/dist/iife/index.bundle.js"></script>
 ```
 
 > **Note**
 >
-> If you do this, then replace the call to `createClient` in the next section with `new Ably.Realtime`.
+> If you do this, then call `createClient` as `AblyPubSub.createClient`, and call `createSpacesClient` as `AblySpaces.createSpacesClient`.
 
 ## Authentication and instantiation
 
-You can pass an Ably client directly to the spaces constructor.
+You can pass an Ably client directly to `createSpacesClient()`.
 
 The Ably client instantiation accepts client options. You will need at minimum an [Ably API key](#ably-api-key) and a [clientId](https://ably.com/docs/auth/identified-clients?lang=javascripts). A clientId represents an identity of an connection. In most cases this will something like the id of a user:
 
 ```ts
 import { createClient } from '@ably/pubsub-device';
-import Spaces from '@ably/spaces';
+import { createSpacesClient } from '@ably/spaces';
 
 const client = createClient({ key: "<API-key>", clientId: "<client-ID>" });
-const spaces = new Spaces(client);
+const spaces = createSpacesClient(client);
 ```
 
 You can access the Ably client via `spaces.ably`.
