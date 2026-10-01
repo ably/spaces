@@ -72,14 +72,14 @@ Install the Ably Pub/Sub SDK and the Spaces SDK:
 npm install @ably/pubsub-device @ably/spaces
 ```
 
-To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/getting-started/setup) and pass it into the Spaces constructor:
+To instantiate the Spaces SDK, create an [Ably client](https://ably.com/docs/getting-started/setup) and pass it to `createSpacesClient()`:
 
 ```ts
-import Spaces from '@ably/spaces';
+import { createSpacesClient } from '@ably/spaces';
 import { createClient } from '@ably/pubsub-device';
 
 const client = createClient({ key: "<API-key>", clientId: "<client-ID>" });
-const spaces = new Spaces(client);
+const spaces = createSpacesClient(client);
 ```
 You can use [basic authentication](https://ably.com/docs/auth/basic) i.e. the API Key directly for testing purposes, however it is strongly recommended that you use [token authentication](https://ably.com/docs/auth/token) in production environments.
 
@@ -90,15 +90,15 @@ To use Spaces you must also set a [`clientId`](https://ably.com/docs/auth/identi
 You can also use Spaces with a CDN, such as [unpkg](https://www.unpkg.com/):
 
 ```html
-<script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+<script src="https://cdn.ably.com/lib/ably.min-3.js"></script>
 <script src="https://cdn.ably.com/spaces/0.5.2/iife/index.bundle.js"></script>
 ```
 
 After this, instantiate the SDK in the same way as in the NPM option above:
 
 ```ts
-const client = new Ably.Realtime({ key: "<API-key>", clientId: "<client-ID>" });
-const spaces = new Spaces(client);
+const client = AblyPubSub.createClient({ key: "<API-key>", clientId: "<client-ID>" });
+const spaces = AblySpaces.createSpacesClient(client);
 ```
 
 ## Spaces for React Developers

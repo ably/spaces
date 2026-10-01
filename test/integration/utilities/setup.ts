@@ -1,7 +1,7 @@
 import { createClient } from '@ably/pubsub-device';
 import { nanoid } from 'nanoid';
 import { createSandboxAblyAPIKey } from '../../lib/ablySandbox.js';
-import Spaces from '../../../src/Spaces.js';
+import { createSpacesClient } from '../../../src/Spaces.js';
 
 /**
  * Fetches a key for the Ably sandbox environment. This key is shared between all callers of this function.
@@ -29,7 +29,7 @@ export async function createClients({ count }: { count: number }) {
       key: sandboxKey,
       clientId: clientId,
     });
-    const spaces = new Spaces(realtime);
+    const spaces = createSpacesClient(realtime);
 
     return { spaces: spaces, clientId: clientId };
   });

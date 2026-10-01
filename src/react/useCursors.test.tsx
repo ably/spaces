@@ -8,14 +8,14 @@ import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { waitFor, renderHook, act } from '@testing-library/react';
 import { SpacesProvider } from './contexts/SpacesContext.js';
 import { SpaceProvider } from './contexts/SpaceContext.js';
-import Spaces from '../index.js';
+import { createSpacesClient, type SpacesClient } from '../index.js';
 import Space from '../Space.js';
 import { createPresenceEvent } from '../utilities/test/fakes.js';
 import { useCursors } from './useCursors.js';
 import type { PresenceMessage } from '@ably/pubsub-core';
 
 interface SpaceTestContext {
-  spaces: Spaces;
+  spaces: SpacesClient;
   space: Space;
   presenceMap: Map<string, PresenceMessage>;
 }
@@ -26,7 +26,7 @@ vi.mock('nanoid');
 describe('useCursors', () => {
   beforeEach<SpaceTestContext>((context) => {
     const client = new DefaultPubSubRealtimeClient({ key: 'spaces-test' });
-    context.spaces = new Spaces(client);
+    context.spaces = createSpacesClient(client);
     context.presenceMap = new Map();
 
     const space = new Space('test', client);

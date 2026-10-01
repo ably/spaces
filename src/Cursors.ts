@@ -36,7 +36,7 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
   private readonly cursorDispensing: CursorDispensing;
   private readonly cursorHistory: CursorHistory;
   /**
-   * The {@link SpaceOptions.cursors | cursors options} passed to {@link default.get | `Spaces.get()`}.
+   * The {@link SpaceOptions.cursors | cursors options} passed to {@link SpacesClient.get | `SpacesClient.get()`}.
    */
   readonly options: CursorsOptions;
   private readonly channelName: string;

@@ -1,10 +1,10 @@
 import React from 'react';
-import type Spaces from '../../';
+import type { SpacesClient } from '../../';
 
-export const SpacesContext = React.createContext<Spaces | undefined>(undefined);
+export const SpacesContext = React.createContext<SpacesClient | undefined>(undefined);
 
 interface SpacesProviderProps {
-  client: Spaces;
+  client: SpacesClient;
   children?: React.ReactNode | React.ReactNode[] | null;
 }
 export const SpacesProvider: React.FC<SpacesProviderProps> = ({ client: spaces, children }) => {

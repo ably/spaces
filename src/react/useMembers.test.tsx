@@ -9,13 +9,13 @@ import { waitFor, renderHook } from '@testing-library/react';
 import { SpacesProvider } from './contexts/SpacesContext.js';
 import { SpaceProvider } from './contexts/SpaceContext.js';
 import type { PresenceMessage } from '@ably/pubsub-core';
-import Spaces from '../index.js';
+import { createSpacesClient, type SpacesClient } from '../index.js';
 import { useMembers } from './useMembers.js';
 import { createLocationUpdate, createPresenceEvent } from '../utilities/test/fakes.js';
 import Space from '../Space.js';
 
 interface SpaceTestContext {
-  spaces: Spaces;
+  spaces: SpacesClient;
   space: Space;
   presenceMap: Map<string, PresenceMessage>;
 }
@@ -26,7 +26,7 @@ vi.mock('nanoid');
 describe('useMembers', () => {
   beforeEach<SpaceTestContext>((context) => {
     const client = new DefaultPubSubRealtimeClient({ key: 'spaces-test' });
-    context.spaces = new Spaces(client);
+    context.spaces = createSpacesClient(client);
     context.presenceMap = new Map();
 
     const space = new Space('test', client);

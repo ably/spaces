@@ -15,48 +15,28 @@ export interface ClientWithOptions extends PubSubRealtimeClient {
 }
 
 /**
- * The `Spaces` class is the entry point to the Spaces SDK. Use its {@link get | `get()`} method to access an individual {@link Space | `Space`}.
+ * The `SpacesClient` is the entry point to the Spaces SDK. Use its {@link SpacesClient.get | `get()`} method to access an individual {@link Space | `Space`}.
  *
- * To create an instance of `Spaces`, you first need to create an instance of an [Ably realtime client](https://ably.com/docs/getting-started/setup). You then pass this instance to the {@link constructor | Spaces constructor}.
+ * To create a `SpacesClient`, you first need to create an instance of an [Ably realtime client](https://ably.com/docs/getting-started/setup). You then pass this instance to {@link createSpacesClient | `createSpacesClient()`}.
  */
-class Spaces {
-  private spaces: Record<string, Space> = {};
+export interface SpacesClient {
   /**
-   * Instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup) client that was passed to the {@link constructor}.
+   * Instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup) client that was passed to {@link createSpacesClient | `createSpacesClient()`}.
    */
-  client: PubSubRealtimeClient;
+  readonly client: PubSubRealtimeClient;
   /**
-   * Instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup) connection, belonging to the client that was passed to the {@link constructor}.
+   * Instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup) connection, belonging to the client that was passed to {@link createSpacesClient | `createSpacesClient()`}.
    */
-  connection: Connection;
+  readonly connection: Connection;
 
   /**
    * Version of the Spaces library.
    */
-  readonly version = VERSION;
-
-  /**
-   * Create a new instance of the Spaces SDK by passing an instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup). A [`clientId`](https://ably.com/docs/auth/identified-clients) is required.
-   *
-   * An Ably API key is needed to authenticate. [Basic authentication](https://ably.com/docs/auth/basic) may be used for convenience, however Ably strongly recommends you use [token authentication](https://ably.com/docs/auth/token) in a production environment.
-   *
-   * @param client An instance of the Ably prmise-based realtime client.
-   */
-  constructor(client: PubSubRealtimeClient) {
-    this.client = client;
-    this.connection = client.connection;
-    this.addAgent((this.client as ClientWithOptions)['options']);
-    this.client.time();
-  }
-
-  private addAgent(options: { agents?: Record<string, string | boolean> }) {
-    const agent = { spaces: this.version };
-    options.agents = { ...(options.agents ?? options.agents), ...agent };
-  }
+  readonly version: string;
 
   /**
    *
-   * Create or retrieve an existing [space](https://ably.com/docs/spaces/space) from the `Spaces` collection. A space is uniquely identified by its unicode string name.
+   * Create or retrieve an existing [space](https://ably.com/docs/spaces/space) from the `SpacesClient` collection. A space is uniquely identified by its unicode string name.
    *
    * The following is an example of creating a space:
    *
@@ -78,6 +58,27 @@ class Spaces {
    * @param name The name of the space to create or retrieve.
    * @param options Additional options to customize the behavior of the space.
    */
+  get(name: string, options?: Subset<SpaceOptions>): Promise<Space>;
+}
+
+class DefaultSpacesClient implements SpacesClient {
+  private spaces: Record<string, Space> = {};
+  readonly client: PubSubRealtimeClient;
+  readonly connection: Connection;
+  readonly version = VERSION;
+
+  constructor(client: PubSubRealtimeClient) {
+    this.client = client;
+    this.connection = client.connection;
+    this.addAgent((this.client as ClientWithOptions)['options']);
+    this.client.time();
+  }
+
+  private addAgent(options: { agents?: Record<string, string | boolean> }) {
+    const agent = { spaces: this.version };
+    options.agents = { ...(options.agents ?? options.agents), ...agent };
+  }
+
   async get(name: string, options?: Subset<SpaceOptions>): Promise<Space> {
     if (typeof name !== 'string' || name.length === 0) {
       throw ERR_SPACE_NAME_MISSING();
@@ -96,4 +97,20 @@ class Spaces {
   }
 }
 
-export default Spaces;
+/**
+ * Create a new instance of the Spaces SDK by passing an instance of the [Ably realtime client](https://ably.com/docs/getting-started/setup). A [`clientId`](https://ably.com/docs/auth/identified-clients) is required.
+ *
+ * An Ably API key is needed to authenticate. [Basic authentication](https://ably.com/docs/auth/basic) may be used for convenience, however Ably strongly recommends you use [token authentication](https://ably.com/docs/auth/token) in a production environment.
+ *
+ * ```javascript
+ * import { createClient } from '@ably/pubsub-device';
+ * import { createSpacesClient } from '@ably/spaces';
+ *
+ * const spaces = createSpacesClient(createClient({ key: '<API-key>', clientId: '<client-ID>' }));
+ * ```
+ *
+ * @param client An instance of the Ably promise-based realtime client.
+ */
+export function createSpacesClient(client: PubSubRealtimeClient): SpacesClient {
+  return new DefaultSpacesClient(client);
+}

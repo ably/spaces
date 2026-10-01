@@ -1,13 +1,13 @@
-import Spaces, { LockStatus } from '@ably/spaces';
+import { createSpacesClient, LockStatus } from '@ably/spaces';
 import { createClient } from '@ably/pubsub-device';
 
 import { enableLocationEditing, lockId } from './my-application';
 
 // Create Ably client
-const client = createClient({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
+const pubsubDeviceClient = createClient({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
 
 // Initialize the Spaces SDK with an Ably client
-const spaces = new Spaces(client);
+const spaces = createSpacesClient(pubsubDeviceClient);
 
 // Create a new space
 const space = await spaces.get('slide-deck-224');

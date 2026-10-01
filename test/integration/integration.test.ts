@@ -6,7 +6,7 @@ import { MembersEventMap } from '../../src/Members.js';
 import { CursorsEventMap } from '../../src/Cursors.js';
 import { nanoid } from 'nanoid';
 import { LocksEventMap } from '../../src/Locks.js';
-import Spaces from '../../src/Spaces.js';
+import type { SpacesClient } from '../../src/Spaces.js';
 
 /*
  * These tests have one `describe` for each area of functionality, each of these `describe`s then containing multiple `it`s.
@@ -147,8 +147,8 @@ describe(
     });
 
     describe('cursors', () => {
-      let performerSpaces: Spaces;
-      let observerSpaces: Spaces;
+      let performerSpaces: SpacesClient;
+      let observerSpaces: SpacesClient;
       let performerClientId: string;
       let performerSpace: Space;
       let observerSpace: Space;

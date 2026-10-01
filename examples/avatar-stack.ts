@@ -1,13 +1,13 @@
-import Spaces from '@ably/spaces';
+import { createSpacesClient } from '@ably/spaces';
 import { createClient } from '@ably/pubsub-device';
 
 import { renderAvatars, renderNotification } from './my-application';
 
-// Create Ably client
-const client = createClient({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
+// Create Ably PubSub client
+const pubsubDeviceClient = createClient({ authUrl: '<auth-endpoint>', clientId: '<client-ID>' });
 
 // Initialize the Spaces SDK with an Ably client
-const spaces = new Spaces(client);
+const spaces = createSpacesClient(pubsubDeviceClient);
 
 // Create a new space
 const space = await spaces.get('slide-deck-224');

@@ -89,7 +89,7 @@ class Space extends EventEmitter<SpaceEventMap> {
   private readonly channelName: string;
 
   /**
-   * The options passed to {@link default.get | `Spaces.get()`}.
+   * The options passed to {@link SpacesClient.get | `SpacesClient.get()`}.
    */
   readonly options: SpaceOptions;
   /**
@@ -113,7 +113,7 @@ class Space extends EventEmitter<SpaceEventMap> {
    */
   readonly locks: Locks;
   /**
-   * The space name passed to {@link default.get | `Spaces.get()`}.
+   * The space name passed to {@link SpacesClient.get | `SpacesClient.get()`}.
    */
   readonly name: string;
 
