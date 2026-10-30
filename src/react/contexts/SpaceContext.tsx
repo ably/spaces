@@ -26,7 +26,7 @@ export const SpaceProvider: React.FC<SpaceProviderProps> = ({ name, options, chi
       if (!spaces) {
         throw new Error(
           'Could not find spaces client in context. ' +
-            'Make sure your spaces hooks are called inside an <SpacesProvider>',
+            'Make sure your spaces hooks are called inside a <SpacesClientProvider>',
         );
       }
 

@@ -5,7 +5,7 @@ import './index.css';
 
 import { SlidesStateContextProvider } from './components/SlidesStateContext.tsx';
 import { createSpacesClient } from '@ably/spaces';
-import { SpacesProvider, SpaceProvider } from '@ably/spaces/react';
+import { SpacesClientProvider, SpaceProvider } from '@ably/spaces/react';
 import { createClient } from '@ably/pubsub-device';
 import { nanoid } from 'nanoid';
 import { generateSpaceName, getParamValueFromUrl } from './utils';
@@ -26,7 +26,7 @@ const spaceName = getParamValueFromUrl('space', generateSpaceName);
 root.render(
   <React.StrictMode>
     <PubSubClientProvider client={client}>
-      <SpacesProvider client={spaces}>
+      <SpacesClientProvider client={spaces}>
         <SpaceProvider
           name={spaceName}
           options={{ offlineTimeout: 10_000 }}
@@ -35,7 +35,7 @@ root.render(
             <App />
           </SlidesStateContextProvider>
         </SpaceProvider>
-      </SpacesProvider>
+      </SpacesClientProvider>
     </PubSubClientProvider>
   </React.StrictMode>,
 );

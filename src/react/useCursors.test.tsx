@@ -6,7 +6,7 @@ import React from 'react';
 import { DefaultPubSubRealtimeClient } from '@ably/pubsub-core';
 import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { waitFor, renderHook, act } from '@testing-library/react';
-import { SpacesProvider } from './contexts/SpacesContext.js';
+import { SpacesClientProvider } from './contexts/SpacesContext.js';
 import { SpaceProvider } from './contexts/SpaceContext.js';
 import { createSpacesClient, type SpacesClient } from '../index.js';
 import Space from '../Space.js';
@@ -46,9 +46,9 @@ describe('useCursors', () => {
     // @ts-ignore
     const { result } = renderHook(() => useCursors(callbackSpy), {
       wrapper: ({ children }) => (
-        <SpacesProvider client={spaces}>
+        <SpacesClientProvider client={spaces}>
           <SpaceProvider name="spaces-test">{children}</SpaceProvider>
-        </SpacesProvider>
+        </SpacesClientProvider>
       ),
     });
 
@@ -87,9 +87,9 @@ describe('useCursors', () => {
     // @ts-ignore
     const { result } = renderHook(() => useCursors({ returnCursors: true }), {
       wrapper: ({ children }) => (
-        <SpacesProvider client={spaces}>
+        <SpacesClientProvider client={spaces}>
           <SpaceProvider name="spaces-test">{children}</SpaceProvider>
-        </SpacesProvider>
+        </SpacesClientProvider>
       ),
     });
 

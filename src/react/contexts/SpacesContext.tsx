@@ -3,10 +3,10 @@ import type { SpacesClient } from '../../';
 
 export const SpacesContext = React.createContext<SpacesClient | undefined>(undefined);
 
-interface SpacesProviderProps {
+interface SpacesClientProviderProps {
   client: SpacesClient;
   children?: React.ReactNode | React.ReactNode[] | null;
 }
-export const SpacesProvider: React.FC<SpacesProviderProps> = ({ client: spaces, children }) => {
+export const SpacesClientProvider: React.FC<SpacesClientProviderProps> = ({ client: spaces, children }) => {
   return <SpacesContext.Provider value={spaces}>{children}</SpacesContext.Provider>;
 };
