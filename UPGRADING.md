@@ -102,3 +102,9 @@ import { SpacesClientProvider, SpaceProvider } from '@ably/spaces/react';
   </SpaceProvider>
 </SpacesClientProvider>;
 ```
+
+### Node.js 22 Or Later Is Required
+
+**Expected Impact: Low**
+
+The package now declares `"engines": { "node": ">=22" }`. If you install or build with Node.js 20 or earlier, npm warns about the engine mismatch, and installs fail outright under yarn v1 or with npm's `engine-strict` setting. Upgrade the Node.js version used by your build and CI to 22 or later. Code running in the browser is unaffected.
