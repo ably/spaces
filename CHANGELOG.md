@@ -1,14 +1,28 @@
 # CHANGELOG
 
-## v0.6.0
+## [0.6.0](https://github.com/ably/spaces/tree/0.6.0) (2026-10-30)
 
-Breaking changes in this release:
+The 0.6.0 release moves the Spaces SDK onto Ably Pub/Sub v3. Pub/Sub v3 is split by where your code runs: `@ably/pubsub-device` for code that runs on an end user's device, such as a browser or a mobile app, and `@ably/pubsub-server` for code that runs on your own infrastructure. The Spaces SDK works with a client from either package, so you install the one that matches your side of the connection alongside `@ably/spaces`.
 
-* Migrate Spaces to the new `@ably/pubsub-*` packages [\#365](https://github.com/ably/spaces/pull/365)
+Below is an overview of the major changes in this release.
 
-With this release the Spaces SDK builds on Ably Pub/Sub v3. Create the client you pass to Spaces with `@ably/pubsub-device` or `@ably/pubsub-server` instead of `ably`, create the Spaces client with `createSpacesClient(client)` instead of `new Spaces(client)`, and use `SpacesClientProvider` instead of `SpacesProvider` in React. The CDN bundle's global is now `AblySpaces`. See the [upgrade guide](./UPGRADING.md) for details.
+Please refer to the [upgrade guide](./UPGRADING.md) for the full details, including a list of all breaking changes and instructions on how to address them.
 
-**Full Changelog**: https://github.com/ably/spaces/compare/0.5.2...0.6.0
+### Ably Pub/Sub v3
+
+- The Spaces SDK no longer uses the `ably` package. Create the Pub/Sub client you pass to the Spaces SDK with `createClient` from `@ably/pubsub-device`, or `createRealtimeClient` from `@ably/pubsub-server`, instead of `new Ably.Realtime()`. [#365](https://github.com/ably/spaces/pull/365)
+- In React, wrap your app in `PubSubClientProvider` from `@ably/pubsub-device/react` instead of `AblyProvider` from `ably/react`. [#365](https://github.com/ably/spaces/pull/365)
+- When using the CDN, load the Pub/Sub v3 bundle, which defines an `AblyPubSub` global in place of `Ably`. [#365](https://github.com/ably/spaces/pull/365)
+
+### Client API naming
+
+- The `Spaces` class and the package's default export are replaced by the `createSpacesClient` factory function, which returns a `SpacesClient`. Use `createSpacesClient(client)` instead of `new Spaces(client)`. [#365](https://github.com/ably/spaces/pull/365)
+- The React `SpacesProvider` is renamed `SpacesClientProvider`. [#365](https://github.com/ably/spaces/pull/365)
+- The CDN bundle's `Spaces` global is replaced by an `AblySpaces` namespace. Use `AblySpaces.createSpacesClient(client)`. [#365](https://github.com/ably/spaces/pull/365)
+
+### Supported platforms changes
+
+- Support for Node.js versions lower than 22 has been dropped, as Ably Pub/Sub v3 requires Node.js 22 or newer. [#365](https://github.com/ably/spaces/pull/365)
 
 ## v0.5.2
 
