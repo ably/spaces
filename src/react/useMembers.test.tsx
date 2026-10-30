@@ -6,7 +6,7 @@ import React from 'react';
 import { DefaultPubSubRealtimeClient } from '@ably/pubsub-core';
 import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { waitFor, renderHook } from '@testing-library/react';
-import { SpacesProvider } from './contexts/SpacesContext.js';
+import { SpacesClientProvider } from './contexts/SpacesContext.js';
 import { SpaceProvider } from './contexts/SpaceContext.js';
 import type { PresenceMessage } from '@ably/pubsub-core';
 import { createSpacesClient, type SpacesClient } from '../index.js';
@@ -50,9 +50,9 @@ describe('useMembers', () => {
     // @ts-ignore
     const { result } = renderHook(() => useMembers(['enter', 'leave'], callbackSpy), {
       wrapper: ({ children }) => (
-        <SpacesProvider client={spaces}>
+        <SpacesClientProvider client={spaces}>
           <SpaceProvider name="spaces-test">{children}</SpaceProvider>
-        </SpacesProvider>
+        </SpacesClientProvider>
       ),
     });
 
@@ -93,9 +93,9 @@ describe('useMembers', () => {
     // @ts-ignore
     const { result } = renderHook(() => useMembers(callbackSpy, { skip: true }), {
       wrapper: ({ children }) => (
-        <SpacesProvider client={spaces}>
+        <SpacesClientProvider client={spaces}>
           <SpaceProvider name="spaces-test">{children}</SpaceProvider>
-        </SpacesProvider>
+        </SpacesClientProvider>
       ),
     });
 

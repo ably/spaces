@@ -1,4 +1,4 @@
-export { SpacesProvider } from './contexts/SpacesContext.js';
+export { SpacesClientProvider } from './contexts/SpacesContext.js';
 export { SpaceProvider } from './contexts/SpaceContext.js';
 export { useSpaces } from './useSpaces.js';
 export { useSpace } from './useSpace.js';

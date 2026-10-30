@@ -34,24 +34,24 @@ The hooks are compatible with all versions of React above 16.8.0
 
 ## Usage
 
-Start by connecting your app to Ably using the `SpacesProvider` component.
+Start by connecting your app to Ably using the `SpacesClientProvider` component.
 
-The `SpacesProvider` should wrap every component that needs to access Spaces.
+The `SpacesClientProvider` should wrap every component that needs to access Spaces.
 
 ```jsx
 import { createClient } from "@ably/pubsub-device";
 import { createSpacesClient } from "@ably/spaces";
-import { SpacesProvider, SpaceProvider } from "@ably/spaces/react";
+import { SpacesClientProvider, SpaceProvider } from "@ably/spaces/react";
 
 const pubsubDeviceClient = createClient({ key: "your-ably-api-key", clientId: 'me' });
 const spaces = createSpacesClient(pubsubDeviceClient);
 
 root.render(
-  <SpacesProvider client={spaces}>
+  <SpacesClientProvider client={spaces}>
     <SpaceProvider name="my-space">
       <App />
     </SpaceProvider>
-  </SpacesProvider>
+  </SpacesClientProvider>
 )
 ```
 
