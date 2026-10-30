@@ -16,9 +16,9 @@ jobs:
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version-file: .tool-versions
       - run: npm ci
       - run: npm audit --production
   format-check:
@@ -27,9 +27,9 @@ jobs:
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version-file: .tool-versions
       - run: npm ci
       - run: npm run format:check
   lint:
@@ -38,9 +38,9 @@ jobs:
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version-file: .tool-versions
       - run: npm ci
       - run: npm run lint
   test:
@@ -50,9 +50,9 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version-file: .tool-versions
       - run: npm ci
       - run: npm run test
   build:
@@ -61,9 +61,9 @@ jobs:
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version-file: .tool-versions
       - run: npm ci
       - run: npm run build
   docs:
@@ -76,9 +76,9 @@ jobs:
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version-file: .tool-versions
       - name: Install Package Dependencies
         run: npm ci
       - name: Build SDK
@@ -112,9 +112,9 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version-file: .tool-versions
       - run: npm ci
       - run: npx playwright install chromium
       - run: npm run build
