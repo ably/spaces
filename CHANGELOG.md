@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.6.0
+
+Breaking changes in this release:
+
+* Migrate Spaces to the new `@ably/pubsub-*` packages [\#365](https://github.com/ably/spaces/pull/365)
+
+With this release the Spaces SDK builds on Ably Pub/Sub v3. Create the client you pass to Spaces with `@ably/pubsub-device` or `@ably/pubsub-server` instead of `ably`, create the Spaces client with `createSpacesClient(client)` instead of `new Spaces(client)`, and use `SpacesClientProvider` instead of `SpacesProvider` in React. The CDN bundle's global is now `AblySpaces`. See the [upgrade guide](./UPGRADING.md) for details.
+
+**Full Changelog**: https://github.com/ably/spaces/compare/0.5.2...0.6.0
+
 ## v0.5.2
 
 No breaking changes were introduced in this release.
