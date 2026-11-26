@@ -110,6 +110,9 @@ export default class Cursors extends EventEmitter<CursorsEventMap> {
      * E.g. multiply the configured outboundBatchInterval by groups of 100 members instead of the total number of members.
      */
     this.cursorBatching.setBatchTime(Math.ceil(cursorsMembers.length / 100) * this.options.outboundBatchInterval);
+
+    // Trigger publishing of any pending cursor positions now that channel is ready
+    this.cursorBatching.triggerPublishFromPending(channel);
   }
 
   private isUnsubscribed() {
