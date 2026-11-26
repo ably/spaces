@@ -142,14 +142,14 @@ describe('Locks', () => {
       // Acquiring two locks concurrently publishes one presence message per lock,
       // and the second message repeats the first lock as PENDING.
       await space.locks.processPresenceMessage(
-        Realtime.PresenceMessage.fromValues({
+        PresenceMessage.fromValues({
           action: 'update',
           connectionId: member.connectionId,
           extras: { locks: [{ ...pendingA }] },
         }),
       );
       await space.locks.processPresenceMessage(
-        Realtime.PresenceMessage.fromValues({
+        PresenceMessage.fromValues({
           action: 'update',
           connectionId: member.connectionId,
           extras: { locks: [{ ...pendingA }, { ...pendingB }] },
